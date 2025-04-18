@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="FMSFrontend.Controls.RobotPositionPanel" 
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+             xmlns:controls="clr-namespace:FMSFrontend.Controls" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+             x:Name="root">
+    <Border Background="#BDBDBD" Padding="10">
+        <StackPanel>
+            <controls:GradientTextBlock Text="機械臂目前位置" FontSize="18" FontWeight="Bold" HorizontalAlignment="Stretch" />
+
+            <!-- 機械臂圖示區域（之後你可用 Binding 動態放圖） -->
+            <Image Source="/Assets/arm.png" Width="200" Height="200" Stretch="Uniform" Margin="0,10" />
+
+            <!-- EDM 文字顯示 -->
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10">
+                <materialDesign:PackIcon Kind="MapMarker" Width="20" Height="20" Margin="0,0,5,0" />
+                <TextBlock Text="EDM205" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" />
+            </StackPanel>
+
+            <!-- 目前動作 / 下一步 -->
+            <StackPanel Orientation="Vertical" Margin="0,10">
+                <Border Background="White" BorderThickness="1" BorderBrush="#888" Margin="0,2">
+                    <StackPanel>
+                        <TextBlock Text="目前動作" Margin="5,2,5,0" />
+                        <TextBlock Text="result" Background="#444" Foreground="White" Padding="5" />
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" BorderThickness="1" BorderBrush="#888" Margin="0,2">
+                    <StackPanel>
+                        <TextBlock Text="下一步" Margin="5,2,5,0" />
+                        <TextBlock Text="next" Background="#DDD" Padding="5" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- 繞圈圈動畫區域 / 未實作 -->
+            <!-- 圖片或 Path 可以之後再加上 Storyboard -->
+
+            <!-- 右下角箭頭按鈕 -->
+            <Button Width="36" Height="36" HorizontalAlignment="Right" Margin="0,10,0,0" Background="White" BorderThickness="0" Cursor="Hand">
+                <materialDesign:PackIcon Kind="ArrowRight" Width="20" Height="20" Foreground="Black" />
+            </Button>
+        </StackPanel>
+    </Border>
+</UserControl>
+

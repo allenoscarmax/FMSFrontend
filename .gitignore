@@ -1,0 +1,63 @@
+## Build results
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+
+## User-specific files
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+## Visual Studio files
+.vs/
+*.vspscc
+*.vssscc
+
+## Visual Studio Code
+.vscode/
+*.code-workspace
+
+## Rider
+.idea/
+
+## NuGet
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+
+## Publish output
+publish/
+*.Publish.xml
+
+## Entity Framework Migrations history
+Migrations/
+
+## Temporary and backup files
+*.tmp
+*.bak
+*.log
+*~
+
+## Database files
+*.db
+*.mdb
+*.ldf
+*.mdf
+
+## OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+## Image cache / temp folders (custom)
+Image/Temp/
+Image/Cache/
+
+## Swap files
+*.swp
+*.swo

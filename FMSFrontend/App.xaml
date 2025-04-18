@@ -1,0 +1,23 @@
+﻿<Application x:Class="FMSFrontend.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:FMSFrontend" xmlns:converters="clr-namespace:FMSFrontend.Converters">
+    <Application.Resources>
+        <ResourceDictionary>
+            <!-- 自訂資源放這裡 -->
+            <converters:MainWindowLoginVisibilityConverter_NullOrEmpty x:Key="LoginVisibility_Null" />
+            <converters:MainWindowLoginVisibilityConverter_NotNullOrEmpty x:Key="LoginVisibility_NotNull" />
+
+            <LinearGradientBrush x:Key="GradientBrush" StartPoint="0,0" EndPoint="1,0">
+                <GradientStop Color="#005E93" Offset="0" />
+                <GradientStop Color="#005E93" Offset="1" />
+            </LinearGradientBrush>
+
+            <!-- 主題資源 -->
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Colors.Light.xaml" />
+                <!--<ResourceDictionary Source="Themes/Colors.Dark.xaml" />-->
+
+                <!-- 可再加上 Dark.xaml、Controls.xaml 等 -->
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+</Application>
