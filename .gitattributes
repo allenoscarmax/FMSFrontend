@@ -1,0 +1,8 @@
+# 讓 text 檔案統一使用 LF，避免不同系統混亂
+* text=auto eol=lf
+
+# 保留二進位圖檔原樣不動
+*.png binary
+*.jpg binary
+*.svg binary
+*.ico binary

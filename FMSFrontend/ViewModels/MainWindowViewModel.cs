@@ -5,7 +5,9 @@ using FMSFrontend.Services;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 using System.Windows;
-using FMSFrontend.Helpers; // 放在你的 ViewModel 上方
+using FMSFrontend.Helpers;
+using System.Windows.Controls; // 放在你的 ViewModel 上方
+using FMSFrontend.Views;
 
 namespace FMSFrontend.ViewModels
 {
@@ -19,14 +21,17 @@ namespace FMSFrontend.ViewModels
         private string currentDateTime;  //存現在的時間
         [ObservableProperty]
         private string _loggedInUser = string.Empty; //登入的名稱
-
+        [ObservableProperty]
+        private UserControl currentPageView;
+        [ObservableProperty]
+        private string currentPageKey;  // 存目前的頁面
 
         public bool IsLoggedIn => !string.IsNullOrEmpty(LoggedInUser);
 
         public MainWindowViewModel(IHttpService httpService)
         {
             _httpService = httpService;
-
+            currentPageView = new MachineOverviewPage();
             // 初始化時間更新
             Task.Run(async () =>
             {
@@ -38,6 +43,22 @@ namespace FMSFrontend.ViewModels
             });
         }
 
+
+        #region PageChange
+        [RelayCommand]
+        private void GoToFactoryOverview()
+        {
+            CurrentPageView = new FactoryOverviewPage();
+             CurrentPageKey = "FactoryOverview";
+        }
+
+        [RelayCommand]
+        private void GoToMachineOverview()
+        {
+            CurrentPageView = new MachineOverviewPage();
+            CurrentPageKey = "MachineOverview";
+        }
+        #endregion
         #region PowerButton
         [RelayCommand]
         private void PowerButtonClick()
