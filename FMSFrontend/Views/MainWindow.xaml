@@ -1,4 +1,11 @@
-﻿<Window x:Class="FMSFrontend.Views.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:FMSFrontend.Views" xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:ext="clr-namespace:FMSFrontend.Extensions" xmlns:controls="clr-namespace:FMSFrontend.Controls" mc:Ignorable="d" Title="FMS 前台" Height="1080" Width="1920" WindowStartupLocation="CenterScreen" WindowStyle="None" WindowState="Maximized">
+﻿<Window x:Class="FMSFrontend.Views.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:local="clr-namespace:FMSFrontend.Views" 
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:ext="clr-namespace:FMSFrontend.Extensions" 
+        xmlns:controls="clr-namespace:FMSFrontend.Controls" 
+        xmlns:views="clr-namespace:FMSFrontend.Views" 
+        mc:Ignorable="d" Title="FMS 前台" Height="1080" Width="1920" WindowStartupLocation="CenterScreen" WindowStyle="None" WindowState="Maximized">
     <Window.Resources>
         <Storyboard x:Key="CollapseMenuBar">
             <ext:GridLengthAnimation Storyboard.TargetName="PageMenuBarRow" Storyboard.TargetProperty="Height" From="100" To="0" Duration="0:0:0.3" />
@@ -147,7 +154,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="36" />
                         <RowDefinition Height="*" />
-                        <RowDefinition x:Name="PageMenuBarRow" Height="100" />
+                        <RowDefinition x:Name="PageMenuBarRow" Height="Auto" />
                     </Grid.RowDefinitions>
                     <Border Grid.Row="0" Background="{DynamicResource  StatusPanelBrush}">
                         <DockPanel VerticalAlignment="Center" Height="36" Margin="5,0">
@@ -162,16 +169,24 @@
                             </StackPanel>
                         </DockPanel>
                     </Border>
-                    <ContentControl Grid.Row="1">
-                        <Grid Background="{DynamicResource PageViewBrush}">
-                            <TextBlock Text="這是測試頁面" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" />
-                        </Grid>
+
+                    <ContentControl Grid.Row="1" Background="{DynamicResource PageViewBrush}" Content="{Binding CurrentPageView}">
                     </ContentControl>
-                    <Grid Grid.Row="2" Background="{DynamicResource  PageMenuBarBrush}">
-                        <!-- 頁面選單列略 -->
+                    <!-- Row 2：底部的 PageMenuBar 區域 -->
+                    <Grid Grid.Row="2" Height="100">
+                        <!-- 這層是為了解決導角外溢的底色一致性 -->
+                        <Border Background="{DynamicResource PageViewBrush}" />
+
+                        <!-- PageMenuBar 本體（含導角與內容） -->
+                        <Border Height="100" Background="{DynamicResource PageMenuBarBrush}" CornerRadius="30,30,0,0" HorizontalAlignment="Stretch">
+                            <controls:PageMenuBar DataContext="{Binding}"/>
+                        </Border>
                     </Grid>
+
                 </Grid>
+                
             </Grid>
+            
         </Grid>
     </Viewbox>
 </Window>
