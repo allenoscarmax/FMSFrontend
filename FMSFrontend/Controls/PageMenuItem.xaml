@@ -1,27 +1,54 @@
 ﻿<UserControl x:Class="FMSFrontend.Controls.PageMenuItem" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" x:Name="root">
-    <Button Background="Transparent" BorderBrush="{x:Null}" Cursor="Hand" Command="{Binding Command, ElementName=root}">
+    <Button Background="Transparent" FocusVisualStyle="{x:Null}" BorderBrush="{x:Null}" Cursor="Hand" Command="{Binding Command, ElementName=root}" CommandParameter="{Binding CommandParameter, ElementName=root}" Style="{x:Null}">
         <Button.Template>
             <ControlTemplate TargetType="Button">
-                <Border x:Name="PART_Border" Background="Transparent" CornerRadius="16" Padding="8" Margin="5">
-                    <Grid VerticalAlignment="Center" HorizontalAlignment="Center" >
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <materialDesign:PackIcon Grid.Row="0" Kind="{Binding Icon, ElementName=root}" Width="44" Height="44" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" />
+                <Border x:Name="PART_Border" BorderThickness="0" Background="Transparent" CornerRadius="{Binding CornerRadius, ElementName=root}" ClipToBounds="True"  Margin="{Binding Margin, ElementName=root}">
+                    <Grid>
+                        <!-- 背景遮色專用 Layer -->
+                        <Border ClipToBounds="True">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding OverlayBackgroundKey, ElementName=root}" Value="PageViewBrush">
+                                            <Setter Property="Background" Value="{DynamicResource PageViewBrush}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding OverlayBackgroundKey, ElementName=root}" Value="PageMenuBarBrush">
+                                            <Setter Property="Background" Value="{DynamicResource PageMenuBarBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
+                        <!-- 實際內容背景 -->
+                        <Border CornerRadius="{Binding CornerRadius, ElementName=root}" ClipToBounds="True">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedBackgroundKey, ElementName=root}" Value="PageViewBrush">
+                                            <Setter Property="Background" Value="{DynamicResource PageViewBrush}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SelectedBackgroundKey, ElementName=root}" Value="PageMenuBarBrush">
+                                            <Setter Property="Background" Value="{DynamicResource PageMenuBarBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
 
-                        <TextBlock Grid.Row="1" Text="{Binding Label, ElementName=root}" FontSize="14" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0" />
+                        <!-- Icon + Text -->
+                        <Grid VerticalAlignment="Center" HorizontalAlignment="Center" ClipToBounds="True">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <materialDesign:PackIcon Grid.Row="0" Kind="{Binding Icon, ElementName=root}" Width="44" Height="44" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" ClipToBounds="True"/>
+
+                            <TextBlock Grid.Row="1" Text="{Binding Label, ElementName=root}" FontSize="14" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0" ClipToBounds="True"/>
+                        </Grid>
                     </Grid>
                 </Border>
-                <ControlTemplate.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter TargetName="PART_Border" Property="Background" Value="#30FFFFFF" />
-                    </Trigger>
-
-                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
-                        <Setter TargetName="PART_Border" Property="Background" Value="#FF444444" />
-                    </DataTrigger>
-                </ControlTemplate.Triggers>
             </ControlTemplate>
         </Button.Template>
     </Button>
