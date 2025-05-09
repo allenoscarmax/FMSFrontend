@@ -179,7 +179,7 @@
 
                         <!-- PageMenuBar 本體（含導角與內容） -->
                         <Border Height="100" Background="{DynamicResource PageMenuBarBrush}" CornerRadius="30,30,0,0" HorizontalAlignment="Stretch">
-                            <controls:PageMenuBar DataContext="{Binding}"/>
+                            <controls:PageMenuBar CurrentPageKey="{Binding CurrentPageKey}" />
                         </Border>
                     </Grid>
 

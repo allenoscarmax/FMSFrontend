@@ -20,11 +20,51 @@ namespace FMSFrontend.Controls
     /// </summary>
     public partial class PageMenuBar : UserControl
     {
+        public static readonly DependencyProperty CurrentPageKeyProperty =
+            DependencyProperty.Register(nameof(CurrentPageKey), typeof(string), typeof(PageMenuBar),
+                new PropertyMetadata(null, OnCurrentPageKeyChanged));
+
+        public string CurrentPageKey
+        {
+            get => (string)GetValue(CurrentPageKeyProperty);
+            set => SetValue(CurrentPageKeyProperty, value);
+        }
+
         public PageMenuBar()
         {
             InitializeComponent();
         }
 
+        private static void OnCurrentPageKeyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is PageMenuBar bar)
+            {
+                bar.UpdateSelection();
+            }
+        }
 
+        private void UpdateSelection()
+        {
+            var items = MenuItemsContainer.Children.OfType<PageMenuItem>().ToList();
+
+            // Step 1：先找選中的項目
+            for (int i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+                item.CurrentPageKey = this.CurrentPageKey;
+                item.IsSelected = item.PageKey == this.CurrentPageKey;
+            }
+
+            // Step 2：再根據選中位置設圓角
+            for (int i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+                item.IsPreviousToSelected = (i < items.Count - 1) && items[i + 1].IsSelected;
+                item.IsNextToSelected = (i > 0) && items[i - 1].IsSelected;
+
+                item.UpdateCornerRadius();
+            }
+        }
     }
+
 }
