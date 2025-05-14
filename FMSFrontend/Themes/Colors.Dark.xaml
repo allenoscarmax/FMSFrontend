@@ -20,7 +20,7 @@
     <SolidColorBrush x:Key="TitleBrush" Color="{StaticResource TitleColor}" />
 
     <!-- Status Panel / Menu Bar -->
-    <Color x:Key="StatusPanelColor">#DBB037</Color>
+    <Color x:Key="StatusPanelColor">#555555</Color>
     <Color x:Key="PageMenuBarColor">#005E93</Color>
     <SolidColorBrush x:Key="StatusPanelBrush" Color="{StaticResource StatusPanelColor}" />
     <SolidColorBrush x:Key="PageMenuBarBrush" Color="{StaticResource PageMenuBarColor}" />

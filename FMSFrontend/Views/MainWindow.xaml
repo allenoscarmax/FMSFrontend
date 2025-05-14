@@ -135,14 +135,132 @@
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="2" Background="{DynamicResource  ControlPanelBackgroundBrush}">
-                        <StackPanel>
+                        <StackPanel >
                             <controls:GradientTextBlock Text="控制單元" FontSize="24" FontWeight="Bold" HorizontalAlignment="Stretch" />
+                            <!-- 按鈕區 -->
+                            <Border Padding="10" HorizontalAlignment="Center">
+                                <WrapPanel HorizontalAlignment="Center" ItemWidth="120" ItemHeight="120" Orientation="Horizontal">
+                                    <!-- 手臂啟動 -->
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotStartButtonClick}" Margin="5">
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                            <materialDesign:PackIcon Kind="Play" Width="60" Height="60" Margin="0,0,0,3" Foreground="#004E79" HorizontalAlignment="Center" />
+                                            <TextBlock Text="手臂啟動" FontSize="16" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <!-- 手臂暫停 -->
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotPauseButtonClick}" Margin="5">
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                            <materialDesign:PackIcon Kind="Pause" Width="60" Height="60" Margin="0,0,0,5" Foreground="#004E79" HorizontalAlignment="Center" />
+                                            <TextBlock Text="手臂暫停" FontSize="16" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                    <!-- 手臂停止 -->
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotStopButtonClick}" Margin="5">
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                            <materialDesign:PackIcon Kind="Stop" Width="60" Height="60" Margin="0,0,0,5" Foreground="#004E79" HorizontalAlignment="Center" />
+                                            <TextBlock Text="手臂停止" FontSize="16" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                    <!-- 手臂重置 -->
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotResetButtonClick}" Margin="5">
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                            <materialDesign:PackIcon Kind="Refresh" Width="60" Height="60" Margin="0,0,0,5" Foreground="#004E79" HorizontalAlignment="Center" />
+                                            <TextBlock Text="手臂重置" FontSize="16" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                    <!-- 派工啟動 -->
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding StartDispatchButtonClick}" Margin="5">
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                            <materialDesign:PackIcon Kind="CogPlay" Width="60" Height="60" Margin="0,0,0,5" Foreground="#004E79" HorizontalAlignment="Center" />
+                                            <TextBlock Text="派工啟動" FontSize="16" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                </WrapPanel>
+                            </Border>
                         </StackPanel>
+
                     </Border>
                     <Border Grid.Row="3" Background="{DynamicResource  ControlPanelBackgroundBrush}">
-                        <StackPanel>
-                            <controls:GradientTextBlock Text="料倉控制" FontSize="24" FontWeight="Bold" HorizontalAlignment="Stretch" />
-                        </StackPanel>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="55" />
+                                <!-- 頂部標題 + 開關 -->
+                                <RowDefinition Height="*" />
+                                <!-- 可切換的內容 -->
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <!-- 料倉控制標題 -->
+                                <controls:GradientTextBlock Text="料倉控制" FontSize="24" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="55" />
+                                <!-- 滑動按鈕 -->
+                                <ToggleButton x:Name="ToggleLight" Width="136" Height="40" HorizontalAlignment="Right" Margin="0,0,30,0">
+                                    <ToggleButton.Template>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Grid Width="136" Height="40">
+                                                <!-- 背景 -->
+                                                <Border Background="#444" CornerRadius="5" BorderBrush="Black" BorderThickness="1" />
+
+                                                <!-- 滑塊 -->
+                                                <Border x:Name="Knob" Width="60" Height="36" Background="White" CornerRadius="5" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                                                    <Border.RenderTransform>
+                                                        <TranslateTransform x:Name="KnobTransform" />
+                                                    </Border.RenderTransform>
+                                                    <Grid>
+                                                        <Image x:Name="ImageOn" Width="28" Height="28" Source="pack://application:,,,/FMSFrontend;component/Image/控制單元/06-1-lightbulbOn.png" Stretch="Uniform" Visibility="Visible" />
+                                                        <Image x:Name="ImageOff" Width="28" Height="28" Source="pack://application:,,,/FMSFrontend;component/Image/控制單元/06-2-lightbulbOff.png" Stretch="Uniform" Visibility="Collapsed" />
+                                                    </Grid>
+                                                </Border>
+
+                                                <!-- 滑動動畫 -->
+                                                <VisualStateManager.VisualStateGroups>
+                                                    <VisualStateGroup x:Name="CheckStates">
+                                                        <VisualState x:Name="Unchecked">
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetName="KnobTransform" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.2" />
+                                                            </Storyboard>
+                                                        </VisualState>
+                                                        <VisualState x:Name="Checked">
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetName="KnobTransform" Storyboard.TargetProperty="X" To="74" Duration="0:0:0.2" />
+                                                            </Storyboard>
+                                                        </VisualState>
+                                                    </VisualStateGroup>
+                                                </VisualStateManager.VisualStateGroups>
+                                            </Grid>
+
+                                            <!-- 圖片切換：用 Triggers 控制 Visibility -->
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter TargetName="ImageOn" Property="Visibility" Value="Collapsed" />
+                                                    <Setter TargetName="ImageOff" Property="Visibility" Value="Visible" />
+                                                </Trigger>
+                                                <Trigger Property="IsChecked" Value="False">
+                                                    <Setter TargetName="ImageOn" Property="Visibility" Value="Visible" />
+                                                    <Setter TargetName="ImageOff" Property="Visibility" Value="Collapsed" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </ToggleButton.Template>
+                                </ToggleButton>
+                            </Grid>
+                            <!-- 第二行：換頁內容 -->
+
+                            <ContentControl Grid.Row="1" Content="{Binding StorageControlPage}" Margin="2">
+                                <ContentControl.Resources>
+                                    <Style TargetType="ContentPresenter">
+                                        <Style.Triggers>
+                                            <EventTrigger RoutedEvent="ContentPresenter.Loaded">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.5" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentControl.Resources>
+                            </ContentControl>
+
+                        </Grid>
                     </Border>
                 </Grid>
 
@@ -157,7 +275,7 @@
                         <RowDefinition x:Name="PageMenuBarRow" Height="Auto" />
                     </Grid.RowDefinitions>
                     <Border Grid.Row="0" Background="{DynamicResource  StatusPanelBrush}">
-                        <DockPanel VerticalAlignment="Center" Height="36" Margin="5,0">
+                        <DockPanel VerticalAlignment="Center" Height="36" Margin="0,0">
                             <materialDesign:PackIcon Kind="AlertCircleOutline" Width="20" Height="20" Margin="5,0" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" />
                             <Border CornerRadius="4" Background="White" Height="24" VerticalAlignment="Center">
                                 <TextBox Text="提示訊息" Margin="10,0" Height="24" VerticalAlignment="Center" Background="White" Padding="8,0" BorderThickness="0" Width="200" HorizontalContentAlignment="Center" FontSize="14" />

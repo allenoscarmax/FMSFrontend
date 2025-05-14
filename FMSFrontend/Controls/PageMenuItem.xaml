@@ -2,7 +2,7 @@
     <Button Background="Transparent" FocusVisualStyle="{x:Null}" BorderBrush="{x:Null}" Cursor="Hand" Command="{Binding Command, ElementName=root}" CommandParameter="{Binding CommandParameter, ElementName=root}" Style="{x:Null}">
         <Button.Template>
             <ControlTemplate TargetType="Button">
-                <Border x:Name="PART_Border" BorderThickness="0" Background="Transparent" CornerRadius="{Binding CornerRadius, ElementName=root}" ClipToBounds="True"  Margin="{Binding Margin, ElementName=root}">
+                <Border x:Name="PART_Border" BorderThickness="0" Background="Transparent" CornerRadius="{Binding CornerRadius, ElementName=root}" ClipToBounds="True" Margin="{Binding Margin, ElementName=root}">
                     <Grid>
                         <!-- 背景遮色專用 Layer -->
                         <Border ClipToBounds="True">
@@ -43,13 +43,29 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <materialDesign:PackIcon Grid.Row="0" Kind="{Binding Icon, ElementName=root}" Width="44" Height="44" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" ClipToBounds="True"/>
+                            <materialDesign:PackIcon x:Name="IconElement" Grid.Row="0" Kind="{Binding Icon, ElementName=root}" Width="44" Height="44" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" ClipToBounds="True" />
 
-                            <TextBlock Grid.Row="1" Text="{Binding Label, ElementName=root}" FontSize="14" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0" ClipToBounds="True"/>
+                            <TextBlock x:Name="TextElement" Grid.Row="1" Text="{Binding Label, ElementName=root}" FontSize="14" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0" ClipToBounds="True" />
                         </Grid>
+                        <!-- 滑鼠高光效果層（有導角） -->
+                        <Border x:Name="HoverHighlight" Background="Transparent" CornerRadius="30" BorderThickness="0" />
                     </Grid>
                 </Border>
+                <ControlTemplate.Triggers>
+                    <!-- 滑鼠移入 -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="HoverHighlight" Property="Background" Value="#33FFFFFF"/>
+                        <!-- 半透明白色高光 -->
+                        <Setter TargetName="HoverHighlight" Property="BorderBrush" Value="#66FFFFFF" />
+                        <Setter TargetName="HoverHighlight" Property="BorderThickness" Value="1" />
+
+                        <!-- Icon 顏色變亮 -->
+                        <Setter Property="Foreground" Value="#FF80D8FF" TargetName="IconElement" />
+                        <Setter Property="Foreground" Value="#FF80D8FF" TargetName="TextElement" />
+                    </Trigger>
+                </ControlTemplate.Triggers>
             </ControlTemplate>
+            
         </Button.Template>
     </Button>
 </UserControl>

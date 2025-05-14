@@ -1,0 +1,41 @@
+﻿using FMSFrontend.Controls;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace FMSFrontend.Views
+{
+    /// <summary>
+    /// StorageUnitControlPage.xaml 的互動邏輯
+    /// </summary>
+    public partial class StorageUnitControlPage : UserControl
+    {
+        public StorageUnitControlPage()
+        {
+            InitializeComponent();
+        }
+
+        public void ScrollToStorageId(string storageId)
+        {
+            foreach (var child in MainStackPanel.Children)
+            {
+                if (child is StorageUnitControl control && control.StorageId == storageId)
+                {
+                    control.BringIntoView();
+                    break;
+                }
+            }
+        }
+    }
+}
