@@ -25,6 +25,9 @@ namespace FMSFrontend.ViewModels
         private UserControl currentPageView;
         [ObservableProperty]
         private string currentPageKey;  // 存目前的頁面
+        [ObservableProperty]
+        private UserControl storageControlPage;
+
 
         public bool IsLoggedIn => !string.IsNullOrEmpty(LoggedInUser);
 
@@ -32,6 +35,7 @@ namespace FMSFrontend.ViewModels
         {
             _httpService = httpService;
             currentPageView = new MachineOverviewPage();
+            StorageControlPage = new StorageUnitMiniControlPage();
             // 初始化時間更新
             Task.Run(async () =>
             {
@@ -94,9 +98,36 @@ namespace FMSFrontend.ViewModels
             CurrentPageKey = "Settingsview";
         }
 
-            #endregion
-            #region PowerButton
-            [RelayCommand]
+        #endregion
+        #region StoragePageChange
+        [RelayCommand]
+        private void ShowDetail(string storageId)
+        {
+            var detailPage = new StorageUnitControlPage
+            {
+                DataContext = this // 👈 傳入目前的 MainWindowViewModel
+            };
+            // 等畫面載入完成後再捲動
+            detailPage.Loaded += (s, e) =>
+            {
+                detailPage.ScrollToStorageId(storageId);
+            };
+
+            StorageControlPage = detailPage;
+        }
+        [RelayCommand]
+        public void Back()
+        {
+            StorageControlPage = new StorageUnitMiniControlPage
+            {
+                DataContext = this // 保持 ViewModel 綁定，否則按鈕 Command 會失效
+            };
+        }
+
+
+        #endregion
+        #region PowerButton
+        [RelayCommand]
             private void PowerButtonClick()
             {
                 // MessageBox.Show("關機囉！");

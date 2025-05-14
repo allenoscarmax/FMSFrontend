@@ -5,6 +5,72 @@
             <converters:MainWindowLoginVisibilityConverter_NullOrEmpty x:Key="LoginVisibility_Null" />
             <converters:MainWindowLoginVisibilityConverter_NotNullOrEmpty x:Key="LoginVisibility_NotNull" />
 
+
+            <!-- 按鈕樣式 -->
+            <Style x:Key="ControlCardButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="White" />
+                <Setter Property="BorderBrush" Value="Black" />
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="Padding" Value="5" />
+                <Setter Property="Margin" Value="10" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontFamily" Value="Microsoft JhengHei"/>
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="buttonBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.4" BlurRadius="6" />
+                                </Border.Effect>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="buttonBorder" Property="RenderTransform">
+                                        <Setter.Value>
+                                            <TranslateTransform Y="2" />
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter TargetName="buttonBorder" Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect Color="Black" Direction="270" ShadowDepth="1" Opacity="0.2" BlurRadius="3" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="buttonBorder" Property="Background" Value="#FFF5F5F5" />
+                                    <Setter TargetName="buttonBorder" Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect Color="#007ACC" Direction="270" ShadowDepth="6" Opacity="0.5" BlurRadius="10" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!--<Style x:Key="RoundedBlackBorderButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="White" />
+                <Setter Property="Foreground" Value="Black" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="BorderBrush" Value="Black" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2" SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>-->
+
             <LinearGradientBrush x:Key="GradientBrush" StartPoint="0,0" EndPoint="1,0">
                 <GradientStop Color="#005E93" Offset="0" />
                 <GradientStop Color="#005E93" Offset="1" />
@@ -16,6 +82,7 @@
                 <!--<ResourceDictionary Source="Themes/Colors.Dark.xaml" />-->
 
                 <!-- 可再加上 Dark.xaml、Controls.xaml 等 -->
+                <ResourceDictionary Source="Styles/Buttons.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
