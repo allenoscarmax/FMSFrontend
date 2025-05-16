@@ -8,6 +8,7 @@ using System.Windows;
 using FMSFrontend.Helpers;
 using System.Windows.Controls; // 放在你的 ViewModel 上方
 using FMSFrontend.Views;
+using FMSFrontend.Models;
 
 namespace FMSFrontend.ViewModels
 {
@@ -28,6 +29,9 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty]
         private UserControl storageControlPage;
 
+        [ObservableProperty]
+        private Robot _robot;
+
 
         public bool IsLoggedIn => !string.IsNullOrEmpty(LoggedInUser);
 
@@ -45,6 +49,13 @@ namespace FMSFrontend.ViewModels
                     await Task.Delay(1000);
                 }
             });
+            Robot = new Robot()
+            {
+                Name = "主線機器人",
+                CurrentLocation = "EDM1",
+                CurrentAction = "拉屎",
+                NextAction = "兜不住喜"
+            };
         }
 
 
@@ -128,38 +139,38 @@ namespace FMSFrontend.ViewModels
         #endregion
         #region PowerButton
         [RelayCommand]
-            private void PowerButtonClick()
-            {
-                // MessageBox.Show("關機囉！");
+        private void PowerButtonClick()
+        {
+            // MessageBox.Show("關機囉！");
 
-                // 切換風格的測試邏輯
-                string current = ThemeManager.CurrentThemeName;
-                string nextTheme = current == "Dark" ? "Light" : "Dark";
-                ThemeManager.ApplyTheme(nextTheme);
+            // 切換風格的測試邏輯
+            string current = ThemeManager.CurrentThemeName;
+            string nextTheme = current == "Dark" ? "Light" : "Dark";
+            ThemeManager.ApplyTheme(nextTheme);
 
-                MessageBox.Show($"套用主題：{nextTheme}");
-                //System.Windows.Application.Current.Shutdown();
-            }
-            #endregion
-            #region Logout
-            [RelayCommand]
-            private void Logout()
-            {
-                // 這裡可以補上實際的登出處理，例如呼叫 API 或清除 token
-                LoggedInUser = string.Empty; // 清除登入者資訊
-                MessageBox.Show("您已成功登出！");
-            }
-            #endregion
-            #region Login
-            [RelayCommand]
-            private void Login()
-            {
-                // TODO: 改為呼叫後台 API 取得使用者資訊
-                LoggedInUser = "王小明"; // 登入成功後設定使用者名稱
-                MessageBox.Show($"歡迎登入，{LoggedInUser}！");
-            }
-            #endregion
+            MessageBox.Show($"套用主題：{nextTheme}");
+            //System.Windows.Application.Current.Shutdown();
+        }
+        #endregion
+        #region Logout
+        [RelayCommand]
+        private void Logout()
+        {
+            // 這裡可以補上實際的登出處理，例如呼叫 API 或清除 token
+            LoggedInUser = string.Empty; // 清除登入者資訊
+            MessageBox.Show("您已成功登出！");
+        }
+        #endregion
+        #region Login
+        [RelayCommand]
+        private void Login()
+        {
+            // TODO: 改為呼叫後台 API 取得使用者資訊
+            LoggedInUser = "王小明"; // 登入成功後設定使用者名稱
+            MessageBox.Show($"歡迎登入，{LoggedInUser}！");
+        }
+        #endregion
 
 
-        } 
     }
+}
