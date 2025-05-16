@@ -9,12 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Image\工具機-icon\01-手臂.png" />
     <None Remove="Image\控制單元\01-play.png" />
     <None Remove="Image\控制單元\06-1-lightbulbOn.png" />
     <None Remove="Image\控制單元\06-2-lightbulbOff.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Image\工具機-icon\01-手臂.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Image\控制單元\01-play.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

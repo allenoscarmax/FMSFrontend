@@ -129,9 +129,13 @@
 
                         </DockPanel>
                     </Border>
-                    <Border Grid.Row="1" Background="{DynamicResource  ControlPanelBackgroundBrush}">
+                    <Border Grid.Row="1" Background="{DynamicResource ControlPanelBackgroundBrush}">
                         <StackPanel>
+                            <!-- 標題 -->
                             <controls:GradientTextBlock Text="機械臂目前位置" FontSize="24" FontWeight="Bold" HorizontalAlignment="Stretch" />
+
+                            <!-- 機械臂面板 -->
+                            <controls:RobotPositionPanel SelectedRobot="{Binding Robot}"  Margin="0,0,0,0" />
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="2" Background="{DynamicResource  ControlPanelBackgroundBrush}">
