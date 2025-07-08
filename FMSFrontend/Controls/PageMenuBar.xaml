@@ -6,11 +6,11 @@
         </Grid.ColumnDefinitions>
 
         <UniformGrid x:Name="MenuItemsContainer" Columns="8" Grid.Column="0" SnapsToDevicePixels="True" Background="Transparent">
-            <controls:PageMenuItem Icon="Factory" Label="整場總覽" Command="{Binding GoToFactoryOverviewCommand}" PageKey="FactoryOverview" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}"/>
+            <controls:PageMenuItem Icon="Factory" Label="產線總覽" Command="{Binding GoToProductionLinesCommand}" PageKey="ProductionLines" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
+            
+            <controls:PageMenuItem Icon="LanConnect" Label="整場總覽" Command="{Binding GoToFactoryOverviewCommand}" PageKey="FactoryOverview" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}"/>
 
             <controls:PageMenuItem Icon="ViewDashboard" Label="設備總覽" Command="{Binding GoToMachineOverviewCommand}" PageKey="MachineOverview" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
-
-            <controls:PageMenuItem Icon="LanConnect" Label="產線總覽" Command="{Binding GoToProductionLinesCommand}" PageKey="ProductionLines" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
 
             <controls:PageMenuItem Icon="ClipboardList" Label="工單派工" Command="{Binding GoToWorkOrderCommand}" PageKey="WorkOrder" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
 
