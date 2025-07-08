@@ -1,0 +1,324 @@
+﻿<UserControl x:Class="FMSFrontend.Controls.StorageDetailControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:FMSFrontend.Controls" xmlns:conv="clr-namespace:FMSFrontend.Converters" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:vm="clr-namespace:FMSFrontend.ViewModels.Storage" mc:Ignorable="d" d:DesignHeight="720" d:DesignWidth="1024" x:Name="root" Background="Transparent">
+
+    <UserControl.Resources>
+        <conv:StorageTypeToBrushConverter x:Key="StorageTypeToBrushConverter" />
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <Style x:Key="GrayTagStatusStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="#666" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="12,4" />
+            <Setter Property="Margin" Value="6,0" />
+        </Style>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <conv:CheckStatusToImageConverter x:Key="CheckStatusToImageConverter" />
+        <conv:ResultStatusToGeometryConverter x:Key="ResultStatusToGeometryConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <!-- 陰影層 -->
+        <Border Background="#33000000" CornerRadius="18" Margin="-2,-2,-2,-2" />
+
+        <!-- 外層圓角白底 + 陰影 -->
+        <Border CornerRadius="18" Background="#FFFFFF" BorderBrush="#DDD" ClipToBounds="True" SnapsToDevicePixels="True">
+
+            <Grid ClipToBounds="True">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40" />
+                    <!-- Tabs -->
+                    <RowDefinition Height="*" />
+                    <!-- Content -->
+                </Grid.RowDefinitions>
+
+                <!-- Tabs 列 -->
+                <Border Grid.Row="0" Background="Transparent" Height="40">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- 返回按鈕 -->
+                        <Border Grid.Column="0" Background="Transparent" Height="40">
+                            <Button Width="61" Height="40" Command="{Binding ShowOverviewCommand}" ToolTip="返回" BorderThickness="0" Padding="0" Background="Transparent">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="18,0,0,0" SnapsToDevicePixels="True">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#B0B0B0" />
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#A0A0A0" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+
+                                <!-- 圖示 -->
+                                <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24" Foreground="Black" />
+                            </Button>
+                        </Border>
+
+                        <!-- Tabs -->
+                        <TabControl Grid.Column="1" SelectedIndex="{Binding SelectedTabIndex}" Style="{StaticResource FlatTabControlStyle}" Height="40" Padding="0" Margin="0" Background="Transparent">
+                            <TabControl.Resources>
+                                <Style TargetType="TabItem" BasedOn="{StaticResource RoundedTabItemStyle}" />
+                            </TabControl.Resources>
+
+                            <TabItem Header="電極" />
+                            <TabItem Header="工件" />
+                        </TabControl>
+                    </Grid>
+                </Border>
+
+                <!-- Main Content 區 -->
+                <Grid Grid.Row="1" Margin="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="71.78" />
+                        <!-- 標題膠囊區 + 狀態列 -->
+                        <RowDefinition Height="*" />
+                        <!-- 倉儲格子 -->
+                        <RowDefinition Height="Auto" />
+                        <!-- 分頁 -->
+                    </Grid.RowDefinitions>
+
+                    <!-- 1. 標題膠囊 + 狀態列 -->
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- 膠囊樣式（左側貼齊，右側圓角） -->
+                        <Border d:Background="#2779A7" Background="{Binding StorageType, Converter={StaticResource StorageTypeToBrushConverter}}" Height="40" CornerRadius="0,20,20,0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Padding="24,0" Width="172">
+                            <TextBlock Text="{Binding StorageName}" d:Text="ES1" Foreground="White" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" />
+                        </Border>
+
+                        <!-- 狀態列 -->
+                        <Grid Grid.Column="1" FocusVisualStyle="{x:Null}" HorizontalAlignment="Right">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Right">
+                                <!-- 上排：彩色狀態統計 -->
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                                    <!--待加工-->
+                                    <Border Background="#F3B407" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="待加工" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
+                                            <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding WaitingCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!--加工中-->
+                                    <Border Background="#1DB945" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="加工中" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
+                                            <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding ProcessingCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!--異常-->
+                                    <Border Background="#CF1916" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="異常" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
+                                            <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding ErrorCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!--完成-->
+                                    <Border Background="#0877E3" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="完成" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
+                                            <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding CompletedCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!--禁用-->
+                                    <Border Background="#CCCCCC" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="禁用" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center" />
+                                            <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding DisabledCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!--預約-->
+                                    <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="預約" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center" />
+                                            <Border Width="24" Height="24" Background="#D6D6D6" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding BookedCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- 下排：灰底圖示狀態列 -->
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="-50,0,0,0" Visibility="{Binding IsElectrode, Converter={StaticResource BoolToVis}}">
+                                    <Border Style="{StaticResource GrayTagStatusStyle}">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource CheckIconGeometry}" 
+                                                  Fill="#555" Width="16" Height="16" Margin="4,0,4,0" VerticalAlignment="Center" />
+                                            <TextBlock Text="成功" FontSize="14" Foreground="#555" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Style="{StaticResource GrayTagStatusStyle}">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource CheckingIconGeometry}" Fill="#555" Width="16" Height="16" Margin="2,0,2,0" VerticalAlignment="Center" />
+                                            <TextBlock Text="檢查中" FontSize="14" Foreground="#555" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Style="{StaticResource GrayTagStatusStyle}">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource CheckFailIconGeometry}" Fill="#555" Width="16" Height="16" Margin="4,0,4,0" VerticalAlignment="Center" />
+                                            <TextBlock Text="失敗" FontSize="14" Foreground="#555" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Style="{StaticResource GrayTagStatusStyle}" Margin="30,0,0,0">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Image Width="16" Height="16" Source="{StaticResource CheckedFileIcon}" Margin="4,0,4,0" />
+                                            <TextBlock Text="已檢查" FontSize="14" Foreground="#555" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Style="{StaticResource GrayTagStatusStyle}">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Image Width="16" Height="16" Source="{StaticResource UncheckfileIcon}" Margin="4,0,4,0" />
+                                            <TextBlock Text="待檢查" FontSize="14" Foreground="#555" />
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+
+                    </Grid>
+
+                    <!-- 2. 倉儲格子區 -->
+                    <Border Grid.Row="1" Background="#F6F4F1" CornerRadius="12" BorderBrush="#DDD" BorderThickness="1" Margin="0,12">
+                        <ItemsControl ItemsSource="{Binding CurrentPage.Slots}" Margin="24">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Rows="{Binding CurrentPage.Rows}" Columns="{Binding CurrentPage.Columns}" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Width="72" Height="72" Margin="3" Background="{Binding Background}" Command="{Binding DataContext.SelectSlotCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderBrush="#DDD" BorderThickness="1">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="22" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="22" />
+                                                        </Grid.RowDefinitions>
+
+                                                        <!-- Row 0: 鎖 icon（禁用） -->
+                                                        <materialDesign:PackIcon Grid.Row="0" Kind="Lock" Width="16" Height="16" Foreground="Black" Visibility="{Binding IsLocked, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+                                                        <!-- Row 1: 工件名稱 -->
+                                                        <TextBlock Grid.Row="1" Text="{Binding Text}" FontSize="14" FontWeight="SemiBold" Foreground="{Binding TextColor, FallbackValue=Black}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+
+                                                        <!-- Row 2: 狀態 icon（左：檢查狀態，右：加工結果） -->
+                                                        <Grid Grid.Row="2" Margin="0">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="*" />
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <!-- 左：檢查狀態 -->
+                                                            <Path Grid.Column="0" Width="16" Height="16" Fill="#555" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding IsElectrode, Converter={StaticResource BoolToVisibilityConverter}}" Data="{Binding ResultStatus, Converter={StaticResource ResultStatusToGeometryConverter}}" />
+
+                                                            <!-- 右：加工結果狀態 -->
+                                                            <Image Grid.Column="1" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding IsElectrode, Converter={StaticResource BoolToVisibilityConverter}}" Source="{Binding CheckStatus, Converter={StaticResource CheckStatusToImageConverter}}" />
+                                                        </Grid>
+                                                    </Grid>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+
+                    <!-- 3. 分頁列 -->
+                    <Grid Grid.Row="2" Height="40" Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- 上一頁按鈕 -->
+                        <Button Grid.Column="0" Width="60" Height="32" Background="White" BorderBrush="#CCC" Command="{Binding PrevPageCommand}" Margin="0,0,8,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="16">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <!-- 滑鼠移入時改變背景色 -->
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="border" Property="Background" Value="#F0F0F0" />
+                                        </Trigger>
+
+                                        <!-- 按下時背景再深一點 -->
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter TargetName="border" Property="Background" Value="#E0E0E0" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                            <materialDesign:PackIcon Kind="ArrowLeft" Width="20" Height="20" />
+                        </Button>
+
+                        <!-- 頁碼顯示 -->
+                        <TextBlock Grid.Column="1" Text="{Binding PageInfo}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+                        <!-- 下一頁按鈕 -->
+                        <Button Grid.Column="2" Width="60" Height="32" Background="White" BorderBrush="#CCC" Command="{Binding NextPageCommand}" Margin="8,0,0,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="16">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <!-- 滑鼠移入時改變背景色 -->
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="border" Property="Background" Value="#F0F0F0" />
+                                        </Trigger>
+
+                                        <!-- 按下時背景再深一點 -->
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter TargetName="border" Property="Background" Value="#E0E0E0" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+
+                            </Button.Template>
+                            <materialDesign:PackIcon Kind="ArrowRight" Width="20" Height="20" />
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Grid>
+
+        </Border>
+    </Grid>
+
+</UserControl>

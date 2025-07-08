@@ -1,4 +1,4 @@
-﻿using FMSFrontend.ViewModels;
+﻿using FMSFrontend.ViewModels.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,17 +14,17 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FMSFrontend.Views
+namespace FMSFrontend.Controls
 {
     /// <summary>
-    /// ProductionLines.xaml 的互動邏輯
+    /// StorageOverviewControl.xaml 的互動邏輯
     /// </summary>
-    public partial class ProductionLines : UserControl
+    public partial class StorageOverviewControl : UserControl
     {
-        public ProductionLines()
+        public StorageOverviewControl()
         {
             InitializeComponent();
-            this.DataContext = new ProductionLinesViewModel();
+           
         }
     }
 }

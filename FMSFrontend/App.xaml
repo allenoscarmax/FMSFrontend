@@ -5,7 +5,6 @@
             <converters:MainWindowLoginVisibilityConverter_NullOrEmpty x:Key="LoginVisibility_Null" />
             <converters:MainWindowLoginVisibilityConverter_NotNullOrEmpty x:Key="LoginVisibility_NotNull" />
 
-
             <!-- 按鈕樣式 -->
             <Style x:Key="ControlCardButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="White" />
@@ -14,7 +13,7 @@
                 <Setter Property="Padding" Value="5" />
                 <Setter Property="Margin" Value="10" />
                 <Setter Property="FontSize" Value="16" />
-                <Setter Property="FontFamily" Value="Microsoft JhengHei"/>
+                <Setter Property="FontFamily" Value="Microsoft JhengHei" />
                 <Setter Property="Cursor" Value="Hand" />
                 <Setter Property="SnapsToDevicePixels" Value="True" />
                 <Setter Property="Template">
@@ -24,7 +23,7 @@
                                 <Border.Effect>
                                     <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.4" BlurRadius="6" />
                                 </Border.Effect>
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="True" UseLayoutRounding="True" />
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsPressed" Value="True">
@@ -53,6 +52,67 @@
                 </Setter>
             </Style>
 
+            <!--TabItem 樣式-->
+            <Style x:Key="RoundedTabItemStyle" TargetType="TabItem">
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Padding" Value="16,10" />
+                <Setter Property="Width" Value="135" />
+                <Setter Property="Height" Value="40" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="Background" Value="#444" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabItem">
+                            <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="5,5,0,0" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Bottom" ContentSource="Header" TextBlock.FontSize="16" TextBlock.FontWeight="Bold" TextBlock.TextAlignment="Center" RecognizesAccessKey="True" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="Bd" Property="Background" Value="#3A77B3" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bd" Property="Opacity" Value="0.85" />
+                                </Trigger>
+                                <!-- 工件 Tab 被選中時改為橘色 -->
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="True" />
+                                        <Condition Property="Header" Value="工件" />
+                                    </MultiTrigger.Conditions>
+                                    <Setter TargetName="Bd" Property="Background" Value="#E08E45" />
+                                </MultiTrigger>
+                            </ControlTemplate.Triggers>
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <!--TabControl Template-->
+            <Style x:Key="FlatTabControlStyle" TargetType="{x:Type TabControl}">
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="OverridesDefaultStyle" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TabControl}">
+                            <Grid ClipToBounds="True">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <!-- 這裡的 TabPanel 就是 TabItem 的容器 -->
+                                <TabPanel x:Name="HeaderPanel" Grid.Row="0" IsItemsHost="True" Background="Transparent" Margin="0" Panel.ZIndex="1" VerticalAlignment="Bottom" />
+
+                                <!-- 隱藏內容用 -->
+                                <ContentPresenter x:Name="PART_SelectedContentHost" Grid.Row="1" Margin="0" ContentSource="SelectedContent" Visibility="Collapsed" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <!--<Style x:Key="RoundedBlackBorderButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="White" />
                 <Setter Property="Foreground" Value="Black" />
@@ -76,6 +136,58 @@
                 <GradientStop Color="#005E93" Offset="1" />
             </LinearGradientBrush>
 
+            <!--checksucess-->
+
+            <!-- ✅ 共用成功圖示幾何 -->
+            <Geometry x:Key="CheckIconGeometry">M8 1C11.8662 1 15 4.13385 15 8C15 11.8661 11.8662 15 8 15C6.91833 15.0018 5.85098 14.7519 4.88281 14.2695C4.73204 14.1941 4.50687 14.1863 4.15723 14.2725C3.98069 14.3177 3.80587 14.3707 3.63379 14.4307L3.57227 14.4521C3.41363 14.5053 3.24184 14.5624 3.08105 14.6055C2.05733 14.8796 1.12029 13.9424 1.39453 12.918C1.4376 12.7579 1.49474 12.5856 1.54785 12.4277L1.56934 12.3662C1.62932 12.1941 1.68231 12.0193 1.72754 11.8428C1.81297 11.4931 1.80514 11.268 1.73047 11.1172C1.26245 10.1775 1 9.11845 1 8C1 4.13385 4.13385 1 8 1ZM10.3154 6C10.1282 5.99378 9.94586 6.07161 9.80957 6.21582L7.08887 9.09473L6.21191 8.08398C6.08134 7.93354 5.9029 7.8476 5.71582 7.84473C5.52857 7.84189 5.34807 7.92269 5.21387 8.06934C5.07966 8.21601 5.00253 8.41668 5 8.62695C4.99754 8.83713 5.06962 9.0398 5.2002 9.19043L6.56152 10.7607C6.69072 10.9095 6.86675 10.9955 7.05176 11C7.23688 11.0045 7.41597 10.9267 7.55078 10.7842L10.7783 7.37012C10.8457 7.29881 10.8995 7.21299 10.9375 7.11816C10.9755 7.02318 10.9972 6.92051 11 6.81641C11.0028 6.71247 10.9869 6.60894 10.9541 6.51172C10.9376 6.46307 10.9171 6.41597 10.8926 6.37207L10.8076 6.24902C10.6793 6.09623 10.5024 6.00634 10.3154 6Z</Geometry>
+            <!-- 檢查中圖示幾何  -->
+            <Geometry x:Key="CheckingIconGeometry">M1.00001 7.99999C1.00001 4.13384 4.13385 1 8 1C11.8662 1 15 4.13384 15 7.99999C15 11.8661 11.8662 15 8 15C6.91823 15.0018 5.85091 14.7516 4.88267 14.2691C4.7319 14.1945 4.50719 14.1873 4.15755 14.2727C3.98093 14.318 3.80632 14.3706 3.63416 14.4307L3.57242 14.4522C3.41447 14.5053 3.24216 14.5628 3.08206 14.6058C2.05755 14.8801 1.11991 13.9425 1.39416 12.9187C1.43724 12.7578 1.49468 12.5862 1.5478 12.4276L1.56934 12.3658C1.63037 12.1828 1.68637 12.0105 1.72729 11.8425C1.81344 11.4928 1.80627 11.2681 1.73088 11.1173C1.24845 10.1491 0.99821 9.08177 1.00001 7.99999ZM5.66667 8.17948C5.66667 8.03667 5.60994 7.89971 5.50896 7.79873C5.40798 7.69775 5.27102 7.64102 5.12821 7.64102C4.9854 7.64102 4.84844 7.69775 4.74746 7.79873C4.64648 7.89971 4.58975 8.03667 4.58975 8.17948V8.53846C4.58975 8.68126 4.64648 8.81822 4.74746 8.91921C4.84844 9.02019 4.9854 9.07692 5.12821 9.07692C5.27102 9.07692 5.40798 9.02019 5.50896 8.91921C5.60994 8.81822 5.66667 8.68126 5.66667 8.53846V8.17948ZM8.53847 8.17948C8.53847 8.03667 8.48173 7.89971 8.38075 7.79873C8.27977 7.69775 8.14281 7.64102 8 7.64102C7.8572 7.64102 7.72024 7.69775 7.61926 7.79873C7.51827 7.89971 7.46154 8.03667 7.46154 8.17948V8.53846C7.46154 8.68126 7.51827 8.81822 7.61926 8.91921C7.72024 9.02019 7.8572 9.07692 8 9.07692C8.14281 9.07692 8.27977 9.02019 8.38075 8.91921C8.48173 8.81822 8.53847 8.68126 8.53847 8.53846V8.17948ZM11.4103 8.17948C11.4103 8.03667 11.3535 7.89971 11.2525 7.79873C11.1516 7.69775 11.0146 7.64102 10.8718 7.64102C10.729 7.64102 10.592 7.69775 10.491 7.79873C10.3901 7.89971 10.3333 8.03667 10.3333 8.17948V8.53846C10.3333 8.68126 10.3901 8.81822 10.491 8.91921C10.592 9.02019 10.729 9.07692 10.8718 9.07692C11.0146 9.07692 11.1516 9.02019 11.2525 8.91921C11.3535 8.81822 11.4103 8.68126 11.4103 8.53846V8.17948Z</Geometry>
+            <!-- 檢查失敗圖示幾何  -->
+            <Geometry x:Key="CheckFailIconGeometry">M7.7998 1C11.666 1 14.7997 4.13384 14.7998 8C14.7998 11.8662 11.666 15 7.7998 15C6.71809 15.0018 5.65081 14.7519 4.68262 14.2695C4.53184 14.1941 4.30668 14.1873 3.95703 14.2734C3.78057 14.3187 3.6056 14.3707 3.43359 14.4307L3.37207 14.4521C3.21342 14.5053 3.04166 14.5634 2.88086 14.6064C1.85719 14.8804 0.920107 13.9424 1.19434 12.918C1.2374 12.758 1.29456 12.5856 1.34766 12.4277L1.36914 12.3662C1.42915 12.1941 1.4821 12.0194 1.52734 11.8428C1.61278 11.4931 1.60494 11.268 1.53027 11.1172C1.06231 10.1775 0.799805 9.1184 0.799805 8C0.7999 4.13389 3.9337 1.00009 7.7998 1ZM7.83398 9.88672C7.59587 9.88672 7.39192 9.97039 7.22363 10.1387C7.05722 10.3051 6.97461 10.508 6.97461 10.7461C6.97472 10.984 7.05725 11.1873 7.22363 11.3555C7.39193 11.522 7.59587 11.6055 7.83398 11.6055C8.07183 11.6054 8.27406 11.5218 8.44043 11.3555C8.6086 11.1873 8.69324 10.984 8.69336 10.7461C8.69336 10.508 8.60872 10.3052 8.44043 10.1387C8.27404 9.9705 8.07189 9.88683 7.83398 9.88672ZM7.83398 4.67578C7.59587 4.67578 7.39192 4.76042 7.22363 4.92871C7.05722 5.09519 6.97461 5.29808 6.97461 5.53613C6.97467 5.91562 7.04159 6.44619 7.17578 7.12793C7.31006 7.80826 7.45443 8.42399 7.6084 8.97363H8.05957C8.21354 8.424 8.35694 7.80826 8.49121 7.12793C8.6254 6.44619 8.6933 5.91562 8.69336 5.53613C8.69336 5.29802 8.60872 5.09521 8.44043 4.92871C8.27404 4.76054 8.07189 4.6759 7.83398 4.67578Z</Geometry>
+            <!-- 已檢查圖示  -->
+            <DrawingImage x:Key="CheckedFileIcon">
+                <DrawingImage.Drawing>
+                    <DrawingGroup>
+
+                        <!-- 背景（Opacity 0.3） -->
+                        <GeometryDrawing Geometry="M4.5 5.88699V13.3337H12.5V2.66699H7.72L4.5 5.88699Z">
+                            <GeometryDrawing.Pen>
+                                <Pen Thickness="0" />
+                            </GeometryDrawing.Pen>
+                            <GeometryDrawing.Brush>
+                                <SolidColorBrush Color="#555555" Opacity="0.3" />
+                            </GeometryDrawing.Brush>
+                        </GeometryDrawing>
+
+                        <!-- 打勾 -->
+                        <GeometryDrawing Brush="#555555" Geometry="M11.4997 5.33301L12.4997 6.33301L7.83967 10.9997L4.83301 7.99967L5.83301 6.99967L7.83967 8.99967L11.4997 5.33301Z" />
+
+                        <!-- 外框 -->
+                        <GeometryDrawing Brush="#555555" Geometry="M7.16699 1.33301H12.5003C13.2337 1.33301 13.8337 1.93301 13.8337 2.66634V13.333C13.8337 14.0663 13.2337 14.6663 12.5003 14.6663H4.50033C3.76699 14.6663 3.16699 14.0663 3.16699 13.333V5.33301L7.16699 1.33301ZM4.50033 5.88634V13.333H12.5003V2.66634H7.72032L4.50033 5.88634Z" />
+                    </DrawingGroup>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+            <!-- 待檢查圖示  -->
+            <DrawingImage x:Key="UncheckfileIcon">
+                <DrawingImage.Drawing>
+                    <DrawingGroup>
+                        <!-- 第一層：半透明背景 -->
+                        <GeometryDrawing Geometry="M4.5 5.88699V13.3337H12.5V2.66699H7.72L4.5 5.88699Z">
+                            <GeometryDrawing.Brush>
+                                <SolidColorBrush Color="#555555" Opacity="0.3" />
+                            </GeometryDrawing.Brush>
+                        </GeometryDrawing>
+
+                        <!-- 第二層：不透明覆蓋 -->
+                        <GeometryDrawing Geometry="M4.5 5.88699V13.3337H12.5V2.66699H7.72L4.5 5.88699Z">
+                            <GeometryDrawing.Brush>
+                                <SolidColorBrush Color="#555555" />
+                            </GeometryDrawing.Brush>
+                        </GeometryDrawing>
+                    </DrawingGroup>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+
             <!-- 主題資源 -->
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes/Colors.Light.xaml" />
@@ -83,6 +195,7 @@
 
                 <!-- 可再加上 Dark.xaml、Controls.xaml 等 -->
                 <ResourceDictionary Source="Styles/Buttons.xaml" />
+
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

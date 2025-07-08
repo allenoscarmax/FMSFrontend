@@ -1,5 +1,4 @@
-﻿using FMSFrontend.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,20 +10,25 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FMSFrontend.Views
+namespace FMSFrontend.Extensions
 {
     /// <summary>
-    /// ProductionLines.xaml 的互動邏輯
+    /// DialogMessageWindow.xaml 的互動邏輯
     /// </summary>
-    public partial class ProductionLines : UserControl
+    public partial class DialogMessageWindow : Window
     {
-        public ProductionLines()
+        public DialogMessageWindow(string message)
         {
             InitializeComponent();
-            this.DataContext = new ProductionLinesViewModel();
+            MessageText.Text = message;
+        }
+
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }
