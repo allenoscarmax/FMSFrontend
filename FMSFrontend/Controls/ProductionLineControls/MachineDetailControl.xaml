@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="FMSFrontend.Controls.MachineDetailControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:FMSFrontend.Controls" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" mc:Ignorable="d" d:DesignHeight="714" d:DesignWidth="601" Background="Transparent">
+
+    <Grid>
+        <!-- 陰影層 -->
+        <Border Background="#33000000" CornerRadius="18" Margin="-2" />
+        <Border CornerRadius="18" Background="#FFFFFF" BorderBrush="#DDD" ClipToBounds="True" SnapsToDevicePixels="True" />
+
+        <Grid ClipToBounds="True" SnapsToDevicePixels="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- ✅ 標題列 -->
+            <Border Grid.Row="0" CornerRadius="18,18,0,0" Background="#EEEEEE" SnapsToDevicePixels="True" ClipToBounds="True">
+                <Grid Height="40">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Working Zone Overview" FontSize="16" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" Margin="20,0,0,0" />
+                    <Button Grid.Column="1" Width="28" Height="28" Margin="0,0,20,0" HorizontalAlignment="Right" Background="Transparent" BorderBrush="{x:Null}" ToolTip="返回總覽" Command="{Binding BackToOverviewCommand}">
+                        <materialDesign:PackIcon Kind="SubdirectoryArrowLeft" Width="24" Height="24" Foreground="#555" />
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Foreground" Value="#555" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="#000" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- 🔍 詳細卡片列表 -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="16,0,16,8" HorizontalAlignment="Center">
+                <ItemsControl ItemsSource="{Binding MachineDetails}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!-- 🔧 你可以自定義 MachineDetailCardControl -->
+                            <local:MachineDetailCardControl Width="260" Height="200" Margin="12,8" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

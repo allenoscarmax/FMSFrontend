@@ -30,8 +30,12 @@
                     </StackPanel>
 
                     <Grid Grid.Row="2">
-                        <Image Source="pack://application:,,,/FMSFrontend;component/Image/工具機-icon/01-手臂.png" Height="120" Stretch="Uniform" HorizontalAlignment="Center" />
-                        <Path Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Top" Height="135" Data="M91.5895,3.10921 C99.4785,1.53738 107.655,0.569035 115.934,0.229427 L115.946,0.121578 C107.658,-0.190494 99.2773,0.128462 90.9858,1.0968 C89.3514,1.25889 87.7386,1.50155 86.1212,1.7449 C84.7896,1.94353 83.2469,2.18906 81.717,2.47359 L78.6508,3.04496 C76.6779,3.4775 75.6198,3.71271 74.1026,4.05002 L72.5983,4.41487 C70.9746,4.83552 66.6448,6.0303 63.6968,6.90915 C60.8063,7.88438 56.5685,9.41747 54.3929,10.2456 C49.554,12.3039 44.2106,14.8922 37.2286,18.5017 C30.7066,22.6734 25.0629,27.4577 20.9523,31.1292 C18.099,33.9838 14.5165,38.004 11.4983,41.9026 C9.16031,45.4019 6.80831,49.5152 5.50325,52.1023 C3.77533,56.1317 2.05699,61.4323 0.226863,80.8795 C0.804966,87.4376 2.5233,94.021 5.51922,100.345 C7.51269,104.257 10.1172,108.586 13.2166,113.011 C17.752,118.429 22.8495,123.608 36.0341,133.918 C49.9565,143.193 67.2197,150.01 85.7861,153.65 C104.669,156.474 139.364,156.991 174.204,156.772 V162 L203.926,143.214 L174.204,122.628 V129.379 C139.364,129.161 104.749,129.391 85.077,126.795 C64.5621,121.058 44.6609,111.017 30.7668,92.3344 C20.7639,79.1608 17.7073,63.0202 19.333,54.8949 C23.5543,45.0982 33.3895,32.1205 49.2059,19.4448 C61.8539,12.3612 74.3965,7.64803 91.5895,3.10921 Z" Margin="0,27,0,0" RenderTransformOrigin="0.484,0.52">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="107*" />
+                            <ColumnDefinition Width="79*" />
+                        </Grid.ColumnDefinitions>
+                        <Image Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/Robot.png" Height="120" Stretch="Uniform" HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="39,30,0,29" />
+                        <Path Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Height="135" Data="M91.5895,3.10921 C99.4785,1.53738 107.655,0.569035 115.934,0.229427 L115.946,0.121578 C107.658,-0.190494 99.2773,0.128462 90.9858,1.0968 C89.3514,1.25889 87.7386,1.50155 86.1212,1.7449 C84.7896,1.94353 83.2469,2.18906 81.717,2.47359 L78.6508,3.04496 C76.6779,3.4775 75.6198,3.71271 74.1026,4.05002 L72.5983,4.41487 C70.9746,4.83552 66.6448,6.0303 63.6968,6.90915 C60.8063,7.88438 56.5685,9.41747 54.3929,10.2456 C49.554,12.3039 44.2106,14.8922 37.2286,18.5017 C30.7066,22.6734 25.0629,27.4577 20.9523,31.1292 C18.099,33.9838 14.5165,38.004 11.4983,41.9026 C9.16031,45.4019 6.80831,49.5152 5.50325,52.1023 C3.77533,56.1317 2.05699,61.4323 0.226863,80.8795 C0.804966,87.4376 2.5233,94.021 5.51922,100.345 C7.51269,104.257 10.1172,108.586 13.2166,113.011 C17.752,118.429 22.8495,123.608 36.0341,133.918 C49.9565,143.193 67.2197,150.01 85.7861,153.65 C104.669,156.474 139.364,156.991 174.204,156.772 V162 L203.926,143.214 L174.204,122.628 V129.379 C139.364,129.161 104.749,129.391 85.077,126.795 C64.5621,121.058 44.6609,111.017 30.7668,92.3344 C20.7639,79.1608 17.7073,63.0202 19.333,54.8949 C23.5543,45.0982 33.3895,32.1205 49.2059,19.4448 C61.8539,12.3612 74.3965,7.64803 91.5895,3.10921 Z" Margin="8,27,0,0" RenderTransformOrigin="0.484,0.52" Grid.ColumnSpan="2">
                             <Path.Fill>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                     <GradientStop x:Name="gradientStop1" Color="#00FFFFFF" Offset="0" />
@@ -60,20 +64,20 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,30,0,8">
-                        <md:PackIcon Kind="MapMarker" Width="22" Height="22" VerticalAlignment="Center" Margin="0,0,5,0" Foreground="#D70011"/>
+                        <md:PackIcon Kind="MapMarker" Width="22" Height="22" VerticalAlignment="Center" Margin="0,0,5,0" Foreground="#D70011" />
                         <TextBlock Text="{Binding SelectedRobot.CurrentLocation, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="18" FontWeight="Bold" Margin="5,0,0,0" VerticalAlignment="Center" d:Text="EDM205" />
                     </StackPanel>
 
-                    <Border Grid.Row="1" BorderThickness="1" BorderBrush="Black" CornerRadius="5" Margin="0,25,0,20" >
+                    <Border Grid.Row="1" BorderThickness="1" BorderBrush="Black" CornerRadius="5" Margin="0,25,0,20">
                         <StackPanel>
-                            <TextBlock Text="目前動作" FontSize="16" Background="Transparent"  Padding="0,2" TextAlignment="Left" Margin="10,0,0,0"/>
+                            <TextBlock Text="目前動作" FontSize="16" Background="Transparent" Padding="0,2" TextAlignment="Left" Margin="10,0,0,0" />
                             <TextBlock Text="{Binding SelectedRobot.CurrentAction, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="16" Background="#444" Foreground="White" Padding="5,2" TextAlignment="Center" d:Text="result" />
                         </StackPanel>
                     </Border>
 
                     <Border Grid.Row="2" BorderThickness="1" BorderBrush="Black" CornerRadius="5">
                         <StackPanel>
-                            <TextBlock Text="下一步" FontSize="16" Background="Transparent" Padding="5,2" TextAlignment="Left" Margin="10,0,0,0"/>
+                            <TextBlock Text="下一步" FontSize="16" Background="Transparent" Padding="5,2" TextAlignment="Left" Margin="10,0,0,0" />
                             <TextBlock Text="{Binding SelectedRobot.NextAction, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="16" Background="#444" Foreground="White" Padding="5,2" TextAlignment="Center" d:Text="next" RenderTransformOrigin="0.495,4.568" />
                         </StackPanel>
                     </Border>
@@ -98,9 +102,9 @@
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Border>
                         </ControlTemplate>
-                        
+
                     </Button.Template>
-                    
+
                     <md:PackIcon Kind="ChevronRight" Width="20" Height="20" />
                 </Button>
             </Grid>
