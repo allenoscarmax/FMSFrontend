@@ -10,9 +10,11 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static FMSFrontend.ViewModels.ProductionLinesViewModel;
 
 namespace FMSFrontend.Views
 {
@@ -25,6 +27,16 @@ namespace FMSFrontend.Views
         {
             InitializeComponent();
             this.DataContext = new ProductionLinesViewModel();
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+
+            if (this.Resources["MoveBorderStoryboard"] is Storyboard sb)
+            {
+                sb.Begin(this, true); // 第二個參數 true 讓動畫可以重複執行
+            }
+
         }
     }
 }

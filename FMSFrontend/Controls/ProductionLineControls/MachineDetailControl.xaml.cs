@@ -1,5 +1,4 @@
-﻿using FMSFrontend.ViewModels.Storage;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,14 +16,13 @@ using System.Windows.Shapes;
 namespace FMSFrontend.Controls
 {
     /// <summary>
-    /// StorageOverviewControl.xaml 的互動邏輯
+    /// MachineDetailControl.xaml 的互動邏輯
     /// </summary>
-    public partial class StorageOverviewControl : UserControl
+    public partial class MachineDetailControl : UserControl
     {
-        public StorageOverviewControl()
+        public MachineDetailControl()
         {
             InitializeComponent();
-           
         }
     }
 }

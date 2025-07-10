@@ -3,7 +3,7 @@ using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-namespace FMSFrontend.ViewModels.Storage
+namespace FMSFrontend.ViewModels.Production
 {
     public partial class StorageOverviewViewModel : ObservableObject
     {

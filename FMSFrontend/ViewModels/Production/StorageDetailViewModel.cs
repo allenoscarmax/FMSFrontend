@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Controls;
 
-namespace FMSFrontend.ViewModels.Storage
+namespace FMSFrontend.ViewModels.Production
 {
     public partial class StorageDetailViewModel : ObservableObject
     {

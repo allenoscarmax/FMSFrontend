@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using FMSFrontend.ViewModels.Storage; // 請根據你自己的專案調整命名空間
+using FMSFrontend.ViewModels.Production; // 請根據你自己的專案調整命名空間
 
 namespace FMSFrontend.Converters
 {
