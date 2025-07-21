@@ -38,7 +38,7 @@ namespace FMSFrontend.ViewModels
         public MainWindowViewModel(IHttpService httpService)
         {
             _httpService = httpService;
-            currentPageView = new MachineOverviewPage();
+            //currentPageView = new MachineOverviewPage();
             StorageControlPage = new StorageUnitMiniControlPage();
             // 初始化時間更新
             Task.Run(async () =>

@@ -33,7 +33,7 @@
             <!-- 上方：Icon + 標題 -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
                 <!-- MaterialDesign PackIcon -->
-                <materialDesign:PackIcon Kind="Factory" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
+                <materialDesign:PackIcon Kind="ViewDashboard" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
                 <TextBlock Text="產線總覽" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
             

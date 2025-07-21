@@ -1,0 +1,59 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:FMSFrontend.Converters">
+
+    <!-- ✅ 1. Converter -->
+    <local:EqualTabWidthConverter x:Key="EqualTabWidthConverter" />
+
+    <!-- ✅ 2. TabItem Style -->
+    <Style x:Key="MachineMainDetailTabItemStyle" TargetType="TabItem">
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Border x:Name="TabBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" >
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="TabBorder" Property="Background" Value="{Binding Tag, RelativeSource={RelativeSource AncestorType=TabItem}}" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <Setter Property="Width">
+            <Setter.Value>
+                <MultiBinding Converter="{StaticResource EqualTabWidthConverter}">
+                    <Binding RelativeSource="{RelativeSource AncestorType=TabControl}" Path="ActualWidth" />
+                    <Binding RelativeSource="{RelativeSource AncestorType=TabControl}" Path="Items.Count" />
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MachineMainDetailTabControlStyle" TargetType="TabControl">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="Black" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabControl">
+                    <Grid ClipToBounds="True" Background="Transparent">
+                        <TabPanel IsItemsHost="True" Background="Transparent" Height="Auto" VerticalAlignment="Top" HorizontalAlignment="Stretch" />
+                        <!-- 可以另外塞 ContentPresenter，如果有內容要顯示 -->
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <!-- 使用 DynamicResource 是對的 -->
+        <Setter Property="ItemContainerStyle" Value="{DynamicResource MachineMainDetailTabItemStyle}" />
+    </Style>
+
+</ResourceDictionary>
