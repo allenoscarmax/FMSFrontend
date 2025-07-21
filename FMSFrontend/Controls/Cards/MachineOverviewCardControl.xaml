@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="FMSFrontend.Controls.MachineOverviewCardControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:conv="clr-namespace:FMSFrontend.Converters" mc:Ignorable="d" d:DesignHeight="66" d:DesignWidth="200">
+
+    <UserControl.Resources>
+        <conv:StatusToBrushConverter x:Key="StatusToBrushConverter" />
+        <conv:MachineTypeToImageConverter x:Key="MachineTypeToImageConverter" />
+    </UserControl.Resources>
+
+    <Grid Width="200" Height="66">
+        <!-- 外框圓角背景 -->
+        <Border Background="#DDDDDD" CornerRadius="12" SnapsToDevicePixels="True">
+            <Grid Margin="10,4,10,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="20" />
+                </Grid.RowDefinitions>
+
+                <!-- 機台圖 -->
+                <Image Grid.RowSpan="2" Grid.Column="0" Width="48" Height="48" Margin="0,0,12,0" Source="{Binding MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" Stretch="Uniform" VerticalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />
+
+                <!-- 機台名稱 -->
+                <TextBlock Grid.Column="1" Text="{Binding MachineName, FallbackValue=EDM2}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="#111" />
+
+                <!-- 狀態條 -->
+                <Border Grid.Row="1" Grid.Column="1" Height="14" CornerRadius="10" Margin="0,0,0,0" Background="{Binding Status, Converter={StaticResource StatusToBrushConverter}, FallbackValue=White}" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

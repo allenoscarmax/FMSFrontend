@@ -1,12 +1,80 @@
-﻿<UserControl x:Class="FMSFrontend.Views.MachineOverviewPage"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:FMSFrontend.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Background="{DynamicResource PageViewBrush}">
-        <TextBlock Text="這是設備總攬" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" />
-    </Grid>
+﻿<UserControl x:Class="FMSFrontend.Views.MachineOverviewPage" xmlns:controls="clr-namespace:FMSFrontend.Controls" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:selectors="clr-namespace:FMSFrontend.Selectors" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:FMSFrontend.Views" mc:Ignorable="d" d:DesignHeight="912" d:DesignWidth="1532">
+
+    <UserControl.Resources>
+        <selectors:TabItemBackgroundSelector x:Key="TabItemColorSelector" />
+        
+    </UserControl.Resources>
+
+    <Border Background="{DynamicResource PageViewBrush}">
+        <Grid Background="{DynamicResource PageViewBrush}" Margin="16,20,16,18">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <!-- Title -->
+                <RowDefinition Height="*" />
+                <!-- 內容區塊（Tab + 卡片 + 主內容） -->
+            </Grid.RowDefinitions>
+
+            <!-- Title 區塊 -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
+                <materialDesign:PackIcon Kind="ViewDashboard" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
+                <TextBlock Text="設備總攬" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" />
+            </StackPanel>
+
+            <!-- 下半部區塊：Tab + 卡片 + 主內容 -->
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <!-- TabControl -->
+                    <RowDefinition Height="82" />
+                    <!-- 卡片列 -->
+                    <RowDefinition Height="*" />
+                    <!-- 主內容 -->
+                </Grid.RowDefinitions>
+
+                <Grid.Triggers>
+                    <EventTrigger RoutedEvent="Loaded">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Grid.Triggers>
+
+                <!-- TabControl 區塊 -->
+                <TabControl SelectedIndex="{Binding SelectedTabIndex}" Style="{StaticResource FlatTabControlStyle}" Height="40" Padding="0" Margin="0,8,0,0" Background="Transparent" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}">
+
+                    <TabItem Header="ALL" Tag="#777777" />
+                    <TabItem Header="EDM" Tag="#555555" />
+                    <TabItem Header="CNC" Tag="#555555" />
+                    <TabItem Header="ROBOT" Tag="#4CAF50" />
+                </TabControl>
+
+                <!-- 卡片列 -->
+                <ScrollViewer Grid.Row="1" Margin="0,8,0,0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding FilteredMachines}" Opacity="{Binding CardOpacity}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <controls:MachineOverviewCardControl Margin="6,0,6,0" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!-- 主內容顯示區 -->
+                <Border Grid.Row="2" CornerRadius="8">
+                    <ContentControl x:Name="MachineDetailContent" Content="{Binding CurrentMachineDetailContent}" />
+                </Border>
+
+            </Grid>
+
+        </Grid>
+    </Border>
+
 </UserControl>

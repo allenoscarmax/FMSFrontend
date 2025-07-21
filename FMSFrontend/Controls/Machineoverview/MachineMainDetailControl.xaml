@@ -1,0 +1,584 @@
+﻿<UserControl x:Class="FMSFrontend.Controls.MachineMainDetailControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:selectors="clr-namespace:FMSFrontend.Selectors" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:vm="clr-namespace:FMSFrontend.ViewModels" mc:Ignorable="d" d:DesignHeight="661" d:DesignWidth="1432" d:DataContext="{d:DesignInstance Type=vm:MachineMainDetailViewModel, IsDesignTimeCreatable=True}">
+
+    <UserControl.Resources>
+        <selectors:TabItemBackgroundSelector x:Key="TabItemColorSelector" />
+    </UserControl.Resources>
+    <Border BorderBrush="#000000" BorderThickness="1" CornerRadius="6">
+        <Grid Background="{DynamicResource PageViewBrush}">
+
+            <!-- 🧩 頂層切 2 Row：標題 + 內容 -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <!-- 標題列 -->
+                <RowDefinition Height="*" />
+                <!-- 內容列 -->
+            </Grid.RowDefinitions>
+
+            <!-- 🔹 標題區塊 -->
+            <Border Grid.Row="0" Background="#CCCCCC" BorderThickness="1" BorderBrush="#000000">
+                <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
+                    <materialDesign:PackIcon Kind="MonitorDashboard" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
+                    <TextBlock Text="{Binding MachineName}" d:Text="EDM1" TextDecorations="Underline" FontSize="20" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                    <TextBlock Text=" 機台資訊" FontSize="20" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                </StackPanel>
+            </Border>
+
+            <!-- 🔸 下方內容區 -->
+            <Grid Grid.Row="1" Margin="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="500" />
+                </Grid.ColumnDefinitions>
+                <!-- 🔹 左邊區塊 -->
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="303" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <!-- 🔹 左上區塊 -->
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="227" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <!-- 🔹 左上圖片 -->
+                        <Border Grid.Column="0" Background="White" CornerRadius="8" Margin="8" BorderBrush="LightGray" BorderThickness="1">
+                            <Image Source="{Binding MachineImagePath}" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />
+                        </Border>
+
+                        <Border Grid.Column="1" Background="White" CornerRadius="10" Margin="8" SnapsToDevicePixels="True">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
+                            </Border.Effect>
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="32" />
+                                    <!-- 區塊標題 -->
+                                    <RowDefinition Height="32" />
+                                    <!-- Tabs -->
+                                    <RowDefinition Height="*" />
+                                    <!-- 內容 -->
+                                </Grid.RowDefinitions>
+
+                                <!-- 區塊標題 -->
+                                <Border Background="#444" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
+                                    <TextBlock Text="機台資訊區" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Border>
+
+                                <TabControl x:Name="MachineInfoTabControl" Grid.Row="1" Style="{StaticResource MachineMainDetailTabControlStyle}" ItemsSource="{Binding Tabs}" SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
+                                    <TabControl.ItemContainerStyle>
+                                        <Style TargetType="TabItem" BasedOn="{StaticResource MachineMainDetailTabItemStyle}">
+                                            <Setter Property="Tag" Value="{Binding TagColor}" />
+                                            <Setter Property="Header" Value="{Binding Header}" />
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Setter Property="Height" Value="32" />
+                                            <Setter Property="FontSize" Value="24" />
+                                        </Style>
+                                    </TabControl.ItemContainerStyle>
+                                </TabControl>
+                                <!-- 資訊內容 -->
+                                <ContentControl Grid.Row="2" Content="{Binding}">
+                                    <ContentControl.Style>
+                                        <Style TargetType="ContentControl">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedTabIndex}" Value="0">
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="2*" />
+                                                                        <!-- 標籤 -->
+                                                                        <ColumnDefinition Width="3*" />
+                                                                        <!-- 資料 -->
+                                                                        <ColumnDefinition Width="2*" />
+                                                                        <!-- 標籤 -->
+                                                                        <ColumnDefinition Width="3*" />
+                                                                        <!-- 資料 -->
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                    </Grid.RowDefinitions>
+
+                                                                    <!-- 左欄標題 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text=" • 機台型號：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text=" • 機台狀態：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text=" • 使用電極：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text=" • 加工程式：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+
+                                                                    <!-- 左欄資料 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.MachineNumber}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.MachineStatus}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.UsingElectrode}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.MachiningCode}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+
+                                                                    <!-- 右欄標題 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text=" • 加工時間：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text=" • 加工進度：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text=" • 目前工單：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text=" • 刀具號碼：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+
+                                                                    <!-- 右欄資料 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding DisplayData.MachiningWorkingTime}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.MachiningWorkingPercentage}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DisplayData.CurrentWorksheet}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding DisplayData.MachiningTool}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding SelectedTabIndex}" Value="1">
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="2*" />
+                                                                        <!-- 標籤 -->
+                                                                        <ColumnDefinition Width="3*" />
+                                                                        <!-- 資料 -->
+                                                                        <ColumnDefinition Width="2*" />
+                                                                        <!-- 標籤 -->
+                                                                        <ColumnDefinition Width="3*" />
+                                                                        <!-- 資料 -->
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                    </Grid.RowDefinitions>
+
+                                                                    <!-- 左側標籤 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text=" • 機台溫度 : " VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text=" • 主軸轉速 : " VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text=" • 油位狀態 : " VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text=" • 冷卻液量 : " VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+
+                                                                    <!-- 右側資料 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.MachineTemperature}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.SpindleRPM}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.OilLevelStatus}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.CoolantLevel}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+
+                                                <!-- 可再加其他 Tab Index -->
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ContentControl.Style>
+                                </ContentControl>
+
+                            </Grid>
+                        </Border>
+
+                    </Grid>
+                    <!-- 🔹 左下區塊 -->
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="444" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- 🟦 工作座標區塊 -->
+                        <Border Grid.Column="0" Background="White" CornerRadius="10" Margin="8" SnapsToDevicePixels="True">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
+                            </Border.Effect>
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="32" />
+                                    <!-- 標題 -->
+                                    <RowDefinition Height="32" />
+                                    <!-- Tabs -->
+                                    <RowDefinition Height="*" />
+                                    <!-- 內容 -->
+                                </Grid.RowDefinitions>
+
+                                <!-- 標題 -->
+                                <Border Background="#444" CornerRadius="6,6,0,0">
+                                    <TextBlock Text="工作座標" Foreground="White" FontSize="24" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Border>
+
+                                <!-- TabControl：資料綁定 -->
+                                <TabControl Grid.Row="1" x:Name="WorkPositionTabControl" Style="{StaticResource MachineMainDetailTabControlStyle}" ItemsSource="{Binding TabsPosition}" SelectedIndex="{Binding SelectedTabIndexPosition, Mode=TwoWay}">
+                                    <TabControl.ItemContainerStyle>
+                                        <Style TargetType="TabItem" BasedOn="{StaticResource MachineMainDetailTabItemStyle}">
+                                            <Setter Property="Tag" Value="{Binding TagColor}" />
+                                            <Setter Property="Header" Value="{Binding Header}" />
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Setter Property="Height" Value="32" />
+                                            <Setter Property="FontSize" Value="24" />
+                                        </Style>
+                                    </TabControl.ItemContainerStyle>
+                                </TabControl>
+
+                                <!-- 切換內容區 -->
+                                <ContentControl Grid.Row="2" Grid.RowSpan="2" Content="{Binding}" Margin="6">
+                                    <ContentControl.Style>
+                                        <Style TargetType="ContentControl">
+                                            <Style.Triggers>
+
+                                                <!-- Tab 0：絕對座標 -->
+                                                <DataTrigger Binding="{Binding SelectedTabIndexPosition}" Value="0">
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="2*" />
+                                                                        <ColumnDefinition Width="3*" />
+                                                                        <ColumnDefinition Width="2*" />
+                                                                        <ColumnDefinition Width="3*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                    </Grid.RowDefinitions>
+
+                                                                    <!-- 左欄標題 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="• 座標號：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="• ABS_X：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="• ABS_Y：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="• ABS_Z：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+
+                                                                    <!-- 左欄資料 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.PositionID}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.ABS_X}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.ABS_Y}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.ABS_Z}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+
+                                                                    <!-- 右欄標題 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="• ABS_C：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="• ABS_A：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="• ABS_B：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+
+                                                                    <!-- 右欄資料 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding DisplayData.ABS_C}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.ABS_A}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DisplayData.ABS_B}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+
+                                                <!-- Tab 1：機械座標 -->
+                                                <DataTrigger Binding="{Binding SelectedTabIndexPosition}" Value="1">
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <!-- 範例內容，請依照實際欄位名稱自行修改 -->
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="2*" />
+                                                                        <ColumnDefinition Width="3*" />
+                                                                        <ColumnDefinition Width="2*" />
+                                                                        <ColumnDefinition Width="3*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                    </Grid.RowDefinitions>
+
+                                                                    <!-- 左欄標題 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="• MCH_X：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="• MCH_Y：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="• MCH_Z：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+
+                                                                    <!-- 左欄資料 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.MCH_X}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.MCH_Y}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.MCH_Z}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+
+                                                                    <!-- 右欄（可擴充） -->
+                                                                    <!-- 可加更多 XYZ 或機械座標值 -->
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ContentControl.Style>
+                                </ContentControl>
+
+                            </Grid>
+                        </Border>
+
+                        <!-- 🟦 加工參數 -->
+                        <Border Grid.Column="1" Background="White" CornerRadius="10" Margin="8" SnapsToDevicePixels="True">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
+                            </Border.Effect>
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="32" />
+                                    <!-- 標題 -->
+                                    <RowDefinition Height="32" />
+                                    <!-- Tabs -->
+                                    <RowDefinition Height="*" />
+                                    <!-- 內容 -->
+                                </Grid.RowDefinitions>
+
+                                <!-- 標題列 -->
+                                <Border Background="#444" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
+                                    <TextBlock Text="加工參數" Foreground="White" FontWeight="Bold" FontSize="24" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Border>
+
+                                <!-- TabControl -->
+                                <TabControl Grid.Row="1" x:Name="MachiningParamTabControl" Style="{StaticResource MachineMainDetailTabControlStyle}" ItemsSource="{Binding TabsParameter}" SelectedIndex="{Binding SelectedTabIndexParameter, Mode=TwoWay}">
+                                    <TabControl.ItemContainerStyle>
+                                        <Style TargetType="TabItem" BasedOn="{StaticResource MachineMainDetailTabItemStyle}">
+                                            <Setter Property="Tag" Value="{Binding TagColor}" />
+                                            <Setter Property="Header" Value="{Binding Header}" />
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Setter Property="Height" Value="32" />
+                                            <Setter Property="FontSize" Value="24" />
+                                        </Style>
+                                    </TabControl.ItemContainerStyle>
+                                </TabControl>
+
+                                <!-- 切換內容區 -->
+                                <ContentControl Grid.Row="2" Grid.RowSpan="2" Content="{Binding}" Margin="6">
+                                    <ContentControl.Style>
+                                        <Style TargetType="ContentControl">
+                                            <Style.Triggers>
+
+                                                <!-- ✅ Tab 0：加工參數 第1頁 -->
+                                                <DataTrigger Binding="{Binding SelectedTabIndexParameter}" Value="0">
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="2*" />
+                                                                        <ColumnDefinition Width="3*" />
+                                                                        <ColumnDefinition Width="2*" />
+                                                                        <ColumnDefinition Width="3*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                    </Grid.RowDefinitions>
+
+                                                                    <!-- 左欄標題 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="• TON [μs]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="• TOFF [μs]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="• I [A]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="• Pol：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+
+                                                                    <!-- 左欄資料 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.T_ON}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.T_OFF}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.E_SPD}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.Pol}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+
+                                                                    <!-- 右欄標題 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="• Hv [Seg]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="• Gap [V]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="• Speed：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="• Pulse：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+
+                                                                    <!-- 右欄資料 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding DisplayData.HV}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.Gap}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DisplayData.Speed}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding DisplayData.Pulse}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+
+                                                <!-- ✅ Tab 1：加工參數 第2頁 -->
+                                                <DataTrigger Binding="{Binding SelectedTabIndexParameter}" Value="1">
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="2*" />
+                                                                        <ColumnDefinition Width="3*" />
+                                                                        <ColumnDefinition Width="2*" />
+                                                                        <ColumnDefinition Width="3*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                        <RowDefinition Height="*" />
+                                                                    </Grid.RowDefinitions>
+
+                                                                    <!-- 左欄標題 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="• Servo [%]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="• JD [mm]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="• Turbo：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="• JT [s]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+
+                                                                    <!-- 左欄資料 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.Servo}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.JD}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.OB}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.JT}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+
+                                                                    <!-- 右欄標題 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="" />
+                                                                    <!-- 可預留欄位 -->
+                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="" />
+
+                                                                    <!-- 右欄資料 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="" />
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ContentControl.Style>
+                                </ContentControl>
+
+                            </Grid>
+                        </Border>
+
+                    </Grid>
+
+                </Grid>
+
+                <!-- 🔹 右邊區塊 -->
+                <Grid Grid.Column="1" Margin="8">
+                    <Border Background="White" CornerRadius="10" SnapsToDevicePixels="True">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
+                        </Border.Effect>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40" />
+                                <!-- Tabs -->
+                                <RowDefinition Height="*" />
+                                <!-- Content -->
+                            </Grid.RowDefinitions>
+
+                            <!-- TabControl 區塊 -->
+
+                            <TabControl x:Name="WorkOrderTabControl" Grid.Row="0" Style="{StaticResource MachineMainDetailTabControlStyle}" ItemsSource="{Binding TabsWorkOrder}" SelectedIndex="{Binding SelectedTabIndexWorkOrder, Mode=TwoWay}">
+                                <TabControl.ItemContainerStyle>
+                                    <Style TargetType="TabItem" BasedOn="{StaticResource MachineMainDetailTabItemStyle}">
+                                        <Setter Property="Tag" Value="{Binding TagColor}" />
+                                        <Setter Property="Header" Value="{Binding Header}" />
+                                        <Setter Property="Visibility" Value="Visible" />
+                                        <Setter Property="Height" Value="40" />
+                                        <Setter Property="FontSize" Value="24" />
+                                    </Style>
+                                </TabControl.ItemContainerStyle>
+                            </TabControl>
+
+                            <!-- 內容顯示區 -->
+                            <ContentControl Grid.Row="1" Content="{Binding}" BorderThickness="0.3" BorderBrush="Black">
+                                <ContentControl.Style>
+                                    <Style TargetType="ContentControl">
+                                        <Style.Triggers>
+                                            <!-- 工單資訊頁 -->
+                                            <DataTrigger Binding="{Binding SelectedTabIndexWorkOrder}" Value="0">
+                                                <Setter Property="ContentTemplate">
+                                                    <Setter.Value>
+                                                        <DataTemplate>
+                                                            <!-- 頁籤1內容，尚未實作 -->
+                                                            
+
+                                                        </DataTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+
+                                            <!-- 工單列表頁 -->
+                                            <DataTrigger Binding="{Binding SelectedTabIndexWorkOrder}" Value="1">
+                                                <Setter Property="ContentTemplate">
+                                                    <Setter.Value>
+                                                        <DataTemplate>
+                                                            <!-- 頁籤2內容，尚未實作 -->
+                                                            <Grid Background="#F5F5F5">
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <!-- 篩選選項 -->
+                                                                    <RowDefinition Height="*" />
+                                                                    <!-- 表格列表 -->
+                                                                </Grid.RowDefinitions>
+
+                                                                <!-- 🔹 篩選區塊 -->
+                                                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="16,12,16,8" VerticalAlignment="Center">
+
+                                                                    <!-- 🔽 篩選類型下拉選單 -->
+                                                                    <ComboBox Width="120" ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding SelectedFilterOption, Mode=TwoWay}" FontSize="16">
+                                                                    </ComboBox>
+
+                                                                    <!-- 📅 日期選擇器（僅在「自訂」時顯示）-->
+                                                                    <DatePicker Width="140" FontSize="16" SelectedDate="{Binding SelectedDate, Mode=TwoWay}">
+                                                                        <DatePicker.Style>
+                                                                            <Style TargetType="DatePicker">
+                                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Binding="{Binding SelectedFilterOption}" Value="自訂">
+                                                                                        <Setter Property="Visibility" Value="Visible" />
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </DatePicker.Style>
+                                                                    </DatePicker>
+
+                                                                </StackPanel>
+
+                                                                <!-- 🔹 表格列表區 -->
+                                                                <DataGrid Grid.Row="1" ItemsSource="{Binding WorkOrderList}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" FontSize="16" RowHeight="40" GridLinesVisibility="Horizontal" Margin="8" BorderThickness="1" BorderBrush="#DDD">
+
+                                                                    <DataGrid.Columns>
+                                                                        <DataGridTextColumn Header="建立時間" Binding="{Binding CreatedTime}" Width="*" />
+                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding WorkOrderNumber}" Width="*" />
+                                                                        <DataGridTextColumn Header="工單狀態" Binding="{Binding WorkOrderStatus}" Width="*" />
+                                                                        <DataGridTextColumn Header="件號" Binding="{Binding WorkpieceID}" Width="*" />
+                                                                    </DataGrid.Columns>
+                                                                </DataGrid>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentControl.Style>
+                            </ContentControl>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+            </Grid>
+
+        </Grid>
+    </Border>
+</UserControl>

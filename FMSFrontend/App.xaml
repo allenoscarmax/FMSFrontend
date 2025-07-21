@@ -5,6 +5,8 @@
             <converters:MainWindowLoginVisibilityConverter_NullOrEmpty x:Key="LoginVisibility_Null" />
             <converters:MainWindowLoginVisibilityConverter_NotNullOrEmpty x:Key="LoginVisibility_NotNull" />
 
+            
+
             <!-- 按鈕樣式 -->
             <Style x:Key="ControlCardButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="White" />
@@ -53,7 +55,7 @@
             </Style>
 
             <!--TabItem 樣式-->
-            <Style x:Key="RoundedTabItemStyle" TargetType="TabItem">
+            <Style x:Key="RoundedTabItemBaseStyle" TargetType="TabItem">
                 <Setter Property="Foreground" Value="White" />
                 <Setter Property="FontWeight" Value="Bold" />
                 <Setter Property="Padding" Value="16,10" />
@@ -70,26 +72,15 @@
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Bottom" ContentSource="Header" TextBlock.FontSize="16" TextBlock.FontWeight="Bold" TextBlock.TextAlignment="Center" RecognizesAccessKey="True" />
                             </Border>
                             <ControlTemplate.Triggers>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter TargetName="Bd" Property="Background" Value="#3A77B3" />
-                                </Trigger>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter TargetName="Bd" Property="Opacity" Value="0.85" />
                                 </Trigger>
-                                <!-- 工件 Tab 被選中時改為橘色 -->
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsSelected" Value="True" />
-                                        <Condition Property="Header" Value="工件" />
-                                    </MultiTrigger.Conditions>
-                                    <Setter TargetName="Bd" Property="Background" Value="#E08E45" />
-                                </MultiTrigger>
                             </ControlTemplate.Triggers>
-
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </Style>
+
             <!--TabControl Template-->
             <Style x:Key="FlatTabControlStyle" TargetType="{x:Type TabControl}">
                 <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -112,6 +103,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
 
             <!--<Style x:Key="RoundedBlackBorderButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="White" />
@@ -195,6 +187,8 @@
 
                 <!-- 可再加上 Dark.xaml、Controls.xaml 等 -->
                 <ResourceDictionary Source="Styles/Buttons.xaml" />
+
+                <ResourceDictionary Source="pack://application:,,,/FMSFrontend;component/Styles/MachineMainTabStyles.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
