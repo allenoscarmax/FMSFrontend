@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
 using MaterialDesignThemes.Wpf;
 
@@ -27,7 +28,14 @@ namespace FMSFrontend.Views
         {
             InitializeComponent();
             this.PreviewMouseLeftButtonDown += WorkOrder_PreviewMouseLeftButtonDown;
-            DataContext = new WorkOrderPageViewModel(); // ✅ 設定你自己設計的 ViewModel
+
+            // 建立服務實例
+            var windowService = new WindowService();
+
+            // 建立 ViewModel 並注入服務
+            var viewModel = new WorkOrderPageViewModel(windowService);
+
+            this.DataContext = viewModel;
         }
         private void WorkOrder_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Interfaces;
+using FMSFrontend.Services;
 using FMSFrontend.Views;
 using System;
 using System.Collections.Generic;
@@ -8,6 +10,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -17,12 +20,108 @@ namespace FMSFrontend.ViewModels
     {
         [ObservableProperty]
         private int selectedTabIndexParameter;
-        public ObservableCollection<WorkOrderData> WorkOrderList { get; set; }
+        [ObservableProperty]
+        private int eDMSelectedTab; // 決定 EDM 子頁籤
 
+        public List<string> DateFilterOptions { get; set; } = new() { "今天", "過去7天", "自訂" };
+        [ObservableProperty]
+        private string selectedFilterOption = "今天";
+
+        private DateTime? lastValidFromDate = DateTime.Today;
+        private DateTime? lastValidToDate = DateTime.Today;
+
+        private readonly IWindowService _windowService;
+
+        partial void OnSelectedFilterOptionChanged(string value)
+        {
+            OnPropertyChanged(nameof(IsCustomDateMode));
+            ApplyDateFilter();
+        }
+        [ObservableProperty]
+        private DateTime? fromDate = DateTime.Today;
+
+        partial void OnFromDateChanged(DateTime? value)
+        {
+            if (value == null || ToDate == null)
+            {
+                lastValidFromDate = value;
+                return;
+            }
+
+            if (value > ToDate)
+            {
+                _windowService.ShowMessage("開始日期不能大於結束日期");
+                FromDate = lastValidFromDate;
+                return;
+            }
+
+            if ((ToDate - value)?.TotalDays > 31)
+            {
+                _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                FromDate = lastValidFromDate;
+                return;
+            }
+
+            lastValidFromDate = value;
+        }
+
+        [ObservableProperty]
+        private DateTime? toDate = DateTime.Today;
+
+        partial void OnToDateChanged(DateTime? value)
+        {
+            if (value == null || FromDate == null)
+            {
+                lastValidToDate = value;
+                return;
+            }
+
+            if (value < FromDate)
+            {
+                ShowWarning("結束日期不能小於開始日期");
+                ToDate = lastValidToDate;
+                return;
+            }
+
+            if ((value - FromDate)?.TotalDays > 31)
+            {
+                ShowWarning("選擇的日期範圍不能超過一個月");
+                ToDate = lastValidToDate;
+                return;
+            }
+
+            lastValidToDate = value;
+        }
+        public bool IsCustomDateMode => SelectedFilterOption == "自訂";
+
+        public ObservableCollection<WorkOrderData> WorkOrderList { get; set; }
+        public ObservableCollection<WorkOrderData> FailureWorkOrders { get; set; } = new();
+
+
+        private void ApplyDateFilter()
+        {
+            switch (SelectedFilterOption)
+            {
+                case "今天":
+                    ToDate = DateTime.Today;
+                    FromDate = DateTime.Today;
+                    break;
+                case "過去7天":
+                    ToDate = DateTime.Today;
+                    FromDate = DateTime.Today.AddDays(-6); // 包含今天一共7天
+                   
+                    break;
+                case "自訂":
+                default:
+                    break;
+            }
+        }
         public ICommand DeleteCommand { get; }
 
-        public WorkOrderPageViewModel()
+        public WorkOrderPageViewModel(IWindowService windowService)
         {
+            _windowService = windowService;
+
             WorkOrderList = new ObservableCollection<WorkOrderData>
             {
                 new WorkOrderData
@@ -125,6 +224,19 @@ namespace FMSFrontend.ViewModels
                     WorkOrderList.Remove(item);
             });
         }
+
+        private void ShowWarning(string message)
+        {
+            FMSFrontend.Extensions.DialogMessageWindow dd = new Extensions.DialogMessageWindow(message);
+            dd.Show();
+        }
+        [RelayCommand]
+        private void OpenUploadSheet()
+        {
+            _windowService.ShowUploadSheetWindow();
+        }
+
+
     }
     public class WorkOrderData : INotifyPropertyChanged
     {
