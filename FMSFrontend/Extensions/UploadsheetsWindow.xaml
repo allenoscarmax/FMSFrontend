@@ -1,0 +1,144 @@
+﻿<Window x:Class="FMSFrontend.Extensions.UploadsheetsWindow" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" Title="上傳工單" Width="1280" Height="824" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True" Background="Transparent" KeyDown="Window_KeyDown" MouseLeftButtonDown="Window_MouseLeftButtonDown" >
+
+    <Window.Resources>
+        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
+    </Window.Resources>
+
+    <Border Background="White" CornerRadius="10" Padding="0" Effect="{DynamicResource ShadowEffect}" BorderBrush="#CCC" BorderThickness="1">
+
+        <Grid>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56" />
+                <!-- 自訂標題列 -->
+                <RowDefinition Height="700" />
+                <!-- 主內容 -->
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- 標題 -->
+            <!-- ✅ 自訂標題列 -->
+            <Border Background="#555555" Grid.Row="0" CornerRadius="10,10,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="48" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="📋 上傳工單" VerticalAlignment="Center" Margin="20,0,0,0" Foreground="White" FontSize="24" FontWeight="Bold" />
+
+                    <!-- 關閉按鈕 -->
+                    <Button Grid.Column="1" Content="✕" Background="Transparent" Foreground="White" BorderThickness="0" FontSize="16" FontWeight="Bold" Cursor="Hand" Click="Close_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="32" Height="32" />
+                </Grid>
+            </Border>
+
+            <!-- 內容 -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <Grid Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- 工作 -->
+                    <GroupBox Header="工件" FontWeight="Bold" FontSize="20" Grid.Row="0">
+                        <StackPanel>
+                            <DockPanel LastChildFill="True" Margin="10,10,10,0">
+                                <Button Width="120" Height="36" Cursor="Hand" Background="#EFE9DD" Foreground="Black" BorderBrush="Transparent" FontSize="14" FontWeight="SemiBold" Padding="10,4" Content="📁 選擇資料夾" Command="{Binding SelectCsvFileCommand}" CommandParameter="Work">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="8" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="border" Property="Background" Value="#E0D8C7" />
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter TargetName="border" Property="Background" Value="#D6CEBE" />
+                                                    <Setter TargetName="border" Property="RenderTransform">
+                                                        <Setter.Value>
+                                                            <TranslateTransform Y="1" />
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                                <TextBlock Text="{Binding SelectedWorkCsvPath}"  d:Text="C:\OSCARMAX\PGM_Program\Workpiece\PGM_Example_Workpiece_2.csv" VerticalAlignment="Center" Margin="10,0,0,0" />
+                            </DockPanel>
+
+                            <DataGrid AutoGenerateColumns="False" HeadersVisibility="Column" Height="200" Margin="10" CanUserAddRows="False" ColumnWidth="*" HorizontalAlignment="Stretch" IsReadOnly="True" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="#" Width="0.3*" />
+                                    <DataGridCheckBoxColumn Header="選取" Width="*" />
+                                    <DataGridTextColumn Header="工作名稱" Width="2*" />
+                                    <DataGridTextColumn Header="狀態" Width="*" />
+                                    <DataGridTextColumn Header="工作量測程式" Width="2*" />
+                                    <DataGridTextColumn Header="目標EDM" Width="*" />
+                                    <DataGridTextColumn Header="座標" Width="*" />
+                                    <DataGridTextColumn Header="設定者" Width="0.8*" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- 電極 -->
+                    <GroupBox Header="電極" FontWeight="Bold" FontSize="20" Grid.Row="1">
+                        <StackPanel>
+                            <DockPanel LastChildFill="True" Margin="10,10,10,0">
+                                <Button Width="120" Height="36" Cursor="Hand" Background="#EFE9DD" Foreground="Black" BorderBrush="Transparent" FontSize="14" FontWeight="SemiBold" Padding="10,4" Content="📁 選擇資料夾" Command="{Binding SelectCsvFileCommand}" CommandParameter="Ele">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="8" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="border" Property="Background" Value="#E0D8C7" />
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter TargetName="border" Property="Background" Value="#D6CEBE" />
+                                                    <Setter TargetName="border" Property="RenderTransform">
+                                                        <Setter.Value>
+                                                            <TranslateTransform Y="1" />
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                                <TextBlock Text="{Binding SelectedEleCsvPath}" d:Text="C:\OSCARMAX\PGM_Program\Workpiece\PGM_Example_Workpiece_2.csv" VerticalAlignment="Center" Margin="10,0,0,0" />
+                            </DockPanel>
+
+                            <DataGrid AutoGenerateColumns="False" HeadersVisibility="Column" Height="200" Margin="10" CanUserAddRows="False" ColumnWidth="*" HorizontalAlignment="Stretch" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="#" Width="0.3*" />
+                                    <DataGridCheckBoxColumn Header="選取" Width="*" />
+                                    <DataGridTextColumn Header="工作名稱" Width="2*" />
+                                    <DataGridTextColumn Header="狀態" Width="*" />
+                                    <DataGridTextColumn Header="工作量測程式" Width="2*" />
+                                    <DataGridTextColumn Header="目標EDM" Width="*" />
+                                    <DataGridTextColumn Header="座標" Width="*" />
+                                    <DataGridTextColumn Header="設定者" Width="0.8*" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </GroupBox>
+                </Grid>
+            </ScrollViewer>
+
+            <!-- 下方按鈕 -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                <Button Content="🗑 Clear/清除" Width="180" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="Gray" Margin="0,0,10,0" />
+                <Button Content="⏫ Upload/上傳" Width="180" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

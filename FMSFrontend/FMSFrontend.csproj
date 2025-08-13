@@ -20,6 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Image\ControlUnit\06-1-lightbulbOn.png" />
+    <None Remove="Image\ControlUnit\06-2-lightbulbOff.png" />
     <None Remove="Image\MachineIcons\CNC.png" />
     <None Remove="Image\MachineIcons\EDM.png" />
     <None Remove="Image\MachineIcons\Robot.png" />
@@ -36,6 +38,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Image\ControlUnit\06-1-lightbulbOn.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\ControlUnit\06-2-lightbulbOff.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Image\MachineIcons\CNC.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

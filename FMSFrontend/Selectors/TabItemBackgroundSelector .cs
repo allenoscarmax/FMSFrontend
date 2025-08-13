@@ -15,10 +15,26 @@ namespace FMSFrontend.Selectors
 
                 if (tabItem.Tag is string colorCode && !string.IsNullOrWhiteSpace(colorCode))
                 {
-                    // 建立一個新的樣式（基於 baseStyle）
                     var customStyle = new Style(typeof(TabItem), baseStyle);
 
-                    // 加上 "IsSelected = True" 時才套用背景顏色
+                    // 🔍 判斷是否來自子 TabControl（例如有 Tag = SubTab）
+                    bool isSubTab = false;
+                    DependencyObject parent = tabItem;
+                    while (parent != null && !(parent is TabControl))
+                        parent = VisualTreeHelper.GetParent(parent);
+
+                    if (parent is TabControl tabControl &&
+                        tabControl.Tag?.ToString() == "SubTab")
+                    {
+                        isSubTab = true;
+                    }
+
+                    // ✅ 預設底色（只有子Tab是灰色）
+                    var defaultColor = isSubTab ? "#CCCCCC" : "#555555"; // 假設原主Tab是偏黑色
+                    customStyle.Setters.Add(new Setter(Control.BackgroundProperty,
+                        new SolidColorBrush((Color)ColorConverter.ConvertFromString(defaultColor))));
+
+                    // ✅ 選中時使用 Tag 設定的顏色
                     var trigger = new Trigger
                     {
                         Property = TabItem.IsSelectedProperty,
@@ -37,5 +53,6 @@ namespace FMSFrontend.Selectors
             return base.SelectStyle(item, container);
         }
     }
+
 
 }

@@ -209,8 +209,8 @@
                                                         <TranslateTransform x:Name="KnobTransform" />
                                                     </Border.RenderTransform>
                                                     <Grid>
-                                                        <Image x:Name="ImageOn" Width="28" Height="28" Source="pack://application:,,,/FMSFrontend;component/Image/控制單元/06-1-lightbulbOn.png" Stretch="Uniform" Visibility="Visible" />
-                                                        <Image x:Name="ImageOff" Width="28" Height="28" Source="pack://application:,,,/FMSFrontend;component/Image/控制單元/06-2-lightbulbOff.png" Stretch="Uniform" Visibility="Collapsed" />
+                                                        <Image x:Name="ImageOn" Width="28" Height="28" Source="/FMSFrontend;component/Image/ControlUnit/06-1-lightbulbOn.png" Stretch="Uniform" Visibility="Visible" />
+                                                        <Image x:Name="ImageOff" Width="28" Height="28" Source="pack://application:,,,/FMSFrontend;component/Image/ControlUnit/06-2-lightbulbOff.png" Stretch="Uniform" Visibility="Collapsed" />
                                                     </Grid>
                                                 </Border>
 

@@ -25,7 +25,7 @@
             </StackPanel>
 
             <!-- Tabs -->
-            <TabControl Grid.Row="1" SelectedIndex="{Binding SelectedTabIndexParameter}" Style="{StaticResource FlatTabControlStyle}" Height="40" Margin="0,8,0,0" Background="Transparent" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}">
+            <TabControl Grid.Row="1" Tag="MainTab" SelectedIndex="{Binding SelectedTabIndexParameter}" Style="{StaticResource FlatTabControlStyle}" Height="40" Margin="0,8,0,0" Background="Transparent" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}">
                 <TabItem Header="New/新建" Tag="#2779A7" />
                 <TabItem Header="EDM" Tag="#2779A7" />
                 <TabItem Header="Failure/失敗" Tag="#2779A7" />
@@ -39,7 +39,8 @@
                     <ContentControl.Style>
                         <Style TargetType="ContentControl">
                             <Style.Triggers>
-                                <!-- ✅ Tab 0：New -->                              
+
+                                <!-- ✅ Tab 0：New -->
                                 <DataTrigger Binding="{Binding SelectedTabIndexParameter}" Value="0">
                                     <Setter Property="ContentTemplate">
                                         <Setter.Value>
@@ -52,7 +53,7 @@
                                                         </Grid.RowDefinitions>
 
                                                         <!-- Upload 按鈕 -->
-                                                        <Button Grid.Row="0" HorizontalAlignment="Left" Margin="0,0,0,16" Padding="16,10" Background="#0070E0" Foreground="White" FontWeight="Bold" Cursor="Hand" BorderThickness="0" Effect="{StaticResource ShadowEffect}">
+                                                        <Button Command="{Binding OpenUploadSheetCommand}" Grid.Row="0" HorizontalAlignment="Left" Margin="0,0,0,16" Padding="16,10" Background="#0070E0" Foreground="White" FontWeight="Bold" Cursor="Hand" BorderThickness="0" Effect="{StaticResource ShadowEffect}">
                                                             <Border CornerRadius="8" Background="Transparent">
                                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                                     <materialDesign:PackIcon Kind="Upload" Width="20" Height="20" Margin="0,0,6,0" />
@@ -64,9 +65,7 @@
                                                         <!-- 外框 -->
                                                         <Border Grid.Row="1" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,8">
                                                             <Grid>
-                                                                <DataGrid Name="NewWorkDataGrid" 
-                                                                          ItemsSource="{Binding WorkOrderList}" IsReadOnly="True" AutoGenerateColumns="False" 
-                                                                          RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="44">
+                                                                <DataGrid Name="NewWorkDataGrid" ItemsSource="{Binding WorkOrderList}" IsReadOnly="True" AutoGenerateColumns="False" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="44">
 
                                                                     <DataGrid.Style>
                                                                         <Style TargetType="DataGrid" BasedOn="{StaticResource ModernFlatDataGridStyle}" />
@@ -78,7 +77,10 @@
                                                                                 <Setter.Value>
                                                                                     <Binding Path="IsExpanded" Converter="{StaticResource BooleanToVisibilityConverter}" />
                                                                                 </Setter.Value>
+
                                                                             </Setter>
+                                                                            <Setter Property="FontSize" Value="20" />
+
                                                                         </Style>
                                                                     </DataGrid.RowStyle>
                                                                     <!-- ✅ Columns 開始 -->
@@ -105,26 +107,26 @@
                                                                             </DataGridTemplateColumn.CellTemplate>
                                                                         </DataGridTemplateColumn>
 
-                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding OrderNumber}" Width="150" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                        <DataGridTextColumn Header="工單編號" FontSize="18" Binding="{Binding OrderNumber}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding PartName}" Width="150" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                        <DataGridTextColumn Header="零件名稱" FontSize="18" Binding="{Binding PartName}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
                                                                         <DataGridTemplateColumn Header="狀態" Width="180">
                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                 <DataTemplate>
                                                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                                                                         <Ellipse Width="10" Height="10" Fill="{Binding StatusColor}" Margin="0,0,6,0" VerticalAlignment="Center" />
-                                                                                        <TextBlock Text="{Binding Status}" FontSize="16" VerticalAlignment="Center" />
+                                                                                        <TextBlock Text="{Binding Status}" FontSize="18" VerticalAlignment="Center" />
                                                                                     </StackPanel>
                                                                                 </DataTemplate>
                                                                             </DataGridTemplateColumn.CellTemplate>
                                                                         </DataGridTemplateColumn>
 
-                                                                        <DataGridTextColumn Header="目標EDM" Binding="{Binding TargetEDM}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                        <DataGridTextColumn Header="目標EDM" FontSize="18" Binding="{Binding TargetEDM}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                        <DataGridTextColumn Header="座標" Binding="{Binding Coordinate}" Width="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                        <DataGridTextColumn Header="座標" FontSize="18" Binding="{Binding Coordinate}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding Operator}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                        <DataGridTextColumn Header="設定者" FontSize="18" Binding="{Binding Operator}" Width="110" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
                                                                         <DataGridTemplateColumn Header="刪除" Width="60">
                                                                             <DataGridTemplateColumn.CellTemplate>
@@ -137,11 +139,11 @@
                                                                         </DataGridTemplateColumn>
                                                                     </DataGrid.Columns>
 
-                                                                    <DataGrid.RowDetailsTemplate >
-                                                                        <DataTemplate >
+                                                                    <DataGrid.RowDetailsTemplate>
+                                                                        <DataTemplate>
                                                                             <StackPanel Margin="20,2,20,2" Background="#F9F9F9">
-                                                                                <StackPanel Orientation="Horizontal" Margin="0,20,0,20" VerticalAlignment="Center" >
-                                                                                    <TextBlock Text="{Binding EDMStageDisplay}" FontSize="14" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                                                <StackPanel Orientation="Horizontal" Margin="0,20,0,20" VerticalAlignment="Center">
+                                                                                    <TextBlock Text="{Binding EDMStageDisplay}" FontSize="18" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" Margin="0,0,8,0" />
                                                                                     <ProgressBar Value="{Binding EDMStageProgress, Mode=OneWay}" Height="8" Width="200" VerticalAlignment="Center" />
                                                                                 </StackPanel>
 
@@ -159,7 +161,7 @@
 
                                                                                     <DataGrid.Columns>
                                                                                         <DataGridTextColumn Header="電極名稱" Binding="{Binding ElectrodeName}" Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                        <DataGridTextColumn Header="標籤序號" Binding="{Binding LabelSerial}" Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
+                                                                                        <DataGridTextColumn Header="標籤序號" Binding="{Binding LabelSerial}" Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                                                         <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                                                         <DataGridCheckBoxColumn Header="需EDM" IsReadOnly="False" Binding="{Binding NeedEDM}" Width="120" ElementStyle="{StaticResource CenterAlignedCheckBoxStyle}" EditingElementStyle="{StaticResource CenterAlignedCheckBoxStyle}" CellStyle="{StaticResource CenterAlignedCheckBoxCellStyle}" />
                                                                                         <DataGridTextColumn Header="加工程式" Binding="{Binding EDMProgram}" Width="150" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
@@ -185,22 +187,363 @@
                                         <Setter.Value>
                                             <DataTemplate>
                                                 <Grid>
-                                                    <!-- 放 EDM 清單、Queue、排序按鈕等等 -->
-                                                    <TextBlock Text="EDM內容區，待實作..." Foreground="Gray" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="*" />
+                                                    </Grid.RowDefinitions>
+
+                                                    <!-- EDM 子頁籤 -->
+                                                    <TabControl Grid.Row="0" Tag="SubTab" SelectedIndex="{Binding EDMSelectedTab}" Style="{StaticResource FlatTabControlStyle}" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}" Height="40" Margin="0,0,0,8" Background="Transparent">
+                                                        <TabItem Header="Preparing" Tag="#2779A7" />
+                                                        <TabItem Header="To Be Processed" Tag="#2779A7" Width="230" />
+                                                        <TabItem Header="Queueing" Tag="#2779A7" />
+                                                        <TabItem Header="Processing" Tag="#2779A7" />
+                                                        <TabItem Header="Completed" Tag="#2779A7" Cursor="" />
+                                                    </TabControl>
+
+                                                    <!-- 對應 EDMSelectedTab 顯示不同內容 -->
+                                                    <ContentControl Grid.Row="1" Content="{Binding}">
+                                                        <ContentControl.Style>
+                                                            <Style TargetType="ContentControl">
+                                                                <Style.Triggers>
+
+                                                                    <!-- Preparing -->
+                                                                    <DataTrigger Binding="{Binding EDMSelectedTab}" Value="0">
+                                                                        <Setter Property="ContentTemplate">
+                                                                            <Setter.Value>
+                                                                                <DataTemplate>
+                                                                                    <Border CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Padding="15" Background="White">
+                                                                                        <Grid>
+                                                                                            <Grid.RowDefinitions>
+                                                                                                <RowDefinition Height="50" />
+                                                                                                <RowDefinition Height="*" />
+                                                                                            </Grid.RowDefinitions>
+
+                                                                                            <!-- 上方按鈕區 -->
+                                                                                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                                                                                                <!--<Button Content="Action" Width="80" Height="36" Background="#0070E0" Foreground="White" />
+                                                                                                <Button Content="Action" Width="80" Height="36" Background="#0070E0" Foreground="White" Margin="12,0,0,0" />-->
+                                                                                            </StackPanel>
+
+                                                                                            <!-- 表格 -->
+                                                                                            <Border Grid.Row="1" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
+                                                                                                <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" RowHeight="30" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource ModernFlatDataGridStyle}">
+                                                                                                    <DataGrid.Columns>
+                                                                                                        <DataGridTextColumn Header="#" Binding="{Binding QueueIndex}" Width="60" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding OrderNumber}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding PartName}" Width="150" />
+                                                                                                        <DataGridTemplateColumn Header="放電狀態" Width="150">
+                                                                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                                                                <DataTemplate>
+                                                                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                                                                                        <Ellipse Width="10" Height="10" Fill="{Binding StatusColor}" Margin="0,0,6,0" />
+                                                                                                                        <TextBlock Text="{Binding Status}" />
+                                                                                                                    </StackPanel>
+                                                                                                                </DataTemplate>
+                                                                                                            </DataGridTemplateColumn.CellTemplate>
+                                                                                                        </DataGridTemplateColumn>
+                                                                                                        <DataGridTextColumn Header="目標EDM" Binding="{Binding TargetEDM}" Width="100" />
+                                                                                                        <DataGridTextColumn Header="座標" Binding="{Binding Coordinate}" Width="80" />
+                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding Operator}" Width="100" />
+                                                                                                    </DataGrid.Columns>
+                                                                                                </DataGrid>
+                                                                                            </Border>
+                                                                                        </Grid>
+                                                                                    </Border>
+                                                                                </DataTemplate>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </DataTrigger>
+
+                                                                    <!-- To Be Processed -->
+                                                                    <DataTrigger Binding="{Binding EDMSelectedTab}" Value="1">
+                                                                        <Setter Property="ContentTemplate">
+                                                                            <Setter.Value>
+                                                                                <DataTemplate>
+                                                                                    <Border CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Padding="15" Background="White">
+                                                                                        <Grid>
+                                                                                            <Grid.RowDefinitions>
+                                                                                                <RowDefinition Height="50" />
+                                                                                                <!-- 上方按鈕 -->
+                                                                                                <RowDefinition Height="*" />
+                                                                                                <!-- 下方表格 -->
+                                                                                            </Grid.RowDefinitions>
+
+                                                                                            <!-- 上方按鈕 -->
+                                                                                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                                                                                                <Button Content="修改順序" Width="80" Height="36" Background="#0070E0" Foreground="White" Command="{Binding EditOrderCommand}" Margin="0,0,12,0" />
+
+                                                                                                <Button Width="36" Height="36" Command="{Binding MoveUpCommand}" Margin="0,0,8,0">
+                                                                                                    <materialDesign:PackIcon Kind="ChevronUp" Width="20" Height="20" />
+                                                                                                </Button>
+
+                                                                                                <Button Width="36" Height="36" Command="{Binding MoveDownCommand}" Margin="0,0,12,0">
+                                                                                                    <materialDesign:PackIcon Kind="ChevronDown" Width="20" Height="20" />
+                                                                                                </Button>
+
+                                                                                                <Button Content="儲存" Width="60" Height="36" Background="#82C3DF" Foreground="White" Command="{Binding SaveQueueCommand}" />
+                                                                                            </StackPanel>
+
+                                                                                            <!-- 下方表格 -->
+                                                                                            <Border Grid.Row="1" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
+                                                                                                <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" RowHeight="30" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource ModernFlatDataGridStyle}">
+
+                                                                                                    <DataGrid.Columns>
+                                                                                                        <DataGridTextColumn Header="#" Binding="{Binding QueueIndex}" Width="60" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding OrderNumber}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding PartName}" Width="150" />
+
+                                                                                                        <DataGridTemplateColumn Header="放電狀態" Width="150">
+                                                                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                                                                <DataTemplate>
+                                                                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                                                                                        <Ellipse Width="10" Height="10" Fill="{Binding StatusColor}" Margin="0,0,6,0" />
+                                                                                                                        <TextBlock Text="{Binding Status}" />
+                                                                                                                    </StackPanel>
+                                                                                                                </DataTemplate>
+                                                                                                            </DataGridTemplateColumn.CellTemplate>
+                                                                                                        </DataGridTemplateColumn>
+
+                                                                                                        <DataGridTextColumn Header="目標EDM" Binding="{Binding TargetEDM}" Width="100" />
+                                                                                                        <DataGridTextColumn Header="座標" Binding="{Binding Coordinate}" Width="80" />
+                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding Operator}" Width="100" />
+                                                                                                    </DataGrid.Columns>
+                                                                                                </DataGrid>
+                                                                                            </Border>
+                                                                                        </Grid>
+                                                                                    </Border>
+                                                                                </DataTemplate>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </DataTrigger>
+
+                                                                    <!-- Queueing -->
+                                                                    <DataTrigger Binding="{Binding EDMSelectedTab}" Value="2">
+                                                                        <Setter Property="ContentTemplate">
+                                                                            <Setter.Value>
+                                                                                <DataTemplate>
+                                                                                    <Border CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Padding="15" Background="White">
+                                                                                        <Grid>
+                                                                                            <Grid.RowDefinitions>
+                                                                                                <RowDefinition Height="50" />
+                                                                                                <RowDefinition Height="*" />
+                                                                                            </Grid.RowDefinitions>
+
+                                                                                            <!-- 上方按鈕區 -->
+                                                                                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                                                                                                <!--<Button Content="Action" Width="80" Height="36" Background="#0070E0" Foreground="White" />
+                <Button Content="Action" Width="80" Height="36" Background="#0070E0" Foreground="White" Margin="12,0,0,0" />-->
+                                                                                            </StackPanel>
+
+                                                                                            <!-- 表格 -->
+                                                                                            <Border Grid.Row="1" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
+                                                                                                <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" RowHeight="30" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource ModernFlatDataGridStyle}">
+                                                                                                    <DataGrid.Columns>
+                                                                                                        <DataGridTextColumn Header="#" Binding="{Binding QueueIndex}" Width="60" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding OrderNumber}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding PartName}" Width="150" />
+                                                                                                        <DataGridTemplateColumn Header="放電狀態" Width="150">
+                                                                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                                                                <DataTemplate>
+                                                                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                                                                                        <Ellipse Width="10" Height="10" Fill="{Binding StatusColor}" Margin="0,0,6,0" />
+                                                                                                                        <TextBlock Text="{Binding Status}" />
+                                                                                                                    </StackPanel>
+                                                                                                                </DataTemplate>
+                                                                                                            </DataGridTemplateColumn.CellTemplate>
+                                                                                                        </DataGridTemplateColumn>
+                                                                                                        <DataGridTextColumn Header="目標EDM" Binding="{Binding TargetEDM}" Width="100" />
+                                                                                                        <DataGridTextColumn Header="座標" Binding="{Binding Coordinate}" Width="80" />
+                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding Operator}" Width="100" />
+                                                                                                    </DataGrid.Columns>
+                                                                                                </DataGrid>
+                                                                                            </Border>
+                                                                                        </Grid>
+                                                                                    </Border>
+                                                                                </DataTemplate>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </DataTrigger>
+
+                                                                    <!-- Processing -->
+                                                                    <DataTrigger Binding="{Binding EDMSelectedTab}" Value="3">
+                                                                        <Setter Property="ContentTemplate">
+                                                                            <Setter.Value>
+                                                                                <DataTemplate>
+                                                                                    <Border CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Padding="15" Background="White">
+                                                                                        <Grid>
+                                                                                            <Grid.RowDefinitions>
+                                                                                                <RowDefinition Height="50" />
+                                                                                                <RowDefinition Height="*" />
+                                                                                            </Grid.RowDefinitions>
+
+                                                                                            <!-- 上方按鈕區 -->
+                                                                                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                                                                                                <Button Content="Revise" Width="80" Height="36" Background="#0070E0" Foreground="White" />
+                                                                                                <!--<Button Content="Action" Width="80" Height="36" Background="#0070E0" Foreground="White" Margin="12,0,0,0" />-->
+                                                                                            </StackPanel>
+
+                                                                                            <!-- 表格 -->
+                                                                                            <Border Grid.Row="1" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
+                                                                                                <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" RowHeight="30" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource ModernFlatDataGridStyle}">
+                                                                                                    <DataGrid.Columns>
+                                                                                                        <DataGridTextColumn Header="#" Binding="{Binding QueueIndex}" Width="60" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding OrderNumber}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding PartName}" Width="150" />
+                                                                                                        <DataGridTemplateColumn Header="放電狀態" Width="150">
+                                                                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                                                                <DataTemplate>
+                                                                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                                                                                        <Ellipse Width="10" Height="10" Fill="{Binding StatusColor}" Margin="0,0,6,0" />
+                                                                                                                        <TextBlock Text="{Binding Status}" />
+                                                                                                                    </StackPanel>
+                                                                                                                </DataTemplate>
+                                                                                                            </DataGridTemplateColumn.CellTemplate>
+                                                                                                        </DataGridTemplateColumn>
+                                                                                                        <DataGridTextColumn Header="目標EDM" Binding="{Binding TargetEDM}" Width="100" />
+                                                                                                        <DataGridTextColumn Header="座標" Binding="{Binding Coordinate}" Width="80" />
+                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding Operator}" Width="100" />
+                                                                                                    </DataGrid.Columns>
+                                                                                                </DataGrid>
+                                                                                            </Border>
+                                                                                        </Grid>
+                                                                                    </Border>
+                                                                                </DataTemplate>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </DataTrigger>
+
+                                                                    <!-- Completed -->
+                                                                    <DataTrigger Binding="{Binding EDMSelectedTab}" Value="4">
+                                                                        <Setter Property="ContentTemplate">
+                                                                            <Setter.Value>
+                                                                                <DataTemplate>
+                                                                                    <Border CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Padding="15" Background="White">
+                                                                                        <Grid>
+                                                                                            <Grid.RowDefinitions>
+                                                                                                <RowDefinition Height="50" />
+                                                                                                <RowDefinition Height="*" />
+                                                                                            </Grid.RowDefinitions>
+
+                                                                                            <!-- 上方日期篩選器 -->
+                                                                                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+                                                                                                <ComboBox Width="100" Height="36" FontSize="20" Margin="0,0,30,0" Background="White" BorderBrush="#444" BorderThickness="1" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                                                                                                
+                                                                                                <DatePicker SelectedDate="{Binding FromDate}" IsEnabled="{Binding IsCustomDateMode}" Width="150" Height="28">
+                                                                                                    <DatePicker.CalendarStyle>
+                                                                                                        <Style TargetType="Calendar">
+                                                                                                            <Setter Property="CalendarItemStyle">
+                                                                                                                <Setter.Value>
+                                                                                                                    <Style TargetType="CalendarItem">
+                                                                                                                        <Setter Property="FontSize" Value="18" />
+                                                                                                                        <Setter Property="Padding" Value="10" />
+                                                                                                                        
+                                                                                                                    </Style>
+                                                                                                                </Setter.Value>
+                                                                                                            </Setter>
+                                                                                                        </Style>
+                                                                                                    </DatePicker.CalendarStyle>
+
+                                                                                                    <DatePicker.Resources>
+                                                                                                        <!-- 日期文字置中 -->
+                                                                                                        <Style TargetType="DatePickerTextBox">
+                                                                                                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                                                                                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                                                                                                            <Setter Property="FontSize" Value="18" />
+                                                                                                        </Style>
+                                                                                                    </DatePicker.Resources>
+                                                                                                </DatePicker>
+
+                                                                                                <TextBlock Text="→" FontSize="20" VerticalAlignment="Center" Margin="12,0" />
+                                                                                                <DatePicker SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" Width="150" Height="28">
+                                                                                                    <DatePicker.CalendarStyle>
+                                                                                                        <Style TargetType="Calendar">
+                                                                                                            <Setter Property="CalendarItemStyle">
+                                                                                                                <Setter.Value>
+                                                                                                                    <Style TargetType="CalendarItem">
+                                                                                                                        <Setter Property="FontSize" Value="18" />
+                                                                                                                        <Setter Property="Padding" Value="10" />
+
+                                                                                                                    </Style>
+                                                                                                                </Setter.Value>
+                                                                                                            </Setter>
+                                                                                                        </Style>
+                                                                                                    </DatePicker.CalendarStyle>
+
+                                                                                                    <DatePicker.Resources>
+                                                                                                        <!-- 日期文字置中 -->
+                                                                                                        <Style TargetType="DatePickerTextBox">
+                                                                                                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                                                                                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                                                                                                            <Setter Property="FontSize" Value="18" />
+                                                                                                        </Style>
+                                                                                                    </DatePicker.Resources>
+                                                                                                </DatePicker>
+
+                                                                                            </StackPanel>
+
+                                                                                            <!-- 表格 -->
+                                                                                            <Border Grid.Row="1" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
+                                                                                                <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" RowHeight="30" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource ModernFlatDataGridStyle}">
+                                                                                                    <DataGrid.Columns>
+                                                                                                        <DataGridTextColumn Header="#" Binding="{Binding QueueIndex}" Width="60" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding OrderNumber}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding PartName}" Width="150" />
+                                                                                                        <DataGridTemplateColumn Header="放電狀態" Width="150">
+                                                                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                                                                <DataTemplate>
+                                                                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                                                                                        <Ellipse Width="10" Height="10" Fill="{Binding StatusColor}" Margin="0,0,6,0" />
+                                                                                                                        <TextBlock Text="{Binding Status}" />
+                                                                                                                    </StackPanel>
+                                                                                                                </DataTemplate>
+                                                                                                            </DataGridTemplateColumn.CellTemplate>
+                                                                                                        </DataGridTemplateColumn>
+                                                                                                        <DataGridTextColumn Header="目標EDM" Binding="{Binding TargetEDM}" Width="100" />
+                                                                                                        <DataGridTextColumn Header="座標" Binding="{Binding Coordinate}" Width="80" />
+                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding Operator}" Width="100" />
+                                                                                                    </DataGrid.Columns>
+                                                                                                </DataGrid>
+                                                                                            </Border>
+                                                                                        </Grid>
+                                                                                    </Border>
+                                                                                </DataTemplate>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </DataTrigger>
+
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </ContentControl.Style>
+                                                    </ContentControl>
+
                                                 </Grid>
                                             </DataTemplate>
+
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
 
+                               
                                 <!-- ✅ Tab 2：Failure -->
                                 <DataTrigger Binding="{Binding SelectedTabIndexParameter}" Value="2">
                                     <Setter Property="ContentTemplate">
                                         <Setter.Value>
                                             <DataTemplate>
                                                 <Grid>
-                                                    <!-- 放 Action 按鈕 DataGrid 等 -->
-                                                    <TextBlock Text="Failure內容區，待實作..." Foreground="Gray" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    <!-- 外框 -->
+                                                    <Border Grid.Row="1" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,8">
+                                                        <DataGrid ItemsSource="{Binding FailureWorkOrders}" IsReadOnly="True" AutoGenerateColumns="False" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" RowHeight="44" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource ModernFlatDataGridStyle}">
+                                                            <DataGrid.Columns>
+                                                                <DataGridTextColumn Header="工單編號" Binding="{Binding OrderNumber}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Header="零件名稱" Binding="{Binding PartName}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="150" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Header="目標EDM" Binding="{Binding TargetEDM}" Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Header="座標" Binding="{Binding Coordinate}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Header="設定者" Binding="{Binding Operator}" Width="110" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                            </DataGrid.Columns>
+                                                        </DataGrid>
+                                                    </Border>
                                                 </Grid>
                                             </DataTemplate>
                                         </Setter.Value>

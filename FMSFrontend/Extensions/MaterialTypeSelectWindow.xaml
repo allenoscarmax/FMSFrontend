@@ -1,0 +1,44 @@
+﻿<Window x:Class="FMSFrontend.Extensions.MaterialTypeSelectWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" Title="物料燒錄" Width="600" Height="384" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Window.Resources>
+        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
+    </Window.Resources>
+
+    <Border Background="White" CornerRadius="10" Padding="0" Effect="{StaticResource ShadowEffect}" BorderBrush="#CCC" BorderThickness="1">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56" />
+                <!-- 標題列 -->
+                <RowDefinition Height="*" />
+                <!-- 主內容 -->
+            </Grid.RowDefinitions>
+
+            <!-- ✅ 自訂標題列 -->
+            <Border Background="#555555" Grid.Row="0" CornerRadius="10,10,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="48" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0">
+                        <materialDesign:PackIcon Kind="DatabaseImport" Width="24" Height="24" Margin="0,0,8,0" Foreground="White" />
+                        <TextBlock Text="物料燒錄" FontSize="22" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- 關閉按鈕 -->
+                    <Button Grid.Column="1" Content="✕" Background="Transparent" Foreground="White" BorderThickness="0" FontSize="16" FontWeight="Bold" Cursor="Hand" Click="Close_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="32" Height="32" />
+                </Grid>
+            </Border>
+
+            <!-- 🎯 主內容：選擇類型 -->
+            <Grid Grid.Row="1">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,16">
+                    <Button Content="電極" Width="240" Height="78" FontSize="24" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Margin="0,0,30,0" Click="SelectElectrodeCommand" />
+                    <Button Content="工件" Width="240" Height="78" FontSize="24" Style="{StaticResource PrimaryButtonStyle}" Background="#DE8C3E" Click="SelectWorkpieceCommand" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

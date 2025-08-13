@@ -1,5 +1,6 @@
 ﻿using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
+using FMSFrontend.ViewModels.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,24 +13,20 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FMSFrontend.Views
+namespace FMSFrontend.Extensions
 {
     /// <summary>
-    /// RFIDBind.xaml 的互動邏輯
+    /// SelectWorksheetWindow.xaml 的互動邏輯
     /// </summary>
-    public partial class RFIDBind : UserControl
+    public partial class SelectWorksheetWindow : Window
     {
-        public RFIDBind()
+        public SelectWorksheetWindow()
         {
             InitializeComponent();
-            // 建立服務實例
-            var windowService = new WindowService();
-
             // 建立 ViewModel 並注入服務
-            var viewModel = new RFIDBindPageViewModel(windowService);
+            SelectWorksheetWindowViewModel viewModel = new SelectWorksheetWindowViewModel();
 
             this.DataContext = viewModel;
         }

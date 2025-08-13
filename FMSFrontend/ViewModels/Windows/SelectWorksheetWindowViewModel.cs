@@ -1,0 +1,130 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Data;
+using System.Windows.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+
+namespace FMSFrontend.ViewModels.Windows
+{
+    public class WorksheetItem
+    {
+        public string PartName { get; set; } = "";
+        public string WorkOrderNo { get; set; } = "";
+        public override string ToString() => $"{PartName} ({WorkOrderNo})";
+    }
+
+    public class SelectWorksheetWindowViewModel : ObservableObject
+    {
+        // ===== 標題列 =====
+        private string _title = "選擇工單";
+        public string Title
+        {
+            get => _title;
+            set => SetProperty(ref _title, value);
+        }
+
+        private Brush _titleBrush =
+            (SolidColorBrush)new BrushConverter().ConvertFrom("#555555")!;
+        public Brush TitleBrush
+        {
+            get => _titleBrush;
+            set => SetProperty(ref _titleBrush, value);
+        }
+
+        // ===== 搜尋 =====
+        private string _searchText = string.Empty;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (SetProperty(ref _searchText, value))
+                    ItemsView.Refresh();
+            }
+        }
+
+        // ===== 清單 =====
+        public ObservableCollection<WorksheetItem> WorksheetItems { get; }
+        public ICollectionView ItemsView { get; }
+
+        private WorksheetItem? _selectedWorksheet;
+        public WorksheetItem? SelectedWorksheet
+        {
+            get => _selectedWorksheet;
+            set
+            {
+                if (SetProperty(ref _selectedWorksheet, value))
+                    (ConfirmCommand as RelayCommand<Window?>)!.NotifyCanExecuteChanged();
+            }
+        }
+
+        // ===== Commands =====
+        public IRelayCommand<object?> SearchCommand { get; }
+        public IRelayCommand<Window?> ConfirmCommand { get; }
+        public IRelayCommand<Window?> CancelCommand { get; }
+
+        public SelectWorksheetWindowViewModel(IEnumerable<WorksheetItem>? items = null)
+        {
+            WorksheetItems = new ObservableCollection<WorksheetItem>(items ?? GetDesignItems());
+            ItemsView = CollectionViewSource.GetDefaultView(WorksheetItems);
+            ItemsView.Filter = FilterItem;
+
+            SearchCommand = new RelayCommand<object?>(OnSearch);
+            ConfirmCommand = new RelayCommand<Window?>(OnConfirm, _ => SelectedWorksheet != null);
+            CancelCommand = new RelayCommand<Window?>(OnCancel);
+        }
+
+        private bool FilterItem(object obj)
+        {
+            if (obj is not WorksheetItem it) return false;
+            if (string.IsNullOrWhiteSpace(SearchText)) return true;
+
+            var q = SearchText.Trim();
+            return it.PartName.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                   it.WorkOrderNo.Contains(q, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // 你的 KeyDownEnterOnlyConverter 會在非 Enter 時給 false；我們就忽略
+        private void OnSearch(object? param)
+        {
+            if (param is bool enterOnly && !enterOnly) return;
+            ItemsView.Refresh();
+        }
+
+        private void OnConfirm(Window? win)
+        {
+            if (win == null) return;
+
+            if (SelectedWorksheet != null)
+            {
+                win.Tag = SelectedWorksheet; // 讓呼叫端可取回
+                try { win.DialogResult = true; } catch { win.Close(); }
+            }
+            else
+            {
+                try { win.DialogResult = false; } catch { win.Close(); }
+            }
+        }
+
+        private void OnCancel(Window? win)
+        {
+            if (win == null) return;
+            try { win.DialogResult = false; } catch { win.Close(); }
+        }
+
+        private static IEnumerable<WorksheetItem> GetDesignItems() => new[]
+        {
+            new WorksheetItem { PartName = "24-034-018", WorkOrderNo = "202506134" },
+            new WorksheetItem { PartName = "24-034-019", WorkOrderNo = "202506135" },
+            new WorksheetItem { PartName = "24-034-020", WorkOrderNo = "202506136" },
+            new WorksheetItem { PartName = "24-034-021", WorkOrderNo = "202506137" },
+            new WorksheetItem { PartName = "24-034-022", WorkOrderNo = "202506138" },
+            new WorksheetItem { PartName = "24-034-023", WorkOrderNo = "202506139" },
+            new WorksheetItem { PartName = "24-034-024", WorkOrderNo = "202506140" },
+        };
+    }
+}
