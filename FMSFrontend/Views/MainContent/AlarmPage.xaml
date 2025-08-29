@@ -1,0 +1,342 @@
+﻿<UserControl x:Class="FMSFrontend.Views.AlarmPage" 
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:selectors="clr-namespace:FMSFrontend.Selectors" mc:Ignorable="d" d:DesignHeight="912" d:DesignWidth="1532">
+
+    <UserControl.Resources>
+        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
+        <selectors:TabItemBackgroundSelector x:Key="TabItemColorSelector" />
+        <!-- 小膠囊風格（錯誤代碼用） -->
+        <Style x:Key="ChipStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="6,2" />
+            <Setter Property="Background" Value="#F1F1F1" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <!-- 主標題 -->
+            <RowDefinition Height="*" />
+            <!-- 主內容 -->
+        </Grid.RowDefinitions>
+
+        <!-- 🔠 主標題 -->
+        <DockPanel Grid.Row="0" VerticalAlignment="Center" Margin="10,0,10,0">
+            <!-- 你指定要有的圖示（白色 20x20，Dock 左側） -->
+            <materialDesign:PackIcon Kind="ReportProblem" Width="20" Height="20" Margin="5,0" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" />
+            <TextBlock Text="Alarm List" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="6,0,0,0" />
+        </DockPanel>
+
+
+        <!-- 📋 內容區：目前警報 / 歷史警報 -->
+        <!-- ▼ 放在 Grid.Row="1"（標題下方），用內層 Grid 切 Tab 與內容高度 -->
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <!-- Tabs -->
+                <RowDefinition Height="*" />
+                <!-- Content -->
+            </Grid.RowDefinitions>
+
+            <!-- Tabs -->
+            <TabControl Grid.Row="0" Tag="MainTab" Margin="0,5,0,0" SelectedIndex="{Binding SelectedTabIndexParameter}" Style="{StaticResource FlatTabControlStyle}" Background="Transparent" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}">
+                <TabItem Header="目前警報" Tag="#2779A7" />
+                <TabItem Header="歷史警報" Tag="#2779A7" />
+            </TabControl>
+
+            <!-- 外部已經統一套好卡片框 -->
+            <Border Grid.Row="1" Background="White" CornerRadius="0,0,10,10" Padding="40,16,40,24" Effect="{StaticResource ShadowEffect}">
+
+                <!-- 切換內容區 -->
+                <ContentControl Content="{Binding}">
+                    <ContentControl.Style>
+                        <Style TargetType="ContentControl">
+                            <Style.Triggers>
+
+                                <!-- ✅ Tab 0：目前警報 -->
+                                <DataTrigger Binding="{Binding SelectedTabIndexParameter}" Value="0">
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <!-- 外框 -->
+                                                <Border CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,8">
+                                                    <DataGrid ItemsSource="{Binding CurrentAlarms}" IsReadOnly="True" AutoGenerateColumns="False" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="44" RowHeaderWidth="0" HeadersVisibility="Column" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
+                                                        <!-- 套用共用 DataGrid 樣式 -->
+                                                        <DataGrid.Style>
+                                                            <Style TargetType="DataGrid" BasedOn="{StaticResource ModernFlatDataGridStyle}" />
+                                                        </DataGrid.Style>
+                                                        <!-- ✨ 移除每個儲存格的內建邊框，避免縫隙 -->
+                                                        <DataGrid.CellStyle>
+                                                            <Style TargetType="DataGridCell">
+                                                                <Setter Property="BorderThickness" Value="0" />
+                                                                <Setter Property="Padding" Value="6,0,6,0" />
+                                                                <!-- 若不想看到虛線焦點框，也可關掉 -->
+                                                                <!--<Setter Property="FocusVisualStyle" Value="{x:Null}"/>-->
+                                                            </Style>
+                                                        </DataGrid.CellStyle>
+
+                                                        <!-- ✨ 列本身也確保沒有額外邊框/間距 -->
+                                                        <DataGrid.RowStyle>
+                                                            <Style TargetType="DataGridRow">
+                                                                <Setter Property="Margin" Value="0" />
+                                                                <Setter Property="BorderThickness" Value="0" />
+                                                                <Setter Property="SnapsToDevicePixels" Value="True" />
+                                                            </Style>
+                                                        </DataGrid.RowStyle>
+
+                                                        <!-- 欄位 -->
+                                                        <DataGrid.Columns>
+                                                            <!-- 時間 -->
+                                                            <DataGridTextColumn Header="時間" Width="160" Binding="{Binding Time, StringFormat=\{0:yyyy/MM/dd HH:mm:ss\}}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+
+                                                            <!-- 錯誤代碼（膠囊＋圖示，依 Level 變色） -->
+                                                            <DataGridTemplateColumn Header="錯誤代碼" Width="200">
+                                                                <!-- Header 也放個小圖示 -->
+                                                                <DataGridTemplateColumn.HeaderTemplate>
+                                                                    <DataTemplate>
+                                                                        <StackPanel Orientation="Horizontal">
+                                                                            <materialDesign:PackIcon Kind="AlarmLightOutline" Width="16" Height="16" Margin="0,0,6,0" />
+                                                                            <TextBlock Text="錯誤代碼" />
+                                                                        </StackPanel>
+                                                                    </DataTemplate>
+                                                                </DataGridTemplateColumn.HeaderTemplate>
+
+                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                    <DataTemplate>
+                                                                        <Border x:Name="Chip" CornerRadius="10" Padding="8,4" Background="#F1F1F1">
+                                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                                                <materialDesign:PackIcon x:Name="ChipIcon" Kind="AlertOutline" Width="16" Height="16" Margin="0,0,6,0" />
+                                                                                <TextBlock Text="{Binding Code}" />
+                                                                            </StackPanel>
+                                                                        </Border>
+
+                                                                        <!-- 依 Level 變色/換圖示 -->
+                                                                        <DataTemplate.Triggers>
+                                                                            <!-- 嚴重：ALARM（紅） -->
+                                                                            <DataTrigger Binding="{Binding Level}" Value="ALARM">
+                                                                                <Setter TargetName="Chip" Property="Background" Value="#F8D1D1" />
+                                                                                <Setter TargetName="ChipIcon" Property="Kind" Value="AlarmLightOutline" />
+                                                                                <Setter TargetName="ChipIcon" Property="Foreground" Value="#B00020" />
+                                                                            </DataTrigger>
+
+                                                                            <!-- 提示：HINT（黃） -->
+                                                                            <DataTrigger Binding="{Binding Level}" Value="HINT">
+                                                                                <Setter TargetName="Chip" Property="Background" Value="#F9E6B0" />
+                                                                                <Setter TargetName="ChipIcon" Property="Kind" Value="AlertCircleOutline" />
+                                                                                <Setter TargetName="ChipIcon" Property="Foreground" Value="#C47F00" />
+                                                                            </DataTrigger>
+
+                                                                            <!-- 一般：INFO（藍）可選 -->
+                                                                            <DataTrigger Binding="{Binding Level}" Value="INFO">
+                                                                                <Setter TargetName="Chip" Property="Background" Value="#D8ECFF" />
+                                                                                <Setter TargetName="ChipIcon" Property="Kind" Value="InformationOutline" />
+                                                                                <Setter TargetName="ChipIcon" Property="Foreground" Value="#0A63A8" />
+                                                                            </DataTrigger>
+                                                                        </DataTemplate.Triggers>
+                                                                    </DataTemplate>
+                                                                </DataGridTemplateColumn.CellTemplate>
+                                                            </DataGridTemplateColumn>
+
+                                                            <!-- 訊息內容 -->
+                                                            <DataGridTextColumn Header="訊息內容" Width="*" Binding="{Binding Message}" />
+                                                            <!-- 若要加來源/機台，取消以下註解
+                            <DataGridTextColumn Header="來源/機台"
+                                                Width="180"
+                                                Binding="{Binding Source}" />
+                            -->
+                                                        </DataGrid.Columns>
+                                                    </DataGrid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+
+                                <!-- 🕘 Tab 1：歷史警報（含分頁，永遠顯示） -->
+                                <DataTrigger Binding="{Binding SelectedTabIndexParameter}" Value="1">
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <Border CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,8">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto" />
+                                                            <!-- 工具列 -->
+                                                            <RowDefinition Height="*" />
+                                                            <!-- 表格 -->
+                                                            <RowDefinition Height="Auto" />
+                                                            <!-- 分頁列 -->
+                                                        </Grid.RowDefinitions>
+
+                                                        <!-- 🔧 工具列 -->
+                                                        <Grid Grid.Row="0" Margin="0,10,0,12">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <!-- 左：日期篩選 -->
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <ComboBox Width="120" Height="32" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" />
+
+                                                                <DatePicker Width="180" Height="32" Margin="8,0,0,0" SelectedDate="{Binding FromDate}" IsEnabled="{Binding IsCustomDateMode}" />
+
+                                                                <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
+
+                                                                <DatePicker Width="180" Height="32" SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" />
+                                                            </StackPanel>
+
+                                                            <!-- 右：Export / Remove -->
+                                                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                                                                <Button Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ExportAlarmsCommand}">
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <materialDesign:PackIcon Kind="FileExport" Width="18" Height="18" Margin="0,0,6,0" />
+                                                                        <TextBlock Text="Export" />
+                                                                    </StackPanel>
+                                                                </Button>
+
+                                                                <Button Style="{StaticResource PrimaryButtonStyle}" Background="#666" Margin="10,0,0,0" Command="{Binding RemoveSelectedAlarmsCommand}">
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <materialDesign:PackIcon Kind="TrashCanOutline" Width="18" Height="18" Margin="0,0,6,0" />
+                                                                        <TextBlock Text="Remove" />
+                                                                    </StackPanel>
+                                                                </Button>
+                                                            </StackPanel>
+                                                        </Grid>
+
+                                                        <!-- 📑 表格 -->
+                                                        <DataGrid Grid.Row="1" ItemsSource="{Binding PagedHistoryAlarms}" SelectedItem="{Binding SelectedHistoryAlarm}" IsReadOnly="True" AutoGenerateColumns="False" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="44" RowHeaderWidth="0" HeadersVisibility="Column" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
+                                                            <DataGrid.Style>
+                                                                <Style TargetType="DataGrid" BasedOn="{StaticResource ModernFlatDataGridStyle}" />
+                                                            </DataGrid.Style>
+
+                                                            <DataGrid.CellStyle>
+                                                                <Style TargetType="DataGridCell">
+                                                                    <Setter Property="BorderThickness" Value="0" />
+                                                                    <Setter Property="Padding" Value="6,0,6,0" />
+                                                                </Style>
+                                                            </DataGrid.CellStyle>
+                                                            <DataGrid.RowStyle>
+                                                                <Style TargetType="DataGridRow">
+                                                                    <Setter Property="Margin" Value="0" />
+                                                                    <Setter Property="BorderThickness" Value="0" />
+                                                                    <Setter Property="SnapsToDevicePixels" Value="True" />
+                                                                </Style>
+                                                            </DataGrid.RowStyle>
+
+                                                            <DataGrid.Columns>
+                                                                <!-- 時間 -->
+                                                                <DataGridTextColumn Header="時間" Width="160" Binding="{Binding Time, StringFormat=\{0:yyyy/MM/dd HH:mm:ss\}}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+
+                                                                <!-- 錯誤代碼（膠囊＋圖示） -->
+                                                                <DataGridTemplateColumn Header="錯誤代碼" Width="200">
+                                                                    <DataGridTemplateColumn.HeaderTemplate>
+                                                                        <DataTemplate>
+                                                                            <StackPanel Orientation="Horizontal">
+                                                                                <materialDesign:PackIcon Kind="AlarmLightOutline" Width="16" Height="16" Margin="0,0,6,0" />
+                                                                                <TextBlock Text="錯誤代碼" />
+                                                                            </StackPanel>
+                                                                        </DataTemplate>
+                                                                    </DataGridTemplateColumn.HeaderTemplate>
+
+                                                                    <DataGridTemplateColumn.CellTemplate>
+                                                                        <DataTemplate>
+                                                                            <Border x:Name="Chip" CornerRadius="10" Padding="8,4" Background="#F1F1F1">
+                                                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                                                    <materialDesign:PackIcon x:Name="ChipIcon" Kind="AlertOutline" Width="16" Height="16" Margin="0,0,6,0" />
+                                                                                    <TextBlock Text="{Binding Code}" />
+                                                                                </StackPanel>
+                                                                            </Border>
+                                                                            <DataTemplate.Triggers>
+                                                                                <DataTrigger Binding="{Binding Level}" Value="ALARM">
+                                                                                    <Setter TargetName="Chip" Property="Background" Value="#F8D1D1" />
+                                                                                    <Setter TargetName="ChipIcon" Property="Kind" Value="AlarmLightOutline" />
+                                                                                    <Setter TargetName="ChipIcon" Property="Foreground" Value="#B00020" />
+                                                                                </DataTrigger>
+                                                                                <DataTrigger Binding="{Binding Level}" Value="HINT">
+                                                                                    <Setter TargetName="Chip" Property="Background" Value="#F9E6B0" />
+                                                                                    <Setter TargetName="ChipIcon" Property="Kind" Value="AlertCircleOutline" />
+                                                                                    <Setter TargetName="ChipIcon" Property="Foreground" Value="#C47F00" />
+                                                                                </DataTrigger>
+                                                                                <DataTrigger Binding="{Binding Level}" Value="INFO">
+                                                                                    <Setter TargetName="Chip" Property="Background" Value="#D8ECFF" />
+                                                                                    <Setter TargetName="ChipIcon" Property="Kind" Value="InformationOutline" />
+                                                                                    <Setter TargetName="ChipIcon" Property="Foreground" Value="#0A63A8" />
+                                                                                </DataTrigger>
+                                                                            </DataTemplate.Triggers>
+                                                                        </DataTemplate>
+                                                                    </DataGridTemplateColumn.CellTemplate>
+                                                                </DataGridTemplateColumn>
+
+                                                                <!-- 訊息內容 -->
+                                                                <DataGridTextColumn Header="訊息內容" Width="*" Binding="{Binding Message}" />
+                                                            </DataGrid.Columns>
+                                                        </DataGrid>
+
+                                                        <!-- 🔢 分頁列（置中，無 Goto） -->
+                                                        <Border Grid.Row="2" Margin="0,10,0,10" Padding="10,6" Background="#F5F5F5" CornerRadius="8">
+                                                            <!-- 讓整組控制項置中 -->
+                                                            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <!-- 最前頁 -->
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <!-- 前一頁 -->
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <!-- Page x of y -->
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <!-- 下一頁 -->
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <!-- 最後頁 -->
+                                                                </Grid.ColumnDefinitions>
+
+                                                                <!-- 移動到最前頁 -->
+                                                                <Button Grid.Column="0" Width="36" Height="36" Margin="0,0,8,0" Command="{Binding GoFirstPageCommand}" IsEnabled="{Binding CanGoPrev}" ToolTip="移動到最前頁" Style="{StaticResource RoundedShadowButtonStyle}">
+                                                                    <materialDesign:PackIcon Kind="ChevronDoubleLeft" Width="18" Height="18" />
+                                                                </Button>
+
+                                                                <!-- 前一頁 -->
+                                                                <Button Grid.Column="1" Width="36" Height="36" Margin="0,0,24,0" Command="{Binding GoPrevPageCommand}" IsEnabled="{Binding CanGoPrev}" ToolTip="前一頁" Style="{StaticResource RoundedShadowButtonStyle}">
+                                                                    <materialDesign:PackIcon Kind="ChevronLeft" Width="18" Height="18" />
+                                                                </Button>
+
+                                                                <!-- Page X of Y（置中顯示） -->
+                                                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                                    <TextBlock Text="Page" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="{Binding CurrentPage}" FontWeight="Bold" Margin="6,0,6,0" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="of" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="{Binding TotalPages}" FontWeight="Bold" Margin="6,0,0,0" VerticalAlignment="Center" />
+                                                                </StackPanel>
+
+                                                                <!-- 下一頁 -->
+                                                                <Button Grid.Column="3" Width="36" Height="36" Margin="24,0,0,0" Command="{Binding GoNextPageCommand}" IsEnabled="{Binding CanGoNext}" ToolTip="下一頁" Style="{StaticResource RoundedShadowButtonStyle}">
+                                                                    <materialDesign:PackIcon Kind="ChevronRight" Width="18" Height="18" />
+                                                                </Button>
+
+                                                                <!-- 移動到最後頁 -->
+                                                                <Button Grid.Column="4" Width="36" Height="36" Margin="8,0,0,0" Command="{Binding GoLastPageCommand}" IsEnabled="{Binding CanGoNext}" ToolTip="移動到最後頁" Style="{StaticResource RoundedShadowButtonStyle}">
+                                                                    <materialDesign:PackIcon Kind="ChevronDoubleRight" Width="18" Height="18" />
+                                                                </Button>
+                                                            </Grid>
+                                                        </Border>
+
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+
+                            </Style.Triggers>
+                            
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
+            </Border>
+        </Grid>
+
+    </Grid>
+</UserControl>
+

@@ -1,6 +1,5 @@
 ﻿using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
-using FMSFrontend.ViewModels.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,21 +18,20 @@ using System.Windows.Shapes;
 namespace FMSFrontend.Views
 {
     /// <summary>
-    /// Settingsview.xaml 的互動邏輯
+    /// AlarmPage.xaml 的互動邏輯
     /// </summary>
-    public partial class Settingsview : UserControl
+    public partial class AlarmPage : UserControl
     {
-        public Settingsview()
+        public AlarmPage()
         {
             InitializeComponent();
             // 建立服務實例
             var windowService = new WindowService();
 
             // 建立 ViewModel 並注入服務
-            var viewModel = new SettingsPageViewModel(windowService);
+            var viewModel = new AlarmPageViewModel(windowService);
 
             this.DataContext = viewModel;
-
         }
     }
 }

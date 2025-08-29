@@ -1,0 +1,316 @@
+﻿<Window x:Class="FMSFrontend.Extensions.PeriodWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:local="clr-namespace:FMSFrontend.Extensions" 
+        xmlns:conv="clr-namespace:FMSFrontend.Converters" xmlns:vm="clr-namespace:FMSFrontend.ViewModels.Windows"
+        mc:Ignorable="d" Title="PeriodWindow" Width="532" Height="520" WindowStartupLocation="CenterScreen" 
+        WindowStyle="None" ResizeMode="NoResize" Background="Transparent" AllowsTransparency="True">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="TitleBarBrush" Color="#555555" />
+        <SolidColorBrush x:Key="BlueBrush" Color="#2F6DEA" />
+        <!-- 在 Window.Resources 加上 -->
+        <conv:BooleanNegationConverter x:Key="Not" />
+        
+
+        <!-- 大按鈕 -->
+        <Style x:Key="ModeButtonBase" TargetType="Button">
+            <Setter Property="Width" Value="120" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Margin" Value="5,0,5,0" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Background" Value="#D3D3D3" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="18">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 週：固定尺寸、置中 -->
+        <Style x:Key="ChipToggleWeek" TargetType="ToggleButton">
+            <Setter Property="Width" Value="90" />
+            <Setter Property="Height" Value="50" />
+            <Setter Property="Margin" Value="12" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Background" Value="#D3D3D3" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="bd" CornerRadius="12" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" TextElement.Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{StaticResource BlueBrush}" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 月：充滿格子、最小尺寸、看起來是完整方框 -->
+        <Style x:Key="ChipToggleMonth" TargetType="ToggleButton">
+            <Setter Property="MinWidth" Value="52" />
+            <Setter Property="MinHeight" Value="38" />
+            <Setter Property="Margin" Value="1.5" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Background" Value="#D3D3D3" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <!-- 讓外框真的鋪滿整個 cell -->
+                        <Border x:Name="bd" CornerRadius="10" Padding="4" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" TextElement.Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{StaticResource BlueBrush}" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- AM/PM Radio -->
+        <Style x:Key="SegmentRadio" TargetType="RadioButton">
+            <Setter Property="Width" Value="72" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Margin" Value="6,0,0,0" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Background" Value="#DDDDDD" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="10" Padding="8,4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="White" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#A0A0A0" />
+                                <Setter TargetName="bd" Property="BorderThickness" Value="1" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 內容高亮框 -->
+        <Style x:Key="ContentPanelBorder" TargetType="Border">
+            <Setter Property="BorderBrush" Value="{StaticResource BlueBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="Margin" Value="20,8,20,8" />
+        </Style>
+    </Window.Resources>
+
+    <!-- 外框 + 陰影 -->
+    <Border CornerRadius="12" Background="White" BorderBrush="#DDD" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.25" />
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- 標題列（動態） -->
+            <Border Grid.Row="0" Background="{StaticResource TitleBarBrush}" CornerRadius="12,12,0,0">
+                <DockPanel LastChildFill="False" Margin="12,0">
+                    <TextBlock Text="{Binding WindowTitle}" Foreground="White" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" DockPanel.Dock="Left" />
+                </DockPanel>
+            </Border>
+
+            <!-- 內容 -->
+            <Grid Grid.Row="1" Margin="0,8,0,12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="64" />
+                    <!-- 1. 選擇按鈕區 -->
+                    <RowDefinition Height="*" />
+                    <!-- 2. 內容區 -->
+                    <RowDefinition Height="60" />
+                    <!-- 3. 設定時間區 -->
+                    <RowDefinition Height="68" />
+                    <!-- 4. 確認/取消 -->
+                </Grid.RowDefinitions>
+
+                <!-- 1) 模式按鈕（用 DataTrigger 比 SelectedMode 高亮） -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
+                    <!-- 三顆模式按鈕 -->
+                    <Button Content="不設定" Command="{Binding SelectModeCommand}" CommandParameter="{x:Static vm:ScheduleMode.None}">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource ModeButtonBase}" TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedMode}" Value="{x:Static vm:ScheduleMode.None}">
+                                        <Setter Property="Background" Value="{StaticResource BlueBrush}" />
+                                        <Setter Property="Foreground" Value="White" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Content="每週" Command="{Binding SelectModeCommand}" CommandParameter="{x:Static vm:ScheduleMode.Weekly}">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource ModeButtonBase}" TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedMode}" Value="{x:Static vm:ScheduleMode.Weekly}">
+                                        <Setter Property="Background" Value="{StaticResource BlueBrush}" />
+                                        <Setter Property="Foreground" Value="White" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Content="每月" Command="{Binding SelectModeCommand}" CommandParameter="{x:Static vm:ScheduleMode.Monthly}">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource ModeButtonBase}" TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedMode}" Value="{x:Static vm:ScheduleMode.Monthly}">
+                                        <Setter Property="Background" Value="{StaticResource BlueBrush}" />
+                                        <Setter Property="Foreground" Value="White" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                </StackPanel>
+
+                <!-- 2) 內容區 -->
+                <Border Grid.Row="1" Style="{StaticResource ContentPanelBorder}">
+                    <ContentControl Content="{Binding}">
+                        <ContentControl.Style>
+                            <Style TargetType="ContentControl">
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <TextBlock />
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+
+                                <!-- 每週 -->
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedMode}" Value="{x:Static vm:ScheduleMode.Weekly}">
+                                        <Setter Property="ContentTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate>
+                                                    <ItemsControl ItemsSource="{Binding WeeklyOptions}">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <WrapPanel />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <ToggleButton Style="{StaticResource ChipToggleWeek}" IsChecked="{Binding IsSelected}" Content="{Binding Display}" ToolTip="右鍵切換正/負">
+                                                                    <ToggleButton.InputBindings>
+                                                                        <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.ToggleNegativeCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
+                                                                    </ToggleButton.InputBindings>
+                                                                </ToggleButton>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+
+                                    <!-- 每月 -->
+                                    <DataTrigger Binding="{Binding SelectedMode}" Value="{x:Static vm:ScheduleMode.Monthly}">
+                                        <Setter Property="ContentTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate>
+                                                    <ItemsControl ItemsSource="{Binding MonthlyOptions}">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <UniformGrid Columns="7" />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <ToggleButton Style="{StaticResource ChipToggleMonth}" IsChecked="{Binding IsSelected}" Content="{Binding Display}" ToolTip="右鍵切換正/負">
+                                                                    <ToggleButton.InputBindings>
+                                                                        <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.ToggleNegativeCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
+                                                                    </ToggleButton.InputBindings>
+                                                                </ToggleButton>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>
+                    </ContentControl>
+                </Border>
+
+                <!-- 3) 設定時間 -->
+                <Grid Grid.Row="2" Margin="20,6,20,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="160" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="觸發時間" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,4" />
+
+                    <Border Grid.Column="2" Background="#E9E9EE" CornerRadius="10" Padding="10,6">
+                        <DockPanel>
+                            <ComboBox Width="56" ItemsSource="{Binding Hours}" SelectedItem="{Binding Hour}" FontSize="18" BorderThickness="0" Background="Transparent" />
+                            <TextBlock Text="：" FontSize="18" Margin="4,0" VerticalAlignment="Center" />
+                            <ComboBox Width="56" ItemsSource="{Binding Minutes}" SelectedItem="{Binding Minute}" FontSize="18" BorderThickness="0" Background="Transparent" />
+                        </DockPanel>
+                    </Border>
+
+                    <StackPanel Grid.Column="4" Orientation="Horizontal" Margin="10,0,0,0" VerticalAlignment="Center">
+                        <!-- 用我們創建的 Not 轉換器 -->
+                        <RadioButton Style="{StaticResource SegmentRadio}" Content="AM" GroupName="ampm" IsChecked="{Binding IsPm, Converter={StaticResource Not}}" />
+                        <RadioButton Style="{StaticResource SegmentRadio}" Content="PM" GroupName="ampm" IsChecked="{Binding IsPm}" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- 4) 確認/取消 -->
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,18,0,0">
+                    <Button Content="確認" Width="110" Height="44" Margin="16,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ConfirmCommand}" />
+                    <Button Content="取消" Width="110" Height="44" Margin="16,0" Background="#EFEFEF" Foreground="Black" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding CancelCommand}" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

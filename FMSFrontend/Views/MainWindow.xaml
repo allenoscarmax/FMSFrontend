@@ -280,10 +280,39 @@
                     </Grid.RowDefinitions>
                     <Border Grid.Row="0" Background="{DynamicResource  StatusPanelBrush}">
                         <DockPanel VerticalAlignment="Center" Height="36" Margin="0,0">
-                            <materialDesign:PackIcon Kind="AlertCircleOutline" Width="20" Height="20" Margin="5,0" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" />
-                            <Border CornerRadius="4" Background="White" Height="24" VerticalAlignment="Center">
-                                <TextBox Text="提示訊息" Margin="10,0" Height="24" VerticalAlignment="Center" Background="White" Padding="8,0" BorderThickness="0" Width="200" HorizontalContentAlignment="Center" FontSize="14" />
-                            </Border>
+                            <materialDesign:PackIcon Kind="ReportProblem" Width="20" Height="20" Margin="5,0" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" />
+                            <!-- ✅ 改成 Button，滑過反白：底灰白、字黑 -->
+                            <Button Command="{Binding OpenAlarmCommand}" Height="24" Width="200" VerticalAlignment="Center" Background="White" Foreground="Black" BorderThickness="0" Padding="0" Cursor="Hand" Focusable="False">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="bd" CornerRadius="4" Background="{TemplateBinding Background}">
+                                            <TextBlock x:Name="lbl" Text="提示訊息" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" Foreground="{TemplateBinding Foreground}" />
+                                        </Border>
+
+                                        <!-- ✨ 狀態切換 -->
+                                        <ControlTemplate.Triggers>
+                                            <!-- 滑鼠移入：底色灰白、字體黑 -->
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="bd" Property="Background" Value="#F0F0F0" />
+                                                <Setter TargetName="lbl" Property="Foreground" Value="Black" />
+                                            </Trigger>
+
+                                            <!-- 按住：再深一點的灰 -->
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="bd" Property="Background" Value="#E5E5E5" />
+                                                <Setter TargetName="lbl" Property="Foreground" Value="Black" />
+                                            </Trigger>
+
+                                            <!-- 停用狀態（可選） -->
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter TargetName="bd" Property="Background" Value="#EEEEEE" />
+                                                <Setter TargetName="lbl" Property="Foreground" Value="#999999" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right" Margin="0,0,10,0">
                                 <materialDesign:PackIcon Kind="Bug" Width="25" Height="25" Margin="10,0" Foreground="White" VerticalAlignment="Center" />
                                 <materialDesign:PackIcon Kind="Tablet" Width="25" Height="25" Margin="10,0" Foreground="White" VerticalAlignment="Center" />
