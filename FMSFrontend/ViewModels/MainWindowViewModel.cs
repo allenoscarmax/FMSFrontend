@@ -108,8 +108,21 @@ namespace FMSFrontend.ViewModels
             CurrentPageView = new Settingsview();
             CurrentPageKey = "Settingsview";
         }
-
+        /// <summary>
+        /// 由狀態列「提示訊息」進入 Alarm 頁，並讓 PageMenu 看起來沒有選中
+        /// </summary>
+        [RelayCommand]
+        private void OpenAlarm()
+        {
+            CurrentPageView = new AlarmPage(); // 你的 Alarm UserControl / Page
+                                               // 讓下方 PageMenu 不顯示選中狀態
+            CurrentPageKey = null;             // 或 string.Empty 都可
+                                               // 若你的 PageMenu 是用 SelectedIndex 套樣式，這行也一起用：
+                                               // SelectedPageIndex = -1;
+        }
         #endregion
+
+
         #region StoragePageChange
         [RelayCommand]
         private void ShowDetail(string storageId)

@@ -58,7 +58,10 @@ namespace FMSFrontend.ViewModels.Windows
             set
             {
                 if (SetProperty(ref _selectedWorksheet, value))
-                    (ConfirmCommand as RelayCommand<Window?>)!.NotifyCanExecuteChanged();
+                {
+                    // 直接對 IRelayCommand 呼叫，無需轉型
+                    ConfirmCommand.NotifyCanExecuteChanged();
+                }
             }
         }
 
@@ -73,9 +76,10 @@ namespace FMSFrontend.ViewModels.Windows
             ItemsView = CollectionViewSource.GetDefaultView(WorksheetItems);
             ItemsView.Filter = FilterItem;
 
-            SearchCommand = new RelayCommand<object?>(OnSearch);
-            ConfirmCommand = new RelayCommand<Window?>(OnConfirm, _ => SelectedWorksheet != null);
-            CancelCommand = new RelayCommand<Window?>(OnCancel);
+            // ✅ 明確使用 CommunityToolkit 的 RelayCommand
+            SearchCommand = new CommunityToolkit.Mvvm.Input.RelayCommand<object?>(OnSearch);
+            ConfirmCommand = new CommunityToolkit.Mvvm.Input.RelayCommand<Window?>(OnConfirm, _ => SelectedWorksheet != null);
+            CancelCommand = new CommunityToolkit.Mvvm.Input.RelayCommand<Window?>(OnCancel);
         }
 
         private bool FilterItem(object obj)
@@ -88,7 +92,6 @@ namespace FMSFrontend.ViewModels.Windows
                    it.WorkOrderNo.Contains(q, StringComparison.OrdinalIgnoreCase);
         }
 
-        // 你的 KeyDownEnterOnlyConverter 會在非 Enter 時給 false；我們就忽略
         private void OnSearch(object? param)
         {
             if (param is bool enterOnly && !enterOnly) return;

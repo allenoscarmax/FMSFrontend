@@ -319,7 +319,10 @@
                 <ResourceDictionary Source="Styles/Buttons.xaml" />
 
                 <ResourceDictionary Source="pack://application:,,,/FMSFrontend;component/Styles/MachineMainTabStyles.xaml" />
-
+                <ResourceDictionary Source="Styles/CustomGroupBoxStyle.xaml" />
+                <ResourceDictionary Source="Styles/UnderlineTextBoxStyle.xaml" />
+                <ResourceDictionary Source="Styles/ComboBoxStyle.xaml" />
+                <ResourceDictionary Source="Styles/CircleIconButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
