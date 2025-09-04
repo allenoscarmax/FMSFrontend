@@ -1,20 +1,23 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Extensions;
-using FMSFrontend.Services;
-using System.Threading.Tasks;
-using System.Windows.Media.Animation;
-using System.Windows;
 using FMSFrontend.Helpers;
-using System.Windows.Controls; // 放在你的 ViewModel 上方
-using FMSFrontend.Views;
 using FMSFrontend.Models;
+using FMSFrontend.Services;
+using FMSFrontend.ViewModels.Windows;
+using FMSFrontend.Views;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls; // 放在你的 ViewModel 上方
+using System.Windows.Media.Animation;
 
 namespace FMSFrontend.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
         private readonly IHttpService _httpService;
+
+        public AlarmPageViewModel AlarmVM { get; }
 
         [ObservableProperty]
         private bool _isMenuVisible;
@@ -33,9 +36,22 @@ namespace FMSFrontend.ViewModels
         private Robot _robot;
 
 
+        [ObservableProperty]
+        private bool _isIdle;
+
+        [ObservableProperty]
+        private bool _isHint = true;
+
+        [ObservableProperty]
+        private bool _isAlarm   = false;
+
+        [ObservableProperty]
+        private string _summaryMessage = "系統正常運作";
+
+
         public bool IsLoggedIn => !string.IsNullOrEmpty(LoggedInUser);
 
-        public MainWindowViewModel(IHttpService httpService)
+        public MainWindowViewModel(IHttpService httpService, AlarmPageViewModel alarmVM)
         {
             _httpService = httpService;
             //currentPageView = new MachineOverviewPage();
@@ -56,6 +72,8 @@ namespace FMSFrontend.ViewModels
                 CurrentAction = "搬運",
                 NextAction = "上架"
             };
+            AlarmVM = alarmVM;
+
         }
 
 
@@ -120,6 +138,7 @@ namespace FMSFrontend.ViewModels
                                                // 若你的 PageMenu 是用 SelectedIndex 套樣式，這行也一起用：
                                                // SelectedPageIndex = -1;
         }
+        
         #endregion
 
 
@@ -156,8 +175,20 @@ namespace FMSFrontend.ViewModels
         {
             // MessageBox.Show("關機囉！");
 
-            
+            // 1. 建立 ViewModel 的實例
+            var viewModel = new ShutdownWindowViewModel(false);
 
+            // 2. 建立視窗的實例
+            var dialog = new ShutdownWindow();
+
+            // 3. 將 ViewModel 設定為視窗的 DataContext
+            dialog.DataContext = viewModel;
+
+            // 4. 顯示視窗
+            dialog.ShowDialog();
+
+
+            /*
             var dialog = new DialogYesNoWindow("是否要更換主題！");
             dialog.ShowDialog();
             if (dialog.DialogResult == true)
@@ -166,7 +197,7 @@ namespace FMSFrontend.ViewModels
                 string current = ThemeManager.CurrentThemeName;
                 string nextTheme = current == "Dark" ? "Light" : "Dark";
                 ThemeManager.ApplyTheme(nextTheme);
-            }
+            }*/
             //System.Windows.Application.Current.Shutdown();
         }
         #endregion

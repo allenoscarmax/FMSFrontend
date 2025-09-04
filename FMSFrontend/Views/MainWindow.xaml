@@ -26,6 +26,7 @@
             <Border Grid.Row="0" Background="{DynamicResource TitleBrush}">
                 <Grid>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0">
+                        <!--<Image Source="pack://application:,,,/Image/Assets/oscar_fms.ico"/>-->
                         <TextBlock FontSize="22" FontWeight="Bold" Foreground="White" FontFamily="Segoe UI">
                             <Run Text="OSCAR" />
                             <Run Text="FMS" Foreground="#FF0000" />
@@ -280,39 +281,85 @@
                     </Grid.RowDefinitions>
                     <Border Grid.Row="0" Background="{DynamicResource  StatusPanelBrush}">
                         <DockPanel VerticalAlignment="Center" Height="36" Margin="0,0">
-                            <materialDesign:PackIcon Kind="ReportProblem" Width="20" Height="20" Margin="5,0" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" />
-                            <!-- ✅ 改成 Button，滑過反白：底灰白、字黑 -->
+                            
+                            <materialDesign:PackIcon Kind="ReportProblem" Width="24" Height="24" Margin="5,0" DockPanel.Dock="Left" VerticalAlignment="Center">
+                                <materialDesign:PackIcon.Style>
+                                    <Style TargetType="materialDesign:PackIcon">
+                                        <Style.Resources>
+                                            <Storyboard x:Key="AlarmBlink">
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.3" Duration="0:0:0.5" AutoReverse="True" RepeatBehavior="Forever" />
+                                            </Storyboard>
+                                            <Storyboard x:Key="ColorBlink">
+                                                <ColorAnimation Storyboard.TargetProperty="(materialDesign:PackIcon.Foreground).(SolidColorBrush.Color)" From="DodgerBlue" To="Red" Duration="0:0:0.5" AutoReverse="True" RepeatBehavior="Forever" />
+                                            </Storyboard>
+                                        </Style.Resources>
+
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsIdle}" Value="True">
+                                                <Setter Property="Foreground" Value="Gray" />
+                                                <Setter Property="Opacity" Value="1" />
+                                            </DataTrigger>
+
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsHint}" Value="True" />
+                                                    <Condition Binding="{Binding IsAlarm}" Value="False" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Foreground" Value="DodgerBlue" />
+                                                <Setter Property="Opacity" Value="1" />
+                                            </MultiDataTrigger>
+
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsAlarm}" Value="True" />
+                                                    <Condition Binding="{Binding IsHint}" Value="False" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Foreground" Value="Red" />
+                                                <MultiDataTrigger.EnterActions>
+                                                    <BeginStoryboard x:Name="AlarmBlink_BS" Storyboard="{StaticResource AlarmBlink}" />
+                                                </MultiDataTrigger.EnterActions>
+                                                <MultiDataTrigger.ExitActions>
+                                                    <StopStoryboard BeginStoryboardName="AlarmBlink_BS" />
+                                                </MultiDataTrigger.ExitActions>
+                                            </MultiDataTrigger>
+
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsHint}" Value="True" />
+                                                    <Condition Binding="{Binding IsAlarm}" Value="True" />
+                                                </MultiDataTrigger.Conditions>
+                                                <MultiDataTrigger.EnterActions>
+                                                    <BeginStoryboard x:Name="ColorBlink_BS" Storyboard="{StaticResource ColorBlink}" />
+                                                </MultiDataTrigger.EnterActions>
+                                                <MultiDataTrigger.ExitActions>
+                                                    <StopStoryboard BeginStoryboardName="ColorBlink_BS" />
+                                                </MultiDataTrigger.ExitActions>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </materialDesign:PackIcon.Style>
+                            </materialDesign:PackIcon>
+
                             <Button Command="{Binding OpenAlarmCommand}" Height="24" Width="200" VerticalAlignment="Center" Background="White" Foreground="Black" BorderThickness="0" Padding="0" Cursor="Hand" Focusable="False">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <Border x:Name="bd" CornerRadius="4" Background="{TemplateBinding Background}">
-                                            <TextBlock x:Name="lbl" Text="提示訊息" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" Foreground="{TemplateBinding Foreground}" />
+                                            <TextBlock x:Name="lbl" Text="{Binding SummaryMessage, FallbackValue='提示訊息'}" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" Foreground="{TemplateBinding Foreground}" />
                                         </Border>
-
-                                        <!-- ✨ 狀態切換 -->
                                         <ControlTemplate.Triggers>
-                                            <!-- 滑鼠移入：底色灰白、字體黑 -->
                                             <Trigger Property="IsMouseOver" Value="True">
                                                 <Setter TargetName="bd" Property="Background" Value="#F0F0F0" />
                                                 <Setter TargetName="lbl" Property="Foreground" Value="Black" />
                                             </Trigger>
-
-                                            <!-- 按住：再深一點的灰 -->
                                             <Trigger Property="IsPressed" Value="True">
                                                 <Setter TargetName="bd" Property="Background" Value="#E5E5E5" />
                                                 <Setter TargetName="lbl" Property="Foreground" Value="Black" />
-                                            </Trigger>
-
-                                            <!-- 停用狀態（可選） -->
-                                            <Trigger Property="IsEnabled" Value="False">
-                                                <Setter TargetName="bd" Property="Background" Value="#EEEEEE" />
-                                                <Setter TargetName="lbl" Property="Foreground" Value="#999999" />
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
                                 </Button.Template>
                             </Button>
-
+                            
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right" Margin="0,0,10,0">
                                 <materialDesign:PackIcon Kind="Bug" Width="25" Height="25" Margin="10,0" Foreground="White" VerticalAlignment="Center" />
                                 <materialDesign:PackIcon Kind="Tablet" Width="25" Height="25" Margin="10,0" Foreground="White" VerticalAlignment="Center" />

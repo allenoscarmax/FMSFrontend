@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Image\Assets\oscar_fms.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +27,12 @@
     <None Remove="Image\MachineIcons\EDM.png" />
     <None Remove="Image\MachineIcons\Robot.png" />
     <None Remove="Image\MachineIcons\ZNC.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Image\Assets\oscar_fms.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>

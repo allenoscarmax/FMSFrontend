@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FMSFrontend.Services;
+using FMSFrontend.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,13 @@ namespace FMSFrontend.Views
         public OperationHistory()
         {
             InitializeComponent();
+            // 建立服務實例
+            var windowService = new WindowService();
+
+            // 建立 ViewModel 並注入服務
+            var viewModel = new OperationHistoryViewModel(windowService);
+
+            this.DataContext = viewModel;
         }
     }
 }
