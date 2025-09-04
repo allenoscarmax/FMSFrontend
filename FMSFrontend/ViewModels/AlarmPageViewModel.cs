@@ -9,9 +9,19 @@ using System.Windows.Data;
 
 namespace FMSFrontend.ViewModels
 {
+    public enum AlarmSeverity { None, Hint, Alarm }
     public partial class AlarmPageViewModel : ObservableObject
     {
         private readonly IWindowService _windowService;
+
+        
+
+
+        // —— 新增：MainWindow 要綁的三個摘要屬性 ——
+        [ObservableProperty] private AlarmSeverity summarySeverity = AlarmSeverity.None;
+        [ObservableProperty] private string summaryMessage = "目前無提示";
+        [ObservableProperty] private int unreadCount = 0;
+
 
         // ===== Tabs =====
         [ObservableProperty]
@@ -59,11 +69,13 @@ namespace FMSFrontend.ViewModels
             OnPropertyChanged(nameof(CanGoPrev));
             OnPropertyChanged(nameof(CanGoNext));
         }
+
         // ===================== End Pagination =====================
 
         public AlarmPageViewModel(IWindowService windowService)
         {
             _windowService = windowService;
+            selectedFilterOption = DateFilterOptions.FirstOrDefault(); // 預設第一個
 
             // ---- Demo：目前警報 ----
             CurrentAlarms.Add(new AlarmItem
@@ -129,6 +141,11 @@ namespace FMSFrontend.ViewModels
             // 預設區間 + 初次過濾/分頁
             ApplyDatePreset();
             ApplyFilter();
+
+
+            // Summary 來源：以「目前警報」(CurrentAlarms) 為準
+            CurrentAlarms.CollectionChanged += (_, __) => RecomputeSummary();
+            RecomputeSummary(); // 初次算一次
         }
 
         // ====== 事件：選單/日期變更 ======
@@ -269,6 +286,33 @@ namespace FMSFrontend.ViewModels
             if (page == CurrentPage) return;
             CurrentPage = page;
             ApplyFilter();
+        }
+
+        // —— 依目前警報重算摘要：最高等級 + 最新訊息 + 未讀數 —— 
+        private void RecomputeSummary()
+        {
+            if (CurrentAlarms.Count == 0)
+            {
+                SummarySeverity = AlarmSeverity.None;
+                SummaryMessage = "目前無提示";
+                UnreadCount = 0;
+                return;
+            }
+
+            // 最高等級：只要有 ALARM 就算 ALARM；否則有 HINT 算 HINT；否則 None
+            var hasAlarm = CurrentAlarms.Any(a => string.Equals(a.Level, "ALARM", StringComparison.OrdinalIgnoreCase));
+            var hasHint = CurrentAlarms.Any(a => string.Equals(a.Level, "HINT", StringComparison.OrdinalIgnoreCase));
+
+            SummarySeverity = hasAlarm ? AlarmSeverity.Alarm
+                             : hasHint ? AlarmSeverity.Hint
+                                        : AlarmSeverity.None;
+
+            // 最新訊息（依時間最大）
+            var latest = CurrentAlarms.OrderByDescending(a => a.Time).First();
+            SummaryMessage = $"{latest.Source}：{latest.Message}";
+
+            // 未讀（簡單處理：用目前數量；之後你可換成 IsRead 計算）
+            UnreadCount = CurrentAlarms.Count;
         }
     }
 

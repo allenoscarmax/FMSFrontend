@@ -1,0 +1,131 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- ▼ 箭頭按鈕（下拉鈕）樣式 -->
+    <Style x:Key="PillComboToggleButton" TargetType="ToggleButton">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border Background="Transparent" Padding="0" CornerRadius="6">
+                        <Grid>
+                            <!-- 右側箭頭區 -->
+                            <Grid Width="28" HorizontalAlignment="Right">
+                                <Path x:Name="Chevron" HorizontalAlignment="Center" VerticalAlignment="Center" StrokeThickness="2" Stroke="#666" Data="M 2 4 L 8 10 L 14 4" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Chevron" Property="Stroke" Value="#333" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Chevron" Property="Stroke" Value="#111" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Chevron" Property="Stroke" Value="#AAA" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ▼ 膠囊形 ComboBox 主樣式 -->
+    <Style x:Key="PillComboBoxStyle" TargetType="ComboBox">
+        <!-- 基本外觀 -->
+        <Setter Property="Foreground" Value="#333" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="BorderBrush" Value="#444" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="16" />
+        <!-- 左右內距；右邊預留箭頭空間 -->
+        <Setter Property="Padding" Value="14,2,36,2" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <!-- 外框（圓角） -->
+                        <Border x:Name="Bd" CornerRadius="12" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <!-- 顯示選取內容 -->
+                            <ContentPresenter x:Name="ContentSite" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+
+                        </Border>
+
+                        <!-- 右側下拉按鈕（覆蓋在上面） -->
+                        <ToggleButton x:Name="DropDownToggle" Grid.ZIndex="1" Style="{StaticResource PillComboToggleButton}" Focusable="False" ClickMode="Press" HorizontalAlignment="Right" Width="36" Margin="0" IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
+
+                        <!-- 下拉清單 -->
+                        <Popup x:Name="PART_Popup" Placement="Bottom" AllowsTransparency="True" Focusable="False" IsOpen="{TemplateBinding IsDropDownOpen}" PopupAnimation="Slide">
+                            <Border Margin="0,6,0,0" Background="White" BorderBrush="#CCC" BorderThickness="1" CornerRadius="10" SnapsToDevicePixels="True">
+                                <ScrollViewer CanContentScroll="True" Padding="4">
+                                    <ItemsPresenter />
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+
+                    <!-- 狀態觸發 -->
+                    <ControlTemplate.Triggers>
+                        <!-- 滑過 -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="#222" />
+                        </Trigger>
+                        <!-- 聚焦 -->
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="#111" />
+                            <Setter TargetName="Bd" Property="BorderThickness" Value="1.5" />
+                        </Trigger>
+                        <!-- 停用 -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Background" Value="#F5F5F5" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="#CCC" />
+                            <Setter Property="Foreground" Value="#999" />
+                        </Trigger>
+                        <!-- 開啟下拉 -->
+                        <Trigger Property="IsDropDownOpen" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="#222" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <!-- 下拉選項的高度與內距 -->
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="Padding" Value="12,8" />
+                    <Setter Property="FontSize" Value="18" />
+                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ComboBoxItem">
+                                <Border x:Name="ItemBd" Background="{TemplateBinding Background}" CornerRadius="6">
+                                    <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsHighlighted" Value="True">
+                                        <Setter TargetName="ItemBd" Property="Background" Value="#F2F2F2" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="ItemBd" Property="Background" Value="#EDEDED" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Foreground" Value="#AAA" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

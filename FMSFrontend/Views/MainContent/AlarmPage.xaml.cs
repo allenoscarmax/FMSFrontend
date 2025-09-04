@@ -1,7 +1,9 @@
 ﻿using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,10 +30,21 @@ namespace FMSFrontend.Views
             // 建立服務實例
             var windowService = new WindowService();
 
-            // 建立 ViewModel 並注入服務
-            var viewModel = new AlarmPageViewModel(windowService);
+            //// 建立 ViewModel 並注入服務
+            //var viewModel = new AlarmPageViewModel();
 
-            this.DataContext = viewModel;
+            //this.DataContext = viewModel;
+
+            if (!DesignerProperties.GetIsInDesignMode(this))
+            {
+                // 執行時：從 DI 取同一個 Singleton VM
+                DataContext = App.ServiceProvider!.GetRequiredService<AlarmPageViewModel>();
+            }
+            else
+            {
+                // 設計時：給一個乾淨 VM 或 stub，避免設計器爆紅
+                DataContext = new AlarmPageViewModel(windowService);
+            }
         }
     }
 }

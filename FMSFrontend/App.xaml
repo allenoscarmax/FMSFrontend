@@ -5,8 +5,6 @@
             <converters:MainWindowLoginVisibilityConverter_NullOrEmpty x:Key="LoginVisibility_Null" />
             <converters:MainWindowLoginVisibilityConverter_NotNullOrEmpty x:Key="LoginVisibility_NotNull" />
 
-            
-
             <!-- 按鈕樣式 -->
             <Style x:Key="ControlCardButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="White" />
@@ -104,25 +102,7 @@
                 </Setter>
             </Style>
 
-
-            <!--<Style x:Key="RoundedBlackBorderButtonStyle" TargetType="Button">
-                <Setter Property="Background" Value="White" />
-                <Setter Property="Foreground" Value="Black" />
-                <Setter Property="FontSize" Value="14" />
-                <Setter Property="BorderBrush" Value="Black" />
-                <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="Cursor" Value="Hand" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2" SnapsToDevicePixels="True">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>-->
-
+          
             <LinearGradientBrush x:Key="GradientBrush" StartPoint="0,0" EndPoint="1,0">
                 <GradientStop Color="#005E93" Offset="0" />
                 <GradientStop Color="#005E93" Offset="1" />
@@ -323,6 +303,8 @@
                 <ResourceDictionary Source="Styles/UnderlineTextBoxStyle.xaml" />
                 <ResourceDictionary Source="Styles/ComboBoxStyle.xaml" />
                 <ResourceDictionary Source="Styles/CircleIconButton.xaml" />
+                <ResourceDictionary Source="Styles/PillComboBoxStyle.xaml" />
+                <ResourceDictionary Source="Styles/DatePickerStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

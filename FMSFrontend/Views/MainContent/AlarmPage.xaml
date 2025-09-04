@@ -179,13 +179,17 @@
 
                                                             <!-- 左：日期篩選 -->
                                                             <StackPanel Orientation="Horizontal">
-                                                                <ComboBox Width="120" Height="32" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" />
-
-                                                                <DatePicker Width="180" Height="32" Margin="8,0,0,0" SelectedDate="{Binding FromDate}" IsEnabled="{Binding IsCustomDateMode}" />
-
+                                                                <ComboBox Width="120" Height="32" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
+                                                               
+                                                                <DatePicker Width="180" Height="32" Margin="8,0,0,0" SelectedDate="{Binding FromDate}" IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}">
+                                                                   
+                                                                </DatePicker>
+                                                                
                                                                 <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
 
-                                                                <DatePicker Width="180" Height="32" SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" />
+                                                                <DatePicker Width="180" Height="32" SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}">
+                                                                   
+                                                                </DatePicker>
                                                             </StackPanel>
 
                                                             <!-- 右：Export / Remove -->
