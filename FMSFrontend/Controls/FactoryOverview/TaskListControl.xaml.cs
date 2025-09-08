@@ -1,4 +1,4 @@
-﻿using FMSFrontend.ViewModels;
+﻿using FMSFrontend.ViewModels.Factory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,17 +14,17 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FMSFrontend.Views
+namespace FMSFrontend.Controls.FactoryOverview
 {
     /// <summary>
-    /// StorageOverviewPage.xaml 的互動邏輯
+    /// TaskListControl.xaml 的互動邏輯
     /// </summary>
-    public partial class FactoryOverviewPage : UserControl
+    public partial class TaskListControl : UserControl
     {
-        public FactoryOverviewPage()
+        public TaskListControl()
         {
             InitializeComponent();
-            this.DataContext = new FactoryOverviewPageViewModel(); // ← 關鍵
+            DataContext = new TaskListViewModel();
         }
     }
 }

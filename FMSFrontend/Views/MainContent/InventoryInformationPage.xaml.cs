@@ -17,14 +17,14 @@ using System.Windows.Shapes;
 namespace FMSFrontend.Views
 {
     /// <summary>
-    /// StorageOverviewPage.xaml 的互動邏輯
+    /// InventoryInformationPage.xaml 的互動邏輯
     /// </summary>
-    public partial class FactoryOverviewPage : UserControl
+    public partial class InventoryInformationPage : UserControl
     {
-        public FactoryOverviewPage()
+        public InventoryInformationPage()
         {
             InitializeComponent();
-            this.DataContext = new FactoryOverviewPageViewModel(); // ← 關鍵
+            DataContext = new InventoryInformationViewModel(); // ← 綁 VM
         }
     }
 }

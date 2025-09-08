@@ -18,14 +18,14 @@
 
             <controls:PageMenuItem Icon="History" Label="操作歷程" Command="{Binding GoToOperationHistoryCommand}" PageKey="OperationHistory" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
 
-            <controls:PageMenuItem Icon="BookOpenPageVariant" Label="操作手冊" Command="{Binding GoToManualCommand}" PageKey="Manual" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
+            <controls:PageMenuItem Icon="Storage" Label="庫存資訊" Command="{Binding GoToMaterailCommand}" PageKey="Materail" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
 
             <controls:PageMenuItem Icon="Cog" Label="設定" Command="{Binding GoToSettingsviewCommand}" PageKey="Settingsview" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
         </UniformGrid>
 
         <!-- 展開收合按鈕 -->
         <Button Grid.Column="1" Width="30" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent" BorderBrush="{x:Null}" ToolTip="收合功能表">
-            <materialDesign:PackIcon Kind="ChevronDown" Width="24" Height="24" Foreground="White" />
+            <materialDesign:PackIcon Kind="ChevronRight" Width="24" Height="24" Foreground="White" />
         </Button>
     </Grid>
 </UserControl>
