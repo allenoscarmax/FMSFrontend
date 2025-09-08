@@ -1,0 +1,113 @@
+﻿<UserControl x:Class="FMSFrontend.Controls.FactoryOverview.FactoryLayoutCanvasControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:FMSFrontend.Controls.FactoryOverview" xmlns:cov="clr-namespace:FMSFrontend.Converters" mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="822">
+
+    <UserControl.Resources>
+        <cov:InverseBoolConverter x:Key="InverseBoolConverter" />
+
+        <!-- 綠色膠囊標籤 -->
+        <Style x:Key="MachineLabelPill" TargetType="Border">
+            <Setter Property="Background" Value="#59B56B" />
+            <!-- 綠 -->
+            <Setter Property="CornerRadius" Value="3" />
+            <Setter Property="Padding" Value="0,6" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Width" Value="150" />
+            <Setter Property="BorderBrush" Value="#2E8B57" />
+            <!-- 深綠外框 -->
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <!-- 淡淡陰影讓膠囊浮起來 -->
+                    <DropShadowEffect Opacity="0.25" BlurRadius="10" ShadowDepth="1" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <!-- 陰影層 -->
+        <Border Background="#33000000" CornerRadius="18" Margin="-2" />
+        <Border CornerRadius="18" Background="#FFFFFF" BorderBrush="#DDD" ClipToBounds="True" SnapsToDevicePixels="True" />
+        <Grid>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- 置換這段：原本 Grid.Row="0" 的 StackPanel -->
+            <Border Grid.Row="0" Background="#EEEEEE" CornerRadius="12,12,0,0" Margin="0,0,0,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="20,0,0,0">
+                    <materialDesign:PackIcon Kind="Chip" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
+                    <TextBlock Text="產線配置" FontSize="20" FontWeight="Bold" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                </StackPanel>
+            </Border>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,1,10,1">
+                <Button Content="編輯" Width="64" Height="28" Margin="0,0,8,0" IsEnabled="{Binding IsEditMode, Converter={StaticResource InverseBoolConverter}}" Click="OnEditClick" Style="{StaticResource PrimaryButtonStyle}" />
+                <Button Content="儲存" Width="64" Height="28" Margin="0,0,8,0" IsEnabled="{Binding IsEditMode}" Click="OnSaveClick" Style="{StaticResource PrimaryButtonStyle}" />
+                <Button Content="載入" Width="64" Height="28" Click="OnLoadClick" Style="{StaticResource PrimaryButtonStyle}" Cursor="Hand" />
+            </StackPanel>
+
+            <!-- 主畫布 -->
+            <ItemsControl x:Name="FactoryItemsControl" Grid.Row="2" ItemsSource="{Binding Machines}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas Background="{x:Null}" />
+                        <!-- 不要 Transparent -->
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="ContentPresenter">
+                        <Setter Property="Canvas.Left" Value="{Binding X, Mode=TwoWay}" />
+                        <Setter Property="Canvas.Top" Value="{Binding Y, Mode=TwoWay}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Thumb DragDelta="OnDragDelta" Cursor="SizeAll" IsHitTestVisible="{Binding DataContext.IsEditMode,
+                                     RelativeSource={RelativeSource AncestorType=UserControl}}">
+                            <Thumb.Template>
+                                <ControlTemplate>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <!-- 綠色膠囊標籤 -->
+                                        <Border x:Name="Pill" CornerRadius="10" Background="White" BorderBrush="#D1D5DB" BorderThickness="1" Padding="10,6" HorizontalAlignment="Center">
+                                            <TextBlock x:Name="PillText" Text="{Binding DisplayName}" FontSize="22" FontWeight="Bold" Foreground="#111" TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="ClearType" />
+                                        </Border>
+                                        <!-- 機台圖片：等比填滿，和標籤距離 8px -->
+                                        <Image Grid.Row="1" Source="{Binding IconPath}" Stretch="Uniform" Margin="0,8,0,0" Width="{Binding Width, FallbackValue=150}" Height="{Binding Height, FallbackValue=150}" />
+                                    </Grid>
+
+                                    <!-- 依 IsActive 切換膠囊色 -->
+                                    <ControlTemplate.Triggers>
+                                        <!-- 名稱為空就把膠囊隱藏 -->
+                                        <DataTrigger Binding="{Binding DisplayName, TargetNullValue=''}" Value="">
+                                            <Setter TargetName="Pill" Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                            <Setter TargetName="Pill" Property="Background" Value="#59B56B" />
+                                            <Setter TargetName="Pill" Property="BorderBrush" Value="#2E8B57" />
+                                            <Setter TargetName="PillText" Property="Foreground" Value="White" />
+                                            <!-- 想要陰影可加：
+              <Setter TargetName="Pill" Property="Effect">
+                <Setter.Value><DropShadowEffect Opacity="0.25" BlurRadius="10" ShadowDepth="1"/></Setter.Value>
+              </Setter>
+              -->
+                                        </DataTrigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Thumb.Template>
+                        </Thumb>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </Grid>
+</UserControl>

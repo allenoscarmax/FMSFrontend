@@ -23,9 +23,22 @@
   <ItemGroup>
     <None Remove="Image\ControlUnit\06-1-lightbulbOn.png" />
     <None Remove="Image\ControlUnit\06-2-lightbulbOff.png" />
+    <None Remove="Image\MachineIcons\03-.png" />
+    <None Remove="Image\MachineIcons\04-.png" />
+    <None Remove="Image\MachineIcons\05-.png" />
+    <None Remove="Image\MachineIcons\07-.png" />
+    <None Remove="Image\MachineIcons\08-.png" />
+    <None Remove="Image\MachineIcons\09-.png" />
     <None Remove="Image\MachineIcons\CNC.png" />
     <None Remove="Image\MachineIcons\EDM.png" />
+    <None Remove="Image\MachineIcons\EX430.png" />
+    <None Remove="Image\MachineIcons\FMS.png" />
+    <None Remove="Image\MachineIcons\ICG-2Z-NC.png" />
+    <None Remove="Image\MachineIcons\long-track.png" />
+    <None Remove="Image\MachineIcons\Magzine.png" />
     <None Remove="Image\MachineIcons\Robot.png" />
+    <None Remove="Image\MachineIcons\RobotOff.png" />
+    <None Remove="Image\MachineIcons\short-track.png" />
     <None Remove="Image\MachineIcons\ZNC.png" />
   </ItemGroup>
 
@@ -57,7 +70,46 @@
     <Resource Include="Image\MachineIcons\EDM.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Image\MachineIcons\EX430.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\MachineIcons\FMS.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\MachineIcons\ICG-2Z-NC.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\MachineIcons\long-track.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\MachineIcons\Magzine.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Image\MachineIcons\Robot.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\MachineIcons\03-.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\MachineIcons\04-.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\MachineIcons\05-.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\MachineIcons\07-.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\MachineIcons\08-.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\MachineIcons\09-.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\MachineIcons\RobotOff.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\MachineIcons\short-track.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Image\MachineIcons\ZNC.png">

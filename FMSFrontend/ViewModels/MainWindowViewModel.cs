@@ -115,10 +115,10 @@ namespace FMSFrontend.ViewModels
             CurrentPageKey = "OperationHistory";
         }
         [RelayCommand]
-        private void GoToManual()
+        private void GoToMaterail()
         {
-            CurrentPageView = new Manual();
-            CurrentPageKey = "Manual";
+            CurrentPageView = new InventoryInformationPage();
+            CurrentPageKey = "Materail";
         }
         [RelayCommand]
         private void GoToSettingsview()
