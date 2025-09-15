@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="FMSFrontend.Controls.MaterialTimelineView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vm="clr-namespace:FMSFrontend.ViewModels" xmlns:conv="clr-namespace:FMSFrontend.Converters" mc:Ignorable="d" d:DesignWidth="511" d:DesignHeight="577">
+
+    <UserControl.Resources>
+        <conv:EndsWithPercentConverter x:Key="EndsWithPercentConverter" />
+
+        <!-- 狀態點樣式 -->
+        <Style x:Key="DotEllipseStyle" TargetType="Ellipse">
+            <Setter Property="Fill" Value="#BFBFBF" />
+            <Style.Triggers>
+                <!-- 完成：✓ = 藍 -->
+                <DataTrigger Binding="{Binding Status}" Value="✓">
+                    <Setter Property="Fill" Value="#1E66D0" />
+                </DataTrigger>
+                <!-- 進行中：百分比 = 綠 -->
+                <DataTrigger Binding="{Binding Status, Converter={StaticResource EndsWithPercentConverter}}" Value="True">
+                    <Setter Property="Fill" Value="#22A652" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- 設計時假資料 -->
+        <x:Array x:Key="DesignTimeline" Type="{x:Type vm:TimelineItemViewModel}">
+            <vm:TimelineItemViewModel Text="放電加工 WRP20250512 於 EDM2" Time="2025-05-12T11:29:00" Status="" />
+            <vm:TimelineItemViewModel Text="放電加工 WRP20250512 於 EDM2" Time="2025-05-12T11:29:00" Status="10%" />
+            <vm:TimelineItemViewModel Text="放電加工 WRP20250512 於 EDM2" Time="2025-05-12T11:29:00" Status="✓" />
+        </x:Array>
+    </UserControl.Resources>
+
+    <!-- 外框卡片 -->
+    <Border CornerRadius="12" BorderBrush="#000" BorderThickness="1" Background="White">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44" />
+                <!-- 標題列 -->
+                <RowDefinition Height="6" />
+                <!-- 黑色分隔線 -->
+                <RowDefinition Height="*" />
+                <!-- 內容 -->
+            </Grid.RowDefinitions>
+
+            <!-- 標題列 -->
+            <Border Grid.Row="0" Background="#D3D3D3" CornerRadius="12,12,0,0" BorderBrush="#DDDDDD" BorderThickness="0,0,0,1">
+                <Grid>
+                    <TextBlock Text="工作列表" Margin="16,0" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="#111" />
+                </Grid>
+            </Border>
+
+            <!-- 黑色粗分隔線 -->
+            <Border Grid.Row="1" Background="Black" />
+
+            <!-- 內容 -->
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}" d:ItemsSource="{StaticResource DesignTimeline}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Margin" Value="0,10,0,10" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="86" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- 左：直線 + 圓 -->
+                                <Grid Grid.Column="0">
+                                    <Border Width="4" Background="#2F2F2F" Margin="41,0,41,0" VerticalAlignment="Stretch" />
+                                    <Grid Width="72" Height="72" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Ellipse Style="{StaticResource DotEllipseStyle}" />
+                                        <TextBlock Text="{Binding Status}" Foreground="White" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Grid>
+                                </Grid>
+
+                                <!-- 右：時間 + 描述 -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="8,0,0,0">
+                                    <TextBlock Text="{Binding Time, StringFormat={}{0:yyyy/MM/dd HH:mm}}" FontSize="14" Foreground="#555" />
+                                    <TextBlock Text="{Binding Text}" FontSize="18" FontWeight="Bold" Foreground="#111" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</UserControl>

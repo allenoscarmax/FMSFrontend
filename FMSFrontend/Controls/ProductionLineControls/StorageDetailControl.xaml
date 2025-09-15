@@ -217,7 +217,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Button Width="72" Height="72" Margin="3" Background="{Binding Background}" Command="{Binding DataContext.SelectSlotCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                                    <Button Width="72" Height="72" Margin="3" Background="{Binding Background}" Command="{Binding DataContext.SelectSlotCommand, ElementName=root}" CommandParameter="{Binding}">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderBrush="#DDD" BorderThickness="1">

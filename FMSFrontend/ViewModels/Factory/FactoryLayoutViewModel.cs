@@ -2,6 +2,8 @@
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Linq; // 需要
@@ -9,7 +11,7 @@ using System.Windows.Media.Animation;
 
 namespace FMSFrontend.ViewModels.Factory
 {
-    public class FactoryLayoutViewModel : INotifyPropertyChanged
+    public partial class FactoryLayoutViewModel : INotifyPropertyChanged
     {
         public ObservableCollection<MachineNode> Machines { get; } = new();
         private static string Pack(string rel) => $"/FMSFrontend;component/{rel}";
@@ -123,6 +125,9 @@ namespace FMSFrontend.ViewModels.Factory
             Machines.Add(new MachineNode { Id = "ES2", DisplayName = "ES2", X = 300, Y = 500, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/Magzine.png") });
             Machines.Add(new MachineNode { Id = "ES3", DisplayName = "ES3", X = 520, Y = 500, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/Magzine.png") });
 
+
+
+
             UpdateHighlight(); // 初始化一次
         }
 
@@ -144,8 +149,13 @@ namespace FMSFrontend.ViewModels.Factory
             foreach (var n in nodes) Machines.Add(n);
 
 
+        }
+        [RelayCommand]
+        private async Task onMove()
+        { 
             await Moverobot();
         }
+
         private async Task Moverobot()
         {
             await Task.Delay(1); // 保持 async 簽名

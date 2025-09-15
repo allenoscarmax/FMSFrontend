@@ -139,5 +139,11 @@ namespace FMSFrontend.Controls.FactoryOverview
                 AnimateRobotTo(robot, x, y);
             });
         }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            // 模擬點擊載入按鈕
+            OnLoadClick(sender, new RoutedEventArgs());
+        }
     }
 }

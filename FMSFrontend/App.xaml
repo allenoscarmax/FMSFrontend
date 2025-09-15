@@ -305,6 +305,8 @@
                 <ResourceDictionary Source="Styles/CircleIconButton.xaml" />
                 <ResourceDictionary Source="Styles/PillComboBoxStyle.xaml" />
                 <ResourceDictionary Source="Styles/DatePickerStyles.xaml" />
+                <ResourceDictionary Source="Styles/ImageButton.xaml" />
+                <ResourceDictionary Source="Styles/LockPillButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
