@@ -1,0 +1,118 @@
+﻿<Window x:Class="FMSFrontend.Views.Windows.ShowRobotWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" Title="設備資訊 - 機器人" Height="416" Width="1074" WindowStartupLocation="CenterOwner" WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown" Cursor="">
+
+    <!-- 样式（保留你可用現有 PrimaryButtonStyle；這裡提供一個備用） -->
+    <Window.Resources>
+        
+        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="10" ShadowDepth="0" Color="Black" Opacity="0.25" />
+    </Window.Resources>
+
+    <Grid >
+        <Border x:Name="Card" Background="White" CornerRadius="10" Padding="0" Effect="{DynamicResource ShadowEffect}" SnapsToDevicePixels="True" BorderBrush="#CCC" BorderThickness="1">
+           
+
+            <!-- 內層真正內容 -->
+            <Grid Margin="0" Background="Transparent">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="48" />
+                    <!-- 1) 標題列 -->
+                    <RowDefinition Height="Auto" />
+                    <!-- 2) 名稱 / 按鈕 -->
+                    <RowDefinition Height="*" />
+                    <!-- 3) 主內容 -->
+                </Grid.RowDefinitions>
+                
+                <!-- Row 0：視窗標題列 -->
+                <!-- ✅ 自訂標題列 -->
+                <Border Background="#555555" Grid.Row="0" CornerRadius="10,10,0,0">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="48" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="⚙️ 設備資訊" VerticalAlignment="Center" Margin="20,0,0,0" Foreground="White" FontSize="24" FontWeight="Bold" />
+
+                        <!-- 關閉按鈕 -->
+                        <Button Grid.Column="1" Content="✕" Background="Transparent" Foreground="White" BorderThickness="0" FontSize="25" FontWeight="Bold" Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center" Width="32" Height="32" Click="Close_Click" />
+                    </Grid>
+                    </Border>
+               
+                <!-- Row 1：名稱 + 右側動作按鈕 -->
+                <Grid Grid.Row="1" Margin="16,10,16,8" Cursor="">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 左：顯示機器人名稱（綁定） -->
+                    <TextBlock Text="{Binding DisplayData.RobotName}" d:Text="機器人" FontSize="28" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="微軟正黑體" />
+
+                    <!-- 右：膠囊按鈕（綁 Command） -->
+                    <Button Grid.Column="1" Style="{StaticResource PrimaryButtonStyle}" Width="144" Height="40" Background="#F3B407" Content="物件移出手臂" VerticalAlignment="Center" Margin="12,0,0,8" Command="{Binding MoveOutCommand}" />
+
+                    <!-- 下方分隔線 -->
+                    <Border Grid.ColumnSpan="2" Background="#D9D9D9" Height="1" VerticalAlignment="Bottom" Margin="0,30,0,0" />
+                </Grid>
+
+                <!-- Row 2：主內容（兩欄） -->
+                <Grid Grid.Row="2" Margin="12,8,12,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <!-- 圖片 -->
+                        <ColumnDefinition Width="3*" />
+                        <!-- 資訊 -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 左：圖片 -->
+                    <Border Grid.Column="0" Margin="6" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Image Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/Robot.png" Width="200" Height="200" Stretch="Uniform" />
+                    </Border>
+
+                    <!-- 右：資訊卡（兩欄：欄名 / 值） -->
+                    <Border Grid.Column="1" Margin="6" CornerRadius="8" BorderBrush="#E5E7EB" BorderThickness="1" Background="White">
+                        <Grid Margin="24">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- 欄位：設備名稱 -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="設備名稱：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.EquipmentName}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+
+                            <!-- 欄位：設備類型 -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="設備類型：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.EquipmentType}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+
+                            <!-- 欄位：設備型號 -->
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="設備型號：" FontSize="22" Margin="0,8" FontFamily="微軘正黑體" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.EquipmentModel}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+
+                            <!-- 欄位：當前程式 -->
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="當前程式：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.CurrentProgram}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+
+                            <!-- 欄位：機台狀態 -->
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="機台狀態：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding DisplayData.MachineState}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+
+                            <!-- 欄位：目前物料 -->
+                            <TextBlock Grid.Row="5" Grid.Column="0" Text="目前物料：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding DisplayData.CurrentMaterial}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -1,7 +1,8 @@
 ﻿<UserControl x:Class="FMSFrontend.Controls.MachineCardControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:conv="clr-namespace:FMSFrontend.Converters" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:vm="clr-namespace:FMSFrontend.ViewModels" mc:Ignorable="d" Width="248" Height="100" >
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ctrl="clr-namespace:FMSFrontend.Controls" xmlns:vm="clr-namespace:FMSFrontend.ViewModels" mc:Ignorable="d" Width="248" Height="100" >
 
     <UserControl.Resources>
         <conv:StatusToBrushConverter x:Key="StatusToBrushConverter" />
@@ -55,7 +56,7 @@
                 </Grid>
 
                 <!-- 🔹 第二列：圖、名稱、狀態條 -->
-                <Grid Grid.Row="1" Margin="0,13,0,0" HorizontalAlignment="Center">
+                <Grid Grid.Row="1" Margin="0,13,0,0" HorizontalAlignment="Center" Cursor="">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <!-- 圖片 -->
@@ -66,7 +67,12 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- 左側圖片 -->
-                    <Image Grid.Column="0" Margin="0,2,0,0" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" Source="{Binding MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" Width="48" Height="48" Stretch="Uniform" VerticalAlignment="Top" />
+                    <!--<Image Grid.Column="0" Margin="0,2,0,0" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" Source="{Binding MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" Width="48" Height="48" Stretch="Uniform" VerticalAlignment="Top" />-->
+
+                    <Button Grid.Column="0" Style="{StaticResource ImageButton}" Command="{Binding DataContext.OpenMachineWindowCommand,
+                          RelativeSource={RelativeSource AncestorType={x:Type ctrl:MachineOverviewControl}}}" ToolTip="查看機器資訊" CommandParameter="{Binding}" Cursor="Hand">
+                        <Image d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" Source="{Binding MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" Width="48" Height="48" Margin="0,2,0,0" Stretch="Uniform" VerticalAlignment="Top" />
+                    </Button>
 
                     <!-- 右側文字 + 進度條 -->
                     <StackPanel Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,0,0,0">

@@ -1,4 +1,5 @@
-﻿using FMSFrontend.ViewModels;
+﻿using FMSFrontend.Services;
+using FMSFrontend.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,9 @@ namespace FMSFrontend.Views
         public ProductionLines()
         {
             InitializeComponent();
-            this.DataContext = new ProductionLinesViewModel();
+            // 建立服務實例
+            var windowService = new WindowService();
+            this.DataContext = new ProductionLinesViewModel(windowService);
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)

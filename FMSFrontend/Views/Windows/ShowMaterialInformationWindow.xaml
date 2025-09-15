@@ -1,0 +1,72 @@
+﻿<Window x:Name="Root" x:Class="FMSFrontend.Views.Windows.ShowMaterialInformationWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vm="clr-namespace:FMSFrontend.ViewModels" xmlns:views="clr-namespace:FMSFrontend.Controls" mc:Ignorable="d" Title="物料資訊" Width="1060" Height="700" WindowStartupLocation="CenterOwner" Background="Transparent" AllowsTransparency="True" WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <!-- 外框：白底 + 圓角 + 陰影 -->
+    <Border CornerRadius="10" Background="#FFFFFF">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="4" ShadowDepth="4" Opacity="0.25" />
+        </Border.Effect>
+
+        <!-- 內層網格：只有 標題列 / 主內容 -->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48" />
+                <!-- 1) 深灰標題列 -->
+                <RowDefinition Height="*" />
+                <!-- 2) 主內容：左右兩卡 -->
+            </Grid.RowDefinitions>
+
+            <!-- 1) 自訂標題列 -->
+            <Border Grid.Row="0" Background="#555555" CornerRadius="10,10,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="48" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="物料資訊" Margin="20,0,0,0" VerticalAlignment="Center" Foreground="White" FontSize="24" FontWeight="Bold" />
+
+                    <!-- 關閉按鈕 -->
+                    <Button Grid.Column="1" Content="✕" Background="Transparent" BorderThickness="0" Foreground="White" FontSize="20" FontWeight="Bold" Width="32" Height="32" HorizontalAlignment="Center" VerticalAlignment="Center" Cursor="Hand" Click="Close_Click" />
+                </Grid>
+            </Border>
+
+            <!-- 2) 主內容：左右兩張卡片（與原視窗綁定完全一致） -->
+            <Grid Grid.Row="1" Margin="10,12,12,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- 左卡：物料資訊（依 VM 類型切換） -->
+                <Border Grid.Column="0" CornerRadius="10" BorderBrush="#CCCCCC" BorderThickness="1" Background="#FFFFFF">
+                    <Grid>
+                        <ContentControl Content="{Binding DetailViewModel}">
+                            <ContentControl.Resources>
+                                <DataTemplate DataType="{x:Type vm:ElectrodeDetailViewModel}">
+                                    <views:ElectrodeDetailView />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type vm:WorkpieceDetailViewModel}">
+                                    <views:WorkpieceDetailView />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type vm:EmptyMaterialDetailViewModel}">
+                                    <views:EmptyMaterialView />
+                                </DataTemplate>
+                            </ContentControl.Resources>
+                        </ContentControl>
+                    </Grid>
+                </Border>
+
+                <!-- 中間間距 -->
+                <Border Grid.Column="1" Background="Transparent" />
+
+                <!-- 右卡：工作列表（時間軸） -->
+                <Border Grid.Column="2" CornerRadius="10" BorderBrush="#CCCCCC" BorderThickness="1" Background="#FFFFFF">
+                    <Grid>
+                        <views:MaterialTimelineView ItemsSource="{Binding Timeline}" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

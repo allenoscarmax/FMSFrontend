@@ -114,11 +114,29 @@
 														<UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
 													</ItemsPanelTemplate>
 												</ItemsControl.ItemsPanel>
+                                                
+                                                
 												<ItemsControl.ItemTemplate>
-													<DataTemplate>
+
+                                                    <!-- 假設每格是 SlotViewModel -->
+                                                    <DataTemplate>
+                                                        <!-- 無樣式 Button 包住原本的 Border -->
+                                                        <Button Command="{Binding DataContext.OpenMaterialCommand, ElementName=root}" CommandParameter="{Binding}" Padding="0" BorderThickness="0" Background="Transparent" Cursor="Hand" Focusable="False">
+                                                            <Button.Template>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <!-- 你原本的格子外觀 -->
+                                                                    <Border Width="22" Height="22" Margin="2" Background="{Binding Background}" CornerRadius="4" BorderBrush="#DDD" BorderThickness="0.5" />
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                        </Button>
+                                                    </DataTemplate>
+
+                                                    <!--<DataTemplate>
 														<Border Width="22" Height="22" Margin="2" Background="{Binding Background}" CornerRadius="4" BorderBrush="#DDD" BorderThickness="0.5" />
-													</DataTemplate>
+													</DataTemplate>-->
 												</ItemsControl.ItemTemplate>
+                                                
+                                                
 											</ItemsControl>
 										</StackPanel>
 									</Border>

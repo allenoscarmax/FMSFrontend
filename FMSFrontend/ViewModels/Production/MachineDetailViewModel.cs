@@ -1,6 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.ViewModels.Windows;
+using FMSFrontend.Views.Windows;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace FMSFrontend.ViewModels.Production
 {
@@ -11,6 +14,11 @@ namespace FMSFrontend.ViewModels.Production
         public MachineDetailViewModel(ProductionLinesViewModel parent)
         {
             _parent = parent;
+            foreach (var card in MachineDetails)
+            {
+                card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl);
+                card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl);
+            }
         }
 
         [RelayCommand]
@@ -18,6 +26,17 @@ namespace FMSFrontend.ViewModels.Production
         {
             // 假設你要展開到特定 StorageId 的 DetailControl
             _parent.ShowMachineOverview();
+        }
+        [RelayCommand]
+        private void OpenMachineWindow(object? machine)   // machine 建議是 MachineCardViewModel
+        {
+            var vm = new ShowMachineWindowViewModel(machine);
+            var win = new ShowMachineWindow { DataContext = vm };
+
+            var owner = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
+            if (owner != null) win.Owner = owner;
+
+            win.ShowDialog();
         }
 
         public ObservableCollection<MachineCardViewModel> MachineDetails { get; } = new()

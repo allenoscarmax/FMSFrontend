@@ -1,0 +1,208 @@
+﻿<Window x:Class="FMSFrontend.Views.Windows.ShowMachineWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:conv="clr-namespace:FMSFrontend.Converters" mc:Ignorable="d" Title="設備資訊" Height="740" Width="1080" WindowStartupLocation="CenterOwner" WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Window.InputBindings>
+        <!-- 按 ESC 關閉 -->
+        <KeyBinding Key="Escape" Command="{Binding CloseWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+    </Window.InputBindings>
+
+    <Window.Resources>
+        <!-- 陰影 -->
+        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="14" ShadowDepth="0" Opacity="0.28" />
+
+        <!-- DataGrid 欄頭藍底白字 -->
+        <Style x:Key="BlueHeader" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#2B72A8" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="BorderBrush" Value="#2B72A8" />
+        </Style>
+
+        <conv:MachineTypeToImageConverter x:Key="MachineTypeToImageConverter" />
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <!-- 外卡：圓角＋陰影 -->
+        <Border x:Name="Card" Background="White" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" SnapsToDevicePixels="True" Effect="{StaticResource ShadowEffect}">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="48" />
+                    <!-- 標題列 -->
+                    <RowDefinition Height="Auto" />
+                    <!-- 名稱/按鈕 -->
+                    <RowDefinition Height="*" />
+                    <!-- 主內容 -->
+                </Grid.RowDefinitions>
+
+                <!-- Row 0：標題列 -->
+                <Border Grid.Row="0" Background="#555" CornerRadius="10,10,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="48" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="⚙️ 設備資訊" Foreground="White" FontSize="24" FontWeight="Bold" VerticalAlignment="Center" Margin="20,0,0,0" />
+
+                        <!-- 改用 Command 關閉 -->
+                        <Button Grid.Column="1" Content="✕" Background="Transparent" Foreground="White" BorderThickness="0" FontSize="25" FontWeight="Bold" Width="32" Height="32" Cursor="Hand" Command="{Binding CloseWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Row 1：頁面標題 + 右上兩顆按鈕 -->
+                <Grid Grid.Row="1" Margin="16,10,16,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="{Binding DeviceName, FallbackValue=設備名稱}" FontSize="26" FontWeight="SemiBold" FontFamily="微軟正黑體" VerticalAlignment="Center" />
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Content="電極強制出倉" Command="{Binding ForceElectrodeOutCommand}" Margin="0,0,10,0" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Content="工作強制出倉" Command="{Binding ForceWorkOutCommand}" Background="#E08E45" />
+                    </StackPanel>
+
+                    <!-- 下方分隔線 -->
+                    <Border Grid.ColumnSpan="2" Background="#D9D9D9" Height="1" VerticalAlignment="Bottom" Margin="0,12,0,0" />
+                </Grid>
+
+                <!-- Row 2：主內容 -->
+                <Grid Grid.Row="2" Margin="16,8,16,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <!-- 左資訊卡 -->
+                        <ColumnDefinition Width="12" />
+                        <!-- 中線 -->
+                        <ColumnDefinition Width="3*" />
+                        <!-- 右工單列表 -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 中線 -->
+                    <Border Grid.Column="1" Background="#C9CED3" CornerRadius="2" Width="4" Margin="8,0" />
+
+                    <!-- 左：設備資訊卡 -->
+                    <Border Grid.Column="0" CornerRadius="8" BorderBrush="#BFC7CE" BorderThickness="1" Background="White">
+                        <Grid Margin="24">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <!-- 圖片 -->
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="Auto" />
+                                <!-- 欄位表 -->
+                            </Grid.RowDefinitions>
+
+                            <!-- 圖片（用你的 Converter） -->
+                            <Image Grid.Row="0" Source="{Binding Info.MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" Width="260" Height="180" Stretch="Uniform" HorizontalAlignment="Center" />
+
+                            <!-- 橫線 -->
+                            <Border Grid.Row="1" Background="#DADDE1" Height="2" Margin="0,6,0,0" />
+
+                            <!-- 欄位表 -->
+                            <Grid Grid.Row="2" Margin="0,10,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="180" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="設備名稱：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Info.EquipmentName}" FontSize="20" Margin="0,6" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="設備類型：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Info.EquipmentType}" FontSize="20" Margin="0,6" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="設備型號：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Info.ModelNo}" FontSize="20" Margin="0,6" />
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="當前程式：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Info.CurrentProgram}" FontSize="20" Margin="0,6" />
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="機台狀態：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Info.MachineState}" FontSize="20" Margin="0,6" />
+
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="狀態持續時間：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Info.StateDuration}" FontSize="20" Margin="0,6" />
+
+                                <TextBlock Grid.Row="6" Grid.Column="0" Text="目前電極編號：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding Info.CurrentElectrode}" FontSize="20" Margin="0,6" />
+
+                                <TextBlock Grid.Row="7" Grid.Column="0" Text="目前工作編號：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding Info.CurrentWork}" FontSize="20" Margin="0,6" />
+
+                                <TextBlock Grid.Row="8" Grid.Column="0" Text="等待加工數：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding Info.WaitingCount}" FontSize="20" Margin="0,6" />
+
+                                <TextBlock Grid.Row="9" Grid.Column="0" Text="本日完工數：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding Info.FinishedToday}" FontSize="20" Margin="0,6" />
+
+                                <TextBlock Grid.Row="10" Grid.Column="0" Text="財產編號：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding Info.AssetNo}" FontSize="20" Margin="0,6" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!-- 右：工單列表 -->
+                    <Border Grid.Column="2" CornerRadius="8" BorderBrush="#BFC7CE" BorderThickness="1" Background="White">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <!-- 卡片標題列 -->
+                                <RowDefinition Height="Auto" />
+                                <!-- 篩選列 -->
+                                <RowDefinition Height="*" />
+                                <!-- 表格 -->
+                            </Grid.RowDefinitions>
+
+                            <!-- 卡片標題列（灰底） -->
+                            <Border Grid.Row="0" Background="#D9D9D9" CornerRadius="8,8,0,0" Padding="16,10">
+                                <TextBlock Text="工單列表" FontSize="18" FontWeight="SemiBold" />
+                            </Border>
+
+                            <!-- 篩選列 -->
+                            <Grid Grid.Row="1" Margin="16,10,16,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="160" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <RadioButton Grid.Column="0" Content="顯示所有項目" GroupName="show" IsChecked="{Binding ShowAllItems}" />
+                                <RadioButton Grid.Column="1" Content="顯示" Margin="20,0,6,0" GroupName="show" IsChecked="{Binding ShowByDate}" />
+                                <DatePicker Grid.Column="3" SelectedDate="{Binding SelectedDate}" IsEnabled="{Binding ShowByDate}" />
+                            </Grid>
+
+                            <!-- DataGrid -->
+                            <DataGrid Grid.Row="2" Margin="12" ItemsSource="{Binding WorkOrders}" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="False" RowHeaderWidth="0" AlternatingRowBackground="#F7FAFC">
+                                <DataGrid.Resources>
+                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource BlueHeader}" />
+                                </DataGrid.Resources>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="建立日期" Binding="{Binding CreatedAtText}" Width="200" />
+                                    <DataGridTextColumn Header="工單編號" Binding="{Binding WorkOrderNo}" Width="*" />
+                                    <DataGridTextColumn Header="工單狀態" Binding="{Binding Status}" Width="160" />
+                                    <DataGridTextColumn Header="工作編號" Binding="{Binding JobNo}" Width="*" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
