@@ -91,19 +91,52 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-
-                <!-- 文字置中 -->
-                <TextBlock Grid.Column="1" Text="{Binding SelectedRobot.SelectedRobotIndexDisplay}" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" d:Text="1 / 5" />
-
-                <!-- 按鈕靠右 -->
-                <Button Grid.Column="2" Width="60" Height="32" Background="White" BorderBrush="#CCC" Visibility="{Binding IsMultipleRobotVisible}" Command="{Binding NextRobotCommand}" HorizontalAlignment="Right" Margin="10,0,0,0">
+                <!-- 按鈕靠左 -->
+                <Button Grid.Column="0"
+                        Width="60"
+                        Height="32"
+                        Background="White"
+                        BorderBrush="#CCC"
+                        Visibility="{Binding SelectedRobot.IsMultipleRobotVisible}"
+                        Command="{Binding LastRobotCommand}"
+                        HorizontalAlignment="Right"
+                        Margin="10,0,0,0" RenderTransformOrigin="0.511,0.557">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="18">
+                            <Border Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="18">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Border>
                         </ControlTemplate>
+                    </Button.Template>
 
+                    <md:PackIcon Kind="ChevronLeft" Width="20" Height="20" />
+                </Button>
+                
+                <!-- 文字置中 -->
+                <TextBlock Grid.Column="1" Text="{Binding SelectedRobot.SelectedRobotIndexDisplay, RelativeSource={RelativeSource AncestorType=UserControl}}" Visibility="{Binding SelectedRobot.IsMultipleRobotVisible}" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" d:Text="1 / 5" />
+
+                <!-- 按鈕靠右 -->
+                <Button Grid.Column="2"
+                        Width="60"
+                        Height="32"
+                        Background="White"
+                        BorderBrush="#CCC"
+                        Visibility="{Binding SelectedRobot.IsMultipleRobotVisible}"
+                        Command="{Binding NextRobotCommand}"
+                        HorizontalAlignment="Right"
+                        Margin="10,0,0,0">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="18">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
                     </Button.Template>
 
                     <md:PackIcon Kind="ChevronRight" Width="20" Height="20" />

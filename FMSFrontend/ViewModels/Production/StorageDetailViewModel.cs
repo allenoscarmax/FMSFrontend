@@ -332,10 +332,10 @@ namespace FMSFrontend.ViewModels.Production
                                 },
                                 Timeline = new[]
                                 {
-                            new TimelineItemModel { Text="入庫", Time=DateTime.Now.AddHours(-8), Status="✓"},
-                            new TimelineItemModel { Text="檢驗完成", Time=DateTime.Now.AddHours(-6), Status="✓"},
-                            new TimelineItemModel { Text="待派工", Time=DateTime.Now.AddHours(-2), Status="10%"}
-                        }
+                                    new TimelineItemModel { Text="入庫", Time=DateTime.Now.AddHours(-8), Status="✓"},
+                                    new TimelineItemModel { Text="檢驗完成", Time=DateTime.Now.AddHours(-6), Status="✓"},
+                                    new TimelineItemModel { Text="待派工", Time=DateTime.Now.AddHours(-2), Status="10%"}
+                                }
                             };
                         }
                         else

@@ -22,7 +22,7 @@ namespace FMSFrontend.ViewModels
             public string No { get; set; }
             public string Type { get; set; }         // 方/圓/自定
             public string HolderNo { get; set; }     // 夾具代號
-            public string TagSerial { get; set; }    // RFID }
+            public string TagSerial { get; set; }    // RFID 
         }
     }
 }

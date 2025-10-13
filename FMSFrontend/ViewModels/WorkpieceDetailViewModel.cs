@@ -20,6 +20,7 @@ namespace FMSFrontend.ViewModels
 
     public class WorkpieceModel
     {
+        //public string JigSerial { get; set; }         // 治具序號
         public string Name { get; set; }         // 工件/零件名稱
         public string No { get; set; }           // 工件編號
         public string BatchNo { get; set; }

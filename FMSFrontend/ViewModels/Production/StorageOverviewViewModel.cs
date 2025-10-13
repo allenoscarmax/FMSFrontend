@@ -19,12 +19,18 @@ namespace FMSFrontend.ViewModels.Production
         {
             _parent = parent;
 
+            StorageUnitViewModel es1 = new StorageUnitViewModel("ES1", 6, 8);
+
+            StorageUnits.Add(es1);
+            
             // ES* → 自動判斷為電極倉；W* → 工件倉
             StorageUnits.Add(FakeDataFactory.CreateStorageUnit("ES1", 6, 8));
             StorageUnits.Add(FakeDataFactory.CreateStorageUnit("ES2", 6, 8));
             StorageUnits.Add(FakeDataFactory.CreateStorageUnit("W1", 2, 5));
             StorageUnits.Add(FakeDataFactory.CreateStorageUnit("W2", 2, 5));
             StorageUnits.Add(FakeDataFactory.CreateStorageUnit("W3", 2, 5));
+            StorageUnits.Add(FakeDataFactory.CreateStorageUnit("W4", 3, 5));
+         
             // ... 其他倉儲
         }
 
@@ -53,8 +59,8 @@ namespace FMSFrontend.ViewModels.Production
         public ObservableCollection<StorageSlotViewModel> Slots { get; set; } = new();
 
         public Brush HeaderColor => StorageName.StartsWith("ES")
-    ? new SolidColorBrush(Color.FromRgb(0x27, 0x79, 0xA7)) // 電極倉 = 藍色
-    : new SolidColorBrush(Color.FromRgb(0xE0, 0x8E, 0x45)); // 工件倉 = 橘色
+        ? new SolidColorBrush(Color.FromRgb(0x27, 0x79, 0xA7)) // 電極倉 = 藍色
+        : new SolidColorBrush(Color.FromRgb(0xE0, 0x8E, 0x45)); // 工件倉 = 橘色
 
         public StorageUnitViewModel(string name, int rows, int cols)
         {
@@ -70,8 +76,8 @@ namespace FMSFrontend.ViewModels.Production
     public class StorageSlotViewModel : ObservableObject, IHasMaterial
     {
         public string Status { get; set; } = "Verified";
-        public bool IsDisabled { get; set; }
-        public bool IsReserved { get; set; }
+        public bool IsDisabled { get; set; } //倉位置訊的禁用連動
+        public bool IsReserved { get; set; } //
 
         // 顏色（保留）
         public Brush Background => Status switch
@@ -273,10 +279,10 @@ public static class FakeDataFactory
         {
             var now = DateTime.Now;
             var list = new List<TimelineItemModel>
-        {
-            new TimelineItemModel { Text = "入庫", Time = now.AddHours(-10 - Rng.Next(6)), Status = "✓" },
-            new TimelineItemModel { Text = "檢驗完成", Time = now.AddHours(-7 - Rng.Next(3)), Status = "✓" }
-        };
+            {
+                new TimelineItemModel { Text = "入庫", Time = now.AddHours(-10 - Rng.Next(6)), Status = "✓" },
+                new TimelineItemModel { Text = "檢驗完成", Time = now.AddHours(-7 - Rng.Next(3)), Status = "✓" }
+            };
 
             switch (status)
             {

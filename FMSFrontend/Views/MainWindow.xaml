@@ -146,38 +146,38 @@
                             <Border Padding="10" HorizontalAlignment="Center">
                                 <WrapPanel HorizontalAlignment="Center" ItemWidth="120" ItemHeight="120" Orientation="Horizontal">
                                     <!-- 手臂啟動 -->
-                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotStartButtonClick}" Margin="5">
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotStartButtonClickCommand}" Margin="5">
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                             <materialDesign:PackIcon Kind="Play" Width="60" Height="60" Margin="0,0,0,3" Foreground="#004E79" HorizontalAlignment="Center" />
                                             <TextBlock Text="手臂啟動" FontSize="16" HorizontalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                     <!-- 手臂暫停 -->
-                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotPauseButtonClick}" Margin="5">
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotPauseButtonClickCommand}" Margin="5">
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                             <materialDesign:PackIcon Kind="Pause" Width="60" Height="60" Margin="0,0,0,5" Foreground="#004E79" HorizontalAlignment="Center" />
                                             <TextBlock Text="手臂暫停" FontSize="16" HorizontalAlignment="Center" />
                                         </StackPanel>
                                     </Button>
                                     <!-- 手臂停止 -->
-                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotStopButtonClick}" Margin="5">
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotStopButtonClickCommand}" Margin="5">
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                             <materialDesign:PackIcon Kind="Stop" Width="60" Height="60" Margin="0,0,0,5" Foreground="#004E79" HorizontalAlignment="Center" />
                                             <TextBlock Text="手臂停止" FontSize="16" HorizontalAlignment="Center" />
                                         </StackPanel>
                                     </Button>
                                     <!-- 手臂重置 -->
-                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotResetButtonClick}" Margin="5">
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotResetButtonClickCommand}" Margin="5">
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                             <materialDesign:PackIcon Kind="Refresh" Width="60" Height="60" Margin="0,0,0,5" Foreground="#004E79" HorizontalAlignment="Center" />
                                             <TextBlock Text="手臂重置" FontSize="16" HorizontalAlignment="Center" />
                                         </StackPanel>
                                     </Button>
                                     <!-- 派工啟動 -->
-                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding StartDispatchButtonClick}" Margin="5">
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotDispatchButtonClickCommand}" Margin="5">
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                             <materialDesign:PackIcon Kind="CogPlay" Width="60" Height="60" Margin="0,0,0,5" Foreground="#004E79" HorizontalAlignment="Center" />
-                                            <TextBlock Text="派工啟動" FontSize="16" HorizontalAlignment="Center" />
+                                            <TextBlock Text="{Binding SDispatchText}" FontSize="16" HorizontalAlignment="Center" />
                                         </StackPanel>
                                     </Button>
                                 </WrapPanel>
@@ -377,7 +377,7 @@
 
                         <!-- PageMenuBar 本體（含導角與內容） -->
                         <Border Height="100" Background="{DynamicResource PageMenuBarBrush}" CornerRadius="30,30,0,0" HorizontalAlignment="Stretch">
-                            <controls:PageMenuBar CurrentPageKey="{Binding CurrentPageKey}" />
+                            <controls:PageMenuBar CurrentPageKey="{Binding CurrentPageKey}" Loaded="PageMenuBar_Loaded" />
                         </Border>
                     </Grid>
 

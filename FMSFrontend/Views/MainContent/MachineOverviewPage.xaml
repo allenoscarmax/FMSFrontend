@@ -65,7 +65,15 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <controls:MachineOverviewCardControl Margin="6,0,6,0" />
+                                <!-- 以 Button 包住卡片，點擊時把該卡片作為 CommandParameter 傳給頁面 VM -->
+                                <Button Command="{Binding DataContext.SelectMachineCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Padding="0"
+                                        Cursor="Hand">
+                                    <controls:MachineOverviewCardControl Margin="6,0,6,0" />
+                                </Button>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
