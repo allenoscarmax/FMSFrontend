@@ -39,7 +39,6 @@ namespace FMSFrontend.Views
             {
                 sb.Begin(this, true); // 第二個參數 true 讓動畫可以重複執行
             }
-
         }
     }
 }

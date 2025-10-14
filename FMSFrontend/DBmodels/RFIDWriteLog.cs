@@ -4,16 +4,17 @@ using System;
 
 namespace OSCARMAXFMS_V3.DBmodels
 {
+    // RFID 寫入紀錄（寫入標籤時的操作日誌）
     public class RFIDWriteLog
     {
         [BsonRepresentation(BsonType.ObjectId)]
-        public string _id { get; set; }
+        public string _id { get; set; } // ID（MongoDB 物件識別碼）
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)] // 強制存本地時間
-        public DateTime TimeStamp {  get; set; }
-        public string Type {  get; set; }
-        public string SrialNo {  get; set; }
-        public string TagSerial {  get; set; }
-        public string ObjName {  get; set; }
-        public string SetupUser {  get; set; }
+        public DateTime TimeStamp { get; set; } // 寫入時間（本地時區）
+        public string Type { get; set; } // 物件類型（例如：Electrode/Workpiece/Fixture 等）
+        public string SrialNo { get; set; } // 物件序號（疑似拼寫錯誤：應為 SerialNo）
+        public string TagSerial { get; set; } // 標籤序號（RFID/NFC Tag UID）
+        public string ObjName { get; set; } // 物件名稱（顯示/辨識用途）
+        public string SetupUser { get; set; } // 操作人員（帳號或姓名）
     }
 }

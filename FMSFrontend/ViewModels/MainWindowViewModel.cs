@@ -18,11 +18,24 @@ using System.Windows.Media.Animation;
 using System;
 using System.Collections.Generic;
 using System.Windows.Threading;
+using OSCARMAXFMS_V3.DBmodels;
+using CommunityToolkit.Mvvm.Messaging; // ← 新增
+using CommunityToolkit.Mvvm.Messaging.Messages; // ← 新增：Message 型別
+using System.Text.Json; // ← 新增：JsonElement
 
 namespace FMSFrontend.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
+        FactoryOverviewPage factoryOverviewPage = new FactoryOverviewPage();
+        ProductionLines productionLines = new ProductionLines();
+        MachineOverviewPage machineOverviewPage = new MachineOverviewPage();
+        WorkOrder workOrder = new WorkOrder();
+        RFIDBind rFIDBind = new RFIDBind();
+        OperationHistory operationHistory = new OperationHistory();
+        InventoryInformationPage inventoryInformationPage = new InventoryInformationPage();
+        SettingsView settingsView = new SettingsView();
+
         private readonly IHttpService _httpService;
 
         public AlarmPageViewModel AlarmVM { get; }
@@ -50,7 +63,7 @@ namespace FMSFrontend.ViewModels
         private bool _isHint = true;
 
         [ObservableProperty]
-        private bool _isAlarm   = false;
+        private bool _isAlarm = false;
 
         [ObservableProperty]
         private string _summaryMessage = "系統正常運作";
@@ -92,16 +105,24 @@ namespace FMSFrontend.ViewModels
         // 新增：最高優先請求佇列（有東西時優先執行）
         private readonly Queue<Func<Task>> _highPriorityRequests = new();
 
+        // ✅ 新增：啟動時取得的 JSON 暫存（依需求使用）
+        private JsonElement _storageDataJson;
+        private JsonElement _machinesJson;
+        private JsonElement _commandScheduleJson;
+        private JsonElement _machineOverviewJson;
+
         // 便捷加入高優先請求的方法（可依需求在外部呼叫）
         public void EnqueueHighPriorityAsrs() => _highPriorityRequests.Enqueue(FetchAsrsParametersAsync);
         public void EnqueueHighPriorityWeather() => _highPriorityRequests.Enqueue(FetchWeatherAsync);
 
         public bool IsLoggedIn => !string.IsNullOrEmpty(LoggedInUser);
 
+        // ✅ 新增：頁面刷新計時器（與 _asrsTimer 分開）
+        private readonly DispatcherTimer _pageRefreshTimer = new() { Interval = TimeSpan.FromSeconds(5) };
+
         public MainWindowViewModel(IHttpService httpService, AlarmPageViewModel alarmVM)
         {
             _httpService = httpService;
-            //currentPageView = new MachineOverviewPage();
             StorageControlPage = new StorageUnitMiniControlPage();
             // 初始化時間更新
             Task.Run(async () =>
@@ -123,9 +144,35 @@ namespace FMSFrontend.ViewModels
             };
             AlarmVM = alarmVM;
 
-            // 啟動每秒輪詢
+            // 既有：ASRS 計時器
             _asrsTimer.Tick += async (_, __) => await PollAsrsAsync();
             _asrsTimer.Start();
+
+            // ✅ 新增：頁面刷新計時器
+            _pageRefreshTimer.Tick += (_, __) => RefreshActivePage();
+            _pageRefreshTimer.Start();
+
+            // ✅ 新增：啟動背景執行續，並行呼叫五個 API
+            Task.Run(InitializeDataAsync);
+        }
+
+        // ✅ 啟動時一次性並行抓取必要資料
+        private async Task InitializeDataAsync()
+        {
+            try
+            {
+                var t1 = FetchAsrsParametersAsync();                               // 1) ASRS/GetASRSParameter
+                var t2 = FetchStorageDataAsync();                                  // 2) Storage/DB_GetAllStorageData
+                var t3 = FetchMachinesDataAsync();                                 // 3) Machine/DB_GetAllMachines
+                var t4 = FetchAllCommandScheduleAsync();                           // 4) CommandScheduler/GetAllCommandSchedule
+                var t5 = FetchMachineDataAsync(0);                                 // 5) Machine/GetMachineData/0
+
+                await Task.WhenAll(t1, t2, t3, t4, t5);
+            }
+            catch
+            {
+                // 啟動期允許忽略暫時性錯誤，後續輪詢或手動刷新會再補上
+            }
         }
 
         // 改成：先跑高優先，否則依不同頁面執行不同 case
@@ -171,7 +218,7 @@ namespace FMSFrontend.ViewModels
                         break;
                     // 其他頁面：預設跑 ASRS
                     default:
-                      //  await FetchAsrsParametersAsync();
+                        //  await FetchAsrsParametersAsync();
                         break;
                 }
             }
@@ -185,7 +232,7 @@ namespace FMSFrontend.ViewModels
             }
         }
 
-        // 新增：封裝 ASRS 資料抓取
+        // 新增：封裝 ASRS 資料抓取（手臂/ASRS參數）
         private async Task FetchAsrsParametersAsync()
         {
             var list = await _httpService.GetJsonAsync<List<AppointmentMaintenance>>("ASRS/GetASRSParameter");
@@ -194,6 +241,42 @@ namespace FMSFrontend.ViewModels
             AsrsParameters.Clear();
             foreach (var item in list)
                 AsrsParameters.Add(item);
+
+            // 通知有更新（若其他頁面需要）
+            WeakReferenceMessenger.Default.Send(new AsrsParametersUpdatedMessage(AsrsParameters.ToList()));
+        }
+
+        // 2) Storage/DB_GetAllStorageData → 產線總覽
+        private async Task FetchStorageDataAsync()
+        {
+            var json = await _httpService.GetJsonAsync<JsonElement>("Storage/DB_GetAllStorageData");
+            _storageDataJson = json;
+            WeakReferenceMessenger.Default.Send(new StorageDataUpdatedMessage(json));
+        }
+
+        // 3) Machine/DB_GetAllMachines → 產線總覽
+        private async Task FetchMachinesDataAsync()
+        {
+            var json = await _httpService.GetJsonAsync<JsonElement>("Machine/DB_GetAllMachines");
+            _machinesJson = json;
+            WeakReferenceMessenger.Default.Send(new MachinesDataUpdatedMessage(json));
+        }
+
+        // 4) CommandScheduler/GetAllCommandSchedule → 整場總覽任務工作條
+        private async Task FetchAllCommandScheduleAsync()
+        {
+            var json = await _httpService.GetJsonAsync<JsonElement>("CommandScheduler/GetAllCommandSchedule");
+            _commandScheduleJson = json;
+            WeakReferenceMessenger.Default.Send(new CommandScheduleUpdatedMessage(json));
+        }
+
+        // 5) Machine/GetMachineData/{line} → 設備總覽機台資訊
+        private async Task FetchMachineDataAsync(int line)
+        {
+            var route = $"Machine/GetMachineData/{line}";
+            var json = await _httpService.GetJsonAsync<JsonElement>(route);
+            _machineOverviewJson = json;
+            WeakReferenceMessenger.Default.Send(new MachineOverviewDataUpdatedMessage(json));
         }
 
         // 新增：封裝天氣資料抓取
@@ -206,55 +289,109 @@ namespace FMSFrontend.ViewModels
         }
 
         #region PageChange
+        // ✅ 新增：依目前頁面廣播刷新訊息
+        private void RefreshActivePage()
+        {
+            if (string.IsNullOrEmpty(CurrentPageKey)) return;
+
+            switch (CurrentPageKey)
+            {
+                case "FactoryOverview":
+                case "ProductionLines":
+                case "MachineOverview":
+                case "WorkOrder":
+                case "RFIDBind":
+                case "OperationHistory":
+                case "Material":
+                case "SettingsView":
+                    WeakReferenceMessenger.Default.Send(new RefreshPageMessage(CurrentPageKey));
+                    break;
+            }
+        }
+
+        // ✅ 依頁面調整刷新頻率（補上其他頁面）
+        private void SetPageRefreshIntervalFor(string pageKey)
+        {
+            _pageRefreshTimer.Interval = pageKey switch
+            {
+                "ProductionLines" => TimeSpan.FromSeconds(3),
+                "MachineOverview" => TimeSpan.FromSeconds(2),
+                "FactoryOverview" => TimeSpan.FromSeconds(5),
+                "WorkOrder" => TimeSpan.FromSeconds(8),
+                "RFIDBind" => TimeSpan.FromSeconds(6),
+                "OperationHistory" => TimeSpan.FromSeconds(7),
+                "Material" => TimeSpan.FromSeconds(10),
+                "SettingsView" => TimeSpan.FromSeconds(12),
+                _ => TimeSpan.FromSeconds(5)
+            };
+        }
+
+        // ✅ 修改：切頁時同步調整頻率，並立即刷新一次
         [RelayCommand]
         private void GoToProductionLines()
         {
-            CurrentPageView = new ProductionLines();
+            CurrentPageView = productionLines;
             CurrentPageKey = "ProductionLines";
+            SetPageRefreshIntervalFor(CurrentPageKey);
+            RefreshActivePage();
         }
 
         [RelayCommand]
         private void GoToFactoryOverview()
         {
-            CurrentPageView = new FactoryOverviewPage();
+            CurrentPageView = factoryOverviewPage;
             CurrentPageKey = "FactoryOverview";
+            SetPageRefreshIntervalFor(CurrentPageKey);
+            RefreshActivePage();
         }
         [RelayCommand]
         private void GoToMachineOverview()
         {
-            CurrentPageView = new MachineOverviewPage();
+            CurrentPageView = machineOverviewPage;
             CurrentPageKey = "MachineOverview";
+            SetPageRefreshIntervalFor(CurrentPageKey);
+            RefreshActivePage();
         }
 
         [RelayCommand]
         private void GoToWorkOrder()
         {
-            CurrentPageView = new WorkOrder();
+            CurrentPageView = workOrder;
             CurrentPageKey = "WorkOrder";
+            SetPageRefreshIntervalFor(CurrentPageKey);
+            RefreshActivePage();
         }
         [RelayCommand]
         private void GoToRFIDBind()
         {
-            CurrentPageView = new RFIDBind();
+            CurrentPageView = rFIDBind;
             CurrentPageKey = "RFIDBind";
+            SetPageRefreshIntervalFor(CurrentPageKey);
+            RefreshActivePage();
         }
         [RelayCommand]
         private void GoToOperationHistory()
         {
-            CurrentPageView = new OperationHistory();
+            CurrentPageView = operationHistory;
             CurrentPageKey = "OperationHistory";
+            SetPageRefreshIntervalFor(CurrentPageKey);
+            RefreshActivePage();
         }
         [RelayCommand]
         private void GoToMaterial()
         {
-            CurrentPageView = new InventoryInformationPage();
+            CurrentPageView = inventoryInformationPage;
             CurrentPageKey = "Material";
+            SetPageRefreshIntervalFor(CurrentPageKey);
+            RefreshActivePage();
         }
         [RelayCommand]
         private void GoToSettingsView()
         {
-            CurrentPageView = new SettingsView();
+            CurrentPageView = settingsView;
             CurrentPageKey = "SettingsView";
+            SetPageRefreshIntervalFor(CurrentPageKey);
+            RefreshActivePage();
         }
         /// <summary>
         /// 由狀態列「提示訊息」進入 Alarm 頁，並讓 PageMenu 看起來沒有選中
@@ -268,7 +405,7 @@ namespace FMSFrontend.ViewModels
                                                // 若你的 PageMenu 是用 SelectedIndex 套樣式，這行也一起用：
                                                // SelectedPageIndex = -1;
         }
-        
+
         #endregion
 
         #region StoragePageChange
@@ -304,7 +441,7 @@ namespace FMSFrontend.ViewModels
 
             UpperDoorLights1[idx] = isUpperDoorOpen[idx] ? Brushes.Lime : Brushes.Gray;
 
-           // new DialogMessageWindow(isUpperDoorOpen[idx] ? $"{storageId} 的上門已開啟" : $"{storageId} 的上門已關閉").ShowDialog();
+            // new DialogMessageWindow(isUpperDoorOpen[idx] ? $"{storageId} 的上門已開啟" : $"{storageId} 的上門已關閉").ShowDialog();
         }
 
         // 下門 -> 使用 LowerDoorLights1 對應索引
@@ -422,7 +559,7 @@ namespace FMSFrontend.ViewModels
             {
                 await _httpService.SendPutAsync(route, new { });
             }
-            catch{ }
+            catch { }
         }
         [RelayCommand]
         private async Task RobotResetButtonClick()
@@ -467,7 +604,7 @@ namespace FMSFrontend.ViewModels
             Robot.CurrentAction = "目前動作 " + _robotActionIndex.ToString();
             Robot.NextAction = "下個動作 " + _robotActionIndex.ToString();
             Robot.SelectedRobotIndexDisplay = _robotActionIndex.ToString() + " / " + "3";
-            Robot.IsMultipleRobotVisible = false; 
+            Robot.IsMultipleRobotVisible = false;
         }
         [RelayCommand]
         private void LastRobot()
@@ -483,5 +620,31 @@ namespace FMSFrontend.ViewModels
             Robot.IsMultipleRobotVisible = true;
         }
         #endregion
+    }
+
+    // ====== 型別化訊息：讓各頁面可訂閱接收資料 ======
+    public sealed class AsrsParametersUpdatedMessage : ValueChangedMessage<List<AppointmentMaintenance>>
+    {
+        public AsrsParametersUpdatedMessage(List<AppointmentMaintenance> value) : base(value) { }
+    }
+    public sealed class StorageDataUpdatedMessage : ValueChangedMessage<JsonElement>
+    {
+        public StorageDataUpdatedMessage(JsonElement value) : base(value) { }
+    }
+    public sealed class MachinesDataUpdatedMessage : ValueChangedMessage<JsonElement>
+    {
+        public MachinesDataUpdatedMessage(JsonElement value) : base(value) { }
+    }
+    public sealed class CommandScheduleUpdatedMessage : ValueChangedMessage<JsonElement>
+    {
+        public CommandScheduleUpdatedMessage(JsonElement value) : base(value) { }
+    }
+    public sealed class MachineOverviewDataUpdatedMessage : ValueChangedMessage<JsonElement>
+    {
+        public MachineOverviewDataUpdatedMessage(JsonElement value) : base(value) { }
+    }
+    public sealed class RefreshPageMessage : ValueChangedMessage<string>
+    {
+        public RefreshPageMessage(string currentPageKey) : base(currentPageKey) { }
     }
 }

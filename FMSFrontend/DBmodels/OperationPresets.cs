@@ -5,16 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace OSCARMAXFMS_V3.DBmodels
 {
-    public class OperationPresets
+    public class OperationPresets // 作業預設（工序模板/標準作業定義）
     {
         [BsonRepresentation(BsonType.ObjectId)]
-        public string _id { get; set; }
-        public string OperationNumber { get; set; }
-        public string OperationStructure {  get; set; }
-        public string MachiningWorkpieceName { get; set; }
-        public string SetupUser {  get; set; }
+        public string _id { get; set; } // ID（MongoDB 物件識別碼）
+        public string OperationNumber { get; set; } // 作業/工序代碼（模板編號）
+        public string OperationStructure {  get; set; } // 作業結構（JSON/DSL；定義步驟、順序、參數等）
+        public string MachiningWorkpieceName { get; set; } // 加工工件名稱（模板適用之品名/類別）
+        public string SetupUser {  get; set; } // 建置/設定人員（帳號或姓名）
     }
 }

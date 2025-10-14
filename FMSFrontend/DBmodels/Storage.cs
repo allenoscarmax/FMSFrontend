@@ -7,15 +7,19 @@ namespace OSCARMAXFMS_V3.DBmodels
     public class Storage
     {
         [BsonRepresentation(BsonType.ObjectId)]
-        public string _id { get; set; }
-        public string StorageName{ get; set; }
-        public string StorageNumber { get; set; }
-        public int Region {  get; set; }
-        public int Column { get; set; }
-        public int Row { get; set; }
-        public string OndeskTagserial {  get; set; }
-        public string State { get; set; }
-        public bool? Restriction { get; set; }
-        public string Note {  get; set; }
+        public string _id { get; set; } //現有：ID
+
+        //StorageOverviewControl
+        public string StorageName{ get; set; } //現有：儲位名稱
+        public int Column { get; set; } //現有：列
+        public int Row { get; set; } //現有：行
+       
+        //未知
+        public int Region { get; set; } //現有：區域
+        public string OndeskTagserial {  get; set; } //現有：桌上型標籤序號 (哪裡用到)
+        public string StorageNumber { get; set; } //現有：儲位編號
+        public string State { get; set; }  //現有：狀態 (可用/不可用/維護中)
+        public bool? Restriction { get; set; } //現有：是否有限制 (true/false)
+        public string Note {  get; set; } //現有：說明
     }
 }
