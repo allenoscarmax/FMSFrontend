@@ -620,6 +620,29 @@ namespace FMSFrontend.ViewModels
             Robot.IsMultipleRobotVisible = true;
         }
         #endregion
+
+        #region DoorLight
+        // 新增屬性：綁定 ToggleButton 狀態
+        [ObservableProperty]
+        private bool _isDoorLightOn;
+
+        // 新增命令：ToggleButton 切換時呼叫
+        [RelayCommand]
+        private async Task DoorLightSwitchChanged(bool isChecked)
+        {
+            // 0: 關閉, 1: 開啟
+            int lightSwitch = isChecked ? 1 : 0;
+            string url = $"http://localhost:5032/PLC/EleMagazineDoorLightSwitch/0/{lightSwitch}";
+            try
+            {
+                await _httpService.SendPutAsync(url, new { });
+            }
+            catch
+            {
+                // 可加上錯誤提示
+            }
+        }
+        #endregion
     }
 
     // ====== 型別化訊息：讓各頁面可訂閱接收資料 ======

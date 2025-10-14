@@ -197,7 +197,10 @@
                                 <!-- 料倉控制標題 -->
                                 <controls:GradientTextBlock Text="料倉控制" FontSize="24" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="55" />
                                 <!-- 滑動按鈕 -->
-                                <ToggleButton x:Name="ToggleLight" Width="136" Height="40" HorizontalAlignment="Right" Margin="0,0,30,0">
+                                <ToggleButton x:Name="ToggleLight" Width="136" Height="40" HorizontalAlignment="Right" Margin="0,0,30,0" 
+                                                IsChecked="{Binding IsDoorLightOn, Mode=TwoWay}"
+                                                Command="{Binding DoorLightSwitchChangedCommand}"
+                                                CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}">
                                     <ToggleButton.Template>
                                         <ControlTemplate TargetType="ToggleButton">
                                             <Grid Width="136" Height="40">

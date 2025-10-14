@@ -12,7 +12,7 @@
                                              UpperDoorLight2="{Binding UpperDoorLights2[0]}"
                                              LowerDoorLight1="{Binding LowerDoorLights1[0]}"
                                              LowerDoorLight2="{Binding LowerDoorLights2[0]}" />
-
+            <!--
             <controls:StorageUnitMiniControl StorageTitle="2號" StorageId="2"
                                              UpperDoorCommand="{Binding UpperDoorCommand}"
                                              LowerDoorCommand="{Binding LowerDoorCommand}"
@@ -74,7 +74,7 @@
                                              UpperDoorLight1="{Binding UpperDoorLights1[7]}"
                                              UpperDoorLight2="{Binding UpperDoorLights2[7]}"
                                              LowerDoorLight1="{Binding LowerDoorLights1[7]}"
-                                             LowerDoorLight2="{Binding LowerDoorLights2[7]}" />
+                                             LowerDoorLight2="{Binding LowerDoorLights2[7]}" /> -->
         </UniformGrid>
     </Grid>
 </UserControl>

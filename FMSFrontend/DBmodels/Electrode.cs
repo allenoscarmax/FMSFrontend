@@ -27,7 +27,7 @@ namespace OSCARMAXFMS_V3.DBmodels
         //使用率??
         public string Offset { get; set; } // 補償量（字串存 xyzabc，例："x=...,y=...,z=...,a=...,b=...,c=..."）
         public int? UseTimes { get; set; } // 已使用次數
-
+        public bool? Restriction { get; set; } // 限制/鎖定（true=不可用/預留）
 
 
         //未知
@@ -38,7 +38,7 @@ namespace OSCARMAXFMS_V3.DBmodels
         public int? OffsetStatus { get; set; } // 補償流程模式：0=未補償；1=量測含加工（量→加→量→加）；2=量測含加工（全量後→全加工）；3=無量測載入補償加工
         public bool ComplementUpload { get; set; } // 僅在狀態3需要載入補償；載入後設為 true
         public string UnderSize { get; set; } // 欠量/負公差設定（字串；若需運算建議改為數值）
-        public bool? Restriction { get; set; } // 限制/鎖定（true=不可用/預留）
+
         public string EDMPGM { get; set; } // EDM 加工程式代碼（P1/P2…）
         public bool? Measuremented { get; set; } // 是否已量測（對應 OffsetStatus 1 或 2 才需）
         public string MeasurementStatus { get; set; } // 量測結果（PASS/FAIL/NG/OK…）

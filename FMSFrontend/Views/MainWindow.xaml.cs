@@ -55,5 +55,6 @@ namespace FMSFrontend.Views
             // 若需要在 PageMenuBar 載入後執行初始化，可在此加入邏輯。
             // 目前不需特別處理可留空，避免 XAML 解析錯誤。
         }
+
     }
 }
