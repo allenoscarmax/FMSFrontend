@@ -18,18 +18,9 @@ namespace FMSFrontend.ViewModels.Production
         public StorageOverviewViewModel(ProductionLinesViewModel parent)
         {
             _parent = parent;
-
-            StorageUnitViewModel es1 = new StorageUnitViewModel("ES1", 6, 8);
-
-            StorageUnits.Add(es1);
-            
             // ES* → 自動判斷為電極倉；W* → 工件倉
-            StorageUnits.Add(FakeDataFactory.CreateStorageUnit("ES1", 6, 8));
-            StorageUnits.Add(FakeDataFactory.CreateStorageUnit("ES2", 6, 8));
+            StorageUnits.Add(FakeDataFactory.CreateStorageUnit("ES1", 3, 10));
             StorageUnits.Add(FakeDataFactory.CreateStorageUnit("W1", 2, 5));
-            StorageUnits.Add(FakeDataFactory.CreateStorageUnit("W2", 2, 5));
-            StorageUnits.Add(FakeDataFactory.CreateStorageUnit("W3", 2, 5));
-            StorageUnits.Add(FakeDataFactory.CreateStorageUnit("W4", 3, 5));
          
             // ... 其他倉儲
         }

@@ -34,12 +34,9 @@ namespace FMSFrontend.ViewModels
         {
             _allMachines = new ObservableCollection<MachineOverviewCard>
         {
-            new() { MachineName = "EDM-01", Status = "Running", Type = MachineType.EDM },
-            new() { MachineName = "ZNC-02", Status = "Stay", Type = MachineType.ZNC },
-            new() { MachineName = "CNC-03", Status = "Alarm", Type = MachineType.CNC },
-            new() { MachineName = "EDM-04", Status = "Stay", Type = MachineType.EDM },
-            new() { MachineName = "CNC-05", Status = "Disconnection", Type = MachineType.CNC },
-            new() { MachineName = "CNC-05", Status = "Disconnection", Type = MachineType.ROBOT }
+            new() { MachineName = "EDM-01", Status = "Stay", Type = MachineType.EDM },
+            new() { MachineName = "EDM-02", Status = "Stay", Type = MachineType.EDM },
+            new() { MachineName = "EDM-03", Status = "Stay", Type = MachineType.EDM }
         };
             SelectedMachine = _allMachines.First(); // 預設第一台
             // 預設先顯示 MachineMainDetailControl

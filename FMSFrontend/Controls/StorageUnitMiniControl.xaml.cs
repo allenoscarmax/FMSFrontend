@@ -131,5 +131,43 @@ namespace FMSFrontend.Controls
         }
 
         #endregion
+
+        #region 新增的 DP
+        public static readonly DependencyProperty LeftTitleBrushProperty =
+            DependencyProperty.Register(nameof(LeftTitleBrush), typeof(Brush), typeof(StorageUnitMiniControl), new PropertyMetadata(Brushes.SteelBlue));
+
+        public Brush LeftTitleBrush
+        {
+            get => (Brush)GetValue(LeftTitleBrushProperty);
+            set => SetValue(LeftTitleBrushProperty, value);
+        }
+
+        public static readonly DependencyProperty LeftTitleProperty =
+            DependencyProperty.Register(nameof(LeftTitle), typeof(string), typeof(StorageUnitMiniControl), new PropertyMetadata(string.Empty));
+
+        public string LeftTitle
+        {
+            get => (string)GetValue(LeftTitleProperty);
+            set => SetValue(LeftTitleProperty, value);
+        }
+
+        public static readonly DependencyProperty RightTitleBrushProperty =
+            DependencyProperty.Register(nameof(RightTitleBrush), typeof(Brush), typeof(StorageUnitMiniControl), new PropertyMetadata(Brushes.DarkOrange));
+
+        public Brush RightTitleBrush
+        {
+            get => (Brush)GetValue(RightTitleBrushProperty);
+            set => SetValue(RightTitleBrushProperty, value);
+        }
+
+        public static readonly DependencyProperty RightTitleProperty =
+            DependencyProperty.Register(nameof(RightTitle), typeof(string), typeof(StorageUnitMiniControl), new PropertyMetadata(string.Empty));
+
+        public string RightTitle
+        {
+            get => (string)GetValue(RightTitleProperty);
+            set => SetValue(RightTitleProperty, value);
+        }
+        #endregion
     }
 }

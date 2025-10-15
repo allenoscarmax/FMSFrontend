@@ -1,5 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+//using OSCARMAXFMS_V3.DBmodels;
+using CommunityToolkit.Mvvm.Messaging; // ← 新增
+using CommunityToolkit.Mvvm.Messaging.Messages; // ← 新增：Message 型別
+using ControlzEx.Standard;
 using FMSFrontend.Controls;
 using FMSFrontend.Extensions;
 using FMSFrontend.Helpers;
@@ -7,28 +11,27 @@ using FMSFrontend.Models;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
+using IniFile;
 using OSCARMAXFMS_V3.DBmodels;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Text.Json; // ← 新增：JsonElement
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls; // 放在你的 ViewModel 上方
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System;
-using System.Collections.Generic;
 using System.Windows.Threading;
-using OSCARMAXFMS_V3.DBmodels;
-using CommunityToolkit.Mvvm.Messaging; // ← 新增
-using CommunityToolkit.Mvvm.Messaging.Messages; // ← 新增：Message 型別
-using System.Text.Json; // ← 新增：JsonElement
 
 namespace FMSFrontend.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
-        FactoryOverviewPage factoryOverviewPage = new FactoryOverviewPage();
         ProductionLines productionLines = new ProductionLines();
+        FactoryOverviewPage factoryOverviewPage = new FactoryOverviewPage();
         MachineOverviewPage machineOverviewPage = new MachineOverviewPage();
         WorkOrder workOrder = new WorkOrder();
         RFIDBind rFIDBind = new RFIDBind();
@@ -73,30 +76,40 @@ namespace FMSFrontend.ViewModels
 
         [ObservableProperty]
         private bool _isDispatch;
+        //電極門 與 工件門
+        [ObservableProperty]
+        private WeatherData? _weather;
 
         [ObservableProperty]
-        public ObservableCollection<Brush> _upperDoorLights1 =
-            new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 8));
+        private Brush _leftTitleBrush = new SolidColorBrush(Color.FromRgb(0x27, 0x79, 0xA7));
 
         [ObservableProperty]
-        public ObservableCollection<Brush> _upperDoorLights2 =
-            new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 8));
+        private string _leftTitle = "電極";
 
         [ObservableProperty]
-        public ObservableCollection<Brush> _lowerDoorLights1 =
-            new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 8));
+        private Brush _rightTitleBrush = new SolidColorBrush(Color.FromRgb(0xE0, 0x8E, 0x45));
 
         [ObservableProperty]
-        public ObservableCollection<Brush> _lowerDoorLights2 =
-            new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 8));
+        private string _rightTitle = "工件";
+        [ObservableProperty]
+        public ObservableCollection<Brush> _upperDoorLights1 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
+
+        [ObservableProperty]
+        public ObservableCollection<Brush> _upperDoorLights2 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
+
+        [ObservableProperty]
+        public ObservableCollection<Brush> _lowerDoorLights1 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
+
+        [ObservableProperty]
+        public ObservableCollection<Brush> _lowerDoorLights2 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
 
         // 新增：ASRS 參數
         [ObservableProperty]
         private ObservableCollection<AppointmentMaintenance> _asrsParameters = new();
 
         // 新增：天氣資料（對應 DBmodels\WeatherData.cs）
-        [ObservableProperty]
-        private WeatherData? _weather;
+
+
 
         // 既有：每3秒輪詢控制
         private readonly DispatcherTimer _asrsTimer = new() { Interval = TimeSpan.FromSeconds(3) };
@@ -120,10 +133,57 @@ namespace FMSFrontend.ViewModels
         // ✅ 新增：頁面刷新計時器（與 _asrsTimer 分開）
         private readonly DispatcherTimer _pageRefreshTimer = new() { Interval = TimeSpan.FromSeconds(5) };
 
+        public void SaveCurrentStoragePageType()
+        {          
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            string pageType = (StorageControlPage is FMSFrontend.Views.StorageUnitMiniControlPage).ToString();
+            ini.Write("Prarm", "IsStorageUnitControlMini", pageType);
+
+            if (productionLines.DataContext is FMSFrontend.ViewModels.ProductionLinesViewModel vm)     
+                pageType = (vm.CurrentStorageView is FMSFrontend.Controls.StorageOverviewControl).ToString();
+            else  
+                pageType = false.ToString();
+            ini.Write("Prarm", "IsStorageOverviewControl", pageType);
+        }
+        public void SaveCurrentStorageOverviewPageType()
+        {
+            /*
+            string pageType = string.Empty;
+            if (StorageControlPage is FMSFrontend.Controls.StorageOverviewControl)
+                pageType = "Overview";
+            else if (StorageControlPage is FMSFrontend.Controls.StorageDetailControl)
+                pageType = "Detail";
+            else
+                pageType = "Unknown";
+
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            ini.Write("Prarm", "IsStorageOverviewControl", pageType);
+            */
+        }
+
+        private readonly string _iniPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Basesitting.ini");
+
+        public void LoadSystemParameters()
+        {
+           // INIFile ini =  new INIFile(AppDomain.CurrentDomain.BaseDirectory+ "\\Basesitting.ini");
+           // IsStorageUnitControlMini = ini.Read("Prarm", "IsStorageUnitControlMini") == "true";
+        }
+
+        public void SaveSystemParameters()
+        {
+
+        }
+
         public MainWindowViewModel(IHttpService httpService, AlarmPageViewModel alarmVM)
         {
             _httpService = httpService;
-            StorageControlPage = new StorageUnitMiniControlPage();
+            
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            bool b = ini.Read("Prarm", "IsStorageUnitControlMini") == "True";
+
+            StorageControlPage = b?  new StorageUnitMiniControlPage() : new StorageUnitControlPage();
+
+           
             // 初始化時間更新
             Task.Run(async () =>
             {
@@ -139,7 +199,7 @@ namespace FMSFrontend.ViewModels
                 CurrentLocation = "EDM",
                 CurrentAction = "搬運",
                 NextAction = "上架",
-                SelectedRobotIndexDisplay = _robotActionIndex.ToString() + " / 3",
+                SelectedRobotIndexDisplay = _robotActionIndex.ToString() + " / "+ _robotActionNum.ToString(),
                 IsMultipleRobotVisible = true
             };
             AlarmVM = alarmVM;
@@ -154,6 +214,8 @@ namespace FMSFrontend.ViewModels
 
             // ✅ 新增：啟動背景執行續，並行呼叫五個 API
             Task.Run(InitializeDataAsync);
+
+            LoadSystemParameters(); // 啟動時讀取
         }
 
         // ✅ 啟動時一次性並行抓取必要資料
@@ -593,17 +655,21 @@ namespace FMSFrontend.ViewModels
         #region Robot
         // 加入：目前指向 NextAction 的索引（-1 代表尚未初始化）
         private int _robotActionIndex = 1;
+        private int _robotActionNum = 1;
+
         [RelayCommand]
         private void NextRobot()
         {
             if (Robot == null) return;
-            if (_robotActionIndex == 3) _robotActionIndex = 1;
+            /*
+            if (_robotActionIndex == 1) _robotActionIndex = 1;
             else _robotActionIndex++;
+            */
             Robot.Name = "名稱" + _robotActionIndex.ToString();
             Robot.CurrentLocation = "目前位置" + _robotActionIndex.ToString();
             Robot.CurrentAction = "目前動作 " + _robotActionIndex.ToString();
             Robot.NextAction = "下個動作 " + _robotActionIndex.ToString();
-            Robot.SelectedRobotIndexDisplay = _robotActionIndex.ToString() + " / " + "3";
+            Robot.SelectedRobotIndexDisplay = _robotActionIndex.ToString() + " / " + _robotActionNum.ToString();
             Robot.IsMultipleRobotVisible = false;
         }
         [RelayCommand]
@@ -616,7 +682,7 @@ namespace FMSFrontend.ViewModels
             Robot.CurrentLocation = "目前位置" + _robotActionIndex.ToString();
             Robot.CurrentAction = "目前動作 " + _robotActionIndex.ToString();
             Robot.NextAction = "下個動作 " + _robotActionIndex.ToString();
-            Robot.SelectedRobotIndexDisplay = _robotActionIndex.ToString() + " / " + "3";
+            Robot.SelectedRobotIndexDisplay = _robotActionIndex.ToString() + " / " + _robotActionNum.ToString();
             Robot.IsMultipleRobotVisible = true;
         }
         #endregion
@@ -642,6 +708,10 @@ namespace FMSFrontend.ViewModels
                 // 可加上錯誤提示
             }
         }
+        #endregion
+
+        #region Title
+
         #endregion
     }
 

@@ -7,6 +7,7 @@ using FMSFrontend.ViewModels.Production;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
 using FMSFrontend.Views.Windows;
+using IniFile;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -39,11 +40,15 @@ namespace FMSFrontend.ViewModels
         public ProductionLinesViewModel(IWindowService windowService)
         {
             _windowService = windowService;
-            // 預設載入總覽畫面
-            ShowOverview();
-            ShowMachineOverview();
 
-            
+            // 預設載入總覽畫面
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            bool b = ini.Read("Prarm", "IsStorageOverviewControl") == "True";
+            if (b) 
+                ShowOverview(); 
+            else 
+                ShowDetail("0");
+            ShowMachineOverview();
         }
 
 
