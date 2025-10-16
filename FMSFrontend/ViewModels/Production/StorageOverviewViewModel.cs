@@ -178,7 +178,7 @@ namespace FMSFrontend.ViewModels.Production
                             Col = c,
                             Layer = 1,
                             Status = stateValue,
-                            IsReserved = restrictionValue,
+                            Restriction = restrictionValue,
                             Material = new MaterialRef
                             {
                                 Kind = isElectrodeStore ? MaterialKind.Electrode : MaterialKind.Workpiece,
@@ -242,6 +242,7 @@ namespace FMSFrontend.ViewModels.Production
         public string Status { get; set; }
         public bool IsDisabled { get; set; }
         public bool IsReserved { get; set; }
+        public bool Restriction { get; set; }
 
         public Brush Background => Status switch
         {
