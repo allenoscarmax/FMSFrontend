@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using IniFile;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -25,12 +26,17 @@ namespace FMSFrontend.ViewModels.Windows
         [RelayCommand]
         private void ShutdownComfirm()
         {
+            if (Application.Current.MainWindow?.DataContext is FMSFrontend.ViewModels.MainWindowViewModel mainVM)
+            {
+                mainVM.SaveCurrentStoragePageType();
+            }
             System.Windows.Application.Current.Shutdown();
             // 執行關機邏輯
         }
         [RelayCommand]
         private void CloseWindow(Window window)
         {
+
             window?.Close();
         }
 

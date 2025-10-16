@@ -41,7 +41,7 @@
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 								<TextBlock Text="待加工" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
 								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">
-									<TextBlock Text="{Binding VerifiedCount}" d:Text ="12"  Foreground="#222"  FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding WaitingCount}" d:Text ="12"  Foreground="#222"  FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
 								</Border>
 							</StackPanel>
 						</Border>

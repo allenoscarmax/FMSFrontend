@@ -166,6 +166,7 @@
 
                                 <!-- 下排：灰底圖示狀態列 -->
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="-50,0,0,0" Visibility="{Binding IsElectrode, Converter={StaticResource BoolToVis}}">
+                                   <!--
                                     <Border Style="{StaticResource GrayTagStatusStyle}">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                             <Path Data="{StaticResource CheckIconGeometry}" 
@@ -201,6 +202,7 @@
                                             <TextBlock Text="待檢查" FontSize="14" Foreground="#555" />
                                         </StackPanel>
                                     </Border>
+                                    -->
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
@@ -231,10 +233,12 @@
                                                         <!-- Row 0: 鎖 icon（禁用） -->
                                                         <materialDesign:PackIcon Grid.Row="0" Kind="Lock" Width="16" Height="16" Foreground="Black" Visibility="{Binding IsLocked, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" />
 
+                                                       
                                                         <!-- Row 1: 工件名稱 -->
                                                         <TextBlock Grid.Row="1" Text="{Binding Text}" FontSize="14" FontWeight="SemiBold" Foreground="{Binding TextColor, FallbackValue=Black}" VerticalAlignment="Center" HorizontalAlignment="Center" />
-
+                                                       
                                                         <!-- Row 2: 狀態 icon（左：檢查狀態，右：加工結果） -->
+                                                        
                                                         <Grid Grid.Row="2" Margin="0">
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition Width="*" />
@@ -242,10 +246,14 @@
                                                             </Grid.ColumnDefinitions>
 
                                                             <!-- 左：檢查狀態 -->
+                                                            <!--
                                                             <Path Grid.Column="0" Width="16" Height="16" Fill="#555" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding IsElectrode, Converter={StaticResource BoolToVisibilityConverter}}" Data="{Binding ResultStatus, Converter={StaticResource ResultStatusToGeometryConverter}}" />
-
+                                                            -->
+                                                            
                                                             <!-- 右：加工結果狀態 -->
+                                                            <!--
                                                             <Image Grid.Column="1" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding IsElectrode, Converter={StaticResource BoolToVisibilityConverter}}" Source="{Binding CheckStatus, Converter={StaticResource CheckStatusToImageConverter}}" />
+                                                            -->
                                                         </Grid>
                                                     </Grid>
                                                 </Border>

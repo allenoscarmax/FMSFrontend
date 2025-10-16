@@ -18,9 +18,9 @@
 
             <controls:PageMenuItem Icon="History" Label="操作歷程" Command="{Binding GoToOperationHistoryCommand}" PageKey="OperationHistory" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
 
-            <controls:PageMenuItem Icon="Storage" Label="庫存資訊" Command="{Binding GoToMaterailCommand}" PageKey="Materail" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
+            <controls:PageMenuItem Icon="Storage" Label="庫存資訊" Command="{Binding GoToMaterialCommand}" PageKey="Material" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
 
-            <controls:PageMenuItem Icon="Cog" Label="設定" Command="{Binding GoToSettingsviewCommand}" PageKey="Settingsview" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
+            <controls:PageMenuItem Icon="Cog" Label="設定" Command="{Binding GoToSettingsViewCommand}" PageKey="SettingsView" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
         </UniformGrid>
 
         <!-- 展開收合按鈕 -->

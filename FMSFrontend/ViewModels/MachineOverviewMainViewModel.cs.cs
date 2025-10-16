@@ -26,17 +26,17 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty]
         private double cardOpacity = 1.0;
 
-        public object CurrentMachineDetailContent { get; set; }
+        // 讓 Content 能通知 UI 更新
+        [ObservableProperty]
+        private object currentMachineDetailContent;
 
         public MachineOverviewMainViewModel()
         {
             _allMachines = new ObservableCollection<MachineOverviewCard>
         {
-            new() { MachineName = "EDM-01", Status = "Running", Type = MachineType.EDM },
-            new() { MachineName = "ZNC-02", Status = "Stay", Type = MachineType.ZNC },
-            new() { MachineName = "CNC-03", Status = "Alarm", Type = MachineType.CNC },
-            new() { MachineName = "EDM-04", Status = "Stay", Type = MachineType.EDM },
-            new() { MachineName = "CNC-05", Status = "Disconnection", Type = MachineType.CNC }
+            new() { MachineName = "EDM-01", Status = "Stay", Type = MachineType.EDM },
+            new() { MachineName = "EDM-02", Status = "Stay", Type = MachineType.EDM },
+            new() { MachineName = "EDM-03", Status = "Stay", Type = MachineType.EDM }
         };
             SelectedMachine = _allMachines.First(); // 預設第一台
             // 預設先顯示 MachineMainDetailControl
@@ -51,6 +51,15 @@ namespace FMSFrontend.ViewModels
             ApplyFilterByTab();
         }
 
+        [RelayCommand]
+        private void SelectMachine(MachineOverviewCard? card)
+        {
+            if (card is null) return;
+
+            SelectedMachine = card;
+            // 重新建立右側詳情區，ViewModel 會依此卡片更新顯示資料
+            CurrentMachineDetailContent = new MachineMainDetailControl(card);
+        }
 
         partial void OnSelectedTabIndexChanged(int value)
         {
@@ -90,7 +99,6 @@ namespace FMSFrontend.ViewModels
             await Task.Delay(50);
             CardOpacity = 1;
         }
-
     }
 
 

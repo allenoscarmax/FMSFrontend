@@ -22,7 +22,7 @@
             <!-- Title 區塊 -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2">
                 <materialDesign:PackIcon Kind="ViewDashboard" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
-                <TextBlock Text="設備總攬" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                <TextBlock Text="設備總覽" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" />
             </StackPanel>
 
             <!-- 下半部區塊：Tab + 卡片 + 主內容 -->
@@ -51,8 +51,8 @@
 
                     <TabItem Header="ALL" Tag="#777777" />
                     <TabItem Header="EDM" Tag="#555555" />
-                    <TabItem Header="CNC" Tag="#555555" />
-                    <TabItem Header="ROBOT" Tag="#4CAF50" />
+                 <!-- <TabItem Header="CNC" Tag="#555555" /> -->
+                 <!--   <TabItem Header="ROBOT" Tag="#4CAF50" /> -->
                 </TabControl>
 
                 <!-- 卡片列 -->
@@ -65,7 +65,15 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <controls:MachineOverviewCardControl Margin="6,0,6,0" />
+                                <!-- 以 Button 包住卡片，點擊時把該卡片作為 CommandParameter 傳給頁面 VM -->
+                                <Button Command="{Binding DataContext.SelectMachineCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Padding="0"
+                                        Cursor="Hand">
+                                    <controls:MachineOverviewCardControl Margin="6,0,6,0" />
+                                </Button>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

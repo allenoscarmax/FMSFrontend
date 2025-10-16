@@ -97,7 +97,6 @@ namespace FMSFrontend.ViewModels
         public ObservableCollection<WorkOrderData> WorkOrderList { get; set; }
         public ObservableCollection<WorkOrderData> FailureWorkOrders { get; set; } = new();
 
-
         private void ApplyDateFilter()
         {
             switch (SelectedFilterOption)
@@ -286,8 +285,6 @@ namespace FMSFrontend.ViewModels
         public bool NeedEDM { get; set; }
         public string EDMProgram { get; set; }
         public int Offset { get; set; }
-
-
 
     }
 }

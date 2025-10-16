@@ -1,17 +1,15 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Extensions;
+using OSCARMAXFMS_V3.DBmodels;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FMSFrontend.Controls
 {
@@ -25,8 +23,9 @@ namespace FMSFrontend.Controls
             InitializeComponent();
         }
 
+        #region 依舊的現有 DP
         public static readonly DependencyProperty StorageTitleProperty =
-    DependencyProperty.Register("StorageTitle", typeof(string), typeof(StorageUnitMiniControl));
+            DependencyProperty.Register(nameof(StorageTitle), typeof(string), typeof(StorageUnitMiniControl));
 
         public string StorageTitle
         {
@@ -35,7 +34,7 @@ namespace FMSFrontend.Controls
         }
 
         public static readonly DependencyProperty UpperDoorCommandProperty =
-            DependencyProperty.Register("UpperDoorCommand", typeof(ICommand), typeof(StorageUnitMiniControl));
+            DependencyProperty.Register(nameof(UpperDoorCommand), typeof(ICommand), typeof(StorageUnitMiniControl));
 
         public ICommand UpperDoorCommand
         {
@@ -44,7 +43,7 @@ namespace FMSFrontend.Controls
         }
 
         public static readonly DependencyProperty LowerDoorCommandProperty =
-            DependencyProperty.Register("LowerDoorCommand", typeof(ICommand), typeof(StorageUnitMiniControl));
+            DependencyProperty.Register(nameof(LowerDoorCommand), typeof(ICommand), typeof(StorageUnitMiniControl));
 
         public ICommand LowerDoorCommand
         {
@@ -53,7 +52,7 @@ namespace FMSFrontend.Controls
         }
 
         public static readonly DependencyProperty ShowDetailCommandProperty =
-    DependencyProperty.Register("ShowDetailCommand", typeof(ICommand), typeof(StorageUnitMiniControl));
+            DependencyProperty.Register(nameof(ShowDetailCommand), typeof(ICommand), typeof(StorageUnitMiniControl));
 
         public ICommand ShowDetailCommand
         {
@@ -62,7 +61,7 @@ namespace FMSFrontend.Controls
         }
 
         public static readonly DependencyProperty StorageIdProperty =
-    DependencyProperty.Register(nameof(StorageId), typeof(string), typeof(StorageUnitMiniControl), new PropertyMetadata(""));
+            DependencyProperty.Register(nameof(StorageId), typeof(string), typeof(StorageUnitMiniControl), new PropertyMetadata(""));
 
         public string StorageId
         {
@@ -71,19 +70,104 @@ namespace FMSFrontend.Controls
         }
 
         public static readonly DependencyProperty SidebarBrushProperty =
-    DependencyProperty.Register(
-        nameof(SidebarBrush),
-        typeof(Brush),
-        typeof(StorageUnitMiniControl),
-        new PropertyMetadata(new SolidColorBrush(Color.FromRgb(0x27, 0x79, 0xA7)))  // 預設為藍色
-    );
+            DependencyProperty.Register(
+                nameof(SidebarBrush),
+                typeof(Brush),
+                typeof(StorageUnitMiniControl),
+                new PropertyMetadata(new SolidColorBrush(Color.FromRgb(0x27, 0x79, 0xA7)))
+            );
 
         public Brush SidebarBrush
         {
             get => (Brush)GetValue(SidebarBrushProperty);
             set => SetValue(SidebarBrushProperty, value);
         }
+        #endregion
 
+        #region DoorLight
+        // 狀態燈 Brush（單一 Brush 即可）
+        public static readonly DependencyProperty UpperDoorLight1Property =
+            DependencyProperty.Register(
+                nameof(UpperDoorLight1), 
+                typeof(Brush), 
+                typeof(StorageUnitMiniControl),
+                new PropertyMetadata(Brushes.Gray)
+            );
 
+        public Brush UpperDoorLight1
+        {
+            get => (Brush)GetValue(UpperDoorLight1Property);
+            set => SetValue(UpperDoorLight1Property, value);
+        }
+
+        public static readonly DependencyProperty UpperDoorLight2Property =
+            DependencyProperty.Register(nameof(UpperDoorLight2), typeof(Brush), typeof(StorageUnitMiniControl),
+                new PropertyMetadata(Brushes.Gray));
+
+        public Brush UpperDoorLight2
+        {
+            get => (Brush)GetValue(UpperDoorLight2Property);
+            set => SetValue(UpperDoorLight2Property, value);
+        }
+
+        public static readonly DependencyProperty LowerDoorLight1Property =
+            DependencyProperty.Register(nameof(LowerDoorLight1), typeof(Brush), typeof(StorageUnitMiniControl),
+                new PropertyMetadata(Brushes.Gray));
+
+        public Brush LowerDoorLight1
+        {
+            get => (Brush)GetValue(LowerDoorLight1Property);
+            set => SetValue(LowerDoorLight1Property, value);
+        }
+
+        public static readonly DependencyProperty LowerDoorLight2Property =
+            DependencyProperty.Register(nameof(LowerDoorLight2), typeof(Brush), typeof(StorageUnitMiniControl),
+                new PropertyMetadata(Brushes.Gray));
+
+        public Brush LowerDoorLight2
+        {
+            get => (Brush)GetValue(LowerDoorLight2Property);
+            set => SetValue(LowerDoorLight2Property, value);
+        }
+
+        #endregion
+
+        #region 新增的 DP
+        public static readonly DependencyProperty LeftTitleBrushProperty =
+            DependencyProperty.Register(nameof(LeftTitleBrush), typeof(Brush), typeof(StorageUnitMiniControl), new PropertyMetadata(Brushes.SteelBlue));
+
+        public Brush LeftTitleBrush
+        {
+            get => (Brush)GetValue(LeftTitleBrushProperty);
+            set => SetValue(LeftTitleBrushProperty, value);
+        }
+
+        public static readonly DependencyProperty LeftTitleProperty =
+            DependencyProperty.Register(nameof(LeftTitle), typeof(string), typeof(StorageUnitMiniControl), new PropertyMetadata(string.Empty));
+
+        public string LeftTitle
+        {
+            get => (string)GetValue(LeftTitleProperty);
+            set => SetValue(LeftTitleProperty, value);
+        }
+
+        public static readonly DependencyProperty RightTitleBrushProperty =
+            DependencyProperty.Register(nameof(RightTitleBrush), typeof(Brush), typeof(StorageUnitMiniControl), new PropertyMetadata(Brushes.DarkOrange));
+
+        public Brush RightTitleBrush
+        {
+            get => (Brush)GetValue(RightTitleBrushProperty);
+            set => SetValue(RightTitleBrushProperty, value);
+        }
+
+        public static readonly DependencyProperty RightTitleProperty =
+            DependencyProperty.Register(nameof(RightTitle), typeof(string), typeof(StorageUnitMiniControl), new PropertyMetadata(string.Empty));
+
+        public string RightTitle
+        {
+            get => (string)GetValue(RightTitleProperty);
+            set => SetValue(RightTitleProperty, value);
+        }
+        #endregion
     }
 }

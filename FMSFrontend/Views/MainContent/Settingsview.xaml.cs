@@ -19,11 +19,11 @@ using System.Windows.Shapes;
 namespace FMSFrontend.Views
 {
     /// <summary>
-    /// Settingsview.xaml 的互動邏輯
+    /// SettingsView.xaml 的互動邏輯
     /// </summary>
-    public partial class Settingsview : UserControl
+    public partial class SettingsView : UserControl
     {
-        public Settingsview()
+        public SettingsView()
         {
             InitializeComponent();
             // 建立服務實例

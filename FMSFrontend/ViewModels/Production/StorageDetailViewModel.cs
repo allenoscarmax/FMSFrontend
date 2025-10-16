@@ -265,11 +265,13 @@ namespace FMSFrontend.ViewModels.Production
             }
         }
         */
+        
         private void LoadStoragePages()
         {
             StoragePages.Clear();
+
             string[] names = StorageType == StorageType.Electrode
-                ? new[] { "ES1", "ES2", "ES3", "ES4" }
+                ? new[] { "ES1"}
                 : new[] { "W1" };
 
             var rnd = new Random();
@@ -278,7 +280,7 @@ namespace FMSFrontend.ViewModels.Production
             {
                 var page = new StoragePageViewModel()
                 {
-                    Rows = 6,
+                    Rows = StorageType == StorageType.Workpiece ? 2 : 3,
                     Columns = StorageType == StorageType.Workpiece ? 5 : 10,
                     StorageName = name
                 };
@@ -332,10 +334,10 @@ namespace FMSFrontend.ViewModels.Production
                                 },
                                 Timeline = new[]
                                 {
-                            new TimelineItemModel { Text="入庫", Time=DateTime.Now.AddHours(-8), Status="✓"},
-                            new TimelineItemModel { Text="檢驗完成", Time=DateTime.Now.AddHours(-6), Status="✓"},
-                            new TimelineItemModel { Text="待派工", Time=DateTime.Now.AddHours(-2), Status="10%"}
-                        }
+                                    new TimelineItemModel { Text="入庫", Time=DateTime.Now.AddHours(-8), Status="✓"},
+                                    new TimelineItemModel { Text="檢驗完成", Time=DateTime.Now.AddHours(-6), Status="✓"},
+                                    new TimelineItemModel { Text="待派工", Time=DateTime.Now.AddHours(-2), Status="10%"}
+                                }
                             };
                         }
                         else

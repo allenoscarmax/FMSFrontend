@@ -25,6 +25,7 @@ namespace FMSFrontend.Views
             InitializeComponent();
             DataContext = viewModel;
         }
+
         private void ToggleMenuBar_Click(object sender, RoutedEventArgs e)
         {
             //Storyboard sb;
@@ -46,10 +47,14 @@ namespace FMSFrontend.Views
 
             //sb.Begin();
             //_isMenuBarVisible = !_isMenuBarVisible;
-
-
         }
 
+        // 修正：補上 XAML 綁定的 Loaded 事件處理函式
+        private void PageMenuBar_Loaded(object sender, RoutedEventArgs e)
+        {
+            // 若需要在 PageMenuBar 載入後執行初始化，可在此加入邏輯。
+            // 目前不需特別處理可留空，避免 XAML 解析錯誤。
+        }
 
     }
 }

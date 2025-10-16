@@ -18,6 +18,12 @@ namespace FMSFrontend.Models
         private string nextAction;
 
         [ObservableProperty]
+        private string selectedRobotIndexDisplay;
+
+        [ObservableProperty]
+        private bool isMultipleRobotVisible;
+
+        [ObservableProperty]
         private Brush statusRed;
 
         [ObservableProperty]
@@ -25,5 +31,6 @@ namespace FMSFrontend.Models
 
         [ObservableProperty]
         private Brush statusGreen;
+
     }
 }

@@ -1,4 +1,7 @@
-﻿<UserControl x:Class="FMSFrontend.Controls.StorageUnitMiniControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Height="64" Width="168">
+﻿<UserControl x:Class="FMSFrontend.Controls.StorageUnitMiniControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Height="64" Width="168">
     <Border Background="#DADADA" CornerRadius="12" Margin="0" Padding="0">
         <Border.Effect>
             <DropShadowEffect BlurRadius="8" ShadowDepth="2" Direction="270" Color="#66000000" />
@@ -14,43 +17,83 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- 左側藍區塊（導左上＋左下角） -->
-            <Button Grid.RowSpan="2" Grid.Column="0" Background="{Binding SidebarBrush, RelativeSource={RelativeSource AncestorType=UserControl}, FallbackValue=#2779A7}" BorderBrush="{x:Null}" Command="{Binding ShowDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding StorageId, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Content="{Binding StorageTitle, RelativeSource={RelativeSource AncestorType=UserControl}}">
-
+            <!-- 上方按鈕（左側顏色與文字） -->
+            <Button Grid.Row="0" Grid.Column="0"
+                    Background="{Binding LeftTitleBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    BorderBrush="{x:Null}"
+                    Command="{Binding ShowDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    CommandParameter="{Binding StorageId, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Content="{Binding LeftTitle, RelativeSource={RelativeSource AncestorType=UserControl}}">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="10,0,0,10">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" Content="{TemplateBinding Content}" />
+                        <Border Background="{TemplateBinding Background}" CornerRadius="10,0,0,0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                     </ControlTemplate>
                 </Button.Template>
             </Button>
+
+            <!-- 下方按鈕（右側顏色與文字） -->
+            <Button Grid.Row="1" Grid.Column="0"
+                    Background="{Binding RightTitleBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    BorderBrush="{x:Null}"
+                    Command="{Binding ShowDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    CommandParameter="{Binding StorageId, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Content="{Binding RightTitle, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="0,0,0,10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
             <!-- 上門控制 -->
             <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="3,0">
                 <TextBlock Text="上門" VerticalAlignment="Center" />
-                <Button Style="{StaticResource RoundedShadowButtonStyle}" Content="開" Width="48" Margin="15,0" Command="{Binding UpperDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" /> 
-                
+                <Button Style="{StaticResource RoundedShadowButtonStyle}"
+                        Content="開"
+                        Width="48"
+                        Margin="15,0"
+                        Command="{Binding UpperDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        CommandParameter="{Binding StorageId, RelativeSource={RelativeSource AncestorType=UserControl}}" />
             </StackPanel>
 
             <!-- 下門控制 -->
             <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="3,0">
                 <TextBlock Text="下門" VerticalAlignment="Center" />
-                <Button Style="{StaticResource RoundedShadowButtonStyle}" Content="開" Width="48" Margin="15,0" Command="{Binding LowerDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" /> 
+                    <Button Style="{StaticResource RoundedShadowButtonStyle}"
+                        Content="開"
+                        Width="48"
+                        Margin="15,0"
+                        Command="{Binding LowerDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        CommandParameter="{Binding StorageId, RelativeSource={RelativeSource AncestorType=UserControl}}" />
             </StackPanel>
 
             <!-- 狀態燈 -->
             <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Vertical">
-                <Ellipse Width="8" Height="8" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,5,0,0" Stroke="#FF717171" StrokeThickness="0.5"></Ellipse>
-                <Ellipse Width="8" Height="8" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,5,0,0" Stroke="#FF717171" StrokeThickness="0.5"></Ellipse>
+                <Ellipse Width="8" Height="8" Margin="0,5,0,0"
+                         Stroke="#FF717171" StrokeThickness="0.5"
+                         Fill="{Binding UpperDoorLight1, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                <Ellipse Width="8" Height="8" Margin="0,5,0,0"
+                         Stroke="#FF717171" StrokeThickness="0.5"
+                         Fill="{Binding UpperDoorLight2, RelativeSource={RelativeSource AncestorType=UserControl}}" />
             </StackPanel>
-            <!-- 狀態燈 -->
             <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical">
-                <Ellipse Width="8" Height="8" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,5,0,0" Stroke="#FF717171" StrokeThickness="0.5"></Ellipse>
-                <Ellipse Width="8" Height="8" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,5,0,0" Stroke="#FF717171" StrokeThickness="0.5"></Ellipse>
+                <Ellipse Width="8" Height="8" Margin="0,5,0,0"
+                         Stroke="#FF717171" StrokeThickness="0.5"
+                         Fill="{Binding LowerDoorLight1, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                <Ellipse Width="8" Height="8" Margin="0,5,0,0"
+                         Stroke="#FF717171" StrokeThickness="0.5"
+                         Fill="{Binding LowerDoorLight2, RelativeSource={RelativeSource AncestorType=UserControl}}" />
             </StackPanel>
-            <!-- ✅ 中間分界線：淺藍色線條 -->
-            <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Height="0.5" Background="#2779A7" VerticalAlignment="Top" Margin="-0.5" />
 
+            <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Height="0.5" Background="#2779A7" VerticalAlignment="Top" Margin="-0.5" />
         </Grid>
     </Border>
 </UserControl>

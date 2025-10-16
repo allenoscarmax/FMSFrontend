@@ -19,35 +19,20 @@ namespace FMSFrontend.ViewModels.Production
             new MachineCardViewModel
             {
                 MachineName = "EDM-01",
-                Status = "Running",
-                Type = MachineType.EDM,
-                Restriction = true
-                
-            },
-            new MachineCardViewModel
-            {
-                MachineName = "ZNC-02",
-                Status = "Stay",
-                Type = MachineType.ZNC,
-                Restriction = true
-            },
-            new MachineCardViewModel
-            {
-                MachineName = "CNC-03",
-                Status = "Alarm",
-                Type = MachineType.CNC
-            },
-            new MachineCardViewModel
-            {
-                MachineName = "EDM-04",
                 Status = "Stay",
                 Type = MachineType.EDM
             },
             new MachineCardViewModel
             {
-                MachineName = "CNC-05",
-                Status = "Disconnection",
-                Type = MachineType.CNC
+                MachineName = "EDM-02",
+                Status = "Stay",
+                Type = MachineType.EDM
+            },
+            new MachineCardViewModel
+            {
+                MachineName = "EDM-03",
+                Status = "Stay",
+                Type = MachineType.EDM
             }
         };
         public MachineOverviewViewModel(ProductionLinesViewModel parent)

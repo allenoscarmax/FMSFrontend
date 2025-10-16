@@ -36,12 +36,16 @@
 
             <Grid Grid.Row="1" Background="White" SnapsToDevicePixels="True" UseLayoutRounding="True">
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="116*"/>
+                        <ColumnDefinition Width="133*"/>
+                    </Grid.ColumnDefinitions>
                     <!-- ① 全域時間軸垂直線：畫滿整個清單高度（在最底層） -->
                     <!-- 70 = 左欄 140 的一半 = 圓心 X；寬度 4 可調 -->
-                    <Border HorizontalAlignment="Left" Margin="70,0,0,0" Width="4" Background="#9BB8CC" CornerRadius="2" VerticalAlignment="Stretch" Panel.ZIndex="0" />
+                    <Border HorizontalAlignment="Left" Margin="70,0,0,0" Width="4" Background="#9BB8CC" CornerRadius="2" Panel.ZIndex="0" />
 
                     <!-- 清單本體 -->
-                    <ItemsControl ItemsSource="{Binding TasksView}">
+                    <ItemsControl ItemsSource="{Binding TasksView}" Grid.ColumnSpan="2">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Vertical" />
