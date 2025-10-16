@@ -47,6 +47,7 @@ namespace FMSFrontend.ViewModels
             public string UsageRate { get; set; } //電極使用率
             public string Compensation { get; set; } //電極補償值
             public string ProcessedCount { get; set; }//被加工次數
+            public bool? Restriction { get; set; } // 新增：限制/鎖定
         }
     }
 }

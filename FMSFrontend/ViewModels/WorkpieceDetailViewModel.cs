@@ -37,7 +37,6 @@ namespace FMSFrontend.ViewModels
             RouteNo = model?.RouteNo;
         }
     }
-
     public class WorkpieceModel
     {
         public string JigSerial { get; set; }    // 治具序號
@@ -52,5 +51,6 @@ namespace FMSFrontend.ViewModels
         public string PartName { get; set; }     // 零件名稱
         public string SerialCode { get; set; }   // 序號順序碼
         public string RouteNo { get; set; }      // 途程號碼
+        public bool Restriction { get; set; }        //限制/鎖定（DB 為 bool）
     }
 }

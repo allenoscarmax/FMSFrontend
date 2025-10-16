@@ -173,7 +173,8 @@ namespace FMSFrontend.ViewModels
                 MaxDischargeCount = db.LifeTimes?.ToString() ?? fallback?.MaxDischargeCount,
                 UsageRate = fallback?.UsageRate, // 若需，用 UseTimes/LifeTimes 計算
                 Compensation = db.Offset ?? fallback?.Compensation,
-                ProcessedCount = db.UseTimes?.ToString() ?? fallback?.ProcessedCount
+                ProcessedCount = db.UseTimes?.ToString() ?? fallback?.ProcessedCount,
+                Restriction = db.Restriction ?? fallback?.Restriction
             };
         }
 
@@ -199,7 +200,8 @@ namespace FMSFrontend.ViewModels
                 BatchNo = fallback?.BatchNo,
                 PartName = fallback?.PartName,
                 SerialCode = fallback?.SerialCode,
-                RouteNo = fallback?.RouteNo
+                RouteNo = fallback?.RouteNo,
+                Restriction = db.Restriction ?? fallback?.Restriction ?? false
             };
         }
 

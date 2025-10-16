@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
 
 namespace FMSFrontend.ViewModels.Production
@@ -103,10 +104,9 @@ namespace FMSFrontend.ViewModels.Production
                                   .Distinct()
                                   .ToList();
 
+
                 // 3) 依類別，批次查詢 TagSerial → 狀態與限制
                 //    用 dictionary 快速回填
-                var tagStateMap = new Dictionary<string, (string State, bool Restriction)>(StringComparer.OrdinalIgnoreCase);
-
                 if (tagSerials.Count > 0)
                 {
                     var tasks = tagSerials.Select(async ts =>
@@ -118,19 +118,16 @@ namespace FMSFrontend.ViewModels.Production
                                 var route = $"Electrode/DB_GetElectrodesByTagSerial/{ts}";
                                 var list = await _httpService.GetJsonAsync<List<Electrode>>(route) ?? new List<Electrode>();
                                 var e = list.FirstOrDefault();
-                                if (e != null)
-                                {
-                                    tagStateMap[ts] = (e.State ?? "Empty", e.Restriction ?? false);
-                                }
+                                //if (e != null) tagStateMap[ts] = (e.State ?? "Empty", e.Restriction ?? false);
                             }
                             else
                             {
                                 var route = $"Workpiece/DB_GetWorkpieceByTagSerial/{ts}";
                                 var list = await _httpService.GetJsonAsync<List<Workpiece>>(route) ?? new List<Workpiece>();
                                 var w = list.FirstOrDefault();
-                                if (w != null)
+                                //if (w != null) tagStateMap[ts] = (w.Status ?? "Empty", w.Restriction ?? false);
                                 {
-                                    tagStateMap[ts] = (w.Status ?? "Empty", w.Restriction);
+                                   
                                 }
                             }
                         }
@@ -147,60 +144,36 @@ namespace FMSFrontend.ViewModels.Production
                 {
                     for (int c = 1; c <= maxCol; c++)
                     {
-                        var rec = g.FirstOrDefault(x => x.Row == r && x.Column == c);
-                        var slot = new StorageSlotViewModel
-                        {
-                            IsElectrode = isElectrodeStore,
-                            Line = ParseLineNumberFromName(unitName), // ES1 → 1、W2 → 2
-                            Row = r,
-                            Col = c,
-                            Layer = 1
-                        };
-
-                        // 預設 "Empty"
-                        slot.Status = "Empty";
-
-                        if (rec != null && !string.IsNullOrWhiteSpace(rec.OndeskTagserial))
-                        {
-                            if (tagStateMap.TryGetValue(rec.OndeskTagserial, out var info))
-                            {
-                                slot.Status = info.State ?? "Empty";
-                                slot.IsReserved = false;
-                                slot.IsDisabled = info.Restriction;
-                            }
-                            else
-                            {
-                                // 若取不到詳細資料，至少帶 storage 的付註資訊
-                                slot.Status = string.IsNullOrWhiteSpace(rec.State) ? "Empty" : rec.State;
-                                slot.IsDisabled = rec.Restriction ?? false;
-                            }
-                        }
-
-                        // 根據 StorageName.IndexOf("E")==0 定義 Kind（非空格位才設定 Material）
-                        if (!string.Equals(slot.Status, "Empty", StringComparison.OrdinalIgnoreCase))
-                        {
-                            slot.Material ??= new MaterialRef();
-                            slot.Material.Kind = unit.StorageName.IndexOf("E") == 0
-                                ? MaterialKind.Electrode
-                                : MaterialKind.Workpiece;
-                            slot.Material.Timeline ??= Enumerable.Empty<TimelineItemModel>();
-
-                            // 寫入電極/工件對應的序號供 OpenMaterial 使用
-                            if (!string.IsNullOrWhiteSpace(rec?.OndeskTagserial))
-                            {
-                                if (isElectrodeStore)
+                            var rec = g.FirstOrDefault(x => x.Row == r && x.Column == c);
+                            var tag = rec?.OndeskTagserial;
+                            var restr = rec?.Restriction;
+                        var slot = new StorageSlotViewModel();
+                        slot.IsElectrode = isElectrodeStore;
+                        slot.Line = ParseLineNumberFromName(unitName); // ES1 → 1、W2 → 2
+                        slot.Row = r;
+                        slot.Col = c;
+                        slot.Layer = 1;
+                        slot.Status = string.IsNullOrWhiteSpace(rec?.State) ? "Empty" : rec.State;
+                        slot.Material = new MaterialRef();
+                        slot.Material.Kind = isElectrodeStore ? MaterialKind.Electrode : MaterialKind.Workpiece;
+                        slot.Material.Electrode = new ElectrodeModel();
+                        slot.Material.Electrode.kind
                                 {
-                                    slot.Material.Electrode ??= new ElectrodeModel();
-                                    slot.Material.Electrode.TagSerial = rec.OndeskTagserial;
-                                }
-                                else
-                                {
-                                    slot.Material.Workpiece ??= new WorkpieceModel();
-                                    slot.Material.Workpiece.SerialCode = rec.OndeskTagserial;
-                                }
-                            }
-                        }
+                                    Kind = isElectrodeStore ? MaterialKind.Electrode : MaterialKind.Workpiece,
+                                     = new ElectrodeModel
+                                    {
+                                        TagSerial = tag,
+                                        Restriction = restr
+                                    },
 
+                                    Workpiece =  new WorkpieceModel
+                                    {
+                                        SerialCode = tag,
+                                        Restriction = restr ?? false
+                                    },
+                                    Timeline = System.Array.Empty<TimelineItemModel>()
+                                }
+                            };
                         unit.Slots.Add(slot);
                     }
                 }

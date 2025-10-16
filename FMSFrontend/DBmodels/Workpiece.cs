@@ -35,7 +35,7 @@ namespace OSCARMAXFMS_V3.DBmodels
 
         //未知
         public string TagSerial { get; set; } // 物料標籤序號（RFID/NFC）
-        public bool Restriction { set; get; } // 是否限制/鎖定（true=限制使用）
+        public bool? Restriction { set; get; } // 是否限制/鎖定（true=限制使用）
 
         public string PairedEDM { get; set; } // 配對之 EDM 機台/流程識別
 
