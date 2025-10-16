@@ -18,7 +18,7 @@ namespace OSCARMAXFMS_V3.DBmodels
         //
         //電極編號??
         public string ElectrodeType { get; set; } // 電極型式（Square/Round/Custom…）
-        public string State { get; set; } // 狀態（例：InStock/InUse/Reserved/Completed/Error 等，自行定義）
+        public string State { get; set; } // 狀態（Verified /Working /Error /Completed /Reserved）
         //
         //電極夾定氣編號?
         public string TagSerial { get; set; } // 標籤序號（RFID/NFC UID），前端多處用於辨識/顯示
@@ -28,7 +28,7 @@ namespace OSCARMAXFMS_V3.DBmodels
         public string Offset { get; set; } // 補償量（字串存 xyzabc，例："x=...,y=...,z=...,a=...,b=...,c=..."）
         public int? UseTimes { get; set; } // 已使用次數
         public bool? Restriction { get; set; } // 限制/鎖定（true=不可用/預留）
-
+        //            
 
         //未知
         public string WorksheetNumber { get; set; } // 所屬工單號（關聯工單）

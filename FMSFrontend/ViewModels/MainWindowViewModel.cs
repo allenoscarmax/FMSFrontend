@@ -30,6 +30,7 @@ namespace FMSFrontend.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
+        //開啟頁面視窗
         ProductionLines productionLines = new ProductionLines();
         FactoryOverviewPage factoryOverviewPage = new FactoryOverviewPage();
         MachineOverviewPage machineOverviewPage = new MachineOverviewPage();
@@ -38,7 +39,7 @@ namespace FMSFrontend.ViewModels
         OperationHistory operationHistory = new OperationHistory();
         InventoryInformationPage inventoryInformationPage = new InventoryInformationPage();
         SettingsView settingsView = new SettingsView();
-
+        
         private readonly IHttpService _httpService;
 
         public AlarmPageViewModel AlarmVM { get; }
@@ -70,15 +71,16 @@ namespace FMSFrontend.ViewModels
 
         [ObservableProperty]
         private string _summaryMessage = "系統正常運作";
+        public bool IsLoggedIn => !string.IsNullOrEmpty(LoggedInUser);
 
+        //控制區按鈕
         [ObservableProperty]
         private string _sDispatchText = "派工啟動";
 
         [ObservableProperty]
         private bool _isDispatch;
+
         //電極門 與 工件門
-        [ObservableProperty]
-        private WeatherData? _weather;
 
         [ObservableProperty]
         private Brush _leftTitleBrush = new SolidColorBrush(Color.FromRgb(0x27, 0x79, 0xA7));
@@ -103,37 +105,11 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty]
         public ObservableCollection<Brush> _lowerDoorLights2 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
 
-        // 新增：ASRS 參數
-        [ObservableProperty]
-        private ObservableCollection<AppointmentMaintenance> _asrsParameters = new();
-
-        // 新增：天氣資料（對應 DBmodels\WeatherData.cs）
-
-
-
-        // 既有：每3秒輪詢控制
-        private readonly DispatcherTimer _asrsTimer = new() { Interval = TimeSpan.FromSeconds(3) };
-        private bool _isPollingAsrs;
-
-        // 新增：最高優先請求佇列（有東西時優先執行）
-        private readonly Queue<Func<Task>> _highPriorityRequests = new();
-
-        // ✅ 新增：啟動時取得的 JSON 暫存（依需求使用）
-        private JsonElement _storageDataJson;
-        private JsonElement _machinesJson;
-        private JsonElement _commandScheduleJson;
-        private JsonElement _machineOverviewJson;
-
-        // 便捷加入高優先請求的方法（可依需求在外部呼叫）
-        public void EnqueueHighPriorityAsrs() => _highPriorityRequests.Enqueue(FetchAsrsParametersAsync);
-        public void EnqueueHighPriorityWeather() => _highPriorityRequests.Enqueue(FetchWeatherAsync);
-
-        public bool IsLoggedIn => !string.IsNullOrEmpty(LoggedInUser);
-
         // ✅ 新增：頁面刷新計時器（與 _asrsTimer 分開）
         private readonly DispatcherTimer _pageRefreshTimer = new() { Interval = TimeSpan.FromSeconds(5) };
 
-        public void SaveCurrentStoragePageType()
+        // ✅ 新增：關機儲存UI設定
+        public void SaveCurrentStoragePageType() 
         {          
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             string pageType = (StorageControlPage is FMSFrontend.Views.StorageUnitMiniControlPage).ToString();
@@ -145,45 +121,9 @@ namespace FMSFrontend.ViewModels
                 pageType = false.ToString();
             ini.Write("Prarm", "IsStorageOverviewControl", pageType);
         }
-        public void SaveCurrentStorageOverviewPageType()
-        {
-            /*
-            string pageType = string.Empty;
-            if (StorageControlPage is FMSFrontend.Controls.StorageOverviewControl)
-                pageType = "Overview";
-            else if (StorageControlPage is FMSFrontend.Controls.StorageDetailControl)
-                pageType = "Detail";
-            else
-                pageType = "Unknown";
-
-            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-            ini.Write("Prarm", "IsStorageOverviewControl", pageType);
-            */
-        }
-
-        private readonly string _iniPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Basesitting.ini");
-
-        public void LoadSystemParameters()
-        {
-           // INIFile ini =  new INIFile(AppDomain.CurrentDomain.BaseDirectory+ "\\Basesitting.ini");
-           // IsStorageUnitControlMini = ini.Read("Prarm", "IsStorageUnitControlMini") == "true";
-        }
-
-        public void SaveSystemParameters()
-        {
-
-        }
-
         public MainWindowViewModel(IHttpService httpService, AlarmPageViewModel alarmVM)
         {
             _httpService = httpService;
-            
-            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-            bool b = ini.Read("Prarm", "IsStorageUnitControlMini") == "True";
-
-            StorageControlPage = b?  new StorageUnitMiniControlPage() : new StorageUnitControlPage();
-
-           
             // 初始化時間更新
             Task.Run(async () =>
             {
@@ -204,152 +144,18 @@ namespace FMSFrontend.ViewModels
             };
             AlarmVM = alarmVM;
 
-            // 既有：ASRS 計時器
-            _asrsTimer.Tick += async (_, __) => await PollAsrsAsync();
-            _asrsTimer.Start();
-
-            // ✅ 新增：頁面刷新計時器
-            _pageRefreshTimer.Tick += (_, __) => RefreshActivePage();
-            _pageRefreshTimer.Start();
+            //✅ 新增：電極倉門初始頁面
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            bool b = ini.Read("Prarm", "IsStorageUnitControlMini") == "True";
+            StorageControlPage = b ? new StorageUnitMiniControlPage() : new StorageUnitControlPage();
 
             // ✅ 新增：啟動背景執行續，並行呼叫五個 API
             Task.Run(InitializeDataAsync);
 
-            LoadSystemParameters(); // 啟動時讀取
+            // ✅ 新增：頁面刷新計時器
+            _pageRefreshTimer.Tick += (_, __) => RefreshActivePage();
+            _pageRefreshTimer.Start();
         }
-
-        // ✅ 啟動時一次性並行抓取必要資料
-        private async Task InitializeDataAsync()
-        {
-            try
-            {
-                var t1 = FetchAsrsParametersAsync();                               // 1) ASRS/GetASRSParameter
-                var t2 = FetchStorageDataAsync();                                  // 2) Storage/DB_GetAllStorageData
-                var t3 = FetchMachinesDataAsync();                                 // 3) Machine/DB_GetAllMachines
-                var t4 = FetchAllCommandScheduleAsync();                           // 4) CommandScheduler/GetAllCommandSchedule
-                var t5 = FetchMachineDataAsync(0);                                 // 5) Machine/GetMachineData/0
-
-                await Task.WhenAll(t1, t2, t3, t4, t5);
-            }
-            catch
-            {
-                // 啟動期允許忽略暫時性錯誤，後續輪詢或手動刷新會再補上
-            }
-        }
-
-        // 改成：先跑高優先，否則依不同頁面執行不同 case
-        private async Task PollAsrsAsync()
-        {
-            if (_isPollingAsrs) return;
-            _isPollingAsrs = true;
-            try
-            {
-                // 1) 高優先請求優先執行
-                if (_highPriorityRequests.Count > 0)
-                {
-                    var job = _highPriorityRequests.Dequeue();
-                    await job();
-                    return;
-                }
-
-                // 2) 依當前頁面執行對應查詢
-                switch (CurrentPageKey)
-                {
-                    case "ProductionLines":
-                        await FetchAsrsParametersAsync();
-                        break;
-                    case "FactoryOverview":
-
-                        break;
-                    case "MachineOverview":
-
-                        break;
-                    case "WorkOrder":
-
-                        break;
-                    case "RFIDBind":
-
-                        break;
-                    case "OperationHistory":
-
-                        break;
-                    case "Material":
-
-                        break;
-                    case "SettingsView":
-                        break;
-                    // 其他頁面：預設跑 ASRS
-                    default:
-                        //  await FetchAsrsParametersAsync();
-                        break;
-                }
-            }
-            catch
-            {
-                // 忽略暫時性錯誤
-            }
-            finally
-            {
-                _isPollingAsrs = false;
-            }
-        }
-
-        // 新增：封裝 ASRS 資料抓取（手臂/ASRS參數）
-        private async Task FetchAsrsParametersAsync()
-        {
-            var list = await _httpService.GetJsonAsync<List<AppointmentMaintenance>>("ASRS/GetASRSParameter");
-            if (list == null) return;
-
-            AsrsParameters.Clear();
-            foreach (var item in list)
-                AsrsParameters.Add(item);
-
-            // 通知有更新（若其他頁面需要）
-            WeakReferenceMessenger.Default.Send(new AsrsParametersUpdatedMessage(AsrsParameters.ToList()));
-        }
-
-        // 2) Storage/DB_GetAllStorageData → 產線總覽
-        private async Task FetchStorageDataAsync()
-        {
-            var json = await _httpService.GetJsonAsync<JsonElement>("Storage/DB_GetAllStorageData");
-            _storageDataJson = json;
-            WeakReferenceMessenger.Default.Send(new StorageDataUpdatedMessage(json));
-        }
-
-        // 3) Machine/DB_GetAllMachines → 產線總覽
-        private async Task FetchMachinesDataAsync()
-        {
-            var json = await _httpService.GetJsonAsync<JsonElement>("Machine/DB_GetAllMachines");
-            _machinesJson = json;
-            WeakReferenceMessenger.Default.Send(new MachinesDataUpdatedMessage(json));
-        }
-
-        // 4) CommandScheduler/GetAllCommandSchedule → 整場總覽任務工作條
-        private async Task FetchAllCommandScheduleAsync()
-        {
-            var json = await _httpService.GetJsonAsync<JsonElement>("CommandScheduler/GetAllCommandSchedule");
-            _commandScheduleJson = json;
-            WeakReferenceMessenger.Default.Send(new CommandScheduleUpdatedMessage(json));
-        }
-
-        // 5) Machine/GetMachineData/{line} → 設備總覽機台資訊
-        private async Task FetchMachineDataAsync(int line)
-        {
-            var route = $"Machine/GetMachineData/{line}";
-            var json = await _httpService.GetJsonAsync<JsonElement>(route);
-            _machineOverviewJson = json;
-            WeakReferenceMessenger.Default.Send(new MachineOverviewDataUpdatedMessage(json));
-        }
-
-        // 新增：封裝天氣資料抓取
-        private async Task FetchWeatherAsync()
-        {
-            const string url = "https://api.open-meteo.com/v1/forecast?latitude=24.15&longitude=120.65&current=temperature_2m,wind_speed_10m";
-            var data = await _httpService.GetJsonAsync<WeatherData>(url);
-            if (data != null)
-                Weather = data;
-        }
-
         #region PageChange
         // ✅ 新增：依目前頁面廣播刷新訊息
         private void RefreshActivePage()
@@ -713,31 +519,5 @@ namespace FMSFrontend.ViewModels
         #region Title
 
         #endregion
-    }
-
-    // ====== 型別化訊息：讓各頁面可訂閱接收資料 ======
-    public sealed class AsrsParametersUpdatedMessage : ValueChangedMessage<List<AppointmentMaintenance>>
-    {
-        public AsrsParametersUpdatedMessage(List<AppointmentMaintenance> value) : base(value) { }
-    }
-    public sealed class StorageDataUpdatedMessage : ValueChangedMessage<JsonElement>
-    {
-        public StorageDataUpdatedMessage(JsonElement value) : base(value) { }
-    }
-    public sealed class MachinesDataUpdatedMessage : ValueChangedMessage<JsonElement>
-    {
-        public MachinesDataUpdatedMessage(JsonElement value) : base(value) { }
-    }
-    public sealed class CommandScheduleUpdatedMessage : ValueChangedMessage<JsonElement>
-    {
-        public CommandScheduleUpdatedMessage(JsonElement value) : base(value) { }
-    }
-    public sealed class MachineOverviewDataUpdatedMessage : ValueChangedMessage<JsonElement>
-    {
-        public MachineOverviewDataUpdatedMessage(JsonElement value) : base(value) { }
-    }
-    public sealed class RefreshPageMessage : ValueChangedMessage<string>
-    {
-        public RefreshPageMessage(string currentPageKey) : base(currentPageKey) { }
     }
 }

@@ -8,7 +8,6 @@ namespace OSCARMAXFMS_V3.DBmodels
     {
         [BsonRepresentation(BsonType.ObjectId)]
         public string _id { get; set; } // ID（MongoDB 物件識別碼）
-
         //未知
         public string StorageName { get; set; } // 單位倉名稱（如 ES1、W3）
         public string StorageNumber { get; set; } // 單位倉內碼/代碼
