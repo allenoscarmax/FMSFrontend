@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using ControlzEx.Standard;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
+using MahApps.Metro.Controls;
 using OSCARMAXFMS_V3.DBmodels;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -12,6 +13,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
+using System.Collections.Concurrent;
 
 namespace FMSFrontend.ViewModels.Production
 {
@@ -88,7 +90,7 @@ namespace FMSFrontend.ViewModels.Production
             {
                 var key = g.Key;
                 var isElectrodeStore = key.StorageName?.StartsWith("E", StringComparison.OrdinalIgnoreCase) == true;
-                // 2.2 電極庫顯示名稱為 "StorageName + StorageNumber"（工件庫一併如此處理）
+                // 2.2 顯示名稱為 "StorageName + StorageNumber"
                 var unitName = $"{key.StorageName}{key.StorageNumber}";
 
                 // 取最大列/行當作格數
@@ -104,9 +106,10 @@ namespace FMSFrontend.ViewModels.Production
                                   .Distinct()
                                   .ToList();
 
+                // 用 ConcurrentDictionary 快速且安全回填
+                var tagStateMap = new ConcurrentDictionary<string, (string State, bool Restriction)>(StringComparer.OrdinalIgnoreCase);
 
                 // 3) 依類別，批次查詢 TagSerial → 狀態與限制
-                //    用 dictionary 快速回填
                 if (tagSerials.Count > 0)
                 {
                     var tasks = tagSerials.Select(async ts =>
@@ -118,16 +121,19 @@ namespace FMSFrontend.ViewModels.Production
                                 var route = $"Electrode/DB_GetElectrodesByTagSerial/{ts}";
                                 var list = await _httpService.GetJsonAsync<List<Electrode>>(route) ?? new List<Electrode>();
                                 var e = list.FirstOrDefault();
-                                //if (e != null) tagStateMap[ts] = (e.State ?? "Empty", e.Restriction ?? false);
+                                if (e != null)
+                                {
+                                    tagStateMap[ts] = (e.State ?? "Empty", e.Restriction ?? false);
+                                }
                             }
                             else
                             {
                                 var route = $"Workpiece/DB_GetWorkpieceByTagSerial/{ts}";
                                 var list = await _httpService.GetJsonAsync<List<Workpiece>>(route) ?? new List<Workpiece>();
                                 var w = list.FirstOrDefault();
-                                //if (w != null) tagStateMap[ts] = (w.Status ?? "Empty", w.Restriction ?? false);
+                                if (w != null)
                                 {
-                                   
+                                    tagStateMap[ts] = (w.Status ?? "Empty", w.Restriction ?? false);
                                 }
                             }
                         }
@@ -139,41 +145,56 @@ namespace FMSFrontend.ViewModels.Production
                     await Task.WhenAll(tasks);
                 }
 
-                // 4) 依 row/col 建立所有格位，並依查回的資料更新 State/Restriction
+                // 4) 依 row/col 建立所有格位，並依查回的資料更新 Status/IsReserved
                 for (int r = 1; r <= maxRow; r++)
                 {
                     for (int c = 1; c <= maxCol; c++)
                     {
-                            var rec = g.FirstOrDefault(x => x.Row == r && x.Column == c);
-                            var tag = rec?.OndeskTagserial;
-                            var restr = rec?.Restriction;
-                        var slot = new StorageSlotViewModel();
-                        slot.IsElectrode = isElectrodeStore;
-                        slot.Line = ParseLineNumberFromName(unitName); // ES1 → 1、W2 → 2
-                        slot.Row = r;
-                        slot.Col = c;
-                        slot.Layer = 1;
-                        slot.Status = string.IsNullOrWhiteSpace(rec?.State) ? "Empty" : rec.State;
-                        slot.Material = new MaterialRef();
-                        slot.Material.Kind = isElectrodeStore ? MaterialKind.Electrode : MaterialKind.Workpiece;
-                        slot.Material.Electrode = new ElectrodeModel();
-                        slot.Material.Electrode.kind
-                                {
-                                    Kind = isElectrodeStore ? MaterialKind.Electrode : MaterialKind.Workpiece,
-                                     = new ElectrodeModel
-                                    {
-                                        TagSerial = tag,
-                                        Restriction = restr
-                                    },
+                        var rec = g.FirstOrDefault(x => x.Row == r && x.Column == c);
+                        var tag = rec?.OndeskTagserial;
 
-                                    Workpiece =  new WorkpieceModel
-                                    {
-                                        SerialCode = tag,
-                                        Restriction = restr ?? false
-                                    },
-                                    Timeline = System.Array.Empty<TimelineItemModel>()
+                        // 預設值
+                        string stateValue = "Empty";
+                        bool restrictionValue = false;
+
+                        // 優先使用 tagStateMap（由電極/工件資料取得）
+                        if (!string.IsNullOrWhiteSpace(tag) && tagStateMap.TryGetValue(tag, out var sr))
+                        {
+                            stateValue = string.IsNullOrWhiteSpace(sr.State) ? "Empty" : sr.State;
+                            restrictionValue = sr.Restriction;
+                        }
+                        else
+                        {
+                            // 回退使用 Storage 原始欄位
+                            stateValue = string.IsNullOrWhiteSpace(rec?.State) ? "Empty" : rec.State!;
+                            restrictionValue = rec?.Restriction ?? false;
+                        }
+
+                        var slot = new StorageSlotViewModel
+                        {
+                            IsElectrode = isElectrodeStore,
+                            Line = ParseLineNumberFromName(unitName), // ES1 → 1、W2 → 2
+                            Row = r,
+                            Col = c,
+                            Layer = 1,
+                            Status = stateValue,
+                            IsReserved = restrictionValue,
+                            Material = new MaterialRef
+                            {
+                                Kind = isElectrodeStore ? MaterialKind.Electrode : MaterialKind.Workpiece,
+                                Electrode = new ElectrodeModel
+                                {
+                                    TagSerial = rec?.OndeskTagserial,
+                                    Restriction = restrictionValue
+                                },
+                                Workpiece = new WorkpieceModel
+                                {
+                                    SerialCode = rec?.OndeskTagserial,
+                                    Restriction = restrictionValue
                                 }
-                            };
+                            }
+                        };
+
                         unit.Slots.Add(slot);
                     }
                 }
@@ -218,7 +239,7 @@ namespace FMSFrontend.ViewModels.Production
 
     public class StorageSlotViewModel : ObservableObject
     {
-        public string Status { get; set; } = "Verified";
+        public string Status { get; set; }
         public bool IsDisabled { get; set; }
         public bool IsReserved { get; set; }
 
