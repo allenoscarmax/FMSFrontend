@@ -2,14 +2,16 @@
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Extensions;   // ← PeriodWindow / PeriodWindowArgs / PeriodSelectionResult / ScheduleMode
 using FMSFrontend.Interfaces;
+using FMSFrontend.Services;
+using IniFile;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-
-
 
 namespace FMSFrontend.ViewModels.Windows
 {
@@ -17,6 +19,9 @@ namespace FMSFrontend.ViewModels.Windows
     {
         // ===== 顯示用（你的 XAML 綁在這個上面）=====
         [ObservableProperty] private string periodDisplay = "不設定";
+
+        // 新增：綁定系統 IP 的輸入欄位
+        [ObservableProperty] private string serverIp = string.Empty;
 
         // ===== 目前的設定（當作下一次開窗的初始值）=====
         [ObservableProperty] private ScheduleMode selectedMode = ScheduleMode.None;
@@ -29,21 +34,28 @@ namespace FMSFrontend.ViewModels.Windows
         // ===== 開窗指令 ── 綁到你的 Button =====
         public IRelayCommand OpenSetPeriodDialogCommand { get; }
 
-
         private readonly IWindowService _windowService;
+        private readonly IHttpService _httpService;
 
-        public SettingsPageViewModel(IWindowService windowService)
+        public SettingsPageViewModel(IWindowService windowService, IHttpService httpService)
         {
             _windowService = windowService;
+            _httpService = httpService;
 
             OpenSetPeriodDialogCommand = new RelayCommand(OpenPeriodDialog);
 
-            // 初始化設定值
+            // 初始化 IP 顯示（優先用 IHttpService 的 ServerIp）
+            ServerIp = _httpService.ServerIp ?? string.Empty;
+
+            // 初始化設定值（原本內容保留）
             AvailableLanguages = new ObservableCollection<string> { "繁體中文", "English", "日本語" };
             SelectedLanguage = AvailableLanguages[0];
 
             AvailableThemes = new ObservableCollection<string> { "Light", "Dark", "System Default" };
             SelectedTheme = AvailableThemes[0];
+
+            AvailablePermissions = new ObservableCollection<string> { "工作人員", "專家" };
+            SelectedPermission = AvailablePermissions[0];
 
             // 初始化權限選項
             AvailablePermissions = new ObservableCollection<string> { "工作人員", "專家" };
@@ -279,13 +291,30 @@ namespace FMSFrontend.ViewModels.Windows
         }
         // === 設定IP ===
         [RelayCommand]
-        private void SaveIP() 
-        { 
-            // TODO: 加入維護完成標記邏輯
-            StatusMessage = "🤖 設定IP OK";
-            _windowService.ShowMessage("設定IP OK");
+        private void SaveIP()
+        {
+            var ip = (ServerIp ?? string.Empty).Trim();
+            if (!IPAddress.TryParse(ip, out _))
+            {
+                StatusMessage = "❌ IP 位址格式不正確";
+                _windowService.ShowMessage("IP 位址格式不正確，請輸入有效的 IPv4，例如：192.168.1.100");
+                return;
+            }
+            try
+            {
+                _httpService.UpdateServerIp(ip);
+                StatusMessage = "🤖 設定IP OK";
+                _windowService.ShowMessage($"已設定 IP：{ip}");
+                INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+                ini.Write("Prarm", "IP", ip);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = "❌ 設定 IP 失敗";
+                _windowService.ShowMessage($"設定 IP 失敗：{ex.Message}");
+            }
         }
-
+            
 
         private bool FilterMachine(object obj)
         {

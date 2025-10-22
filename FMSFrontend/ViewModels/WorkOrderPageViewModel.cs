@@ -1,14 +1,18 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging; // ← 新增（用於接收 UploadSheetsClosedMessage）
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.Views;
+using OSCARMAXFMS_V3.DBmodels; // ← 新增：Workpiece 模型
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -18,11 +22,28 @@ namespace FMSFrontend.ViewModels
 {
     public partial class WorkOrderPageViewModel : ObservableObject
     {
+
         [ObservableProperty]
         private int selectedTabIndexParameter;
+        partial void OnSelectedTabIndexParameterChanged(int value)
+        {
+            _paramTabCts?.Cancel();
+            _paramTabCts = new CancellationTokenSource();
+
+            var status = MapWorkStatusForParameterTab(value);
+            _ = FetchAndBindByStatusAsync(status, _paramTabCts.Token);
+        }
+
         [ObservableProperty]
         private int eDMSelectedTab; // 決定 EDM 子頁籤
+        partial void OnEDMSelectedTabChanged(int value)
+        {
+            _edmTabCts?.Cancel();
+            _edmTabCts = new CancellationTokenSource();
 
+            var status = MapWorkStatusForEdmTab(value);
+            _ = FetchAndBindByStatusAsync(status, _edmTabCts.Token);
+        }
         public List<string> DateFilterOptions { get; set; } = new() { "今天", "過去7天", "自訂" };
         [ObservableProperty]
         private string selectedFilterOption = "今天";
@@ -31,6 +52,11 @@ namespace FMSFrontend.ViewModels
         private DateTime? lastValidToDate = DateTime.Today;
 
         private readonly IWindowService _windowService;
+        private readonly IHttpService _httpService; // ← 新增：呼叫 API
+
+        // ← 新增：切換標籤時取消前一個請求
+        private CancellationTokenSource? _paramTabCts;
+        private CancellationTokenSource? _edmTabCts;
 
         partial void OnSelectedFilterOptionChanged(string value)
         {
@@ -67,7 +93,16 @@ namespace FMSFrontend.ViewModels
 
         [ObservableProperty]
         private DateTime? toDate = DateTime.Today;
+        public void OnPageActivated()
+        {
+            _paramTabCts?.Cancel();
+            _paramTabCts = new CancellationTokenSource();
 
+            var status = MapWorkStatusForParameterTab(SelectedTabIndexParameter);
+
+            // fire-and-forget 更新資料（內部支援 CancellationToken）
+            _ = FetchAndBindByStatusAsync(status, _paramTabCts.Token);
+        }
         partial void OnToDateChanged(DateTime? value)
         {
             if (value == null || FromDate == null)
@@ -89,14 +124,12 @@ namespace FMSFrontend.ViewModels
                 ToDate = lastValidToDate;
                 return;
             }
-
             lastValidToDate = value;
         }
         public bool IsCustomDateMode => SelectedFilterOption == "自訂";
-
-        public ObservableCollection<WorkOrderData> WorkOrderList { get; set; }
+        public ObservableCollection<WorkOrderData> WorkOrderList { get; set; } = new();
         public ObservableCollection<WorkOrderData> FailureWorkOrders { get; set; } = new();
-
+        public ObservableCollection<WorkOrderData> FilteredEDMList { get; } = new();
         private void ApplyDateFilter()
         {
             switch (SelectedFilterOption)
@@ -117,110 +150,29 @@ namespace FMSFrontend.ViewModels
         }
         public ICommand DeleteCommand { get; }
 
-        public WorkOrderPageViewModel(IWindowService windowService)
+        public WorkOrderPageViewModel(IWindowService windowService, IHttpService httpService) // ← 調整建構子
         {
             _windowService = windowService;
-
-            WorkOrderList = new ObservableCollection<WorkOrderData>
-            {
-                new WorkOrderData
-                {
-                    OrderNumber = "20250722001",
-                    PartName = "24-018-003",
-                    Status = "NEW",
-                    StatusColor = Brushes.Gold,
-                    
-                    TargetEDM = "EDM1",
-                    Coordinate = "G01",
-                    Operator = "admin",
-                    
-                    EDMDetails =new ObservableCollection<EDMDetail>
-                    {
-                        new EDMDetail { ElectrodeName = "E01", LabelSerial = "A123", Status = "待機", NeedEDM = true, EDMProgram = "P1", Offset = 1 },
-                        new EDMDetail { ElectrodeName = "E02", LabelSerial = "A124", Status = "加工中", NeedEDM = false, EDMProgram = "P2", Offset = 2 },
-                    }
-                },
-                new WorkOrderData
-                {
-                    OrderNumber = "20250722001",
-                    PartName = "24-018-003",
-                    Status = "NEW",
-                    StatusColor = Brushes.Gold,
-
-                    TargetEDM = "EDM1",
-                    Coordinate = "G01",
-                    Operator = "admin",
-
-                    EDMDetails =new ObservableCollection<EDMDetail>
-                    {
-                        new EDMDetail { ElectrodeName = "E01", LabelSerial = "A123", Status = "待機", NeedEDM = true, EDMProgram = "P1", Offset = 1 },
-                        new EDMDetail { ElectrodeName = "E02", LabelSerial = "A124", Status = "加工中", NeedEDM = false, EDMProgram = "P2", Offset = 2 },
-                    }
-                },
-                new WorkOrderData
-                {
-                    OrderNumber = "20250722001",
-                    PartName = "24-018-003",
-                    Status = "NEW",
-                    StatusColor = Brushes.Gold,
-
-                    TargetEDM = "EDM1",
-                    Coordinate = "G01",
-                    Operator = "admin",
-
-                    EDMDetails =new ObservableCollection<EDMDetail>
-                    {
-                        new EDMDetail { ElectrodeName = "E01", LabelSerial = "A123", Status = "待機", NeedEDM = true, EDMProgram = "P1", Offset = 1 },
-                        new EDMDetail { ElectrodeName = "E02", LabelSerial = "A124", Status = "加工中", NeedEDM = false, EDMProgram = "P2", Offset = 2 },
-                        new EDMDetail { ElectrodeName = "E01", LabelSerial = "A123", Status = "待機", NeedEDM = true, EDMProgram = "P1", Offset = 1 },
-                        new EDMDetail { ElectrodeName = "E02", LabelSerial = "A124", Status = "加工中", NeedEDM = false, EDMProgram = "P2", Offset = 2 },
-                        new EDMDetail { ElectrodeName = "E01", LabelSerial = "A123", Status = "待機", NeedEDM = true, EDMProgram = "P1", Offset = 1 },
-                        new EDMDetail { ElectrodeName = "E02", LabelSerial = "A124", Status = "加工中", NeedEDM = false, EDMProgram = "P2", Offset = 2 },
-                        new EDMDetail { ElectrodeName = "E01", LabelSerial = "A123", Status = "待機", NeedEDM = true, EDMProgram = "P1", Offset = 1 },
-                        new EDMDetail { ElectrodeName = "E02", LabelSerial = "A124", Status = "加工中", NeedEDM = false, EDMProgram = "P2", Offset = 2 },
-                    }
-                },
-                new WorkOrderData
-                {
-                    OrderNumber = "20250722001",
-                    PartName = "24-018-003",
-                    Status = "NEW",
-                    StatusColor = Brushes.Gold,
-
-                    TargetEDM = "EDM1",
-                    Coordinate = "G01",
-                    Operator = "admin",
-
-                    EDMDetails =new ObservableCollection<EDMDetail>
-                    {
-                        new EDMDetail { ElectrodeName = "E01", LabelSerial = "A123", Status = "待機", NeedEDM = true, EDMProgram = "P1", Offset = 1 },
-                        new EDMDetail { ElectrodeName = "E02", LabelSerial = "A124", Status = "加工中", NeedEDM = false, EDMProgram = "P2", Offset = 2 },
-                    }
-                },
-                new WorkOrderData
-                {
-                    OrderNumber = "20250722002",
-                    PartName = "24-018-004",
-                    Status = "Completed",
-                    StatusColor = Brushes.DeepSkyBlue,
-                    TargetEDM = "EDM2",
-                    Coordinate = "G02",
-                    Operator = "admin",
-                    CurrentStage = 1,
-                    TotalStage = 20,
-                    EDMDetails = new ObservableCollection<EDMDetail>
-                    {
-                        new EDMDetail { ElectrodeName = "E03", LabelSerial = "B001", Status = "完成", NeedEDM = true, EDMProgram = "P3", Offset = 3 },
-                    }
-                }
-
-            };
-
-
+            _httpService = httpService;
+            // 使用非同步方法刪除：保留 RelayCommand，但在內部啟動 async Task
             DeleteCommand = new RelayCommand<WorkOrderData>(item =>
             {
                 if (item != null)
-                    WorkOrderList.Remove(item);
+                {
+                    _ = DeleteWorkOrderAsync(item);
+                }
+            });
+
+            // 新增：訂閱 UploadsheetsWindow 關閉後的廣播，收到後重新抓取資料
+            WeakReferenceMessenger.Default.Register<UploadSheetsClosedMessage>(this, (r, msg) =>
+            {
+                if (!msg.Value) return;
+
+                _paramTabCts?.Cancel();
+                _paramTabCts = new CancellationTokenSource();
+
+                var status = MapWorkStatusForParameterTab(SelectedTabIndexParameter);
+                _ = FetchAndBindByStatusAsync(status, _paramTabCts.Token);
             });
         }
 
@@ -234,29 +186,155 @@ namespace FMSFrontend.ViewModels
         {
             _windowService.ShowUploadSheetWindow();
         }
+        // 最小改動：呼叫後端 API 並綁定到對應的 UI 集合（使用 CancellationToken）
+        private async Task FetchAndBindByStatusAsync(string workStatus, CancellationToken ct)
+        {
+           // try
+           // {
+                // 支援取消
+                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Worksheet/DB_GetAllWorkSheet", ct);
+                ct.ThrowIfCancellationRequested();
 
+                List<Worksheets> worksheets = json.HasValue
+                    ? JsonSerializer.Deserialize<List<Worksheets>>(json.Value.GetRawText()) ?? new List<Worksheets>()
+                    : new List<Worksheets>();
 
+              
+                // 只更新目前畫面所綁定的集合（避免不必要變動）
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    if (SelectedTabIndexParameter == 0)
+                    {
+                        WorkOrderList.Clear();
+                        foreach (var w in worksheets)
+                            WorkOrderList.Add(MapToWorkOrderData(w));
+                    }
+                    else if (SelectedTabIndexParameter == 1)
+                    {
+                        // EDM 子頁簽
+                        FilteredEDMList.Clear();
+                        foreach (var w in worksheets)
+                            FilteredEDMList.Add(MapToWorkOrderData(w));
+                    }
+                    else
+                    {
+                        FailureWorkOrders.Clear();
+                        foreach (var w in worksheets)
+                            FailureWorkOrders.Add(MapToWorkOrderData(w));
+                    }
+                });
+                return;
+            // }
+            // catch (OperationCanceledException)
+            // {
+            // 被取消，靜默忽略
+            // }
+            // catch (Exception ex)
+            // {
+            //     Application.Current.Dispatcher.Invoke(() =>
+            //     {
+            //         _windowService.ShowMessage($"讀取工單資料失敗：{ex.Message}");
+            //     });
+            //  }
+        }
+
+        // 新增：處理刪除工單的非同步方法（包含 UI 確認、API 呼叫與錯誤處理）
+        private async Task DeleteWorkOrderAsync(WorkOrderData item)
+        {
+            try
+            {
+                // 要求使用者確認
+                bool yes = _windowService.ShowYesNoDialog($"確定要刪除工單 {item.WorksheetNumber} 嗎？");
+                if (!yes) return;
+
+                if (string.IsNullOrWhiteSpace(item.Id))
+                {
+                    _windowService.ShowMessage("找不到工單 ID，無法刪除。");
+                    return;
+                }
+
+                string route = $"Worksheet/DB_DeleteWorkSheetDataById/{item.Id}";
+                await _httpService.SendPutAsync(route,"");
+
+                // 若 API 呼叫成功，從 UI 清單移除
+                WorkOrderList.Remove(item);
+                _windowService.ShowMessage("已成功刪除工單。");
+            }
+            catch (Exception ex)
+            {
+                // 顯示錯誤資訊但不要讓應用程式崩潰
+                _windowService.ShowMessage($"刪除工單失敗：{ex.Message}");
+            }
+        }
+
+        // ← 新增：分頁索引對應到後端 WorkStatus（請依實際需求調整）
+        private static string MapWorkStatusForParameterTab(int index) => index switch
+        {
+            0 => "Working",
+            1 => "Verified",
+            2 => "Completed",
+            _ => "Working"
+        };
+
+        private static string MapWorkStatusForEdmTab(int index) => index switch
+        {
+            0 => "Reserved",
+            1 => "Working",
+            2 => "Error",
+            _ => "Working"
+        };
+
+        // ← 新增：將 Workpiece 轉為畫面使用的 WorkOrderData
+        private static WorkOrderData MapToWorkOrderData(Worksheets ws)
+        {
+            return new WorkOrderData
+            {
+                Id = ws._id ?? string.Empty,
+                WorksheetNumber = ws.worksheetNumber ?? string.Empty,
+                WorkpieceName = ws.workpieceName ?? string.Empty,
+                Status = ws.workStatus ?? string.Empty,
+                StatusColor = ToStatusBrush(ws.workStatus),
+                TargetEDM = ws.targetEDM ?? string.Empty,
+                Coordinate = ws.coordinate ?? string.Empty,
+                SetupUser = ws.setupUser ?? string.Empty,
+                ProcessStep = ws.processStep ?? 0,
+                TotalProcessStep = ws.totalProcessStep ?? 0,
+                EDMDetails = new ObservableCollection<EDMDetail>() // Worksheets 不含電極明細，先回傳空集合
+            };
+        }
+
+        private static Brush ToStatusBrush(string? status)
+        {
+            return status switch
+            {
+                "Working" => Brushes.Orange,
+                "Verified" => Brushes.MediumPurple,
+                "Completed" => Brushes.DeepSkyBlue,
+                "Reserved" => Brushes.SteelBlue,
+                "Error" => Brushes.IndianRed,
+                "Empty" => Brushes.Gray,
+                _ => Brushes.Gray
+            };
+        }
     }
+
     public class WorkOrderData : INotifyPropertyChanged
     {
-        public string OrderNumber { get; set; }
-        public string PartName { get; set; }
-        public string Status { get; set; }
-        public Brush StatusColor { get; set; }
-        public string TargetEDM { get; set; }
-        public string Coordinate { get; set; }
-        public string Operator { get; set; }
-        public int CurrentStage { get; set; } = 1;
-        public int TotalStage { get; set; } = 3;
+        // 新增 Id 屬性以對應後端 MongoDB _id
+        public string Id { get; set; } = string.Empty;
 
-        // 進度條百分比（回傳 double）
-        public double EDMStageProgress => TotalStage == 0 ? 0 : (100.0 * CurrentStage / TotalStage);
-
-        // 顯示文字，如 "EDM加工階段：1 / 3"
-        public string EDMStageDisplay => $"EDM加工階段：{CurrentStage} / {TotalStage}";
-
+        public string WorksheetNumber { get; set; } // 工單編號
+        public string WorkpieceName { get; set; } //工件名稱
+        public string Status { get; set; } //工單狀態
+        public Brush StatusColor { get; set; } //工單燈號
+        public string TargetEDM { get; set; } //目標EDM
+        public string Coordinate { get; set; } //座標
+        public string SetupUser { get; set; } //設定者
+        public int ProcessStep { get; set; } = 1; //目前步數
+        public int TotalProcessStep { get; set; } = 3; //總步數
+        public double EDMStageProgress => TotalProcessStep == 0 ? 0 : (100.0 * ProcessStep / TotalProcessStep);  // 進度條百分比（回傳 double）
+        public string EDMStageDisplay => $"EDM加工階段：{ProcessStep} / {TotalProcessStep}"; // 顯示文字，如 "EDM加工階段：1 / 3"
         public ObservableCollection<EDMDetail> EDMDetails { get; set; } = new ObservableCollection<EDMDetail>();
-
 
         private bool _isExpanded;
         public bool IsExpanded

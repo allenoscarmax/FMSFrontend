@@ -100,7 +100,9 @@
 
                                                                 <!-- 內容：輸入框 + 按鈕 -->
                                                                 <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
-                                                                    <TextBox Width="200" Height="26" VerticalAlignment="Center" FontSize="16" Text="192.168.xxx.xxx" Foreground="Black" Padding="5,0" Style="{StaticResource UnderlineTextBoxStyle}" />
+                                                                    <TextBox Width="200" Height="26" VerticalAlignment="Center" FontSize="16"
+                                                                             Text="{Binding ServerIp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                             Foreground="Black" Padding="5,0" Style="{StaticResource UnderlineTextBoxStyle}" />
                                                                     <Button Content="Save" Width="84" Height="32" VerticalAlignment="Center" Background="#CCCCCC" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding SaveIPCommand}" />
                                                                 </StackPanel>
                                                             </Grid>

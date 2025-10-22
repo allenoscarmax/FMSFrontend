@@ -148,7 +148,8 @@ namespace FMSFrontend.ViewModels
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             bool b = ini.Read("Prarm", "IsStorageUnitControlMini") == "True";
             StorageControlPage = b ? new StorageUnitMiniControlPage() : new StorageUnitControlPage();
-
+           
+            
             // ✅ 新增：啟動背景執行續，並行呼叫五個 API
             Task.Run(InitializeDataAsync);
 
@@ -400,7 +401,7 @@ namespace FMSFrontend.ViewModels
             dialog.ShowDialog();
             try
             {
-                await _httpService.SendPutAsync(route, new { });
+               // await _httpService.SendPutAsync(route, new { });
             }
             catch { }
         }
@@ -413,7 +414,7 @@ namespace FMSFrontend.ViewModels
             dialog.ShowDialog();
             try
             {
-                await _httpService.SendPutAsync(route, new { });
+              //  await _httpService.SendPutAsync(route, new { });
             }
             catch { }
         }
@@ -425,7 +426,7 @@ namespace FMSFrontend.ViewModels
             dialog.ShowDialog();
             try
             {
-                await _httpService.SendPutAsync(route, new { });
+              //  await _httpService.SendPutAsync(route, new { });
             }
             catch { }
         }
@@ -437,7 +438,7 @@ namespace FMSFrontend.ViewModels
             dialog.ShowDialog();
             try
             {
-                await _httpService.SendPutAsync(route, new { });
+              //  await _httpService.SendPutAsync(route, new { });
             }
             catch { }
         }
@@ -452,7 +453,7 @@ namespace FMSFrontend.ViewModels
             dialog.ShowDialog();
             try
             {
-                await _httpService.SendPutAsync(route, new { });
+              //  await _httpService.SendPutAsync(route, new { });
             }
             catch { }
         }
@@ -507,7 +508,7 @@ namespace FMSFrontend.ViewModels
             string url = $"http://localhost:5032/PLC/EleMagazineDoorLightSwitch/0/{lightSwitch}";
             try
             {
-                await _httpService.SendPutAsync(url, new { });
+               // await _httpService.SendPutAsync(url, new { });
             }
             catch
             {

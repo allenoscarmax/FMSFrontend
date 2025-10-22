@@ -4,6 +4,7 @@ using FMSFrontend.ViewModels.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,9 +29,9 @@ namespace FMSFrontend.Views
             InitializeComponent();
             // 建立服務實例
             var windowService = new WindowService();
-
+            var httpService = new HttpService();
             // 建立 ViewModel 並注入服務
-            var viewModel = new SettingsPageViewModel(windowService);
+            var viewModel = new SettingsPageViewModel(windowService, httpService);
 
             this.DataContext = viewModel;
 

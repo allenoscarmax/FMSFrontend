@@ -34,24 +34,40 @@
 
             <!-- 內容 -->
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                <Grid Margin="20">
+                <Grid Margin="10">
                     <Grid.RowDefinitions>
+                        <!-- 新增首列給篩選列 -->
+                        <RowDefinition Height="50" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <!-- 工作 -->
-                    <GroupBox Header="工件" FontWeight="Bold" FontSize="20" Grid.Row="0">
+                    <!-- 四控件 Grid：移到工件群組之外的上方 -->
+                    <Grid Grid.Row="0" Margin="10,10,10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60" />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="60" />
+                            <ColumnDefinition Width="150" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="機台" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="SemiBold" FontSize="18"/>
+                        <ComboBox  Grid.Column="1" Height="30" FontSize="18" HorizontalAlignment="Center" ItemsSource="{Binding AvailableEdms}"   SelectedItem="{Binding SelectedEdm}" Margin="0,0,0,0" Width="150"/>
+                        <TextBlock Grid.Column="3" Text="座標" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8,0,0,0" FontWeight="SemiBold" FontSize="18"/>
+                        <ComboBox  Grid.Column="4" Height="30" FontSize="18" HorizontalAlignment="Center" ItemsSource="{Binding AvailableCoordinates}" SelectedItem="{Binding SelectedCoordinate}" Margin="0,0,0,0" Width="150" />
+                    </Grid>
+
+                    <!-- 工件 -->
+                    <GroupBox Header="工件" FontWeight="Bold" FontSize="20" Grid.Row="1">
                         <StackPanel>
                             <DockPanel LastChildFill="True" Margin="10,10,10,0">
-                                <Button Width="120" Height="36" Cursor="Hand" Background="#EFE9DD" Foreground="Black" BorderBrush="Transparent" FontSize="14" FontWeight="SemiBold" Padding="10,4" Content="📁 選擇資料夾" Command="{Binding SelectCsvFileCommand}" CommandParameter="Work">
+                                <Button Width="120" Height="36" Cursor="Hand" Background="#EFE9DD" Foreground="Black" BorderBrush="Transparent" FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0" VerticalAlignment="Top" Content="📁 選擇資料夾" Command="{Binding SelectCsvFileCommand}" CommandParameter="Work">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="8" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
-
                                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Border>
-
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter TargetName="border" Property="Background" Value="#E0D8C7" />
@@ -71,23 +87,28 @@
                                 <TextBlock Text="{Binding SelectedWorkCsvPath}"  d:Text="C:\OSCARMAX\PGM_Program\Workpiece\PGM_Example_Workpiece_2.csv" VerticalAlignment="Center" Margin="10,0,0,0" />
                             </DockPanel>
 
-                            <DataGrid AutoGenerateColumns="False" HeadersVisibility="Column" Height="200" Margin="10" CanUserAddRows="False" ColumnWidth="*" HorizontalAlignment="Stretch" IsReadOnly="True" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False">
+                            <!-- 綁定到 WorkItems，並提供 6 欄 -->
+                            <DataGrid ItemsSource="{Binding WorkItems}" AutoGenerateColumns="False" HeadersVisibility="Column" Height="200" Margin="10" CanUserAddRows="False" ColumnWidth="*" HorizontalAlignment="Stretch" IsReadOnly="False" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="#" Width="0.3*" />
-                                    <DataGridCheckBoxColumn Header="選取" Width="*" />
-                                    <DataGridTextColumn Header="工作名稱" Width="2*" />
-                                    <DataGridTextColumn Header="狀態" Width="*" />
-                                    <DataGridTextColumn Header="工作量測程式" Width="2*" />
-                                    <DataGridTextColumn Header="目標EDM" Width="*" />
-                                    <DataGridTextColumn Header="座標" Width="*" />
-                                    <DataGridTextColumn Header="設定者" Width="0.8*" />
+                                    <DataGridCheckBoxColumn Header="選取" Binding="{Binding IsSelected}" Width="Auto" />
+                                    <DataGridTextColumn Header="工件名稱" Binding="{Binding WorkpieceName}" Width="2*" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="Auto" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="量測程式" Binding="{Binding MeasurementProgram}" Width="2*" IsReadOnly="True" />
+                                    <!-- 6. 設定者 (TextBox 可編輯) -->
+                                    <DataGridTemplateColumn Header="設定者" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding SetupUser, UpdateSourceTrigger=PropertyChanged}" MinWidth="120" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
                     </GroupBox>
 
                     <!-- 電極 -->
-                    <GroupBox Header="電極" FontWeight="Bold" FontSize="20" Grid.Row="1">
+                    <GroupBox Header="電極" FontWeight="Bold" FontSize="20" Grid.Row="2">
                         <StackPanel>
                             <DockPanel LastChildFill="True" Margin="10,10,10,0">
                                 <Button Width="120" Height="36" Cursor="Hand" Background="#EFE9DD" Foreground="Black" BorderBrush="Transparent" FontSize="14" FontWeight="SemiBold" Padding="10,4" Content="📁 選擇資料夾" Command="{Binding SelectCsvFileCommand}" CommandParameter="Ele">
@@ -117,16 +138,15 @@
                                 <TextBlock Text="{Binding SelectedEleCsvPath}" d:Text="C:\OSCARMAX\PGM_Program\Workpiece\PGM_Example_Workpiece_2.csv" VerticalAlignment="Center" Margin="10,0,0,0" />
                             </DockPanel>
 
-                            <DataGrid AutoGenerateColumns="False" HeadersVisibility="Column" Height="200" Margin="10" CanUserAddRows="False" ColumnWidth="*" HorizontalAlignment="Stretch" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False">
+                            <DataGrid ItemsSource="{Binding ElectrodeItems}" AutoGenerateColumns="False" HeadersVisibility="Column" Height="200" Margin="10" CanUserAddRows="False" ColumnWidth="*" HorizontalAlignment="Stretch" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="#" Width="0.3*" />
-                                    <DataGridCheckBoxColumn Header="選取" Width="*" />
-                                    <DataGridTextColumn Header="工作名稱" Width="2*" />
-                                    <DataGridTextColumn Header="狀態" Width="*" />
-                                    <DataGridTextColumn Header="工作量測程式" Width="2*" />
-                                    <DataGridTextColumn Header="目標EDM" Width="*" />
-                                    <DataGridTextColumn Header="座標" Width="*" />
-                                    <DataGridTextColumn Header="設定者" Width="0.8*" />
+                                    <DataGridCheckBoxColumn Header="選取" Binding="{Binding IsSelected}" Width="Auto" />
+                                    <DataGridTextColumn Header="名稱" Binding="{Binding ElectrodeName}" Width="2*" />
+                                    <DataGridTextColumn Header="壽命" Binding="{Binding LifeTimes}" Width="Auto" />
+                                    <DataGridTextColumn Header="補償" Binding="{Binding OffsetStatus}" Width="Auto" />
+                                    <DataGridTextColumn Header="狀態" Binding="{Binding State}" Width="Auto" />
+                                    <DataGridTextColumn Header="程式" Binding="{Binding MeasurementProgram}" Width="2*" />
+                                    <DataGridTextColumn Header="設定者" Binding="{Binding SetupUser}" Width="*" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
@@ -135,9 +155,11 @@
             </ScrollViewer>
 
             <!-- 下方按鈕 -->
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-                <Button Content="🗑 Clear/清除" Width="180" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="Gray" Margin="0,0,10,0" />
-                <Button Content="⏫ Upload/上傳" Width="180" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" />
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0" Cursor="Hand">
+                <!--按鈕:清除 -->
+                <Button Content="🗑 Clear/清除" Width="180" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="Gray" Margin="0,0,10,0" Command="{Binding ClearButtonCommand}" />
+                <!-- 按鈕:上傳 -->
+                <Button Content="⏫ Upload/上傳" Width="180" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Command="{Binding UpdataButtonCommand}" />
             </StackPanel>
         </Grid>
     </Border>
