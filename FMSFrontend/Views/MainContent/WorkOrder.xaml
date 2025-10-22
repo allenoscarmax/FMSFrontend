@@ -107,9 +107,9 @@
                                                                             </DataGridTemplateColumn.CellTemplate>
                                                                         </DataGridTemplateColumn>
 
-                                                                        <DataGridTextColumn Header="工單編號" FontSize="18" Binding="{Binding OrderNumber}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                        <DataGridTextColumn Header="工單編號" FontSize="18" Binding="{Binding WorksheetNumber}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                        <DataGridTextColumn Header="零件名稱" FontSize="18" Binding="{Binding PartName}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                        <DataGridTextColumn Header="工件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
                                                                         <DataGridTemplateColumn Header="狀態" Width="180">
                                                                             <DataGridTemplateColumn.CellTemplate>
@@ -126,7 +126,7 @@
 
                                                                         <DataGridTextColumn Header="座標" FontSize="18" Binding="{Binding Coordinate}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                        <DataGridTextColumn Header="設定者" FontSize="18" Binding="{Binding Operator}" Width="110" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                        <DataGridTextColumn Header="設定者" FontSize="18" Binding="{Binding SetupUser}" Width="110" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
                                                                         <DataGridTemplateColumn Header="刪除" Width="60">
                                                                             <DataGridTemplateColumn.CellTemplate>
@@ -230,8 +230,8 @@
                                                                                                 <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" RowHeight="30" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource ModernFlatDataGridStyle}">
                                                                                                     <DataGrid.Columns>
                                                                                                         <DataGridTextColumn Header="#" Binding="{Binding QueueIndex}" Width="60" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding OrderNumber}" Width="150" />
-                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding PartName}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding WorksheetNumber}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding WorkpieceName}" Width="150" />
                                                                                                         <DataGridTemplateColumn Header="放電狀態" Width="150">
                                                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                                                 <DataTemplate>
@@ -244,7 +244,7 @@
                                                                                                         </DataGridTemplateColumn>
                                                                                                         <DataGridTextColumn Header="目標EDM" Binding="{Binding TargetEDM}" Width="100" />
                                                                                                         <DataGridTextColumn Header="座標" Binding="{Binding Coordinate}" Width="80" />
-                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding Operator}" Width="100" />
+                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding SetupUser}" Width="100" />
                                                                                                     </DataGrid.Columns>
                                                                                                 </DataGrid>
                                                                                             </Border>
@@ -290,8 +290,8 @@
 
                                                                                                     <DataGrid.Columns>
                                                                                                         <DataGridTextColumn Header="#" Binding="{Binding QueueIndex}" Width="60" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding OrderNumber}" Width="150" />
-                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding PartName}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding WorksheetNumber}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding WorkpieceName}" Width="150" />
 
                                                                                                         <DataGridTemplateColumn Header="放電狀態" Width="150">
                                                                                                             <DataGridTemplateColumn.CellTemplate>
@@ -306,7 +306,7 @@
 
                                                                                                         <DataGridTextColumn Header="目標EDM" Binding="{Binding TargetEDM}" Width="100" />
                                                                                                         <DataGridTextColumn Header="座標" Binding="{Binding Coordinate}" Width="80" />
-                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding Operator}" Width="100" />
+                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding SetupUser}" Width="100" />
                                                                                                     </DataGrid.Columns>
                                                                                                 </DataGrid>
                                                                                             </Border>
@@ -340,8 +340,8 @@
                                                                                                 <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" RowHeight="30" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource ModernFlatDataGridStyle}">
                                                                                                     <DataGrid.Columns>
                                                                                                         <DataGridTextColumn Header="#" Binding="{Binding QueueIndex}" Width="60" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding OrderNumber}" Width="150" />
-                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding PartName}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding WorksheetNumber}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding WorkpieceName}" Width="150" />
                                                                                                         <DataGridTemplateColumn Header="放電狀態" Width="150">
                                                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                                                 <DataTemplate>
@@ -354,7 +354,7 @@
                                                                                                         </DataGridTemplateColumn>
                                                                                                         <DataGridTextColumn Header="目標EDM" Binding="{Binding TargetEDM}" Width="100" />
                                                                                                         <DataGridTextColumn Header="座標" Binding="{Binding Coordinate}" Width="80" />
-                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding Operator}" Width="100" />
+                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding SetupUser}" Width="100" />
                                                                                                     </DataGrid.Columns>
                                                                                                 </DataGrid>
                                                                                             </Border>
@@ -388,8 +388,8 @@
                                                                                                 <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" RowHeight="30" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource ModernFlatDataGridStyle}">
                                                                                                     <DataGrid.Columns>
                                                                                                         <DataGridTextColumn Header="#" Binding="{Binding QueueIndex}" Width="60" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding OrderNumber}" Width="150" />
-                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding PartName}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding WorksheetNumber}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding WorkpieceName}" Width="150" />
                                                                                                         <DataGridTemplateColumn Header="放電狀態" Width="150">
                                                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                                                 <DataTemplate>
@@ -402,7 +402,7 @@
                                                                                                         </DataGridTemplateColumn>
                                                                                                         <DataGridTextColumn Header="目標EDM" Binding="{Binding TargetEDM}" Width="100" />
                                                                                                         <DataGridTextColumn Header="座標" Binding="{Binding Coordinate}" Width="80" />
-                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding Operator}" Width="100" />
+                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding SetupUser}" Width="100" />
                                                                                                     </DataGrid.Columns>
                                                                                                 </DataGrid>
                                                                                             </Border>
@@ -445,8 +445,8 @@
                                                                                                 <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" RowHeight="30" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource ModernFlatDataGridStyle}">
                                                                                                     <DataGrid.Columns>
                                                                                                         <DataGridTextColumn Header="#" Binding="{Binding QueueIndex}" Width="60" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding OrderNumber}" Width="150" />
-                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding PartName}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding WorksheetNumber}" Width="150" />
+                                                                                                        <DataGridTextColumn Header="零件名稱" Binding="{Binding WorkpieceName}" Width="150" />
                                                                                                         <DataGridTemplateColumn Header="放電狀態" Width="150">
                                                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                                                 <DataTemplate>
@@ -459,7 +459,7 @@
                                                                                                         </DataGridTemplateColumn>
                                                                                                         <DataGridTextColumn Header="目標EDM" Binding="{Binding TargetEDM}" Width="100" />
                                                                                                         <DataGridTextColumn Header="座標" Binding="{Binding Coordinate}" Width="80" />
-                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding Operator}" Width="100" />
+                                                                                                        <DataGridTextColumn Header="設定者" Binding="{Binding SetupUser}" Width="100" />
                                                                                                     </DataGrid.Columns>
                                                                                                 </DataGrid>
                                                                                             </Border>
@@ -493,12 +493,12 @@
                                                     <Border Grid.Row="1" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,8">
                                                         <DataGrid ItemsSource="{Binding FailureWorkOrders}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" IsReadOnly="True" AutoGenerateColumns="False" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" RowHeight="30" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource ModernFlatDataGridStyle}">
                                                             <DataGrid.Columns>
-                                                                <DataGridTextColumn Header="工單編號" Binding="{Binding OrderNumber}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                <DataGridTextColumn Header="零件名稱" Binding="{Binding PartName}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Header="工單編號" Binding="{Binding WorksheetNumber}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Header="零件名稱" Binding="{Binding WorkpieceName}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                                 <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="150" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                                 <DataGridTextColumn Header="目標EDM" Binding="{Binding TargetEDM}" Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                                 <DataGridTextColumn Header="座標" Binding="{Binding Coordinate}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                <DataGridTextColumn Header="設定者" Binding="{Binding Operator}" Width="110" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Header="設定者" Binding="{Binding SetupUser}" Width="110" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                             </DataGrid.Columns>
                                                         </DataGrid>
                                                     </Border>

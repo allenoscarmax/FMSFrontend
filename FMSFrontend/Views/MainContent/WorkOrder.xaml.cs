@@ -16,6 +16,8 @@ using System.Windows.Shapes;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Extensions.DependencyInjection; // ← 新增
+using FMSFrontend.Interfaces;                 // ← 新增
 
 namespace FMSFrontend.Views
 {
@@ -29,11 +31,12 @@ namespace FMSFrontend.Views
             InitializeComponent();
             this.PreviewMouseLeftButtonDown += WorkOrder_PreviewMouseLeftButtonDown;
 
-            // 建立服務實例
-            var windowService = new WindowService();
+                // 透過 DI 取得服務
+            var windowService = App.ServiceProvider.GetRequiredService<IWindowService>();
+            var httpService   = App.ServiceProvider.GetRequiredService<IHttpService>();
 
             // 建立 ViewModel 並注入服務
-            var viewModel = new WorkOrderPageViewModel(windowService);
+            var viewModel = new WorkOrderPageViewModel(windowService, httpService);
 
             this.DataContext = viewModel;
         }

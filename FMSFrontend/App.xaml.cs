@@ -10,9 +10,6 @@ using System.Windows;
 
 namespace FMSFrontend
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
         public static IServiceProvider? ServiceProvider { get; private set; }
@@ -39,11 +36,9 @@ namespace FMSFrontend
 
             var services = new ServiceCollection();
 
-            // 註冊 HttpClient
-            services.AddHttpClient<IHttpService, HttpService>(client =>
-            {
-                client.BaseAddress = new Uri("http://localhost:5032/");
-            });
+            // 原本的 typed client 會要求建構子有 HttpClient → 改用一般 Singleton
+            // services.AddHttpClient<IHttpService, HttpService>();
+            services.AddSingleton<IHttpService, HttpService>();
 
             // Services
             services.AddSingleton<IWindowService, WindowService>();
@@ -57,11 +52,8 @@ namespace FMSFrontend
 
             ServiceProvider = services.BuildServiceProvider();
 
-            // 透過 DI 建立 MainWindow
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
         }
     }
-
-
 }

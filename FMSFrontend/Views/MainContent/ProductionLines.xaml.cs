@@ -18,11 +18,7 @@ namespace FMSFrontend.Views
             InitializeComponent();
 
             var windowService = new WindowService();
-            var httpClient = new HttpClient
-            {
-                BaseAddress = new Uri("http://localhost:5032/") // ← 供相對路徑使用
-            };
-            var httpService = new HttpService(httpClient);
+            var httpService = new HttpService();
 
             this.DataContext = new ProductionLinesViewModel(windowService, httpService); // ← 傳入
         }

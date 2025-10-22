@@ -163,18 +163,18 @@ namespace FMSFrontend.ViewModels
             return new ElectrodeModel
             {
                 // 以 API 為主，缺的用舊值補
-                JigSerial = fallback?.JigSerial,
-                Name = db.ElectrodeName ?? fallback?.Name,
-                No = fallback?.No, // DB 未提供 → 沿用舊值
-                Type = db.ElectrodeType ?? fallback?.Type,
-                Status = db.State ?? fallback?.Status,
-                HolderNo = fallback?.HolderNo,
-                TagSerial = db.TagSerial ?? fallback?.TagSerial,
-                MaxDischargeCount = db.LifeTimes?.ToString() ?? fallback?.MaxDischargeCount,
-                UsageRate = fallback?.UsageRate, // 若需，用 UseTimes/LifeTimes 計算
-                Compensation = db.Offset ?? fallback?.Compensation,
-                ProcessedCount = db.UseTimes?.ToString() ?? fallback?.ProcessedCount,
-                Restriction = db.Restriction ?? fallback?.Restriction
+                JigSerial = "",
+                Name = db.electrodeName ?? "",
+                No = "", // DB 未提供 → 沿用舊值
+                Type = db.electrodeType ?? "",
+                Status = db.state ?? "",
+                HolderNo = "",
+                TagSerial = db.tagSerial ?? "",
+                MaxDischargeCount = db.lifeTimes.ToString() ?? "",
+                UsageRate = "",
+                Compensation = db.offset ?? "",
+                ProcessedCount = db.useTimes?.ToString() ?? "",
+                Restriction = db.restriction 
             };
         }
 
@@ -189,19 +189,19 @@ namespace FMSFrontend.ViewModels
             return new WorkpieceModel
             {
                 // 以 API 為主，缺的用舊值補
-                JigSerial = fallback?.JigSerial,
-                Name = db.WorkpieceName ?? fallback?.Name,
-                No = fallback?.No,
-                WorkType = fallback?.WorkType,
-                PartNo = fallback?.PartNo,
-                OrderNo = db.WorksheetNumber ?? fallback?.OrderNo,
-                ClampNo = fallback?.ClampNo,
-                Status = db.Status ?? fallback?.Status,
-                BatchNo = fallback?.BatchNo,
-                PartName = fallback?.PartName,
-                SerialCode = fallback?.SerialCode,
-                RouteNo = fallback?.RouteNo,
-                Restriction = db.Restriction ?? fallback?.Restriction ?? false
+                JigSerial = "",
+                Name = db.workpieceName ?? "",
+                No = "",
+                WorkType = "",
+                PartNo = "",
+                OrderNo = db.worksheetNumber ?? "",
+                ClampNo = "",
+                Status = db.status ?? "",
+                BatchNo = "",
+                PartName = "",
+                SerialCode = "",
+                RouteNo = "",
+                Restriction = db.restriction ?? false
             };
         }
 

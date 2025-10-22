@@ -87,11 +87,6 @@ namespace FMSFrontend.ViewModels
         {
             var json = await _httpService.GetJsonAsync<JsonElement>("Storage/DB_GetAllStorageData");
             _storageDataJson = json;
-
-
-
-
-
             WeakReferenceMessenger.Default.Send(new StorageDataUpdatedMessage(json));
 
         }

@@ -79,9 +79,9 @@ namespace FMSFrontend.ViewModels.Production
 
             // 依 StorageName + StorageNumber 分組（例如 E + 1 → ES1、W + 1 → W1，這裡直接 StorageName+StorageNumber）
             var groups = storages
-                .GroupBy(s => new { s.StorageName, s.StorageNumber })
-                .OrderBy(g => g.Key.StorageName)
-                .ThenBy(g => g.Key.StorageNumber)
+                .GroupBy(s => new { s.storageName, s.storageNumber })
+                .OrderBy(g => g.Key.storageName)
+                .ThenBy(g => g.Key.storageNumber)
                 .ToList();
 
             var newUnits = new List<StorageUnitViewModel>();
@@ -89,19 +89,19 @@ namespace FMSFrontend.ViewModels.Production
             foreach (var g in groups)
             {
                 var key = g.Key;
-                var isElectrodeStore = key.StorageName?.StartsWith("E", StringComparison.OrdinalIgnoreCase) == true;
+                var isElectrodeStore = key.storageName?.StartsWith("E", StringComparison.OrdinalIgnoreCase) == true;
                 // 2.2 顯示名稱為 "StorageName + StorageNumber"
-                var unitName = $"{key.StorageName}{key.StorageNumber}";
+                var unitName = $"{key.storageName}{key.storageNumber}";
 
                 // 取最大列/行當作格數
-                int maxRow = Math.Max(1, g.Max(x => x.Row));     // 行
-                int maxCol = Math.Max(1, g.Max(x => x.Column));  // 列
+                int maxRow = Math.Max(1, g.Max(x => x.row));     // 行
+                int maxCol = Math.Max(1, g.Max(x => x.column));  // 列
 
                 var unit = new StorageUnitViewModel(unitName, maxRow, maxCol);
                 unit.Slots.Clear();
 
                 // 2.3 取得該倉別所有 OndeskTagserial（非空）
-                var tagSerials = g.Select(x => x.OndeskTagserial)
+                var tagSerials = g.Select(x => x.ondeskTagserial)
                                   .Where(ts => !string.IsNullOrWhiteSpace(ts))
                                   .Distinct()
                                   .ToList();
@@ -123,7 +123,7 @@ namespace FMSFrontend.ViewModels.Production
                                 var e = list.FirstOrDefault();
                                 if (e != null)
                                 {
-                                    tagStateMap[ts] = (e.State ?? "Empty", e.Restriction ?? false);
+                                    tagStateMap[ts] = (e.state ?? "Empty", e.restriction);
                                 }
                             }
                             else
@@ -133,7 +133,7 @@ namespace FMSFrontend.ViewModels.Production
                                 var w = list.FirstOrDefault();
                                 if (w != null)
                                 {
-                                    tagStateMap[ts] = (w.Status ?? "Empty", w.Restriction ?? false);
+                                    tagStateMap[ts] = (w.status ?? "Empty", w.restriction ?? false);
                                 }
                             }
                         }
@@ -150,8 +150,8 @@ namespace FMSFrontend.ViewModels.Production
                 {
                     for (int c = 1; c <= maxCol; c++)
                     {
-                        var rec = g.FirstOrDefault(x => x.Row == r && x.Column == c);
-                        var tag = rec?.OndeskTagserial;
+                        var rec = g.FirstOrDefault(x => x.row == r && x.column == c);
+                        var tag = rec?.ondeskTagserial;
 
                         // 預設值
                         string stateValue = "Empty";
@@ -166,8 +166,8 @@ namespace FMSFrontend.ViewModels.Production
                         else
                         {
                             // 回退使用 Storage 原始欄位
-                            stateValue = string.IsNullOrWhiteSpace(rec?.State) ? "Empty" : rec.State!;
-                            restrictionValue = rec?.Restriction ?? false;
+                            stateValue = string.IsNullOrWhiteSpace(rec?.state) ? "Empty" : rec.state!;
+                            restrictionValue = rec?.restriction ?? false;
                         }
 
                         var slot = new StorageSlotViewModel
@@ -184,12 +184,12 @@ namespace FMSFrontend.ViewModels.Production
                                 Kind = isElectrodeStore ? MaterialKind.Electrode : MaterialKind.Workpiece,
                                 Electrode = new ElectrodeModel
                                 {
-                                    TagSerial = rec?.OndeskTagserial,
+                                    TagSerial = rec?.ondeskTagserial,
                                     Restriction = restrictionValue
                                 },
                                 Workpiece = new WorkpieceModel
                                 {
-                                    SerialCode = rec?.OndeskTagserial,
+                                    SerialCode = rec?.ondeskTagserial,
                                     Restriction = restrictionValue
                                 }
                             }
