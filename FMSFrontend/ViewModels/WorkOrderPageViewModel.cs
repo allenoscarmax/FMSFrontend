@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging; // ← 新增（用於接收 UploadSheetsClosedMessage）
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.Views;
@@ -92,7 +93,16 @@ namespace FMSFrontend.ViewModels
 
         [ObservableProperty]
         private DateTime? toDate = DateTime.Today;
+        public void OnPageActivated()
+        {
+            _paramTabCts?.Cancel();
+            _paramTabCts = new CancellationTokenSource();
 
+            var status = MapWorkStatusForParameterTab(SelectedTabIndexParameter);
+
+            // fire-and-forget 更新資料（內部支援 CancellationToken）
+            _ = FetchAndBindByStatusAsync(status, _paramTabCts.Token);
+        }
         partial void OnToDateChanged(DateTime? value)
         {
             if (value == null || FromDate == null)
@@ -117,13 +127,9 @@ namespace FMSFrontend.ViewModels
             lastValidToDate = value;
         }
         public bool IsCustomDateMode => SelectedFilterOption == "自訂";
-
-        public ObservableCollection<WorkOrderData> WorkOrderList { get; set; }
+        public ObservableCollection<WorkOrderData> WorkOrderList { get; set; } = new();
         public ObservableCollection<WorkOrderData> FailureWorkOrders { get; set; } = new();
-
-        // 最少新增：EDM 子頁簽綁定需要的集合（XAML 中綁定了 FilteredEDMList）
         public ObservableCollection<WorkOrderData> FilteredEDMList { get; } = new();
-
         private void ApplyDateFilter()
         {
             switch (SelectedFilterOption)
@@ -148,30 +154,6 @@ namespace FMSFrontend.ViewModels
         {
             _windowService = windowService;
             _httpService = httpService;
-            
-
-            WorkOrderList = new ObservableCollection<WorkOrderData>
-            {
-                // 可保留初始化範例資料；切換分頁後會被 API 結果覆蓋
-                new WorkOrderData
-                {
-                    WorksheetNumber = "20250722001",
-                    WorkpieceName = "24-018-003",
-                    Status = "NEW",
-                    StatusColor = Brushes.Gold,
-                    
-                    TargetEDM = "EDM1",
-                    Coordinate = "G01",
-                    SetupUser = "admin",
-                    
-                    EDMDetails =new ObservableCollection<EDMDetail>
-                    {
-                        new EDMDetail { ElectrodeName = "E01", LabelSerial = "A123", Status = "待機", NeedEDM = true, EDMProgram = "P1", Offset = 1 },
-                        new EDMDetail { ElectrodeName = "E02", LabelSerial = "A124", Status = "加工中", NeedEDM = false, EDMProgram = "P2", Offset = 2 },
-                    }
-                }
-            };
-
             // 使用非同步方法刪除：保留 RelayCommand，但在內部啟動 async Task
             DeleteCommand = new RelayCommand<WorkOrderData>(item =>
             {
@@ -179,6 +161,18 @@ namespace FMSFrontend.ViewModels
                 {
                     _ = DeleteWorkOrderAsync(item);
                 }
+            });
+
+            // 新增：訂閱 UploadsheetsWindow 關閉後的廣播，收到後重新抓取資料
+            WeakReferenceMessenger.Default.Register<UploadSheetsClosedMessage>(this, (r, msg) =>
+            {
+                if (!msg.Value) return;
+
+                _paramTabCts?.Cancel();
+                _paramTabCts = new CancellationTokenSource();
+
+                var status = MapWorkStatusForParameterTab(SelectedTabIndexParameter);
+                _ = FetchAndBindByStatusAsync(status, _paramTabCts.Token);
             });
         }
 
@@ -205,45 +199,43 @@ namespace FMSFrontend.ViewModels
                     ? JsonSerializer.Deserialize<List<Worksheets>>(json.Value.GetRawText()) ?? new List<Worksheets>()
                     : new List<Worksheets>();
 
-                var mapped = worksheets.Select(MapToWorkOrderData).ToList();
-
+              
                 // 只更新目前畫面所綁定的集合（避免不必要變動）
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    if (SelectedTabIndexParameter == 1)
+                    if (SelectedTabIndexParameter == 0)
+                    {
+                        WorkOrderList.Clear();
+                        foreach (var w in worksheets)
+                            WorkOrderList.Add(MapToWorkOrderData(w));
+                    }
+                    else if (SelectedTabIndexParameter == 1)
                     {
                         // EDM 子頁簽
                         FilteredEDMList.Clear();
-                        foreach (var w in mapped.Where(x => string.Equals(x.Status, workStatus, StringComparison.OrdinalIgnoreCase)))
-                            FilteredEDMList.Add(w);
-                        return;
+                        foreach (var w in worksheets)
+                            FilteredEDMList.Add(MapToWorkOrderData(w));
                     }
-
-                    if (SelectedTabIndexParameter == 2 || string.Equals(workStatus, "Error", StringComparison.OrdinalIgnoreCase) || string.Equals(workStatus, "Failed", StringComparison.OrdinalIgnoreCase))
+                    else
                     {
                         FailureWorkOrders.Clear();
-                        foreach (var w in mapped.Where(x => string.Equals(x.Status, workStatus, StringComparison.OrdinalIgnoreCase)))
-                            FailureWorkOrders.Add(w);
-                        return;
+                        foreach (var w in worksheets)
+                            FailureWorkOrders.Add(MapToWorkOrderData(w));
                     }
-
-                    // 預設更新主頁（New/參數分頁）
-                    WorkOrderList.Clear();
-                    foreach (var w in mapped.Where(x => string.Equals(x.Status, workStatus, StringComparison.OrdinalIgnoreCase)))
-                        WorkOrderList.Add(w);
                 });
-           // }
-           // catch (OperationCanceledException)
-           // {
-                // 被取消，靜默忽略
-           // }
-           // catch (Exception ex)
-           // {
-           //     Application.Current.Dispatcher.Invoke(() =>
-           //     {
-           //         _windowService.ShowMessage($"讀取工單資料失敗：{ex.Message}");
-           //     });
-          //  }
+                return;
+            // }
+            // catch (OperationCanceledException)
+            // {
+            // 被取消，靜默忽略
+            // }
+            // catch (Exception ex)
+            // {
+            //     Application.Current.Dispatcher.Invoke(() =>
+            //     {
+            //         _windowService.ShowMessage($"讀取工單資料失敗：{ex.Message}");
+            //     });
+            //  }
         }
 
         // 新增：處理刪除工單的非同步方法（包含 UI 確認、API 呼叫與錯誤處理）

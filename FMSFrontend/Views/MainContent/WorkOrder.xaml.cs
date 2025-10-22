@@ -39,6 +39,15 @@ namespace FMSFrontend.Views
             var viewModel = new WorkOrderPageViewModel(windowService, httpService);
 
             this.DataContext = viewModel;
+
+            // 新增：當頁面載入時觸發 ViewModel 的更新
+            this.Loaded += (s, e) =>
+            {
+                if (this.DataContext is WorkOrderPageViewModel vm)
+                {
+                    try { vm.OnPageActivated(); } catch { }
+                }
+            };
         }
         private void WorkOrder_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

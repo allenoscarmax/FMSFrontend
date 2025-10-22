@@ -12,6 +12,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
+using CommunityToolkit.Mvvm.Messaging; // ← 新增
+using CommunityToolkit.Mvvm.Messaging.Messages; // ← 新增
 
 namespace FMSFrontend.Services
 {
@@ -23,6 +25,8 @@ namespace FMSFrontend.Services
         {
             var window = new UploadsheetsWindow();
             window.ShowDialog();
+            // 新增：上傳視窗關閉後廣播訊息，讓其他 ViewModel 可接收到並刷新資料
+            WeakReferenceMessenger.Default.Send(new UploadSheetsClosedMessage(true));
         }
 
         public void ShowMessage(string message)
@@ -31,7 +35,7 @@ namespace FMSFrontend.Services
             dialog.ShowDialog();
         }
 
-        public bool ShowYesNoDialog( string message)
+        public bool ShowYesNoDialog(string message)
         {
             var dialog = new DialogYesNoWindow(message);
             return dialog.ShowDialog() == true;
@@ -224,6 +228,10 @@ namespace FMSFrontend.Services
             }
         }
 
-
+    }
+    // 新增：簡單的訊息型別（放在同一 namespace 下）
+    public sealed class UploadSheetsClosedMessage : ValueChangedMessage<bool>
+    {
+        public UploadSheetsClosedMessage(bool value) : base(value) { }
     }
 }
