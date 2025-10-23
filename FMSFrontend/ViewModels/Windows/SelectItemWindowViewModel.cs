@@ -25,11 +25,10 @@ namespace FMSFrontend.Extensions
         // 可選：讓外部注入資料載入器（例如 API/Mongo）
         private readonly Func<SelectItemType, IEnumerable<SelectItem>> _dataLoader;
 
-        public SelectItemWindowViewModel(SelectItemType type,
-                                         Func<SelectItemType, IEnumerable<SelectItem>> dataLoader = null)
+        public SelectItemWindowViewModel(SelectItemType type, Func<SelectItemType, IEnumerable<SelectItem>>? dataLoader = null)
         {
             Type = type;
-            _dataLoader = dataLoader;
+           if(dataLoader != _dataLoader)  _dataLoader = dataLoader;
 
             ItemsView = CollectionViewSource.GetDefaultView(Items);
             ItemsView.Filter = FilterItem;
@@ -44,15 +43,18 @@ namespace FMSFrontend.Extensions
             {
                 case SelectItemType.Electrode:
                     Title = "選擇電極";
-                    TitleBrush = (Brush)new BrushConverter().ConvertFrom("#4078B3");
+                    TitleBrush = BrushFrom("#4078B3");
+                  //  TitleBrush = (Brush)new BrushConverter().ConvertFrom("#4078B3")?? ;
                     break;
 
                 case SelectItemType.Workpiece:
                     Title = "選擇工件";
-                    TitleBrush = (Brush)new BrushConverter().ConvertFrom("#E27B35");
+                    TitleBrush = BrushFrom("#E27B35");
+                  //  TitleBrush = (Brush)new BrushConverter().ConvertFrom("#E27B35");
                     break;
             }
         }
+
 
         private void LoadData()
         {

@@ -67,11 +67,7 @@ namespace FMSFrontend.Services
 
             ServerIp = ip;
 
-            var baseUri = _httpClient.BaseAddress;
-            var scheme = baseUri?.Scheme ?? "http";
-            var portPart = baseUri != null && !baseUri.IsDefaultPort ? $":{baseUri.Port}" : string.Empty;
-
-            _httpClient.BaseAddress = new Uri($"{scheme}://{ip}{portPart}:5032/");
+            _httpClient.BaseAddress = new Uri($"http://{ip}:5032/");
         }
     }
 }
