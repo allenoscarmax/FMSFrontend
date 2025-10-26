@@ -44,9 +44,9 @@ public partial class MaterialPairViewModel : ObservableObject
     [ObservableProperty] private string _lifetime = string.Empty;
     [ObservableProperty] private string _selectStatus = string.Empty;
     [ObservableProperty] private string _tagSerial = string.Empty;
-    [ObservableProperty] private string _name = string.Empty;
-    [ObservableProperty] private string _pgm = string.Empty;
-    [ObservableProperty] private string _pairEdm = string.Empty;
+    [ObservableProperty] private string _selectName = string.Empty;
+    [ObservableProperty] private string _selectPgm = string.Empty;
+    [ObservableProperty] private string _selectPairEdm = string.Empty;
 
 
     // 方便 UI 綁定顯示文字（可選）
@@ -106,7 +106,7 @@ public partial class MaterialPairViewModel : ObservableObject
     // =========================
     // 新增：選擇工件 / 電極
     // =========================
-    Brush StatusColor(string s)
+    Brush StatusColor(string? s)
     {
         return s switch
         {
@@ -152,9 +152,9 @@ public partial class MaterialPairViewModel : ObservableObject
             var wp = Workpiece.FirstOrDefault(w => string.Equals(w.workpieceName, selectedName, StringComparison.Ordinal));
             SelectStatus = wp?.status ?? string.Empty;
             TagSerial = wp?.tagSerial ?? string.Empty;
-            Name = wp.workpieceName ?? string.Empty;
-            PairEdm = wp.pairedEDM ?? string.Empty;
-            Pgm = wp.edmpgm ?? string.Empty;
+            SelectName = wp?.workpieceName ?? string.Empty;
+            SelectPairEdm = wp?.pairedEDM ?? string.Empty;
+            SelectPgm = wp?.edmpgm ?? string.Empty;
             // 若切換選擇邏輯需要清掉另一邊，可視需求做：
             // SelectedElectrodeItem = null;
         }
@@ -191,9 +191,9 @@ public partial class MaterialPairViewModel : ObservableObject
             Lifetime = e?.lifeTimes?.ToString() ?? string.Empty;
             SelectStatus = e?.state ?? string.Empty;
             TagSerial = e?.tagSerial ?? string.Empty;
-            Name = e?.electrodeName ?? string.Empty;
-            PairEdm = e?.pairedEDM ?? string.Empty;
-            Pgm = e?.edmpgm ?? string.Empty;
+            SelectName = e?.electrodeName ?? string.Empty;
+            SelectPairEdm = e?.pairedEDM ?? string.Empty;
+            SelectPgm = e?.edmpgm ?? string.Empty;
             // SelectedWorkpieceItem = null;
         }
     }

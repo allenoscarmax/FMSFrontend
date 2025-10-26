@@ -19,7 +19,7 @@ namespace FMSFrontend.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        private bool _isMenuBarVisible = true;
+        //private bool _isMenuBarVisible = true;
         public MainWindow(MainWindowViewModel viewModel)
         {
             InitializeComponent();

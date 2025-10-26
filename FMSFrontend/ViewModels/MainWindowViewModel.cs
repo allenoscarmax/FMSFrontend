@@ -47,13 +47,13 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty]
         private bool _isMenuVisible;
         [ObservableProperty]
-        private string currentDateTime;  //存現在的時間
+        private string currentDateTime ="";  //存現在的時間
         [ObservableProperty]
         private string _loggedInUser = string.Empty; //登入的名稱
         [ObservableProperty]
-        private UserControl currentPageView;
+        private UserControl? _currentPageView;
         [ObservableProperty]
-        private string currentPageKey;  // 存目前的頁面
+        private string currentPageKey ="";  // 存目前的頁面
         [ObservableProperty]
         private UserControl storageControlPage;
 
@@ -270,7 +270,7 @@ namespace FMSFrontend.ViewModels
         {
             CurrentPageView = new AlarmPage(); // 你的 Alarm UserControl / Page
                                                // 讓下方 PageMenu 不顯示選中狀態
-            CurrentPageKey = null;             // 或 string.Empty 都可
+            CurrentPageKey = "";             // 或 string.Empty 都可
                                                // 若你的 PageMenu 是用 SelectedIndex 套樣式，這行也一起用：
                                                // SelectedPageIndex = -1;
         }
@@ -395,38 +395,39 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private async Task RobotStartButton()
         {
-            const string route = "http://localhost:5032/ASRS/SetASRSRobotStart";
-
+          
             var dialog = new DialogMessageWindow("Start");
             dialog.ShowDialog();
             try
             {
-               // await _httpService.SendPutAsync(route, new { });
+                const string route = "http://localhost:5032/ASRS/SetASRSRobotStart";
+                await _httpService.SendPutAsync(route, new { });
             }
             catch { }
         }
         [RelayCommand]
         private async Task RobotPauseButtonClickCommand()
         {
-            const string route = "http://localhost:5032/ASRS/SetASRSRobotPause";
 
             var dialog = new DialogMessageWindow("Pause");
             dialog.ShowDialog();
             try
             {
-              //  await _httpService.SendPutAsync(route, new { });
+                const string route = "http://localhost:5032/ASRS/SetASRSRobotPause";
+                await _httpService.SendPutAsync(route, new { });
             }
             catch { }
         }
         [RelayCommand]
         private async Task RobotStopButtonClick()
         {
-            const string route = "http://localhost:5032/ASRS/SetASRSRobotStop";
+         
             var dialog = new DialogMessageWindow("Stop");
             dialog.ShowDialog();
             try
             {
-              //  await _httpService.SendPutAsync(route, new { });
+                string route = "http://localhost:5032/ASRS/SetASRSRobotStop";
+                await _httpService.SendPutAsync(route, new { });
             }
             catch { }
         }
@@ -438,7 +439,7 @@ namespace FMSFrontend.ViewModels
             dialog.ShowDialog();
             try
             {
-              //  await _httpService.SendPutAsync(route, new { });
+                await _httpService.SendPutAsync(route, new { });
             }
             catch { }
         }
@@ -448,12 +449,12 @@ namespace FMSFrontend.ViewModels
             IsDispatch = !IsDispatch;
             SDispatchText = IsDispatch ? "派工中" : "派工啟動";
 
-            const string route = "http://localhost:5032/ASRS/SetASRSRobotDispatch";
             var dialog = new DialogMessageWindow("Dispatch");
             dialog.ShowDialog();
             try
             {
-              //  await _httpService.SendPutAsync(route, new { });
+                const string route = "http://localhost:5032/ASRS/SetASRSRobotDispatch";
+                await _httpService.SendPutAsync(route, new { });
             }
             catch { }
         }
@@ -505,10 +506,10 @@ namespace FMSFrontend.ViewModels
         {
             // 0: 關閉, 1: 開啟
             int lightSwitch = isChecked ? 1 : 0;
-            string url = $"http://localhost:5032/PLC/EleMagazineDoorLightSwitch/0/{lightSwitch}";
             try
             {
-               // await _httpService.SendPutAsync(url, new { });
+                string url = $"http://localhost:5032/PLC/EleMagazineDoorLightSwitch/0/{lightSwitch}";
+                await _httpService.SendPutAsync(url, new { });
             }
             catch
             {

@@ -47,7 +47,7 @@ namespace FMSFrontend.ViewModels.Production
 
         public ObservableCollection<StoragePageViewModel> StoragePages { get; } = new();
 
-        public StoragePageViewModel CurrentPage => StoragePages.Count > CurrentPageIndex ? StoragePages[CurrentPageIndex] : null;
+        public StoragePageViewModel? CurrentPage => StoragePages.Count > CurrentPageIndex ? StoragePages[CurrentPageIndex] : null;
         [RelayCommand]
         private void ShowOverview()
         {
@@ -296,7 +296,7 @@ namespace FMSFrontend.ViewModels.Production
                     var slot = new SlotViewModel
                     {
                         // 讓 SlotCode 走數字格式 → Text 設 null
-                        Text = null,
+                        Text = "",
                         Background = "#FFFFFF",
                         IsElectrode = (StorageType == StorageType.Electrode),
 
@@ -404,14 +404,14 @@ namespace FMSFrontend.ViewModels.Production
 
     public partial class SlotViewModel : ObservableObject, IHasMaterial
     {
-        public string Text { get; set; }
-        public string Background { get; set; }
+        public string Text { get; set; } = "";
+        public string Background { get; set; } = "";
         public bool IsElectrode { get; set; }
 
         [ObservableProperty] private ResultStatus resultStatus;
         [ObservableProperty] private CheckStatus checkStatus;
 
-        public MaterialRef Material { get; set; }
+        public MaterialRef Material { get; set; } = new MaterialRef();
 
         // 位置資訊（數字）
         public int Line { get; set; } = 1;  // 倉線/倉號，例如 ES1 → 1、W3 → 3
@@ -433,8 +433,8 @@ namespace FMSFrontend.ViewModels.Production
 
     public class StatusItemViewModel
     {
-        public string Label { get; set; }
-        public Brush Color { get; set; }
+        public string Label { get; set; } = "";
+        public Brush Color { get; set; } = Brushes.Gray; //Allen
     }
     public enum StorageType
     {

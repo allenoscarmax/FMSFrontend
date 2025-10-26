@@ -21,15 +21,15 @@ namespace FMSFrontend.ViewModels
 {
     public partial class ProductionLinesViewModel : ObservableObject
     {
-        private object _currentStorageView;
-        public object CurrentStorageView
+        private object? _currentStorageView;
+        public object? CurrentStorageView
         {
             get => _currentStorageView;
             set => SetProperty(ref _currentStorageView, value);
         }
 
-        private object _currentWorkingZoneView;
-        public object CurrentWorkingZoneView
+        private object? _currentWorkingZoneView;
+        public object? CurrentWorkingZoneView
         {
             get => _currentWorkingZoneView;
             set => SetProperty(ref _currentWorkingZoneView, value);
@@ -102,7 +102,8 @@ namespace FMSFrontend.ViewModels
                     if (string.IsNullOrWhiteSpace(tagSerial))
                     {
                         // 沒有 TagSerial 就 fallback
-                        _windowService.ShowElectrode(material.Electrode, material.Timeline ?? Array.Empty<TimelineItemModel>(), slotCode);
+                        ElectrodeModel elecFallback = material.Electrode ?? new ElectrodeModel();
+                        _windowService.ShowElectrode(elecFallback, material.Timeline ?? Array.Empty<TimelineItemModel>(), slotCode);
                         return;
                     }
 
@@ -123,7 +124,8 @@ namespace FMSFrontend.ViewModels
                     var tagSerial = material.Workpiece?.SerialCode;
                     if (string.IsNullOrWhiteSpace(tagSerial))
                     {
-                        _windowService.ShowWorkpiece(material.Workpiece, material.Timeline ?? Array.Empty<TimelineItemModel>(), slotCode);
+                        WorkpieceModel wpFallback = material.Workpiece ?? new WorkpieceModel();
+                        _windowService.ShowWorkpiece(wpFallback, material.Timeline ?? Array.Empty<TimelineItemModel>(), slotCode);
                         return;
                     }
 

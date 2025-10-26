@@ -29,18 +29,18 @@ namespace FMSFrontend.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
-        // ✅ 啟動時一次性並行抓取必要資料
         private async Task InitializeDataAsync()
         {
             try
             {
-                var t1 = FetchAsrsParametersAsync();                               // 1) ASRS 
+                var t1 = FetchAsrsParametersAsync();                            
                 var t2 = FetchProductionLinesAsync();                                  // 2) ProductionLines
-                var t3 = FetchMachinesDataAsync();                                 // 3) Machine/DB_GetAllMachines
-                var t4 = FetchAllCommandScheduleAsync();                           // 4) CommandScheduler/GetAllCommandSchedule
-                var t5 = FetchMachineDataAsync(0);                                 // 5) Machine/GetMachineData/0
+                //  var t3 = FetchMachinesDataAsync();                                 // 3) Machine/DB_GetAllMachines
+                //  var t4 = FetchAllCommandScheduleAsync();                           // 4) CommandScheduler/GetAllCommandSchedule
+                //  var t5 = FetchMachineDataAsync(0);                                 // 5) Machine/GetMachineData/0
 
-                await Task.WhenAll(t1, t2, t3, t4, t5);
+                //  await Task.WhenAll(t1, t2, t3, t4, t5);
+                  await Task.WhenAll(t1);
             }
             catch
             {
@@ -60,23 +60,7 @@ namespace FMSFrontend.ViewModels
             var p = list[idx];
 
             // 更新機器人區塊
-            if (Robot == null) Robot = new Robot();
-            Robot.Name = $"機器人{(p.RobotNumber?.ToString() ?? string.Empty)}";
-            Robot.CurrentLocation = p.RobotPosition ?? "-";
-            Robot.CurrentAction = p.RobotDoingNow ?? "-";
-            Robot.NextAction = p.RobotDoingNext ?? "-";
-            Robot.IsMultipleRobotVisible = list.Count > 1;
-            Robot.SelectedRobotIndexDisplay = $"{_robotActionIndex} / {_robotActionNum}";
 
-            // 同步派工狀態與摘要/告警
-            IsDispatch = p.DispatchSwitch;
-            SDispatchText = IsDispatch ? "派工中" : "派工啟動";
-            IsIdle = !p.IsRobotBusy;
-
-            IsAlarm = p.IsRobotError || p.BattAlarm || p.AsrsProcessWarning;
-            SummaryMessage = IsAlarm
-                ? (string.IsNullOrWhiteSpace(p.RobotAlarmMessage) ? "機器人異常" : p.RobotAlarmMessage!)
-                : "系統正常運作";
 
             // 廣播給訂閱頁面
             WeakReferenceMessenger.Default.Send(new AsrsParametersUpdatedMessage(list));
@@ -87,8 +71,21 @@ namespace FMSFrontend.ViewModels
         {
             var json = await _httpService.GetJsonAsync<JsonElement>("Storage/DB_GetAllStorageData");
             _storageDataJson = json;
+            List<Storage> storage = new List<Storage>();
+            try
+            {
+                if (json.ValueKind == JsonValueKind.Array)
+                {
+                    storage = JsonSerializer.Deserialize<List<Storage>>(json.GetRawText()) ?? new List<Storage>();
+                }
+                else if (json.ValueKind == JsonValueKind.Object)
+                {
+                    var single = JsonSerializer.Deserialize<Storage>(json.GetRawText());
+                    if (single != null) storage.Add(single);
+                }
+            }
+            catch { }
             WeakReferenceMessenger.Default.Send(new StorageDataUpdatedMessage(json));
-
         }
 
         // 3) Machine/DB_GetAllMachines → 產線總覽

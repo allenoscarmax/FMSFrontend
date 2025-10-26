@@ -30,8 +30,7 @@ namespace FMSFrontend.ViewModels
             _paramTabCts?.Cancel();
             _paramTabCts = new CancellationTokenSource();
 
-            var status = MapWorkStatusForParameterTab(value);
-            _ = FetchAndBindByStatusAsync(status, _paramTabCts.Token);
+            _ = FetchAndBindByStatusAsync( _paramTabCts.Token);
         }
 
         [ObservableProperty]
@@ -42,7 +41,7 @@ namespace FMSFrontend.ViewModels
             _edmTabCts = new CancellationTokenSource();
 
             var status = MapWorkStatusForEdmTab(value);
-            _ = FetchAndBindByStatusAsync(status, _edmTabCts.Token);
+            _ = FetchAndBindByStatusAsync(_edmTabCts.Token);
         }
         public List<string> DateFilterOptions { get; set; } = new() { "今天", "過去7天", "自訂" };
         [ObservableProperty]
@@ -101,7 +100,7 @@ namespace FMSFrontend.ViewModels
             var status = MapWorkStatusForParameterTab(SelectedTabIndexParameter);
 
             // fire-and-forget 更新資料（內部支援 CancellationToken）
-            _ = FetchAndBindByStatusAsync(status, _paramTabCts.Token);
+            _ = FetchAndBindByStatusAsync( _paramTabCts.Token);
         }
         partial void OnToDateChanged(DateTime? value)
         {
@@ -171,8 +170,7 @@ namespace FMSFrontend.ViewModels
                 _paramTabCts?.Cancel();
                 _paramTabCts = new CancellationTokenSource();
 
-                var status = MapWorkStatusForParameterTab(SelectedTabIndexParameter);
-                _ = FetchAndBindByStatusAsync(status, _paramTabCts.Token);
+                _ = FetchAndBindByStatusAsync( _paramTabCts.Token);
             });
         }
 
@@ -187,7 +185,7 @@ namespace FMSFrontend.ViewModels
             _windowService.ShowUploadSheetWindow();
         }
         // 最小改動：呼叫後端 API 並綁定到對應的 UI 集合（使用 CancellationToken）
-        private async Task FetchAndBindByStatusAsync(string workStatus, CancellationToken ct)
+        private async Task FetchAndBindByStatusAsync( CancellationToken ct)
         {
            // try
            // {
@@ -303,7 +301,7 @@ namespace FMSFrontend.ViewModels
             };
         }
 
-        private static Brush ToStatusBrush(string? status)
+        private static SolidColorBrush ToStatusBrush(string? status)
         {
             return status switch
             {
@@ -323,13 +321,13 @@ namespace FMSFrontend.ViewModels
         // 新增 Id 屬性以對應後端 MongoDB _id
         public string Id { get; set; } = string.Empty;
 
-        public string WorksheetNumber { get; set; } // 工單編號
-        public string WorkpieceName { get; set; } //工件名稱
-        public string Status { get; set; } //工單狀態
-        public Brush StatusColor { get; set; } //工單燈號
-        public string TargetEDM { get; set; } //目標EDM
-        public string Coordinate { get; set; } //座標
-        public string SetupUser { get; set; } //設定者
+        public string WorksheetNumber { get; set; } = ""; // 工單編號
+        public string WorkpieceName { get; set; } = ""; //工件名稱
+        public string Status { get; set; } = ""; //工單狀態
+        public Brush StatusColor { get; set; } = Brushes.Transparent;//工單燈號
+        public string TargetEDM { get; set; } = "";//目標EDM
+        public string Coordinate { get; set; } = "";//座標
+        public string SetupUser { get; set; } = "";//設定者
         public int ProcessStep { get; set; } = 1; //目前步數
         public int TotalProcessStep { get; set; } = 3; //總步數
         public double EDMStageProgress => TotalProcessStep == 0 ? 0 : (100.0 * ProcessStep / TotalProcessStep);  // 進度條百分比（回傳 double）
@@ -350,18 +348,18 @@ namespace FMSFrontend.ViewModels
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
     public class EDMDetail 
     {
-        public string ElectrodeName { get; set; }
-        public string LabelSerial { get; set; }
-        public string Status { get; set; }
+        public string ElectrodeName { get; set; } = "";
+        public string LabelSerial { get; set; } = "";
+        public string Status { get; set; } = "";
         public bool NeedEDM { get; set; }
-        public string EDMProgram { get; set; }
+        public string EDMProgram { get; set; } = "";
         public int Offset { get; set; }
 
     }

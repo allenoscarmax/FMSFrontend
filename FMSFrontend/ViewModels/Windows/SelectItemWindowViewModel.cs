@@ -17,7 +17,7 @@ namespace FMSFrontend.Extensions
         [ObservableProperty] private Brush titleBrush = Brushes.SlateGray;
 
         [ObservableProperty] private string searchText = "";
-        [ObservableProperty] private SelectItem selectedItem;
+        [ObservableProperty] private SelectItem? selectedItem;
 
         public ObservableCollection<SelectItem> Items { get; } = new();
         public ICollectionView ItemsView { get; }
@@ -28,7 +28,7 @@ namespace FMSFrontend.Extensions
         public SelectItemWindowViewModel(SelectItemType type, Func<SelectItemType, IEnumerable<SelectItem>>? dataLoader = null)
         {
             Type = type;
-           if(dataLoader != _dataLoader)  _dataLoader = dataLoader;
+            _dataLoader = dataLoader ?? (_ => Enumerable.Empty<SelectItem>()); // 保證 _dataLoader 不為 null
 
             ItemsView = CollectionViewSource.GetDefaultView(Items);
             ItemsView.Filter = FilterItem;

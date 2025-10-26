@@ -184,12 +184,12 @@ namespace FMSFrontend.ViewModels.Production
                                 Kind = isElectrodeStore ? MaterialKind.Electrode : MaterialKind.Workpiece,
                                 Electrode = new ElectrodeModel
                                 {
-                                    TagSerial = rec?.ondeskTagserial,
+                                    TagSerial = rec?.ondeskTagserial ?? string.Empty,
                                     Restriction = restrictionValue
                                 },
                                 Workpiece = new WorkpieceModel
                                 {
-                                    SerialCode = rec?.ondeskTagserial,
+                                    SerialCode = rec?.ondeskTagserial ?? string.Empty,
                                     Restriction = restrictionValue
                                 }
                             }
@@ -239,7 +239,7 @@ namespace FMSFrontend.ViewModels.Production
 
     public class StorageSlotViewModel : ObservableObject
     {
-        public string Status { get; set; }
+        public string Status { get; set; } = "";
         public bool IsDisabled { get; set; }
         public bool IsReserved { get; set; }
 
@@ -254,7 +254,7 @@ namespace FMSFrontend.ViewModels.Production
             _ => Brushes.White
         };
 
-        public MaterialRef Material { get; set; }
+        public MaterialRef Material { get; set; } = new MaterialRef();
 
         public bool IsElectrode { get; set; }
         public int Line { get; set; }   // 倉線/倉號
@@ -268,8 +268,8 @@ namespace FMSFrontend.ViewModels.Production
     public class MaterialRef
     {
         public MaterialKind Kind { get; set; }
-        public ElectrodeModel Electrode { get; set; }
-        public WorkpieceModel Workpiece { get; set; }
-        public IEnumerable<TimelineItemModel> Timeline { get; set; }
+        public ElectrodeModel Electrode { get; set; } = new ElectrodeModel();
+        public WorkpieceModel Workpiece { get; set; } = new WorkpieceModel();
+        public IEnumerable<TimelineItemModel> Timeline { get; set; } = Enumerable.Empty<TimelineItemModel>();
     }
 }

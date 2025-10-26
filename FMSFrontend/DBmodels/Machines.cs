@@ -7,15 +7,15 @@ namespace OSCARMAXFMS_V3.DBmodels
     public class Machines
     {
         [BsonRepresentation(BsonType.ObjectId)]
-        public string _id { get; set; } // ID（MongoDB 物件識別碼）
+        public string _id { get; set; } = ""; // ID（MongoDB 物件識別碼）
 
         //設備總覽頁面
         //設備總覽
-        public string MachineName { get; set; } // 機台名稱（顯示用）
-        public string Status { get; set; } // 狀態（如 Idle/Running/Alarm/Offline）
-        public string OnDeckElectrodeSerial { get; set; } // 夾持中電極標籤序號（RFID）
-        public string OnDeckWorksheetSerial { get; set; } // 當前工單號/序號    
-        public string OnDeckWorkpieceSerial { get; set; } // 夾持中工件標籤序號（RFID）
+        public string machineName { get; set; } = "";// 機台名稱（顯示用）
+        public string status { get; set; } = "";// 狀態（如 Idle/Running/Alarm/Offline）
+        public string onDeckElectrodeSerial { get; set; } = "";// 夾持中電極標籤序號（RFID）
+        public string onDeckWorksheetSerial { get; set; } = "";// 當前工單號/序號    
+        public string onDeckWorkpieceSerial { get; set; } = "";// 夾持中工件標籤序號（RFID）
         //
         //加工程式??
         //

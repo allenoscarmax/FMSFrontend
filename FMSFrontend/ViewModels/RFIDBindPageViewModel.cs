@@ -171,9 +171,9 @@ namespace FMSFrontend.ViewModels
         public class BurnRecord
         {
             public DateTime Time { get; set; }
-            public string MaterialType { get; set; }
-            public string SerialNo { get; set; }
-            public string TagSerial { get; set; }
+            public string MaterialType { get; set; } = "";
+            public string SerialNo { get; set; } = "";
+            public string TagSerial { get; set; } = "";
         }
     }
 }

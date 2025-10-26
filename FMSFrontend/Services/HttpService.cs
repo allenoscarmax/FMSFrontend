@@ -3,6 +3,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,6 +12,10 @@ namespace FMSFrontend.Services
     public class HttpService : IHttpService
     {
         private readonly HttpClient _httpClient;
+        private readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
 
         public HttpService()
         {
@@ -27,13 +32,13 @@ namespace FMSFrontend.Services
 
         public async Task SendGetAsync(string route) => await _httpClient.GetAsync(route);
 
-        public async Task SendPostAsync<T>(string route, T payload) => await _httpClient.PostAsJsonAsync(route, payload);
+        public async Task SendPostAsync<T>(string route, T payload) => await _httpClient.PostAsJsonAsync(route, payload, _jsonOptions);
 
         public async Task<bool> SendPutAsync<T>(string route, T payload)
         {
             try
             {
-                using var resp = await _httpClient.PutAsJsonAsync(route, payload);
+                using var resp = await _httpClient.PutAsJsonAsync(route, payload, _jsonOptions);
                 return resp.IsSuccessStatusCode;
             }
             catch
@@ -45,17 +50,17 @@ namespace FMSFrontend.Services
         public async Task SendDeleteAsync(string route) => await _httpClient.DeleteAsync(route);
 
         public Task<T?> GetJsonAsync<T>(string route, CancellationToken cancellationToken = default)
-            => _httpClient.GetFromJsonAsync<T>(route, cancellationToken);
+            => _httpClient.GetFromJsonAsync<T>(route, _jsonOptions, cancellationToken);
 
         public async Task<TResult?> PutJsonAsync<TRequest, TResult>(string route, TRequest payload, CancellationToken cancellationToken = default)
         {
-            using var response = await _httpClient.PutAsJsonAsync(route, payload, cancellationToken);
+            using var response = await _httpClient.PutAsJsonAsync(route, payload, _jsonOptions, cancellationToken);
             response.EnsureSuccessStatusCode();
 
             if (response.StatusCode == HttpStatusCode.NoContent || response.Content == null)
                 return default;
 
-            return await response.Content.ReadFromJsonAsync<TResult>(cancellationToken: cancellationToken);
+            return await response.Content.ReadFromJsonAsync<TResult>(options: _jsonOptions, cancellationToken: cancellationToken);
         }
 
         public string? ServerIp { get; private set; }
