@@ -105,9 +105,6 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty]
         public ObservableCollection<Brush> _lowerDoorLights2 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
 
-        // ✅ 新增：頁面刷新計時器（與 _asrsTimer 分開）
-        private readonly DispatcherTimer _pageRefreshTimer = new() { Interval = TimeSpan.FromSeconds(5) };
-
         // ✅ 新增：關機儲存UI設定
         public void SaveCurrentStoragePageType() 
         {          
@@ -153,56 +150,15 @@ namespace FMSFrontend.ViewModels
             // ✅ 新增：啟動背景執行續，並行呼叫五個 API
             Task.Run(InitializeDataAsync);
 
-            // ✅ 新增：頁面刷新計時器
-            _pageRefreshTimer.Tick += (_, __) => RefreshActivePage();
-            _pageRefreshTimer.Start();
         }
         #region PageChange
-        // ✅ 新增：依目前頁面廣播刷新訊息
-        private void RefreshActivePage()
-        {
-            if (string.IsNullOrEmpty(CurrentPageKey)) return;
 
-            switch (CurrentPageKey)
-            {
-                case "FactoryOverview":
-                case "ProductionLines":
-                case "MachineOverview":
-                case "WorkOrder":
-                case "RFIDBind":
-                case "OperationHistory":
-                case "Material":
-                case "SettingsView":
-                    WeakReferenceMessenger.Default.Send(new RefreshPageMessage(CurrentPageKey));
-                    break;
-            }
-        }
-
-        // ✅ 依頁面調整刷新頻率（補上其他頁面）
-        private void SetPageRefreshIntervalFor(string pageKey)
-        {
-            _pageRefreshTimer.Interval = pageKey switch
-            {
-                "ProductionLines" => TimeSpan.FromSeconds(3),
-                "MachineOverview" => TimeSpan.FromSeconds(2),
-                "FactoryOverview" => TimeSpan.FromSeconds(5),
-                "WorkOrder" => TimeSpan.FromSeconds(8),
-                "RFIDBind" => TimeSpan.FromSeconds(6),
-                "OperationHistory" => TimeSpan.FromSeconds(7),
-                "Material" => TimeSpan.FromSeconds(10),
-                "SettingsView" => TimeSpan.FromSeconds(12),
-                _ => TimeSpan.FromSeconds(5)
-            };
-        }
-
-        // ✅ 修改：切頁時同步調整頻率，並立即刷新一次
         [RelayCommand]
         private void GoToProductionLines()
         {
             CurrentPageView = productionLines;
             CurrentPageKey = "ProductionLines";
-            SetPageRefreshIntervalFor(CurrentPageKey);
-            RefreshActivePage();
+            WeakReferenceMessenger.Default.Send(new ValueChangedMessage<string>(CurrentPageKey));
         }
 
         [RelayCommand]
@@ -210,16 +166,12 @@ namespace FMSFrontend.ViewModels
         {
             CurrentPageView = factoryOverviewPage;
             CurrentPageKey = "FactoryOverview";
-            SetPageRefreshIntervalFor(CurrentPageKey);
-            RefreshActivePage();
         }
         [RelayCommand]
         private void GoToMachineOverview()
         {
             CurrentPageView = machineOverviewPage;
             CurrentPageKey = "MachineOverview";
-            SetPageRefreshIntervalFor(CurrentPageKey);
-            RefreshActivePage();
         }
 
         [RelayCommand]
@@ -227,40 +179,32 @@ namespace FMSFrontend.ViewModels
         {
             CurrentPageView = workOrder;
             CurrentPageKey = "WorkOrder";
-            SetPageRefreshIntervalFor(CurrentPageKey);
-            RefreshActivePage();
+            WeakReferenceMessenger.Default.Send(new ValueChangedMessage<string>(CurrentPageKey));
         }
         [RelayCommand]
         private void GoToRFIDBind()
         {
             CurrentPageView = rFIDBind;
             CurrentPageKey = "RFIDBind";
-            SetPageRefreshIntervalFor(CurrentPageKey);
-            RefreshActivePage();
+            WeakReferenceMessenger.Default.Send(new ValueChangedMessage<string>(CurrentPageKey));
         }
         [RelayCommand]
         private void GoToOperationHistory()
         {
             CurrentPageView = operationHistory;
             CurrentPageKey = "OperationHistory";
-            SetPageRefreshIntervalFor(CurrentPageKey);
-            RefreshActivePage();
         }
         [RelayCommand]
         private void GoToMaterial()
         {
             CurrentPageView = inventoryInformationPage;
             CurrentPageKey = "Material";
-            SetPageRefreshIntervalFor(CurrentPageKey);
-            RefreshActivePage();
         }
         [RelayCommand]
         private void GoToSettingsView()
         {
             CurrentPageView = settingsView;
             CurrentPageKey = "SettingsView";
-            SetPageRefreshIntervalFor(CurrentPageKey);
-            RefreshActivePage();
         }
         /// <summary>
         /// 由狀態列「提示訊息」進入 Alarm 頁，並讓 PageMenu 看起來沒有選中
@@ -353,19 +297,6 @@ namespace FMSFrontend.ViewModels
 
             // 4. 顯示視窗
             dialog.ShowDialog();
-
-
-            /*
-            var dialog = new DialogYesNoWindow("是否要更換主題！");
-            dialog.ShowDialog();
-            if (dialog.DialogResult == true)
-            {
-                // 切換風格的測試邏輯
-                string current = ThemeManager.CurrentThemeName;
-                string nextTheme = current == "Dark" ? "Light" : "Dark";
-                ThemeManager.ApplyTheme(nextTheme);
-            }*/
-            //System.Windows.Application.Current.Shutdown();
         }
         #endregion
 
@@ -373,8 +304,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void Logout()
         {
-            // 這裡可以補上實際的登出處理，例如呼叫 API 或清除 token
-            LoggedInUser = string.Empty; // 清除登入者資訊
+            LoggedInUser = string.Empty;
             var dialog = new DialogMessageWindow("您已成功登出！");
             dialog.ShowDialog();
         }
@@ -384,8 +314,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void Login()
         {
-            // TODO: 改為呼叫後台 API 取得使用者資訊
-            LoggedInUser = "王小明"; // 登入成功後設定使用者名稱
+            LoggedInUser = "王小明";
             var dialog = new DialogMessageWindow($"歡迎登入，{LoggedInUser}！");
             dialog.ShowDialog();
         }
@@ -395,7 +324,6 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private async Task RobotStartButton()
         {
-          
             var dialog = new DialogMessageWindow("Start");
             dialog.ShowDialog();
             try

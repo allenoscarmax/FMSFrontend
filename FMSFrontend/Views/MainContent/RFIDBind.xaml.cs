@@ -27,9 +27,9 @@ namespace FMSFrontend.Views
             InitializeComponent();
             // 建立服務實例
             var windowService = new WindowService();
-
+            var httpService = new HttpService();
             // 建立 ViewModel 並注入服務
-            var viewModel = new RFIDBindPageViewModel(windowService);
+            var viewModel = new RFIDBindPageViewModel(windowService, httpService);
 
             this.DataContext = viewModel;
         }

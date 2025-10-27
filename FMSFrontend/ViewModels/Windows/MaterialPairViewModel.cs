@@ -15,6 +15,9 @@ using System.Windows.Media;
 using System.Threading.Tasks;
 using FMSFrontend.Services;
 using ControlzEx.Standard;
+// 新增的 using
+using System.Windows.Threading;
+using System.Threading;
 
 public partial class MaterialPairViewModel : ObservableObject
 {
@@ -29,6 +32,14 @@ public partial class MaterialPairViewModel : ObservableObject
         _window = window;
         _windowService = windowService;
         _httpService = httpService;
+        // 每 0.5 秒輪詢 RFID 最新 Tag 並更新 TagSerial / 連線狀態
+        _pollTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
+        _pollTimer.Tick += PollTimer_Tick;
+        _pollTimer.Start();
+        // 當 Tag 有更新時，Tag 指示燈亮 3 秒後熄滅
+        _tagOffTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
+        _tagOffTimer.Tick += TagOffTimer_Tick;
+        if (_window != null) window.Closed += Window_Closed;
     }
 
     // 控制區塊顯示
@@ -47,8 +58,14 @@ public partial class MaterialPairViewModel : ObservableObject
     [ObservableProperty] private string _selectName = string.Empty;
     [ObservableProperty] private string _selectPgm = string.Empty;
     [ObservableProperty] private string _selectPairEdm = string.Empty;
-
-
+    // RFID 顯示屬性與計時器欄位
+    [ObservableProperty] private Brush _rfidConnectedBrush = Brushes.Gray;
+    [ObservableProperty] private Brush _rfidTagBrush = Brushes.Gray;
+    private readonly DispatcherTimer _pollTimer;
+    private readonly DispatcherTimer _tagOffTimer;
+    Electrode electrode = new Electrode();
+    Workpiece workpiece = new Workpiece();
+    string SelecteId = "";
     // 方便 UI 綁定顯示文字（可選）
     public string CurrentTitle => ShowElectrodeSection ? "電極配對" : "工件配對";
 
@@ -83,10 +100,81 @@ public partial class MaterialPairViewModel : ObservableObject
 
     // Pair
     [RelayCommand]
-    private void Pair()
+    private async Task Pair()
     {
-        // TODO: 依你的流程處理配對，例如使用 SelectedElectrodeItem / SelectedWorkpieceItem
-        _windowService.ShowMessage($"{CurrentTitle} OK!");
+        try
+        {
+            bool ok = false;
+            if (ShowElectrodeSection)
+            {
+                // 電極配對頁面：更新 / 上傳電極資料
+                if (SelectedElectrodeItem == null)
+                {
+                    _windowService.ShowMessage("請選擇要配對的電極");
+                    return;
+                }
+                else if (SelectedWorksheetItem == null)
+                {
+                    _windowService.ShowMessage("請選擇要配對的工單");
+                    return;
+                }
+
+                electrode.worksheetNumber = SelectedWorksheetItem?.WorkOrderNo ?? string.Empty;
+                electrode.tagSerial = TagSerial ?? "";
+                ok = await _httpService.SendPutAsync("Electrode/DB_UpdateElectrodeData", electrode);
+                if (!ok)
+                {
+                    _windowService.ShowMessage("電極上傳失敗: " + electrode.electrodeName);
+                    return;
+                }
+
+            }
+            else // Workpiece section
+            {
+                // 工件配對頁面：更新 / 上傳工件資料
+                if (SelectedWorkpieceItem == null)
+                {
+                    _windowService.ShowMessage("請先選擇要配對的工件。");
+                    return;
+                }
+                else if (SelectedWorksheetItem == null)
+                {
+                    _windowService.ShowMessage("請選擇要配對的工單");
+                    return;
+                }
+
+                workpiece._id = SelecteId;
+                workpiece.worksheetNumber = SelectedWorksheetItem?.WorkOrderNo ?? string.Empty;
+                workpiece.tagSerial = TagSerial ?? "";
+                ok = await _httpService.SendPutAsync("Workpiece/DB_UpdateWorkpieceData", workpiece);
+                if (!ok)
+                {
+                    _windowService.ShowMessage("工件上傳失敗: " + workpiece.workpieceName);
+                    return;
+                }
+            }
+
+            var RFIDWriteLog = new RFIDWriteLog
+            {
+                timeStamp = DateTime.Now,
+                type = ShowElectrodeSection ? "Electrode" : "Workpiece",
+                tagSerial = TagSerial ?? "",
+                srialNo =  SelectedWorksheetItem?.WorkOrderNo ?? string.Empty,
+                objName = SelectName ,
+            };
+
+            ok = await _httpService.SendPutAsync("RFIDMgmtModule/DB_InsertNewRFIDWriteLogData", RFIDWriteLog);
+            if (!ok)
+            {
+                _windowService.ShowMessage("RFIDWriteLog上傳失敗: ");
+                return;
+            }
+            _windowService.ShowMessage($"{CurrentTitle} OK!");
+        }
+        catch (Exception ex)
+        {
+            _windowService.ShowMessage("配對處理發生錯誤: " + ex.Message);
+        }
     }
 
     [RelayCommand]
@@ -128,7 +216,9 @@ public partial class MaterialPairViewModel : ObservableObject
         // 若你有資料來源，可傳一個 loader 進去；沒有就直接 new
         var items = new List<SelectItem>();
         JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Workpiece/DB_GetAllWorkpiece", default);
-        var Workpiece = json.HasValue ? JsonSerializer.Deserialize<List<Workpiece>>(json.Value.GetRawText()) ?? new List<Workpiece>() : new List<Workpiece>();
+        var Workpiece = json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined ? 
+            JsonSerializer.Deserialize<List<Workpiece>>(json.Value.GetRawText()) ?? new List<Workpiece>() : 
+            new List<Workpiece>();
         foreach (var wp in Workpiece)
         {
             Brush statusBrush = StatusColor(wp.status);
@@ -150,13 +240,13 @@ public partial class MaterialPairViewModel : ObservableObject
 
             var selectedName = SelectedWorkpieceItem?.MaterialName ?? string.Empty;
             var wp = Workpiece.FirstOrDefault(w => string.Equals(w.workpieceName, selectedName, StringComparison.Ordinal));
+       
             SelectStatus = wp?.status ?? string.Empty;
             TagSerial = wp?.tagSerial ?? string.Empty;
             SelectName = wp?.workpieceName ?? string.Empty;
             SelectPairEdm = wp?.pairedEDM ?? string.Empty;
             SelectPgm = wp?.edmpgm ?? string.Empty;
-            // 若切換選擇邏輯需要清掉另一邊，可視需求做：
-            // SelectedElectrodeItem = null;
+            workpiece = wp!;
         }
     }
 
@@ -166,7 +256,9 @@ public partial class MaterialPairViewModel : ObservableObject
         // 1) 準備資料
         var items = new List<SelectItem>();
         JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Electrode/DB_GetAllElectrode", default);
-        var Electrode = json.HasValue ? JsonSerializer.Deserialize<List<Electrode>>(json.Value.GetRawText()) ?? new List<Electrode>() : new List<Electrode>();
+        var Electrode = json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined ?
+            JsonSerializer.Deserialize<List<Electrode>>(json.Value.GetRawText()) ?? new List<Electrode>() : 
+            new List<Electrode>();
         foreach (var e in Electrode)
         {
             Brush statusBrush = StatusColor(e.state);
@@ -194,7 +286,7 @@ public partial class MaterialPairViewModel : ObservableObject
             SelectName = e?.electrodeName ?? string.Empty;
             SelectPairEdm = e?.pairedEDM ?? string.Empty;
             SelectPgm = e?.edmpgm ?? string.Empty;
-            // SelectedWorkpieceItem = null;
+            electrode = e!;
         }
     }
     [RelayCommand]
@@ -205,20 +297,26 @@ public partial class MaterialPairViewModel : ObservableObject
 
         // 從 API 取得資料
         JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Worksheet/DB_GetAllWorkSheet", default);
-
-        var worksheets = json.HasValue
-            ? JsonSerializer.Deserialize<List<Worksheets>>(json.Value.GetRawText()) ?? new List<Worksheets>()
-            : new List<Worksheets>();
-
-        // 將 API model 轉成 UI 用的 WorksheetItem
-        foreach (var ws in worksheets)
+        if (!json.HasValue || json.Value.ValueKind == JsonValueKind.Undefined)
         {
-            items.Add(new WorksheetItem
-            {
-                PartName = ws.workpieceName ?? string.Empty,
-                WorkOrderNo = ws.worksheetNumber ?? string.Empty
-            });
+            _windowService.ShowMessage("請先新增工單");
+            return;
         }
+        else
+        {
+            var worksheets = JsonSerializer.Deserialize<List<Worksheets>>(json.Value.GetRawText()) ?? new List<Worksheets>();
+            // 將 API model 轉成 UI 用的 WorksheetItem
+            foreach (var ws in worksheets)
+            {
+                items.Add(new WorksheetItem
+                {
+                    PartName = ws.workpieceName ?? string.Empty,
+                    WorkOrderNo = ws.worksheetNumber ?? string.Empty
+                });
+            }
+        }
+           
+
 
         if (items.Count != 0)
         {
@@ -237,5 +335,67 @@ public partial class MaterialPairViewModel : ObservableObject
             }
         }
     }
+    // 新增：計時器事件讀取RFID最新Tag
+    private async void PollTimer_Tick(object? sender, EventArgs e)
+    {
+        try
+        {
+            JsonElement? json = null;
+            // 嘗試取得最新 Tag；若失敗代表未連線
+            try
+            {
+                // 成功呼叫 API 視為連線正常
+                json = await _httpService.GetJsonAsync<JsonElement>("RFIDMgmtModule/Read_Tag_ID/0/0", default);
+                var RFIDWriteLog = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined)?
+                    JsonSerializer.Deserialize<List<RFIDWriteLog>>(json.Value.GetRawText()) ?? new List<RFIDWriteLog>() : 
+                    new List<RFIDWriteLog>();
+                RfidConnectedBrush = Brushes.LimeGreen;
+            }
+            catch
+            {
+                RfidConnectedBrush = Brushes.Gray;
+            }
 
+            if (json.HasValue)
+            {
+                string newTag;
+                try
+                {
+                    newTag = JsonSerializer.Deserialize<string>(json.Value.GetRawText()) ?? string.Empty;
+                }
+                catch
+                {
+                    newTag = json.Value.GetRawText().Trim('"');
+                }
+
+                // 若 Tag 有變動，更新並亮起 Tag 燈 3 秒
+                if (!string.Equals(newTag, TagSerial, StringComparison.Ordinal))
+                {
+                    TagSerial = newTag;
+                    RfidTagBrush = Brushes.LimeGreen;
+                    _tagOffTimer.Stop();
+                    _tagOffTimer.Start();
+                }
+            }
+        }
+        catch
+        {
+            // 靜默忽略例外，避免 UI 被打斷
+        }
+    }
+    private void TagOffTimer_Tick(object? sender, EventArgs e)
+    {
+        _tagOffTimer.Stop();
+        RfidTagBrush = Brushes.Gray;
+    }
+
+    private void Window_Closed(object? sender, EventArgs e)
+    {
+        _pollTimer?.Stop();
+        _tagOffTimer?.Stop();
+        if (_window != null)
+        {
+            _window.Closed -= Window_Closed;
+        }
+    }
 }

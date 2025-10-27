@@ -38,9 +38,9 @@
                 </Button>
 
                 <StackPanel Orientation="Horizontal" Margin="16,0,0,0" VerticalAlignment="Center">
-                    <Ellipse Width="12" Height="12" Fill="Gray" VerticalAlignment="Center" />
+                    <Ellipse Width="12" Height="12" Fill="{Binding RfidConnectedBrush}" VerticalAlignment="Center" />
                     <TextBlock Text="RFID Connected" FontSize="14" Margin="6,0,16,0" VerticalAlignment="Center" />
-                    <Ellipse Width="12" Height="12" Fill="Gray" VerticalAlignment="Center" />
+                    <Ellipse Width="12" Height="12" Fill="{Binding RfidTagBrush}" VerticalAlignment="Center" />
                     <TextBlock Text="RFID Tag" FontSize="14" Margin="6,0,0,0" VerticalAlignment="Center" />
                 </StackPanel>
             </StackPanel>
@@ -101,8 +101,8 @@
 
                                 <!-- 狀態 -->
                                 <StackPanel Grid.Column="1" Margin="8,0">
-                                    <TextBlock Text="狀態：" FontSize="16" FontWeight="Bold" />
-                                    <TextBox x:Name="Status"  IsReadOnly="True" Text="{Binding SelectStatus, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
+                                    <TextBlock Text="狀態："  FontSize="16" FontWeight="Bold" />
+                                    <TextBox x:Name="Status" IsReadOnly="True" Text="{Binding SelectStatus, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
                                     <!--  <Border BorderBrush="Black" BorderThickness="0,0,0,1" Margin="0,0,32,0" /> -->
                                 </StackPanel>
 
@@ -127,15 +127,15 @@
                                 <StackPanel Grid.Column="0">
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                                         <TextBlock Text="零件名稱：" Width="120" FontSize="16" FontWeight="Bold" />
-                                        <TextBox x:Name="WName"  IsReadOnly="True" Text="{Binding SelectName, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
+                                        <TextBox x:Name="WName" IsReadOnly="True" Text="{Binding SelectName, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                                         <TextBlock Text="EDM加工程式：" Width="120" FontSize="16" FontWeight="Bold" />
-                                        <TextBox x:Name="WPgm"  IsReadOnly="True" Text="{Binding SelectPgm, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
+                                        <TextBox x:Name="WPgm" IsReadOnly="True" Text="{Binding SelectPgm, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="目標EDM：" Width="120" FontSize="16" FontWeight="Bold" />
-                                        <TextBox x:Name="WPairEdm"  IsReadOnly="True" Text="{Binding SelectPairEdm, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
+                                        <TextBox x:Name="WPairEdm" IsReadOnly="True" Text="{Binding SelectPairEdm, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
                                     </StackPanel>
                                 </StackPanel>
 
@@ -229,15 +229,15 @@
                                 <StackPanel Grid.Column="0">
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                                         <TextBlock Text="零件名稱：" Width="120" FontSize="16" FontWeight="Bold" />
-                                        <TextBox x:Name="EName"  IsReadOnly="True" Text="{Binding SelectName, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
+                                        <TextBox x:Name="EName" IsReadOnly="True" Text="{Binding SelectName, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                                         <TextBlock Text="EDM加工程式：" Width="120" FontSize="16" FontWeight="Bold" />
-                                        <TextBox x:Name="EPgm"  IsReadOnly="True" Text="{Binding SelectPgm, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
+                                        <TextBox x:Name="EPgm" IsReadOnly="True"  Text="{Binding SelectPgm, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="目標EDM：" Width="120" FontSize="16" FontWeight="Bold" />
-                                        <TextBox x:Name="EPairEdm"  IsReadOnly="True" Text="{Binding SelectPairEdm, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
+                                        <TextBox x:Name="EPairEdm" IsReadOnly="True" Text="{Binding SelectPairEdm, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
                                     </StackPanel>
                                 </StackPanel>
 

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging; // ← 新增（用於接收 UploadSheetsClosedMessage）
+using　CommunityToolkit.Mvvm.Messaging.Messages;
+using CommunityToolkit.Mvvm.Messaging; 
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.Views;
@@ -165,12 +166,13 @@ namespace FMSFrontend.ViewModels
             // 新增：訂閱 UploadsheetsWindow 關閉後的廣播，收到後重新抓取資料
             WeakReferenceMessenger.Default.Register<UploadSheetsClosedMessage>(this, (r, msg) =>
             {
-                if (!msg.Value) return;
+                if (msg.Value) ScheduleFetchForWorkOrder();
+            });
 
-                _paramTabCts?.Cancel();
-                _paramTabCts = new CancellationTokenSource();
-
-                _ = FetchAndBindByStatusAsync( _paramTabCts.Token);
+            WeakReferenceMessenger.Default.Register<ValueChangedMessage<string>>(this, (r, message) =>
+            {
+                if (string.Equals(message.Value, "WorkOrder", StringComparison.Ordinal))
+                    ScheduleFetchForWorkOrder();
             });
         }
 
@@ -185,55 +187,44 @@ namespace FMSFrontend.ViewModels
             _windowService.ShowUploadSheetWindow();
         }
         // 最小改動：呼叫後端 API 並綁定到對應的 UI 集合（使用 CancellationToken）
-        private async Task FetchAndBindByStatusAsync( CancellationToken ct)
+        private async Task FetchAndBindByStatusAsync(CancellationToken ct)
         {
-           // try
-           // {
-                // 支援取消
-                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Worksheet/DB_GetAllWorkSheet", ct);
-                ct.ThrowIfCancellationRequested();
+            // try
+            // {
+            // 支援取消
+            JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Worksheet/DB_GetAllWorkSheet", ct);
+            ct.ThrowIfCancellationRequested();
+            List<Worksheets> worksheets = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined)
+                ? JsonSerializer.Deserialize<List<Worksheets>>(json.Value.GetRawText()) ?? new List<Worksheets>()
+                : new List<Worksheets>();
 
-                List<Worksheets> worksheets = json.HasValue
-                    ? JsonSerializer.Deserialize<List<Worksheets>>(json.Value.GetRawText()) ?? new List<Worksheets>()
-                    : new List<Worksheets>();
 
-              
-                // 只更新目前畫面所綁定的集合（避免不必要變動）
-                Application.Current.Dispatcher.Invoke(() =>
+            // 只更新目前畫面所綁定的集合（避免不必要變動）
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (SelectedTabIndexParameter == 0)
                 {
-                    if (SelectedTabIndexParameter == 0)
-                    {
-                        WorkOrderList.Clear();
-                        foreach (var w in worksheets)
-                            WorkOrderList.Add(MapToWorkOrderData(w));
-                    }
-                    else if (SelectedTabIndexParameter == 1)
-                    {
-                        // EDM 子頁簽
-                        FilteredEDMList.Clear();
-                        foreach (var w in worksheets)
-                            FilteredEDMList.Add(MapToWorkOrderData(w));
-                    }
-                    else
-                    {
-                        FailureWorkOrders.Clear();
-                        foreach (var w in worksheets)
-                            FailureWorkOrders.Add(MapToWorkOrderData(w));
-                    }
-                });
-                return;
-            // }
-            // catch (OperationCanceledException)
-            // {
-            // 被取消，靜默忽略
-            // }
-            // catch (Exception ex)
-            // {
-            //     Application.Current.Dispatcher.Invoke(() =>
-            //     {
-            //         _windowService.ShowMessage($"讀取工單資料失敗：{ex.Message}");
-            //     });
+                    WorkOrderList.Clear();
+                    foreach (var w in worksheets)
+                        WorkOrderList.Add(MapToWorkOrderData(w));
+                }
+                else if (SelectedTabIndexParameter == 1)
+                {
+                    // EDM 子頁簽
+                    FilteredEDMList.Clear();
+                    foreach (var w in worksheets)
+                        FilteredEDMList.Add(MapToWorkOrderData(w));
+                }
+                else
+                {
+                    FailureWorkOrders.Clear();
+                    foreach (var w in worksheets)
+                        FailureWorkOrders.Add(MapToWorkOrderData(w));
+                }
+            });
+            return;
             //  }
+            //  catch { }
         }
 
         // 新增：處理刪除工單的非同步方法（包含 UI 確認、API 呼叫與錯誤處理）
@@ -313,6 +304,14 @@ namespace FMSFrontend.ViewModels
                 "Empty" => Brushes.Gray,
                 _ => Brushes.Gray
             };
+        }
+
+        // 新增於類別內（private helper）
+        private void ScheduleFetchForWorkOrder()
+        {
+            _paramTabCts?.Cancel();
+            _paramTabCts = new CancellationTokenSource();
+            _ = FetchAndBindByStatusAsync(_paramTabCts.Token);
         }
     }
 

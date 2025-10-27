@@ -1,21 +1,24 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging; // ← 新增
+using CommunityToolkit.Mvvm.Messaging.Messages; // ← 新增：Message 型別
+
 using FMSFrontend.Controls;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
+using FMSFrontend.Services; // ← 新增
 using FMSFrontend.ViewModels.Production;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
 using FMSFrontend.Views.Windows;
-using FMSFrontend.Services; // ← 新增
 using IniFile;
+using OSCARMAXFMS_V3.DBmodels; // ← 反序列化 Electrode.cs / Workpiece.cs
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using OSCARMAXFMS_V3.DBmodels; // ← 反序列化 Electrode.cs / Workpiece.cs
 
 namespace FMSFrontend.ViewModels
 {
@@ -45,11 +48,19 @@ namespace FMSFrontend.ViewModels
 
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             bool b = ini.Read("Prarm", "IsStorageOverviewControl") == "True";
-            if (b)
-                ShowOverview();
-            else
-                ShowDetail("0");
-            ShowMachineOverview();
+
+            // 訂閱 MainWindowViewModel 的頁面刷新訊息：當切換到 RFIDBind 時重新抓取
+            WeakReferenceMessenger.Default.Register<ValueChangedMessage<string>>(this, (r, message) =>
+            {
+                if (string.Equals(message.Value, "ProductionLines", StringComparison.Ordinal))
+                {
+                    if (b)
+                        ShowOverview();
+                    else
+                        ShowDetail("0");
+                    ShowMachineOverview();
+                }
+            });
         }
 
 
