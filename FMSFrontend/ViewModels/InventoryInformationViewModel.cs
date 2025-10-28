@@ -21,18 +21,18 @@ namespace FMSFrontend.ViewModels
     {
         public InventoryKind Kind { get; set; }
 
-        public string BurnSerial { get; set; }
-        public string TagSerial { get; set; }
-        public string BindState { get; set; }
-        public string Status { get; set; }
-        public string Location { get; set; }
-        public string StorageArea { get; set; }
-        public string WorkOrder { get; set; }
-        public string Process { get; set; }
-        public string Machine { get; set; }
-        public string PartNo { get; set; }
-        public string PartName { get; set; }
-        public string LotNo { get; set; }
+        public string BurnSerial { get; set; } = "";
+        public string TagSerial { get; set; } = "";
+        public string BindState { get; set; } = "";
+        public string Status { get; set; } = "";
+        public string Location { get; set; } = "";
+        public string StorageArea { get; set; } = "";
+        public string WorkOrder { get; set; } = "";
+        public string Process { get; set; } = "";
+        public string Machine { get; set; } = "";
+        public string PartNo { get; set; } = "";
+        public string PartName { get; set; } = "";
+        public string LotNo { get; set; } = "";
     }
 
     public partial class InventoryInformationViewModel : ObservableObject
@@ -44,7 +44,7 @@ namespace FMSFrontend.ViewModels
         public ICollectionView InventoryList { get; }
 
         [ObservableProperty] private int selectedTabIndex = 0;
-        [ObservableProperty] private string searchText;
+        [ObservableProperty] private string searchText = "";
 
         public IRelayCommand RefreshCommand { get; }
         public IRelayCommand<object> SearchCommand { get; }

@@ -104,7 +104,7 @@
                                 <!-- 上排：彩色狀態統計 -->
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
                                     <!--待加工-->
-                                    <Border Background="#F3B407" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                    <Border Background="DarkGoldenrod" CornerRadius="6" Margin="4,0" Padding="12,4">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="待加工" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
@@ -114,7 +114,7 @@
                                     </Border>
 
                                     <!--加工中-->
-                                    <Border Background="#1DB945" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                    <Border Background="Green" CornerRadius="6" Margin="4,0" Padding="12,4">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="加工中" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
@@ -124,7 +124,7 @@
                                     </Border>
 
                                     <!--異常-->
-                                    <Border Background="#CF1916" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                    <Border Background="IndianRed" CornerRadius="6" Margin="4,0" Padding="12,4">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="異常" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
@@ -134,7 +134,7 @@
                                     </Border>
 
                                     <!--完成-->
-                                    <Border Background="#0877E3" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                    <Border Background="RoyalBlue" CornerRadius="6" Margin="4,0" Padding="12,4">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="完成" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
@@ -148,7 +148,7 @@
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="禁用" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding DisabledCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding RestrictionCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>

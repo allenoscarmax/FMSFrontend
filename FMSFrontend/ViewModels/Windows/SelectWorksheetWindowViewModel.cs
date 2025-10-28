@@ -113,6 +113,7 @@ namespace FMSFrontend.ViewModels.Windows
             }
         }
 
+
         private void OnCancel(Window? win)
         {
             if (win == null) return;
@@ -121,13 +122,7 @@ namespace FMSFrontend.ViewModels.Windows
 
         private static IEnumerable<WorksheetItem> GetDesignItems() => new[]
         {
-            new WorksheetItem { PartName = "24-034-018", WorkOrderNo = "202506134" },
-            new WorksheetItem { PartName = "24-034-019", WorkOrderNo = "202506135" },
-            new WorksheetItem { PartName = "24-034-020", WorkOrderNo = "202506136" },
-            new WorksheetItem { PartName = "24-034-021", WorkOrderNo = "202506137" },
-            new WorksheetItem { PartName = "24-034-022", WorkOrderNo = "202506138" },
-            new WorksheetItem { PartName = "24-034-023", WorkOrderNo = "202506139" },
-            new WorksheetItem { PartName = "24-034-024", WorkOrderNo = "202506140" },
-        };
+            new WorksheetItem { PartName = "", WorkOrderNo = "" },
+         };
     }
 }

@@ -25,10 +25,12 @@ namespace FMSFrontend.Extensions
         public MaterialPairWindow(bool isElectrode)
         {
             var windowService = new WindowService();
-            InitializeComponent();
-            DataContext = new MaterialPairViewModel(isElectrode, this, windowService);
+            var httpService = new HttpService();
 
+            InitializeComponent();
+            DataContext = new MaterialPairViewModel(isElectrode, this, windowService, httpService);
         }
+
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             this.Close();

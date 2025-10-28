@@ -12,8 +12,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
-using CommunityToolkit.Mvvm.Messaging; // ← 新增
-using CommunityToolkit.Mvvm.Messaging.Messages; // ← 新增
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages; 
 
 namespace FMSFrontend.Services
 {
@@ -87,7 +87,7 @@ namespace FMSFrontend.Services
             EnsureMaterialWindow();
             _vm.Kind = MaterialKind.Workpiece;
             _vm.SlotCode = slotCode ?? (!string.IsNullOrWhiteSpace(workpiece?.No) ? workpiece.No : workpiece?.Name);
-            _vm.DetailViewModel = new WorkpieceDetailViewModel(workpiece);
+            _vm.DetailViewModel = new WorkpieceDetailViewModel(workpiece ?? new WorkpieceModel());
 
             FillTimeline(timeline);               // ← 把 timeline 塞回去
             ShowOrActivate();
@@ -98,7 +98,7 @@ namespace FMSFrontend.Services
             EnsureMaterialWindow();
             _vm.Kind = MaterialKind.Electrode;
             _vm.SlotCode = slotCode ?? (!string.IsNullOrWhiteSpace(electrode?.No) ? electrode.No : electrode?.Name);
-            _vm.DetailViewModel = new ElectrodeDetailViewModel(electrode);
+            _vm.DetailViewModel = new ElectrodeDetailViewModel(electrode?? new ElectrodeModel());
 
             FillTimeline(timeline);               // ← 把 timeline 塞回去
             ShowOrActivate();

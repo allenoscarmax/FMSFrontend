@@ -1,35 +1,41 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging; // ← 新增
+using CommunityToolkit.Mvvm.Messaging.Messages; // ← 新增：Message 型別
+
 using FMSFrontend.Controls;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
+using FMSFrontend.Services; // ← 新增
 using FMSFrontend.ViewModels.Production;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
 using FMSFrontend.Views.Windows;
-using FMSFrontend.Services; // ← 新增
 using IniFile;
-using System;
-using System.Linq;
-using System.Windows;
-using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OSCARMAXFMS_V3.DBmodels; // ← 反序列化 Electrode.cs / Workpiece.cs
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
+using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
 
 namespace FMSFrontend.ViewModels
 {
     public partial class ProductionLinesViewModel : ObservableObject
     {
-        private object _currentStorageView;
-        public object CurrentStorageView
+        private object? _currentStorageView;
+        public object? CurrentStorageView
         {
             get => _currentStorageView;
             set => SetProperty(ref _currentStorageView, value);
         }
 
-        private object _currentWorkingZoneView;
-        public object CurrentWorkingZoneView
+        private object? _currentWorkingZoneView;
+        public object? CurrentWorkingZoneView
         {
             get => _currentWorkingZoneView;
             set => SetProperty(ref _currentWorkingZoneView, value);
@@ -37,7 +43,8 @@ namespace FMSFrontend.ViewModels
 
         public readonly IWindowService _windowService;
         private readonly IHttpService _httpService; // ← 新增
-
+         // 新增：Timer 欄位
+        private readonly DispatcherTimer _refreshTimer;
         public ProductionLinesViewModel(IWindowService windowService, IHttpService httpService) // ← 變更簽章
         {
             _windowService = windowService;
@@ -45,13 +52,57 @@ namespace FMSFrontend.ViewModels
 
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             bool b = ini.Read("Prarm", "IsStorageOverviewControl") == "True";
-            if (b)
-                ShowOverview();
-            else
-                ShowDetail("0");
-            ShowMachineOverview();
+            // 新增：建立並啟動每秒刷新 Timer
+            _refreshTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _refreshTimer.Tick += RefreshTimer_Tick;
+            _refreshTimer.Start();
+            // 訂閱 MainWindowViewModel 的頁面刷新訊息：當切換到 RFIDBind 時重新抓取
+            WeakReferenceMessenger.Default.Register<ValueChangedMessage<string>>(this, (r, message) =>
+            {
+                if (string.Equals(message.Value, "ProductionLines", StringComparison.Ordinal))
+                {
+                    if (b)
+                        ShowOverview();
+                    else
+                        ShowDetail("0");
+                    ShowMachineOverview();
+                }
+            });
         }
+        // 新增：Timer Tick 處理器（輕量、fire-and-forget）
+        private void RefreshTimer_Tick(object? sender, EventArgs e)
+        {
+            try
+            {
+                // 如果 CurrentStorageView 為 FrameworkElement（你的 View），取其 DataContext
+                var storageDc = (CurrentStorageView as System.Windows.FrameworkElement)?.DataContext;
+                if (storageDc is Production.StorageOverviewViewModel sovm)
+                {
+                    _ = sovm.RefreshAsync();
+                }
+                else if (storageDc is Production.StorageDetailViewModel sdvm)
+                {
+                    _ = sdvm.RefreshAsync();
+                }
 
+                var workingDc = (CurrentWorkingZoneView as System.Windows.FrameworkElement)?.DataContext;
+                if (workingDc is Production.MachineDetailViewModel mdvm)
+                {
+                    _ = mdvm.RefreshAsync();
+                }
+                else if (workingDc is Production.MachineOverviewViewModel movm)
+                {
+                    _ = movm.RefreshAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"RefreshTimer_Tick error: {ex}");
+            }
+        }
 
         public class RobotStatusViewModel
         {
@@ -102,7 +153,8 @@ namespace FMSFrontend.ViewModels
                     if (string.IsNullOrWhiteSpace(tagSerial))
                     {
                         // 沒有 TagSerial 就 fallback
-                        _windowService.ShowElectrode(material.Electrode, material.Timeline ?? Array.Empty<TimelineItemModel>(), slotCode);
+                        ElectrodeModel elecFallback = material.Electrode ?? new ElectrodeModel();
+                        _windowService.ShowElectrode(elecFallback, material.Timeline ?? Array.Empty<TimelineItemModel>(), slotCode);
                         return;
                     }
 
@@ -123,13 +175,19 @@ namespace FMSFrontend.ViewModels
                     var tagSerial = material.Workpiece?.SerialCode;
                     if (string.IsNullOrWhiteSpace(tagSerial))
                     {
-                        _windowService.ShowWorkpiece(material.Workpiece, material.Timeline ?? Array.Empty<TimelineItemModel>(), slotCode);
+                        WorkpieceModel wpFallback = material.Workpiece ?? new WorkpieceModel();
+                        _windowService.ShowWorkpiece(wpFallback, material.Timeline ?? Array.Empty<TimelineItemModel>(), slotCode);
                         return;
                     }
 
-                    // 1. 資料
-                    var wpList = await _httpService.GetJsonAsync<List<Workpiece>>($"Workpiece/DB_GetWorkpieceByTagSerial/{tagSerial}");
-                    var dbWp = wpList?.FirstOrDefault();
+                // 1. 資料
+                //var wpList = await _httpService.GetJsonAsync<List<Workpiece>>($"Workpiece/DB_GetWorkpieceByTagSerial/{tagSerial}");
+                //var dbWp = wpList?.FirstOrDefault();
+                    string route = $"Workpiece/DB_GetWorkpieceByTagSerial/{tagSerial}";
+                    JsonElement? json = await _httpService.GetJsonAsync<JsonElement>(route, default);
+                    Workpiece dbWp = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
+                    JsonSerializer.Deserialize<Workpiece>(json.Value.GetRawText()) ?? new Workpiece() :
+                    new Workpiece();
                     // 2. 時間軸
                     var wpTimeline = await _httpService.GetJsonAsync<IEnumerable<TimelineItemModel>>($"Workpiece/DB_GetWorkpieceTimelineByTagSerial/{tagSerial}")
                                      ?? Array.Empty<TimelineItemModel>();
@@ -201,7 +259,7 @@ namespace FMSFrontend.ViewModels
                 PartName = "",
                 SerialCode = "",
                 RouteNo = "",
-                Restriction = db.restriction ?? false
+                Restriction = db.restriction?? false
             };
         }
 
@@ -209,7 +267,7 @@ namespace FMSFrontend.ViewModels
         public void ShowDetail(string storageId)
         {
             // TODO: 傳入 storageId 給 DetailControl，如果要的話
-            var overviewVM = new StorageDetailViewModel(this); // 傳入自己當 parent
+            var overviewVM = new StorageDetailViewModel(this, _httpService); // 傳入自己當 parent
             var overviewView = new StorageDetailControl
             {
                 DataContext = overviewVM // 這一步非常重要！
@@ -231,7 +289,7 @@ namespace FMSFrontend.ViewModels
         public void ShowMachineDetail()
         {
             // TODO: 傳入 storageId 給 DetailControl，如果要的話
-            var overviewVM = new MachineDetailViewModel(this); // 傳入自己當 parent
+            var overviewVM = new MachineDetailViewModel(this, _httpService); // 傳入自己當 parent 與 httpService
             var overviewView = new MachineDetailControl
             {
                 DataContext = overviewVM // 這一步非常重要！
@@ -241,7 +299,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         public void ShowMachineOverview()
         {
-            var overviewVM = new MachineOverviewViewModel(this); // 傳入自己當 parent
+            var overviewVM = new MachineOverviewViewModel(this, _httpService); // 傳入自己當 parent
             var overviewView = new MachineOverviewControl
             {
                 DataContext = overviewVM // 這一步非常重要！

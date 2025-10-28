@@ -8,17 +8,17 @@ namespace FMSFrontend.ViewModels
 {
     public class TimelineItemModel
     {
-        public string Text { get; set; }
+        public string Text { get; set; } = "";
         public DateTime Time { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = "";
     }
 
     public class TimelineItemViewModel
     {
         public TimelineItemViewModel() { }   // ← 加這個
-        public string Text { get; set; }
+        public string Text { get; set; } = "";
         public DateTime Time { get; set; }
-        public string Status { get; set; } // "10%" 或 "✓"
+        public string Status { get; set; } = ""; // "10%" 或 "✓"
 
 
         public TimelineItemViewModel(string text, DateTime time, string status)

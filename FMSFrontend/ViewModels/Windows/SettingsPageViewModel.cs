@@ -100,13 +100,13 @@ namespace FMSFrontend.ViewModels.Windows
         private ObservableCollection<string> availableLanguages;
 
         [ObservableProperty]
-        private string selectedLanguage;
+        private string selectedLanguage = "";
 
         [ObservableProperty]
         private ObservableCollection<string> availableThemes;
 
         [ObservableProperty]
-        private string selectedTheme;
+        private string selectedTheme = "";
 
         [ObservableProperty]
         private bool enableNotifications = true;
@@ -121,12 +121,12 @@ namespace FMSFrontend.ViewModels.Windows
         private ObservableCollection<string> availablePermissions;
 
         [ObservableProperty]
-        private string selectedPermission;
+        private string selectedPermission = "";
 
         //MachineList
         public ObservableCollection<MachineInfo> MachineList { get; set; }
         private readonly ICollectionView _machinesView;
-        private string _searchText;
+        private string _searchText = "";
         public string SearchText
         {
             get => _searchText;
@@ -142,7 +142,7 @@ namespace FMSFrontend.ViewModels.Windows
         //RobotList
         public ObservableCollection<RobotInfo> RobotList { get; set; }
         private readonly ICollectionView _robotsView;
-        private string _robotSearchText;
+        private string _robotSearchText = "";
         public string RobotSearchText
         {
             get => _robotSearchText;
@@ -157,11 +157,11 @@ namespace FMSFrontend.ViewModels.Windows
         }// ====== Device 區 ======
 
         // 1) 清單 + 視圖
-        public ObservableCollection<DeviceInfo> DeviceList { get; set; }
+        public ObservableCollection<DeviceInfo> DeviceList { get; set; } 
         private readonly ICollectionView _devicesView;
 
         // 2) 選取項目（可選）
-        private DeviceInfo _selectedDevice;
+        private DeviceInfo _selectedDevice = new DeviceInfo();
         public DeviceInfo SelectedDevice
         {
             get => _selectedDevice;
@@ -169,7 +169,7 @@ namespace FMSFrontend.ViewModels.Windows
         }
 
         // 3) 搜尋文字（即時過濾）
-        private string _deviceSearchText;
+        private string _deviceSearchText ="";
         public string DeviceSearchText
         {
             get => _deviceSearchText;
@@ -294,7 +294,7 @@ namespace FMSFrontend.ViewModels.Windows
         private void SaveIP()
         {
             var ip = (ServerIp ?? string.Empty).Trim();
-            if (!IPAddress.TryParse(ip, out _))
+            if (!(IPAddress.TryParse(ip, out _) || ip =="localhost"))
             {
                 StatusMessage = "❌ IP 位址格式不正確";
                 _windowService.ShowMessage("IP 位址格式不正確，請輸入有效的 IPv4，例如：192.168.1.100");
@@ -367,30 +367,30 @@ namespace FMSFrontend.ViewModels.Windows
 
         public class MachineInfo
         {
-            public string MachineId { get; set; }
-            public string MachineName { get; set; }
-            public string MachineType { get; set; }
-            public string IpAddress { get; set; }
+            public string MachineId { get; set; } = "";
+            public string MachineName { get; set; } = "";
+            public string MachineType { get; set; } = "";
+            public string IpAddress { get; set; } = "";
             public int Port { get; set; }
-            public string AssetNo { get; set; }
-            public string Owner { get; set; }
+            public string AssetNo { get; set; } = "";
+            public string Owner { get; set; } = "";
         }
         public class RobotInfo
         {
-            public string RobotId { get; set; }
-            public string RobotName { get; set; }
-            public string RobotType { get; set; }
-            public string IpAddress { get; set; }
-            public string Owner { get; set; }
+            public string RobotId { get; set; } = "";
+            public string RobotName { get; set; } = "";
+            public string RobotType { get; set; } = "";
+            public string IpAddress { get; set; } = "";
+            public string Owner { get; set; } = "";
         }
         public class DeviceInfo
         {
-            public string DeviceId { get; set; }
-            public string DeviceName { get; set; }
-            public string IpAddress { get; set; }
+            public string DeviceId { get; set; } = "";
+            public string DeviceName { get; set; } = "";
+            public string IpAddress { get; set; } = "";
             public int Port { get; set; }
-            public string AssetNo { get; set; }
-            public string Owner { get; set; }
+            public string AssetNo { get; set; } = "";
+            public string Owner { get; set; } = "";
         }
 
     }

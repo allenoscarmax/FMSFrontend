@@ -7,7 +7,7 @@ namespace FMSFrontend.Converters
 {
     public class KeyDownEnterOnlyConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) 
         {
             // 判斷是否是 Enter
             if (value is KeyEventArgs e && e.Key == Key.Enter)

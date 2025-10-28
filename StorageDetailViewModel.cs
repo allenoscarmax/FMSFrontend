@@ -1,4 +1,5 @@
-ï»¿using CommunityToolkit.Mvvm.ComponentModel;
+FMSFrontend\ViewModels\Production\StorageDetailViewModel.cs
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Controls;
 using FMSFrontend.Interfaces;
@@ -6,7 +7,7 @@ using FMSFrontend.ViewModels.Windows;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
-using System.Linq;  // â† éœ€è¦
+using System.Linq;  // ¡ö »İ­n
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
@@ -20,7 +21,7 @@ namespace FMSFrontend.ViewModels.Production
     {
         private readonly ProductionLinesViewModel _parent;
         private readonly IHttpService _httpService;
-        public Task RefreshAsync() => Task.Run(async () => await LoadStoragePagesAsync());
+
         public StorageDetailViewModel(ProductionLinesViewModel parent, IHttpService httpService)
         {
             _parent = parent;
@@ -28,7 +29,7 @@ namespace FMSFrontend.ViewModels.Production
 
             SelectedTabIndex = 0;
 
-            // å‡è¨­è¦å‰‡æ˜¯ ES é–‹é ­æ˜¯é›»æ¥µï¼ŒW é–‹é ­æ˜¯å·¥ä»¶
+            // °²³]³W«h¬O ES ¶}ÀY¬O¹q·¥¡AW ¶}ÀY¬O¤u¥ó
             if (storageName.StartsWith("W"))
                 StorageType = StorageType.Workpiece;
             else
@@ -40,16 +41,16 @@ namespace FMSFrontend.ViewModels.Production
         }
         [ObservableProperty] private int selectedTabIndex;
         [ObservableProperty] private int currentPageIndex;
-        [ObservableProperty] private string pageInfo = "";
+        [ObservableProperty] private string pageInfo;
         [ObservableProperty] private string storageName = "ES1";
 
-        [ObservableProperty] private string waitingCount = "";
-        [ObservableProperty] private string processingCount = "";
-        [ObservableProperty] private string errorCount = "";
-        [ObservableProperty] private string completedCount = "";
-        [ObservableProperty] private string bookedCount = "";
-        [ObservableProperty] private string restrictionCount = "";
-        [ObservableProperty] private bool isElectrode = true; //æ§åˆ¶ç‹€æ…‹åˆ—
+        [ObservableProperty] private int waitingCount;
+        [ObservableProperty] private int processingCount;
+        [ObservableProperty] private int errorCount;
+        [ObservableProperty] private int completedCount;
+        [ObservableProperty] private int disabledCount;
+        [ObservableProperty] private int bookedCount;
+        [ObservableProperty] private bool isElectrode = true; //±±¨îª¬ºA¦C
 
         [ObservableProperty] private StorageType storageType = StorageType.Electrode;
 
@@ -59,7 +60,7 @@ namespace FMSFrontend.ViewModels.Production
         [RelayCommand]
         private void ShowOverview()
         {
-            // å‡è¨­ä½ è¦å±•é–‹åˆ°ç‰¹å®š StorageId çš„ DetailControl
+            // °²³]§A­n®i¶}¨ì¯S©w StorageId ªº DetailControl
             _parent.ShowOverview();
         }
         [RelayCommand]
@@ -88,7 +89,7 @@ namespace FMSFrontend.ViewModels.Production
         [RelayCommand]
         private void SelectSlot(SlotViewModel slot)
         {
-            _parent.OpenMaterial(slot);  // ç›´æ¥ä¸Ÿçµ¦çˆ¶ VMï¼ˆå¤šè¼‰æœƒåƒåˆ°ï¼‰
+            _parent.OpenMaterial(slot);  // ª½±µ¥áµ¹¤÷ VM¡]¦h¸ü·|¦Y¨ì¡^
         }
 
         partial void OnSelectedTabIndexChanged(int value)
@@ -103,12 +104,12 @@ namespace FMSFrontend.ViewModels.Production
             }
         }
 
-        // é‡æ–°å¯¦ä½œï¼šèˆ‡ StorageOverviewViewModel.LoadStorageUnitsAsync ç›¸åŒæ¨¡å¼
+        // ­«·s¹ê§@¡G»P StorageOverviewViewModel.LoadStorageUnitsAsync ¬Û¦P¼Ò¦¡
         private async Task LoadStoragePagesAsync()
         {
             StoragePages.Clear();
 
-            // 1) å…ˆæŠ“å…¨éƒ¨ Storage è³‡æ–™
+            // 1) ¥ı§ì¥ş³¡ Storage ¸ê®Æ
             JsonElement json;
             try
             {
@@ -116,7 +117,7 @@ namespace FMSFrontend.ViewModels.Production
             }
             catch
             {
-                // API å¤±æ•—å°±ä¿ç•™ç©ºé é¢é›†åˆ
+                // API ¥¢±Ñ´N«O¯dªÅ­¶­±¶°¦X
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     StoragePages.Clear();
@@ -144,7 +145,7 @@ namespace FMSFrontend.ViewModels.Production
                 return;
             }
 
-            // ä¾ StorageName + StorageNumber åˆ†çµ„ï¼ˆä¾‹å¦‚ E + 1 â†’ ES1ã€W + 1 â†’ W1ï¼‰
+            // ¨Ì StorageName + StorageNumber ¤À²Õ¡]¨Ò¦p E + 1 ¡÷ ES1¡BW + 1 ¡÷ W1¡^
             var groups = storages
                 .GroupBy(s => new { s.storageName, s.storageNumber })
                 .OrderBy(g => g.Key.storageName)
@@ -157,14 +158,14 @@ namespace FMSFrontend.ViewModels.Production
             {
                 var key = g.Key;
                 var unitName = $"{key.storageName}{key.storageNumber}";
-                var isElectrodeStore = key.storageName?.IndexOf("E") != -1;
+                var isElectrodeStore = key.storageName?.StartsWith("E", System.StringComparison.OrdinalIgnoreCase) == true;
 
-                // åªå»ºç«‹èˆ‡ç›®å‰é¸å– Tabï¼ˆé›»æ¥µ/å·¥ä»¶ï¼‰ç›¸ç¬¦çš„é é¢
+                // ¥u«Ø¥ß»P¥Ø«e¿ï¨ú Tab¡]¹q·¥/¤u¥ó¡^¬Û²Åªº­¶­±
                 if (isElectrodeStore && StorageType != StorageType.Electrode) continue;
                 if (!isElectrodeStore && StorageType != StorageType.Workpiece) continue;
 
-                int maxRow = Math.Max(1, g.Max(x => x.row));     // è¡Œ
-                int maxCol = Math.Max(1, g.Max(x => x.column));  // åˆ—
+                int maxRow = Math.Max(1, g.Max(x => x.row));     // ¦æ
+                int maxCol = Math.Max(1, g.Max(x => x.column));  // ¦C
 
                 var page = new StoragePageViewModel
                 {
@@ -173,13 +174,13 @@ namespace FMSFrontend.ViewModels.Production
                     Columns = maxCol
                 };
 
-                // å–å¾—è©²å€‰åˆ¥æ‰€æœ‰ OndeskTagserialï¼ˆéç©ºï¼‰
+                // ¨ú±o¸Ó­Ü§O©Ò¦³ OndeskTagserial¡]«DªÅ¡^
                 var tagSerials = g.Select(x => x.ondeskTagserial)
-                          .Where(ts => !string.IsNullOrWhiteSpace(ts))
-                          .Distinct()
-                          .ToList();
+                                  .Where(ts => !string.IsNullOrWhiteSpace(ts))
+                                  .Distinct()
+                                  .ToList();
 
-                // ç¾åœ¨ä¹Ÿå„²å­˜ status å­—ä¸²ï¼ˆè‹¥æœ‰ï¼‰
+                // ²{¦b¤]Àx¦s status ¦r¦ê¡]­Y¦³¡^
                 var tagMap = new ConcurrentDictionary<string, (string Tag, bool Restriction, string Status)>(System.StringComparer.OrdinalIgnoreCase);
 
                 if (tagSerials.Count > 0)
@@ -201,10 +202,8 @@ namespace FMSFrontend.ViewModels.Production
                             else
                             {
                                 var route = $"Workpiece/DB_GetWorkpieceByTagSerial/{ts}";
-                                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>(route, default);
-                                Workpiece w = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
-                                JsonSerializer.Deserialize<Workpiece>(json.Value.GetRawText()) ?? new Workpiece() :
-                                new Workpiece();
+                                var list = await _httpService.GetJsonAsync<List<Workpiece>>(route) ?? new List<Workpiece>();
+                                var w = list.FirstOrDefault();
                                 if (w != null)
                                 {
                                     tagMap[ts] = (w.tagSerial ?? ts, w.restriction ?? false, w.status);
@@ -213,14 +212,14 @@ namespace FMSFrontend.ViewModels.Production
                         }
                         catch
                         {
-                            // å–®ç­†éŒ¯èª¤å¿½ç•¥
+                            // ³æµ§¿ù»~©¿²¤
                         }
                     });
 
                     await Task.WhenAll(tasks);
                 }
 
-                // å»ºç«‹æ ¼ä½ä¸¦å›å¡«è³‡æ–™
+                // «Ø¥ß®æ¦ì¨Ã¦^¶ñ¸ê®Æ
                 for (int r = 1; r <= page.Rows; r++)
                 {
                     for (int c = 1; c <= page.Columns; c++)
@@ -228,7 +227,7 @@ namespace FMSFrontend.ViewModels.Production
                         var rec = g.FirstOrDefault(x => x.row == r && x.column == c);
                         var tag = rec?.ondeskTagserial;
 
-                        // æ±ºå®šæ ¼ä½çš„ Statusï¼ˆå„ªå…ˆï¼štagMap çš„ DB status â†’ rec.state â†’ Emptyï¼‰
+                        // ¨M©w®æ¦ìªº Status¡]Àu¥ı¡GtagMap ªº DB status ¡÷ rec.state ¡÷ Empty¡^
                         string slotStatus = "";
                         if (!string.IsNullOrWhiteSpace(tag) && tagMap.TryGetValue(tag, out var info))
                         {
@@ -245,12 +244,12 @@ namespace FMSFrontend.ViewModels.Production
                             Col = c,
                             Layer = 1,
                             IsLocked = rec?.restriction ?? false,
-                            // ä¿ç•™åŸæœ¬ enum éš¨æ©Ÿæˆ–é è¨­ï¼Œé€™è£¡ä½¿ç”¨é è¨­å€¼
+                            // «O¯d­ì¥» enum ÀH¾÷©Î¹w³]¡A³o¸Ì¨Ï¥Î¹w³]­È
                             ResultStatus = isElectrodeStore ? ResultStatus.Checking : ResultStatus.CheckSuccess,
                             CheckStatus = isElectrodeStore ? CheckStatus.Unchecked : CheckStatus.Checked
                         };
 
-                        // å¦‚æœ‰ tag ä¸” API æœ‰å›ä¾†ï¼Œå°±å¡å…¥ MaterialRef çš„æœ€å°è³‡è¨Šï¼ˆTagSerial + Restrictionï¼‰
+                        // ¦p¦³ tag ¥B API ¦³¦^¨Ó¡A´N¶ë¤J MaterialRef ªº³Ì¤p¸ê°T¡]TagSerial + Restriction¡^
                         if (!string.IsNullOrWhiteSpace(tag) && tagMap.TryGetValue(tag, out var info2))
                         {
                             if (isElectrodeStore)
@@ -282,7 +281,7 @@ namespace FMSFrontend.ViewModels.Production
                         }
                         else
                         {
-                            // è‹¥ç„¡ tag æˆ– API ç„¡è³‡æ–™ï¼Œå›é€€ä½¿ç”¨ Storage åŸå§‹æ¬„ä½ï¼ˆå¦‚æœå­˜åœ¨ restrictionï¼‰
+                            // ­YµL tag ©Î API µL¸ê®Æ¡A¦^°h¨Ï¥Î Storage ­ì©lÄæ¦ì¡]¦pªG¦s¦b restriction¡^
                             if (!string.IsNullOrWhiteSpace(rec?.state) || rec?.restriction != null)
                             {
                                 bool restr = rec?.restriction ?? false;
@@ -315,24 +314,15 @@ namespace FMSFrontend.ViewModels.Production
                                 }
                             }
                         }
+
                         page.Slots.Add(slot);
                     }
                 }
+
                 newPages.Add(page);
             }
-            // è¨ˆç®—é›»æ¥µç›¸é—œç‹€æ…‹çµ±è¨ˆï¼ˆåƒ…è¨ˆç®— IsElectrode = true çš„æ ¼ä½ï¼‰
-            var electrodeSlots = newPages.SelectMany(u => u.Slots).Where(s => s.IsElectrode).ToList();
-            int waiting = electrodeSlots.Count(s => string.Equals(s.Status, "Verified", StringComparison.OrdinalIgnoreCase));
-            int processing = electrodeSlots.Count(s => string.Equals(s.Status, "Working", StringComparison.OrdinalIgnoreCase));
-            int error = electrodeSlots.Count(s => string.Equals(s.Status, "Error", StringComparison.OrdinalIgnoreCase));
-            int completed = electrodeSlots.Count(s => string.Equals(s.Status, "Completed", StringComparison.OrdinalIgnoreCase));
 
-            // ç”± Storage åŸå§‹è³‡æ–™è¨ˆç®—ï¼šrestriction == true
-            int restriction = storages.Count(s => s.restriction == true);
-            // ç”± Storage åŸå§‹è³‡æ–™è¨ˆç®—ï¼šstate == "Book"ï¼ˆå¤§å°å¯«ä¸æ•æ„Ÿï¼‰
-            int booked = storages.Count(s => string.Equals(s.state, "Book", StringComparison.OrdinalIgnoreCase));
-            // ä¸€æ¬¡æ€§å¥—ç”¨åˆ° UIï¼ˆåŒ…å« StorageUnits èˆ‡è¨ˆæ•¸å­—ä¸²ï¼‰
-            // å¥—ç”¨åˆ° UI
+            // ®M¥Î¨ì UI
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
                 StoragePages.Clear();
@@ -343,12 +333,6 @@ namespace FMSFrontend.ViewModels.Production
                 PageInfo = $"{CurrentPageIndex + 1} / {StoragePages.Count}";
                 OnPropertyChanged(nameof(CurrentPage));
                 UpdateCurrentStorageName();
-                WaitingCount = waiting.ToString();
-                ProcessingCount = processing.ToString();
-                ErrorCount = error.ToString();
-                CompletedCount = completed.ToString();
-                BookedCount = booked.ToString();
-                RestrictionCount = restriction.ToString();
             });
         }
 
@@ -375,14 +359,14 @@ namespace FMSFrontend.ViewModels.Production
 
     public partial class SlotViewModel : ObservableObject, IHasMaterial
     {
-        // è®“ Status æœ‰è®Šæ›´é€šçŸ¥ï¼ˆCommunityToolkit æœƒç”¢ç”Ÿå…¬é–‹å±¬æ€§ï¼‰
+        // Åı Status ¦³ÅÜ§ó³qª¾¡]CommunityToolkit ·|²£¥Í¤½¶}Äİ©Ê¡^
         [ObservableProperty]
         private string status = "Empty";
 
         [ObservableProperty]
         private string text = "";
 
-        // è¨ˆç®—å±¬æ€§ï¼Œæ ¹æ“š Status å›å‚³ Brush
+        // ­pºâÄİ©Ê¡A®Ú¾Ú Status ¦^¶Ç Brush
         public Brush Background => Status switch
         {
             "Verified" => Brushes.DarkGoldenrod,
@@ -416,7 +400,7 @@ namespace FMSFrontend.ViewModels.Production
                 ? Text
                 : $"{(IsElectrode ? "E" : "W")}:{Line}:{Row}:{Col}:{Layer}";
 
-        // ç•¶ Status è®Šæ›´æ™‚ï¼Œé€šçŸ¥ Background ä¹Ÿæ›´æ–°
+        // ·í Status ÅÜ§ó®É¡A³qª¾ Background ¤]§ó·s
         partial void OnStatusChanged(string value)
         {
             OnPropertyChanged(nameof(Background));

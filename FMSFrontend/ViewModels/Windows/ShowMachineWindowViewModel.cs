@@ -29,7 +29,7 @@ namespace FMSFrontend.ViewModels.Windows
                 DeviceName = m.MachineName ?? "設備名稱";
 
                 Info.MachineTypeName = m.MachineTypeName;       // 給 Converter 用（EDM/CNC/ZNC…）
-                Info.EquipmentName = m.MachineName;           // 左卡「設備名稱」
+                Info.EquipmentName = m.MachineName??"";           // 左卡「設備名稱」
                 Info.EquipmentType = m.Type.ToString();       // 左卡「設備類型」
                 Info.MachineState = MapStatus(m.Status);     // 左卡「機台狀態」
 

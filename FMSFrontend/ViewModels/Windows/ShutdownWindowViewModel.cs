@@ -14,7 +14,7 @@ namespace FMSFrontend.ViewModels.Windows
         [ObservableProperty]
         private bool _isRobotRunning;
         [ObservableProperty]
-        private string _shutdownMessage;
+        private string _shutdownMessage ="";
 
         public ShutdownWindowViewModel(bool isRobotRunning)
         {
@@ -42,13 +42,13 @@ namespace FMSFrontend.ViewModels.Windows
 
         private void UpdateMessage()
         {
-            if (_isRobotRunning)
+            if (IsRobotRunning)
             {
-                _shutdownMessage = "手臂正在運行中！確定要關機？";
+                ShutdownMessage = "手臂正在運行中！確定要關機？";
             }
             else
             {
-                _shutdownMessage = "確定要關閉控制系統？";
+                ShutdownMessage = "確定要關閉控制系統？";
             }
         }
     }

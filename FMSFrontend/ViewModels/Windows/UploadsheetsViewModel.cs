@@ -225,7 +225,7 @@ namespace FMSFrontend.ViewModels.Windows
                     edmpgm = w.MeasurementProgram ?? "",
                     needInspect = true,
                     inspected = false,
-                    inspectStatus = null,
+                    inspectStatus = "",
                     inspectOffset = "",
                     setupUser = "admin"
                 };

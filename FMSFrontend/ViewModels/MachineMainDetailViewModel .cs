@@ -93,6 +93,8 @@ namespace FMSFrontend.ViewModels
         {
             Machine = machine;
 
+            SelectedMachine = machine; //Allen 加入
+
             Tabs = new ObservableCollection<TabItemModel>
             {
                 new TabItemModel { Header = "1", TagColor = "#2779A7" },
@@ -178,56 +180,56 @@ namespace FMSFrontend.ViewModels
         public class TabItemModel
         {
             public override string ToString() => Header;
-            public string Header { get; set; }
-            public string TagColor { get; set; }  // 對應 TabItem 的 Tag 屬性
+            public string Header { get; set; } = "";
+            public string TagColor { get; set; } = ""; // 對應 TabItem 的 Tag 屬性
         }
 
         public partial class MachineDisplayData : ObservableObject
         {
             //機台資訊
-            [ObservableProperty] private string machineNumber;
-            [ObservableProperty] private string machineStatus;
-            [ObservableProperty] private string usingElectrode;
-            [ObservableProperty] private string machiningCode;
-            [ObservableProperty] private string machiningWorkingTime;
-            [ObservableProperty] private string machiningWorkingPercentage;
-            [ObservableProperty] private string currentWorksheet;
-            [ObservableProperty] private string machiningTool;
+            [ObservableProperty] private string machineNumber = "";
+            [ObservableProperty] private string machineStatus = "";
+            [ObservableProperty] private string usingElectrode = "";
+            [ObservableProperty] private string machiningCode = "";
+            [ObservableProperty] private string machiningWorkingTime = "";
+            [ObservableProperty] private string machiningWorkingPercentage = "";
+            [ObservableProperty] private string currentWorksheet = "";
+            [ObservableProperty] private string machiningTool = "";
 
-            [ObservableProperty] private string machineTemperature;
-            [ObservableProperty] private string spindleRPM;
-            [ObservableProperty] private string oilLevelStatus;
-            [ObservableProperty] private string coolantLevel;
+            [ObservableProperty] private string machineTemperature = "";
+            [ObservableProperty] private string spindleRPM = "";
+            [ObservableProperty] private string oilLevelStatus = "";
+            [ObservableProperty] private string coolantLevel = "";
 
             //座標
-            [ObservableProperty] private string positionID;
-            [ObservableProperty] private string aBS_X;
-            [ObservableProperty] private string aBS_Y;
-            [ObservableProperty] private string aBS_Z;
-            [ObservableProperty] private string aBS_C;
-            [ObservableProperty] private string aBS_A;
-            [ObservableProperty] private string aBS_B;
+            [ObservableProperty] private string positionID = "";
+            [ObservableProperty] private string aBS_X = "";
+            [ObservableProperty] private string aBS_Y = "";
+            [ObservableProperty] private string aBS_Z = "";
+            [ObservableProperty] private string aBS_C = "";
+            [ObservableProperty] private string aBS_A = "";
+            [ObservableProperty] private string aBS_B = "";
 
-            [ObservableProperty] private string mCH_X;
-            [ObservableProperty] private string mCH_Y;
-            [ObservableProperty] private string mCH_Z;
+            [ObservableProperty] private string mCH_X = "";
+            [ObservableProperty] private string mCH_Y = "";
+            [ObservableProperty] private string mCH_Z = "";
 
             // 加工參數
-            [ObservableProperty] private string speed;
-            [ObservableProperty] private string servo;
-            [ObservableProperty] private string gap;
-            [ObservableProperty] private string oB;
-            [ObservableProperty] private string e_SPD;
-            [ObservableProperty] private string pol;
-            [ObservableProperty] private string pulse;
+            [ObservableProperty] private string speed = "";
+            [ObservableProperty] private string servo = "";
+            [ObservableProperty] private string gap = "";
+            [ObservableProperty] private string oB = "";
+            [ObservableProperty] private string e_SPD = "";
+            [ObservableProperty] private string pol = "";
+            [ObservableProperty] private string pulse = "";
 
-            [ObservableProperty] private string e_Cod;
-            [ObservableProperty] private string t_ON;
-            [ObservableProperty] private string t_OFF;
-            [ObservableProperty] private string lV;
-            [ObservableProperty] private string hV;
-            [ObservableProperty] private string jT;
-            [ObservableProperty] private string jD;
+            [ObservableProperty] private string e_Cod = "";
+            [ObservableProperty] private string t_ON = "";
+            [ObservableProperty] private string t_OFF = "";
+            [ObservableProperty] private string lV = "";
+            [ObservableProperty] private string hV = "";
+            [ObservableProperty] private string jT = "";
+            [ObservableProperty] private string jD = "";
 
         }
 

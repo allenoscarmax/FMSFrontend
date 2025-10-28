@@ -17,7 +17,7 @@ namespace FMSFrontend.ViewModels.Windows
     public class OptionItem : INotifyPropertyChanged
     {
         public int Value { get; }      // 週: 1~7 (Mon=1)；月: 1~31；0=last
-        public string Label { get; }   // "週一"、"30"、"last"
+        public string Label { get; } = ""; // "週一"、"30"、"last"
 
         private bool _isSelected;
         public bool IsSelected
@@ -37,8 +37,9 @@ namespace FMSFrontend.ViewModels.Windows
 
         public OptionItem(int value, string label) { Value = value; Label = label; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string n = null)
+        // 事件改為可為 null（加上問號），或可改用初始化空 delegate（另一選項）
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? n = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(n));
     }
 
@@ -154,8 +155,9 @@ namespace FMSFrontend.ViewModels.Windows
         public int[] CollectWeekly() => WeeklyOptions.Where(x => x.IsSelected).Select(x => x.IsNegative ? -x.Value : x.Value).ToArray();
         public int[] CollectMonthly() => MonthlyOptions.Where(x => x.IsSelected).Select(x => x.IsNegative ? -x.Value : x.Value).ToArray();
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string n = null)
+        // 將事件宣告改為可為 null 以符合 nullable reference types
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? n = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(n));
     }
 }

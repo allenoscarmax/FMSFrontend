@@ -19,8 +19,7 @@ namespace FMSFrontend.Extensions
     /// </summary>
     public partial class SelectItemWindow : Window
     {
-        public SelectItemWindow(SelectItemType type,
-             Func<SelectItemType, IEnumerable<SelectItem>> dataLoader = null)
+        public SelectItemWindow(SelectItemType type, Func<SelectItemType, IEnumerable<SelectItem>>? dataLoader = null)
         {
             InitializeComponent();
 
@@ -28,4 +27,5 @@ namespace FMSFrontend.Extensions
             DataContext = new SelectItemWindowViewModel(type, dataLoader);
         }
     }
+
 }

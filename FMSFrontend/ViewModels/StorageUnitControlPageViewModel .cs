@@ -13,7 +13,7 @@ namespace FMSFrontend.ViewModels
 {
     public class StorageUnitControlPageViewModel
     {
-        public string ScrollToStorageId { get; set; }
+        public string ScrollToStorageId { get; set; } = "";
         // 其他屬性和方法
     }
 }

@@ -12,9 +12,9 @@ namespace OSCARMAXFMS_V3.DBmodels
     public class ErrorMessagePresets
     {
         [BsonRepresentation(BsonType.ObjectId)]
-        public string _id { get; set; } // ID（MongoDB 物件識別碼）
-        public string ErrorCode { get; set; } // 錯誤代碼鍵（用於查表）
-        public string Message_cn { get; set; } // 中文預設訊息
-        public string Message_en { get; set; } // 英文預設訊息
+        public string _id { get; set; } = ""; // ID（MongoDB 物件識別碼）
+        public string errorCode { get; set; } = "";// 錯誤代碼鍵（用於查表）
+        public string message_cn { get; set; } = ""; // 中文預設訊息
+        public string message_en { get; set; } = "";// 英文預設訊息
     }
 }
