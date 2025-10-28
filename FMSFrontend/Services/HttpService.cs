@@ -76,38 +76,8 @@ namespace FMSFrontend.Services
             if (string.IsNullOrWhiteSpace(content))
                 return default;
 
-            try
-            {
-                // 若 T 是 JsonElement（或 Nullable<JsonElement>），先解析並檢查 ValueKind
-                var targetType = typeof(T);
-                var isJsonElement = targetType == typeof(JsonElement) || targetType == typeof(JsonElement?);
-
-                if (isJsonElement)
-                {
-                    using var doc = JsonDocument.Parse(content);
-                    var root = doc.RootElement;
-                    if (root.ValueKind == JsonValueKind.Null
-                        || root.ValueKind == JsonValueKind.Undefined
-                        || (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() == 0)
-                        || (root.ValueKind == JsonValueKind.String && string.IsNullOrWhiteSpace(root.GetString())))
-                    {
-                        return default;
-                    }
-
-                    // 安全回傳 JsonElement
-                    object boxed = root.Clone();
-                    return (T?)boxed;
-                }
-
-                // 其他型別直接用 JsonSerializer 反序列化
-                var result = JsonSerializer.Deserialize<T>(content, _jsonOptions);
-                return result;
-            }
-            catch
-            {
-                // 若解析或反序列化失敗，回傳 default 以維持呼叫端相容性
-                return default;
-            }
+            var result = JsonSerializer.Deserialize<T>(content, _jsonOptions);
+            return result;
         }
 
         // PutJsonAsync：加入回傳過濾（與 GetJsonAsync 相同策略）

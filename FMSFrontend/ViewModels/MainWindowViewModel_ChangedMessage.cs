@@ -31,6 +31,7 @@ namespace FMSFrontend.ViewModels
     {
         private async Task InitializeDataAsync()
         {
+           /*
             try
             {
                 //var t1 = FetchAsrsParametersAsync();                            
@@ -46,6 +47,7 @@ namespace FMSFrontend.ViewModels
             {
                 // 啟動期允許忽略暫時性錯誤，後續輪詢或手動刷新會再補上
             }
+           */
         }
         // 新增：封裝 ASRS 資料抓取（手臂/ASRS參數）
 

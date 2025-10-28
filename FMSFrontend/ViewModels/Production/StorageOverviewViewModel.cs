@@ -5,23 +5,35 @@ using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using MahApps.Metro.Controls;
 using OSCARMAXFMS_V3.DBmodels;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
-using System.Collections.Concurrent;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FMSFrontend.ViewModels.Production
 {
     public partial class StorageOverviewViewModel : ObservableObject
     {
+        [ObservableProperty] private string waitingCount = "0";
+        [ObservableProperty] private string processingCount = "0";
+        [ObservableProperty] private string errorCount = "0";
+        [ObservableProperty] private string completedCount = "0";
+        [ObservableProperty] private string restrictionCount = "0";
+        [ObservableProperty] private string bookedCount = "0";
+
         private readonly ProductionLinesViewModel _parent;
         private readonly IHttpService _httpService;
-
+        // Run the loading on a background thread so the UI thread is not captured; UI updates happen via Dispatcher inside the method.
+        public Task RefreshAsync() => Task.Run(async () => await LoadStorageUnitsAsync());
         public ObservableCollection<StorageUnitViewModel> StorageUnits { get; set; } = new();
 
         public StorageOverviewViewModel(ProductionLinesViewModel parent, IHttpService httpService)
@@ -85,7 +97,10 @@ namespace FMSFrontend.ViewModels.Production
                 .ToList();
 
             var newUnits = new List<StorageUnitViewModel>();
-
+                            int waiting = 0;
+                int processing = 0;
+                int error = 0;
+                int completed = 0;
             foreach (var g in groups)
             {
                 var key = g.Key;
@@ -120,20 +135,32 @@ namespace FMSFrontend.ViewModels.Production
                             {
                                 var route = $"Electrode/DB_GetElectrodesByTagSerial/{ts}";
                                 var list = await _httpService.GetJsonAsync<List<Electrode>>(route) ?? new List<Electrode>();
-                                var e = list.FirstOrDefault();
+                                var e = list?.FirstOrDefault();
                                 if (e != null)
                                 {
                                     tagStateMap[ts] = (e.state ?? "Empty", e.restriction);
+                                }
+                                else
+                                {
+                                    tagStateMap[ts] = ("null", false);
                                 }
                             }
                             else
                             {
                                 var route = $"Workpiece/DB_GetWorkpieceByTagSerial/{ts}";
-                                var list = await _httpService.GetJsonAsync<List<Workpiece>>(route) ?? new List<Workpiece>();
-                                var w = list.FirstOrDefault();
+                                //var list = await _httpService.GetJsonAsync<List<Workpiece>>(route) ?? new List<Workpiece>();
+                                //var w = list?.FirstOrDefault();
+                                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>(route, default);
+                                Workpiece  w = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
+                                JsonSerializer.Deserialize<Workpiece>(json.Value.GetRawText()) ?? new Workpiece() :
+                                new Workpiece();
                                 if (w != null)
                                 {
-                                    tagStateMap[ts] = (w.status ?? "Empty", w.restriction ?? false);
+                                    tagStateMap[ts] = (w.status ?? "Empty", w.restriction?? false);
+                                }
+                                else
+                                {
+                                    tagStateMap[ts] = ("null", false);
                                 }
                             }
                         }
@@ -144,6 +171,7 @@ namespace FMSFrontend.ViewModels.Production
                     });
                     await Task.WhenAll(tasks);
                 }
+
 
                 // 4) 依 row/col 建立所有格位，並依查回的資料更新 Status/IsReserved
                 for (int r = 1; r <= maxRow; r++)
@@ -169,7 +197,13 @@ namespace FMSFrontend.ViewModels.Production
                             stateValue = string.IsNullOrWhiteSpace(rec?.state) ? "Empty" : rec.state!;
                             restrictionValue = rec?.restriction ?? false;
                         }
-
+                        switch (stateValue)
+                        {
+                            case "Verified": waiting++; break;
+                            case "Working": processing++; break;
+                            case "Error": error++; break;
+                            case "Completed": completed++; break;
+                        }
                         var slot = new StorageSlotViewModel
                         {
                             IsElectrode = isElectrodeStore,
@@ -202,12 +236,22 @@ namespace FMSFrontend.ViewModels.Production
                 newUnits.Add(unit);
             }
 
-            // 一次性套用到 UI
+            // 由 Storage 原始資料計算：restriction == true
+            int restriction = storages.Count(s => s.restriction == true);
+            // 由 Storage 原始資料計算：state == "Book"（大小寫不敏感）
+            int booked = storages.Count(s => string.Equals(s.state, "Book", StringComparison.OrdinalIgnoreCase));
+            // 一次性套用到 UI（包含 StorageUnits 與計數字串）
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
                 StorageUnits.Clear();
                 foreach (var u in newUnits)
                     StorageUnits.Add(u);
+                WaitingCount = waiting.ToString();
+                ProcessingCount = processing.ToString();
+                ErrorCount = error.ToString();
+                CompletedCount = completed.ToString();
+                BookedCount = booked.ToString();
+                RestrictionCount = restriction.ToString();
             });
 
             static int ParseLineNumberFromName(string name)
@@ -216,6 +260,8 @@ namespace FMSFrontend.ViewModels.Production
                 return int.TryParse(digits, out var n) ? n : 0;
             }
         }
+
+
     }
 
     public class StorageUnitViewModel
@@ -237,15 +283,32 @@ namespace FMSFrontend.ViewModels.Production
         }
     }
 
-    public class StorageSlotViewModel : ObservableObject
+    public partial class StorageSlotViewModel : ObservableObject
     {
-        public string Status { get; set; } = "";
-        public bool IsDisabled { get; set; }
-        public bool IsReserved { get; set; }
+        // 讓 Status/IsDisabled/IsReserved 有變更通知（CommunityToolkit 會產生公開屬性）
+        [ObservableProperty]
+        private string status = "";
+
+        [ObservableProperty]
+        private bool isDisabled;
+
+        // IsReserved 會被設定於建立 slot 時，也可能於後續變更
+        [ObservableProperty]
+        private bool isReserved;
+
+        // 對應 XAML 中使用的綁定名：IsLocked
+        // 回傳目前的 IsReserved 狀態
+        public bool IsLocked => IsReserved;
+
+        // 當 IsReserved 改變時，同步通知 IsLocked 也要更新 UI
+        partial void OnIsReservedChanged(bool value)
+        {
+            OnPropertyChanged(nameof(IsLocked));
+        }
 
         public Brush Background => Status switch
         {
-            "Verified" => Brushes.Gold,
+            "Verified" => Brushes.DarkGoldenrod,
             "Working" => Brushes.Green,
             "Error" => Brushes.IndianRed,
             "Completed" => Brushes.RoyalBlue,

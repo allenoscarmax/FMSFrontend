@@ -118,7 +118,7 @@ public partial class MaterialPairViewModel : ObservableObject
                     _windowService.ShowMessage("請選擇要配對的工單");
                     return;
                 }
-
+                electrode.state = SelectStatus;
                 electrode.worksheetNumber = SelectedWorksheetItem?.WorkOrderNo ?? string.Empty;
                 electrode.tagSerial = TagSerial ?? "";
                 ok = await _httpService.SendPutAsync("Electrode/DB_UpdateElectrodeData", electrode);
@@ -142,8 +142,7 @@ public partial class MaterialPairViewModel : ObservableObject
                     _windowService.ShowMessage("請選擇要配對的工單");
                     return;
                 }
-
-                workpiece._id = SelecteId;
+                workpiece.status = SelectStatus;
                 workpiece.worksheetNumber = SelectedWorksheetItem?.WorkOrderNo ?? string.Empty;
                 workpiece.tagSerial = TagSerial ?? "";
                 ok = await _httpService.SendPutAsync("Workpiece/DB_UpdateWorkpieceData", workpiece);
@@ -367,7 +366,6 @@ public partial class MaterialPairViewModel : ObservableObject
                 {
                     newTag = json.Value.GetRawText().Trim('"');
                 }
-
                 // 若 Tag 有變動，更新並亮起 Tag 燈 3 秒
                 if (!string.Equals(newTag, TagSerial, StringComparison.Ordinal))
                 {

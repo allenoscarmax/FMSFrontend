@@ -30,16 +30,16 @@ namespace FMSFrontend.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
-        //開啟頁面視窗
-        ProductionLines productionLines = new ProductionLines();
-        FactoryOverviewPage factoryOverviewPage = new FactoryOverviewPage();
-        MachineOverviewPage machineOverviewPage = new MachineOverviewPage();
-        WorkOrder workOrder = new WorkOrder();
-        RFIDBind rFIDBind = new RFIDBind();
-        OperationHistory operationHistory = new OperationHistory();
-        InventoryInformationPage inventoryInformationPage = new InventoryInformationPage();
-        SettingsView settingsView = new SettingsView();
-        
+        // 開啟頁面視窗（改為延遲建立：避免啟動時一次建立大量 UI）
+        private ProductionLines? productionLines;
+        private FactoryOverviewPage? factoryOverviewPage;
+        private MachineOverviewPage? machineOverviewPage;
+        private WorkOrder? workOrder;
+        private RFIDBind? rFIDBind;
+        private OperationHistory? operationHistory;
+        private InventoryInformationPage? inventoryInformationPage;
+        private SettingsView? settingsView;
+
         private readonly IHttpService _httpService;
 
         public AlarmPageViewModel AlarmVM { get; }
@@ -112,7 +112,7 @@ namespace FMSFrontend.ViewModels
             string pageType = (StorageControlPage is FMSFrontend.Views.StorageUnitMiniControlPage).ToString();
             ini.Write("Prarm", "IsStorageUnitControlMini", pageType);
 
-            if (productionLines.DataContext is FMSFrontend.ViewModels.ProductionLinesViewModel vm)     
+            if (productionLines?.DataContext is FMSFrontend.ViewModels.ProductionLinesViewModel vm)     
                 pageType = (vm.CurrentStorageView is FMSFrontend.Controls.StorageOverviewControl).ToString();
             else  
                 pageType = false.ToString();
@@ -121,15 +121,14 @@ namespace FMSFrontend.ViewModels
         public MainWindowViewModel(IHttpService httpService, AlarmPageViewModel alarmVM)
         {
             _httpService = httpService;
-            // 初始化時間更新
-            Task.Run(async () =>
+
+            // 使用 DispatcherTimer 在 UI Thread 週期性更新時間（比起背景執行緒直接更新屬性更安全且不會產生跨執行緒問題）
+            var timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Normal, (s, e) =>
             {
-                while (true)
-                {
-                    CurrentDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-                    await Task.Delay(1000);
-                }
-            });
+                CurrentDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+            }, Application.Current.Dispatcher);
+            timer.Start();
+
             Robot = new Robot()
             {
                 Name = "機器人",
@@ -141,21 +140,25 @@ namespace FMSFrontend.ViewModels
             };
             AlarmVM = alarmVM;
 
-            //✅ 新增：電極倉門初始頁面
+            //✅ 新增：電極倉門初始頁面 -> 延遲建立到 UI Thread 空閒時再建立，避免啟動卡住
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             bool b = ini.Read("Prarm", "IsStorageUnitControlMini") == "True";
-            StorageControlPage = b ? new StorageUnitMiniControlPage() : new StorageUnitControlPage();
-           
-            
-            // ✅ 新增：啟動背景執行續，並行呼叫五個 API
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                StorageControlPage = b ? new StorageUnitMiniControlPage() : new StorageUnitControlPage();
+            }), DispatcherPriority.Background);
+
+            // ✅ 新增：啟動背景執行緒，先執行輕量的 InitializeDataAsync（目前為 stub，可後續加入真正的 API 呼叫）
             Task.Run(InitializeDataAsync);
 
         }
+
         #region PageChange
 
         [RelayCommand]
         private void GoToProductionLines()
         {
+            if (productionLines == null) productionLines = new ProductionLines();
             CurrentPageView = productionLines;
             CurrentPageKey = "ProductionLines";
             WeakReferenceMessenger.Default.Send(new ValueChangedMessage<string>(CurrentPageKey));
@@ -164,12 +167,14 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void GoToFactoryOverview()
         {
+            if (factoryOverviewPage == null) factoryOverviewPage = new FactoryOverviewPage();
             CurrentPageView = factoryOverviewPage;
             CurrentPageKey = "FactoryOverview";
         }
         [RelayCommand]
         private void GoToMachineOverview()
         {
+            if (machineOverviewPage == null) machineOverviewPage = new MachineOverviewPage();
             CurrentPageView = machineOverviewPage;
             CurrentPageKey = "MachineOverview";
         }
@@ -177,6 +182,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void GoToWorkOrder()
         {
+            if (workOrder == null) workOrder = new WorkOrder();
             CurrentPageView = workOrder;
             CurrentPageKey = "WorkOrder";
             WeakReferenceMessenger.Default.Send(new ValueChangedMessage<string>(CurrentPageKey));
@@ -184,6 +190,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void GoToRFIDBind()
         {
+            if (rFIDBind == null) rFIDBind = new RFIDBind();
             CurrentPageView = rFIDBind;
             CurrentPageKey = "RFIDBind";
             WeakReferenceMessenger.Default.Send(new ValueChangedMessage<string>(CurrentPageKey));
@@ -191,18 +198,21 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void GoToOperationHistory()
         {
+            if (operationHistory == null) operationHistory = new OperationHistory();
             CurrentPageView = operationHistory;
             CurrentPageKey = "OperationHistory";
         }
         [RelayCommand]
         private void GoToMaterial()
         {
+            if (inventoryInformationPage == null) inventoryInformationPage = new InventoryInformationPage();
             CurrentPageView = inventoryInformationPage;
             CurrentPageKey = "Material";
         }
         [RelayCommand]
         private void GoToSettingsView()
         {
+            if (settingsView == null) settingsView = new SettingsView();
             CurrentPageView = settingsView;
             CurrentPageKey = "SettingsView";
         }
@@ -212,7 +222,9 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void OpenAlarm()
         {
-            CurrentPageView = new AlarmPage(); // 你的 Alarm UserControl / Page
+            // 延遲建立 AlarmPage（避免一次建立過多 UI）
+            var alarm = new AlarmPage();
+            CurrentPageView = alarm; // 你的 Alarm UserControl / Page
                                                // 讓下方 PageMenu 不顯示選中狀態
             CurrentPageKey = "";             // 或 string.Empty 都可
                                                // 若你的 PageMenu 是用 SelectedIndex 套樣式，這行也一起用：
@@ -449,5 +461,7 @@ namespace FMSFrontend.ViewModels
         #region Title
 
         #endregion
+
+        // 新增：如果原本有要在啟動時並行呼叫 API，可在此實作；目前先放空的 stub，不會阻塞 UI
     }
 }
