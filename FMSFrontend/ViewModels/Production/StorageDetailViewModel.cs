@@ -20,7 +20,7 @@ namespace FMSFrontend.ViewModels.Production
     {
         private readonly ProductionLinesViewModel _parent;
         private readonly IHttpService _httpService;
-        public Task RefreshAsync() => Task.Run(async () => await LoadStoragePagesAsync());
+        public Task RefreshAsync() => Task.Run(async () => await UpdateStoragePagesAsync());
         public StorageDetailViewModel(ProductionLinesViewModel parent, IHttpService httpService)
         {
             _parent = parent;
@@ -352,6 +352,297 @@ namespace FMSFrontend.ViewModels.Production
             });
         }
 
+        /// <summary>
+        /// 與 LoadStoragePagesAsync 同樣向 API 查詢，但只更新現有 StoragePages 的內容（更新 slot / rows / cols），
+        /// 不會一律清除整個 StoragePages 集合，以保留 UI 綁定的物件實體。
+        /// </summary>
+        private async Task UpdateStoragePagesAsync()
+        {
+            // 1) 先抓全部 Storage 資料
+            JsonElement json;
+            try
+            {
+                json = await _httpService.GetJsonAsync<JsonElement>("Storage/DB_GetAllStorageData");
+            }
+            catch
+            {
+                // 失敗就不更新
+                return;
+            }
+
+            List<Storage> storages;
+            try
+            {
+                storages = JsonSerializer.Deserialize<List<Storage>>(json.GetRawText()) ?? new List<Storage>();
+            }
+            catch
+            {
+                return;
+            }
+
+            if (storages.Count == 0)
+                return;
+
+            var groups = storages
+                .GroupBy(s => new { s.storageName, s.storageNumber })
+                .OrderBy(g => g.Key.storageName)
+                .ThenBy(g => g.Key.storageNumber)
+                .ToList();
+
+            var newPages = new List<StoragePageViewModel>();
+
+            foreach (var g in groups)
+            {
+                var key = g.Key;
+                var unitName = $"{key.storageName}{key.storageNumber}";
+                var isElectrodeStore = key.storageName?.IndexOf("E") != -1;
+
+                if (isElectrodeStore && StorageType != StorageType.Electrode) continue;
+                if (!isElectrodeStore && StorageType != StorageType.Workpiece) continue;
+
+                int maxRow = Math.Max(1, g.Max(x => x.row));
+                int maxCol = Math.Max(1, g.Max(x => x.column));
+
+                var page = new StoragePageViewModel
+                {
+                    StorageName = unitName,
+                    Rows = maxRow,
+                    Columns = maxCol
+                };
+
+                var tagSerials = g.Select(x => x.ondeskTagserial)
+                          .Where(ts => !string.IsNullOrWhiteSpace(ts))
+                          .Distinct()
+                          .ToList();
+
+                var tagMap = new ConcurrentDictionary<string, (string Tag, bool Restriction, string Status)>(System.StringComparer.OrdinalIgnoreCase);
+
+                if (tagSerials.Count > 0)
+                {
+                    var tasks = tagSerials.Select(async ts =>
+                    {
+                        try
+                        {
+                            if (isElectrodeStore)
+                            {
+                                var route = $"Electrode/DB_GetElectrodesByTagSerial/{ts}";
+                                var list = await _httpService.GetJsonAsync<List<Electrode>>(route) ?? new List<Electrode>();
+                                var e = list.FirstOrDefault();
+                                if (e != null)
+                                {
+                                    tagMap[ts] = (e.tagSerial ?? ts, e.restriction, e.state);
+                                }
+                            }
+                            else
+                            {
+                                var route = $"Workpiece/DB_GetWorkpieceByTagSerial/{ts}";
+                                JsonElement? json2 = await _httpService.GetJsonAsync<JsonElement>(route, default);
+                                Workpiece w = (json2.HasValue && json2.Value.ValueKind != JsonValueKind.Undefined) ?
+                                JsonSerializer.Deserialize<Workpiece>(json2.Value.GetRawText()) ?? new Workpiece() :
+                                new Workpiece();
+                                if (w != null)
+                                {
+                                    tagMap[ts] = (w.tagSerial ?? ts, w.restriction ?? false, w.status);
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            // ignore
+                        }
+                    });
+
+                    await Task.WhenAll(tasks);
+                }
+
+                for (int r = 1; r <= page.Rows; r++)
+                {
+                    for (int c = 1; c <= page.Columns; c++)
+                    {
+                        var rec = g.FirstOrDefault(x => x.row == r && x.column == c);
+                        var tag = rec?.ondeskTagserial;
+
+                        string slotStatus = "";
+                        if (!string.IsNullOrWhiteSpace(tag) && tagMap.TryGetValue(tag, out var info))
+                        {
+                            slotStatus = string.IsNullOrWhiteSpace(info.Status) ? "Empty" : info.Status;
+                        }
+
+                        var slot = new SlotViewModel
+                        {
+                            Status = slotStatus,
+                            Text = "",
+                            IsElectrode = isElectrodeStore,
+                            Line = int.TryParse(new string(unitName.Where(char.IsDigit).ToArray()), out var n) ? n : 0,
+                            Row = r,
+                            Col = c,
+                            Layer = 1,
+                            IsLocked = rec?.restriction ?? false,
+                            ResultStatus = isElectrodeStore ? ResultStatus.Checking : ResultStatus.CheckSuccess,
+                            CheckStatus = isElectrodeStore ? CheckStatus.Unchecked : CheckStatus.Checked
+                        };
+
+                        if (!string.IsNullOrWhiteSpace(tag) && tagMap.TryGetValue(tag, out var info2))
+                        {
+                            if (isElectrodeStore)
+                            {
+                                slot.Material = new MaterialRef
+                                {
+                                    Kind = MaterialKind.Electrode,
+                                    Electrode = new ElectrodeModel
+                                    {
+                                        TagSerial = info2.Tag ?? tag,
+                                        Restriction = info2.Restriction
+                                    },
+                                    Timeline = Enumerable.Empty<TimelineItemModel>()
+                                };
+                            }
+                            else
+                            {
+                                slot.Material = new MaterialRef
+                                {
+                                    Kind = MaterialKind.Workpiece,
+                                    Workpiece = new WorkpieceModel
+                                    {
+                                        SerialCode = info2.Tag ?? tag,
+                                        Restriction = info2.Restriction
+                                    },
+                                    Timeline = Enumerable.Empty<TimelineItemModel>()
+                                };
+                            }
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrWhiteSpace(rec?.state) || rec?.restriction != null)
+                            {
+                                bool restr = rec?.restriction ?? false;
+                                var state = string.IsNullOrWhiteSpace(rec?.state) ? "Empty" : rec!.state!;
+                                if (isElectrodeStore)
+                                {
+                                    slot.Material = new MaterialRef
+                                    {
+                                        Kind = MaterialKind.Electrode,
+                                        Electrode = new ElectrodeModel
+                                        {
+                                            TagSerial = rec?.ondeskTagserial ?? string.Empty,
+                                            Restriction = restr
+                                        },
+                                        Timeline = Enumerable.Empty<TimelineItemModel>()
+                                    };
+                                }
+                                else
+                                {
+                                    slot.Material = new MaterialRef
+                                    {
+                                        Kind = MaterialKind.Workpiece,
+                                        Workpiece = new WorkpieceModel
+                                        {
+                                            SerialCode = rec?.ondeskTagserial ?? string.Empty,
+                                            Restriction = restr
+                                        },
+                                        Timeline = Enumerable.Empty<TimelineItemModel>()
+                                    };
+                                }
+                            }
+                        }
+                        page.Slots.Add(slot);
+                    }
+                }
+                newPages.Add(page);
+            }
+
+            // 計算統計
+            var electrodeSlots2 = newPages.SelectMany(u => u.Slots).Where(s => s.IsElectrode).ToList();
+            int waiting2 = electrodeSlots2.Count(s => string.Equals(s.Status, "Verified", StringComparison.OrdinalIgnoreCase));
+            int processing2 = electrodeSlots2.Count(s => string.Equals(s.Status, "Working", StringComparison.OrdinalIgnoreCase));
+            int error2 = electrodeSlots2.Count(s => string.Equals(s.Status, "Error", StringComparison.OrdinalIgnoreCase));
+            int completed2 = electrodeSlots2.Count(s => string.Equals(s.Status, "Completed", StringComparison.OrdinalIgnoreCase));
+
+            int restriction2 = storages.Count(s => s.restriction == true);
+            int booked2 = storages.Count(s => string.Equals(s.state, "Book", StringComparison.OrdinalIgnoreCase));
+
+            // 更新 UI：不會清空整個 StoragePages，而是更新現有頁面內容、移除不存在頁、並新增新的頁
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                var newByName = newPages.ToDictionary(p => p.StorageName, StringComparer.OrdinalIgnoreCase);
+                var processed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                // 更新或移除現有頁面
+                foreach (var existing in StoragePages.ToList())
+                {
+                    if (existing == null) continue;
+                    var name = existing.StorageName ?? string.Empty;
+                    if (newByName.TryGetValue(name, out var updatedPage))
+                    {
+                        // 更新 rows/cols
+                        existing.Rows = updatedPage.Rows;
+                        existing.Columns = updatedPage.Columns;
+
+                        // 更新 Slots：不要清空集合，改为逐格比對更新已處理的 slots，並新增缺少的 slots
+                        // 以 (Line,Row,Col,Layer) 作為鍵
+                        var existingMap = existing.Slots.ToDictionary(s => (s.Line, s.Row, s.Col, s.Layer));
+
+                        var processedSlots = new HashSet<(int Line, int Row, int Col, int Layer)>();
+
+                        foreach (var updatedSlot in updatedPage.Slots)
+                        {
+                            var key = (updatedSlot.Line, updatedSlot.Row, updatedSlot.Col, updatedSlot.Layer);
+                            processedSlots.Add(key);
+
+                            if (existingMap.TryGetValue(key, out var existingSlot))
+                            {
+                                // 更新欄位（只更新會變動的欄位）
+                                existingSlot.Status = updatedSlot.Status;
+                                existingSlot.Text = updatedSlot.Text;
+                                existingSlot.IsElectrode = updatedSlot.IsElectrode;
+                                existingSlot.IsLocked = updatedSlot.IsLocked;
+                                existingSlot.ResultStatus = updatedSlot.ResultStatus;
+                                existingSlot.CheckStatus = updatedSlot.CheckStatus;
+                                existingSlot.Material = updatedSlot.Material;
+                                // 若需要同步其他欄位（Line/Row/Col/Layer）通常不需要，因為鍵已相同
+                            }
+                            else
+                            {
+                                // 新增缺少的 slot（保持物件型別一致）
+                                existing.Slots.Add(updatedSlot);
+                            }
+                        }
+
+                        // 不自動移除 existing.Slots 中未被更新到的 slots（遵照使用者要求「不清除只更新 processed」）
+
+                        processed.Add(name);
+                    }
+                    else
+                    {
+                        // 移除不存在的頁
+                        StoragePages.Remove(existing);
+                    }
+                }
+
+                // 新增新頁
+                foreach (var p in newPages)
+                {
+                    if (processed.Contains(p.StorageName)) continue;
+                    StoragePages.Add(p);
+                }
+
+                // 調整 CurrentPageIndex
+                if (CurrentPageIndex >= StoragePages.Count)
+                    CurrentPageIndex = Math.Max(0, StoragePages.Count - 1);
+
+                PageInfo = $"{CurrentPageIndex + 1} / {StoragePages.Count}";
+                OnPropertyChanged(nameof(CurrentPage));
+                UpdateCurrentStorageName();
+
+                WaitingCount = waiting2.ToString();
+                ProcessingCount = processing2.ToString();
+                ErrorCount = error2.ToString();
+                CompletedCount = completed2.ToString();
+                BookedCount = booked2.ToString();
+                RestrictionCount = restriction2.ToString();
+            });
+        }
+
         private void UpdateCurrentStorageName()
         {
             if (CurrentPage != null)
@@ -385,11 +676,11 @@ namespace FMSFrontend.ViewModels.Production
         // 計算屬性，根據 Status 回傳 Brush
         public Brush Background => Status switch
         {
-            "Verified" => Brushes.DarkGoldenrod,
-            "Working" => Brushes.Green,
-            "Error" => Brushes.IndianRed,
-            "Completed" => Brushes.RoyalBlue,
-            "Reserved" => Brushes.Gray,
+            "Verified" => new SolidColorBrush(Color.FromRgb(0xE6, 0xB9, 0x3E)), // 待加工 (黃)
+            "Working" => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)),  // 加工中 (綠)
+            "Error" => new SolidColorBrush(Color.FromRgb(0xC0, 0x39, 0x2B)),    // 異常 (紅)
+            "Completed" => new SolidColorBrush(Color.FromRgb(0x2F, 0x64, 0xCF)),// 完成 (藍)
+            "Reserved" => new SolidColorBrush(Color.FromRgb(0xE0, 0xE0, 0xE0)), // 保留/預約 (灰)
             "Empty" => Brushes.White,
             _ => Brushes.White
         };

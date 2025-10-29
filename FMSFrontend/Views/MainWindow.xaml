@@ -146,38 +146,92 @@
                             <Border Padding="10" HorizontalAlignment="Center">
                                 <WrapPanel HorizontalAlignment="Center" ItemWidth="120" ItemHeight="120" Orientation="Horizontal">
                                     <!-- 手臂啟動 -->
-                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotStartButtonClickCommand}" Margin="5">
+                                    <Button Command="{Binding RobotStartButtonClickCommand}" Margin="5" Background="{Binding StartBackground}" BorderBrush="{Binding StartForeground}" BorderThickness="2" Focusable="False">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
+                                                    <Border.Effect>
+                                                        <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.4" BlurRadius="6" />
+                                                    </Border.Effect>
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                            <materialDesign:PackIcon Kind="Play" Width="60" Height="60" Margin="0,0,0,3" Foreground="#004E79" HorizontalAlignment="Center" />
-                                            <TextBlock Text="手臂啟動" FontSize="16" HorizontalAlignment="Center"/>
+                                            <materialDesign:PackIcon Kind="Play" Width="60" Height="60" Margin="0,0,0,3" HorizontalAlignment="Center" Foreground="{Binding StartForeground}" />
+                                            <TextBlock Text="手臂啟動" FontSize="16" HorizontalAlignment="Center" Foreground="{Binding StartForeground}" />
                                         </StackPanel>
                                     </Button>
+
                                     <!-- 手臂暫停 -->
-                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotPauseButtonClickCommand}" Margin="5">
+                                    <Button Command="{Binding RobotPauseButtonClickCommand}" Margin="5" Background="{Binding PauseBackground}" BorderBrush="{Binding PauseForeground}" BorderThickness="2" Focusable="False">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
+                                                    <Border.Effect>
+                                                        <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.4" BlurRadius="6" />
+                                                    </Border.Effect>
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                            <materialDesign:PackIcon Kind="Pause" Width="60" Height="60" Margin="0,0,0,5" Foreground="#004E79" HorizontalAlignment="Center" />
-                                            <TextBlock Text="手臂暫停" FontSize="16" HorizontalAlignment="Center" />
+                                            <materialDesign:PackIcon Kind="Pause" Width="60" Height="60" Margin="0,0,0,5" Foreground="{Binding PauseForeground}" HorizontalAlignment="Center" />
+                                            <TextBlock Text="手臂暫停" FontSize="16" HorizontalAlignment="Center" Foreground="{Binding PauseForeground}" />
                                         </StackPanel>
                                     </Button>
+
                                     <!-- 手臂停止 -->
-                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotStopButtonClickCommand}" Margin="5">
+                                    <Button Command="{Binding RobotStopButtonClickCommand}" Margin="5" Background="{Binding StopBackground}" BorderBrush="{Binding StopForeground}" BorderThickness="2" Focusable="False">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
+                                                    <Border.Effect>
+                                                        <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.4" BlurRadius="6" />
+                                                    </Border.Effect>
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                            <materialDesign:PackIcon Kind="Stop" Width="60" Height="60" Margin="0,0,0,5" Foreground="#004E79" HorizontalAlignment="Center" />
-                                            <TextBlock Text="手臂停止" FontSize="16" HorizontalAlignment="Center" />
+                                            <materialDesign:PackIcon Kind="Stop" Width="60" Height="60" Margin="0,0,0,5" Foreground="{Binding StopForeground}" HorizontalAlignment="Center" />
+                                            <TextBlock Text="手臂停止" FontSize="16" HorizontalAlignment="Center" Foreground="{Binding StopForeground}" />
                                         </StackPanel>
                                     </Button>
+
                                     <!-- 手臂重置 -->
-                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotResetButtonClickCommand}" Margin="5">
+                                    <Button Command="{Binding RobotResetButtonClickCommand}" Margin="5" Background="#FFFFFF" BorderBrush="#004E79" BorderThickness="2" Focusable="False">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
+                                                    <Border.Effect>
+                                                        <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.4" BlurRadius="6" />
+                                                    </Border.Effect>
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                            <materialDesign:PackIcon Kind="Refresh" Width="60" Height="60" Margin="0,0,0,5" Foreground="#004E79" HorizontalAlignment="Center" />
-                                            <TextBlock Text="手臂重置" FontSize="16" HorizontalAlignment="Center" />
+                                            <materialDesign:PackIcon Kind="Refresh" Width="60" Height="60" Margin="0,0,0,5" Foreground="#004E79     " HorizontalAlignment="Center" />
+                                            <TextBlock Text="手臂重置" FontSize="16" HorizontalAlignment="Center" Foreground="#004E79" />
                                         </StackPanel>
                                     </Button>
+
                                     <!-- 派工啟動 -->
-                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotDispatchButtonClickCommand}" Margin="5">
+                                    <Button Command="{Binding RobotDispatchButtonClickCommand}" Margin="5" Background="{Binding DispatchBackground}" BorderBrush="{Binding DispatchForeground}" BorderThickness="2" Focusable="False">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
+                                                    <Border.Effect>
+                                                        <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.4" BlurRadius="6" />
+                                                    </Border.Effect>
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                            <materialDesign:PackIcon Kind="CogPlay" Width="60" Height="60" Margin="0,0,0,5" Foreground="#004E79" HorizontalAlignment="Center" />
-                                            <TextBlock Text="{Binding SDispatchText}" FontSize="16" HorizontalAlignment="Center" />
+                                            <materialDesign:PackIcon Kind="CogPlay" Width="60" Height="60" Margin="0,0,0,5" Foreground="{Binding DispatchForeground}" HorizontalAlignment="Center" />
+                                            <TextBlock Text="{Binding DispatchText}" FontSize="16" HorizontalAlignment="Center" Foreground="{Binding DispatchForeground}" />
                                         </StackPanel>
                                     </Button>
                                 </WrapPanel>

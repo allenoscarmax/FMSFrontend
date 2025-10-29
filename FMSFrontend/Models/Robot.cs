@@ -32,5 +32,9 @@ namespace FMSFrontend.Models
         [ObservableProperty]
         private Brush statusGreen;
 
+        // New: whether robot is connected (bound to RobotPositionPanel status indicator)
+        [ObservableProperty]
+        private bool isRobotConnected;
+
     }
 }

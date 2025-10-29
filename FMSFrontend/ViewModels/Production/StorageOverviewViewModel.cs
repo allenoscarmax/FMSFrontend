@@ -33,7 +33,7 @@ namespace FMSFrontend.ViewModels.Production
         private readonly ProductionLinesViewModel _parent;
         private readonly IHttpService _httpService;
         // Run the loading on a background thread so the UI thread is not captured; UI updates happen via Dispatcher inside the method.
-        public Task RefreshAsync() => Task.Run(async () => await LoadStorageUnitsAsync());
+        public Task RefreshAsync() => Task.Run(async () => await LoadStorageAsync());
         public ObservableCollection<StorageUnitViewModel> StorageUnits { get; set; } = new();
 
         public StorageOverviewViewModel(ProductionLinesViewModel parent, IHttpService httpService)
@@ -42,7 +42,7 @@ namespace FMSFrontend.ViewModels.Production
             _httpService = httpService;
 
             // 啟動即載入
-            _ = LoadStorageUnitsAsync();
+            _ = LoadStorageAsync();
         }
 
         [RelayCommand]
@@ -58,7 +58,7 @@ namespace FMSFrontend.ViewModels.Production
         }
 
         // 依需求撈資料 + 更新 StorageUnits
-        private async Task LoadStorageUnitsAsync()
+        private async Task LoadStorageAsync()
         {
             // 1) 取得 Storage JSON（依你的需求先抓 JsonElement）
             JsonElement json;
@@ -308,11 +308,11 @@ namespace FMSFrontend.ViewModels.Production
 
         public Brush Background => Status switch
         {
-            "Verified" => Brushes.DarkGoldenrod,
-            "Working" => Brushes.Green,
-            "Error" => Brushes.IndianRed,
-            "Completed" => Brushes.RoyalBlue,
-            "Reserved" => Brushes.Gray,
+            "Verified" => new SolidColorBrush(Color.FromRgb(0xE6, 0xB9, 0x3E)), // 待加工 (黃)
+            "Working" => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)),  // 加工中 (綠)
+            "Error" => new SolidColorBrush(Color.FromRgb(0xC0, 0x39, 0x2B)),    // 異常 (紅)
+            "Completed" => new SolidColorBrush(Color.FromRgb(0x2F, 0x64, 0xCF)),// 完成 (藍)
+            "Reserved" => new SolidColorBrush(Color.FromRgb(0xE0, 0xE0, 0xE0)), // 保留/預約 (灰)
             "Empty" => Brushes.White,
             _ => Brushes.White
         };

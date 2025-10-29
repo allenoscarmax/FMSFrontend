@@ -80,6 +80,24 @@ namespace FMSFrontend.Services
             return result;
         }
 
+        // 取得原始字串（不反序列化）
+        public async Task<string?> GetJsonAsyncNoDeserialize(string route, CancellationToken cancellationToken = default)
+        {
+            using var response = await _httpClient.GetAsync(route, cancellationToken).ConfigureAwait(false);
+
+            // 無內容或 204
+            if (response.StatusCode == HttpStatusCode.NoContent || response.Content == null)
+                return null;
+
+            // 非成功狀態，不嘗試反序列化
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            // 讀取為字串以便做額外判斷
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            return string.IsNullOrWhiteSpace(content) ? null : content;
+
+        }
         // PutJsonAsync：加入回傳過濾（與 GetJsonAsync 相同策略）
         public async Task<TResult?> PutJsonAsync<TRequest, TResult>(string route, TRequest payload, CancellationToken cancellationToken = default)
         {

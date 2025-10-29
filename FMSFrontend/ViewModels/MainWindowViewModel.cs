@@ -13,6 +13,7 @@ using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
 using IniFile;
 using OSCARMAXFMS_V3.DBmodels;
+using OSCARMAXFMS_V3.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -39,105 +40,82 @@ namespace FMSFrontend.ViewModels
         private OperationHistory? operationHistory;
         private InventoryInformationPage? inventoryInformationPage;
         private SettingsView? settingsView;
-
         private readonly IHttpService _httpService;
-
         public AlarmPageViewModel AlarmVM { get; }
+        [ObservableProperty] private bool _isMenuVisible;
+        [ObservableProperty] private string currentDateTime = "";  //存現在的時間
+        [ObservableProperty] private string _loggedInUser = string.Empty; //登入的名稱
+        [ObservableProperty] private UserControl? _currentPageView;
+        [ObservableProperty] private string currentPageKey = "";  // 存目前的頁面
+        [ObservableProperty] private UserControl storageControlPage;
+        
 
-        [ObservableProperty]
-        private bool _isMenuVisible;
-        [ObservableProperty]
-        private string currentDateTime ="";  //存現在的時間
-        [ObservableProperty]
-        private string _loggedInUser = string.Empty; //登入的名稱
-        [ObservableProperty]
-        private UserControl? _currentPageView;
-        [ObservableProperty]
-        private string currentPageKey ="";  // 存目前的頁面
-        [ObservableProperty]
-        private UserControl storageControlPage;
-
-        [ObservableProperty]
-        private Robot _robot;
-
-        [ObservableProperty]
-        private bool _isIdle;
-
-        [ObservableProperty]
-        private bool _isHint = true;
-
-        [ObservableProperty]
-        private bool _isAlarm = false;
-
-        [ObservableProperty]
-        private string _summaryMessage = "系統正常運作";
+        [ObservableProperty] private bool _isIdle;
+        [ObservableProperty] private bool _isHint = true;
+        [ObservableProperty] private bool _isAlarm = false;
+        [ObservableProperty] private string _summaryMessage = "系統正常運作";
         public bool IsLoggedIn => !string.IsNullOrEmpty(LoggedInUser);
+        [ObservableProperty] private bool isDispatch;
 
         //控制區按鈕
-        [ObservableProperty]
-        private string _sDispatchText = "派工啟動";
-
-        [ObservableProperty]
-        private bool _isDispatch;
+        private bool MuRobot = false;
+        private List<string> RobotNames = new List<string>() ;
+        [ObservableProperty] private Robot _robot = new Robot();
+        //開始
+        [ObservableProperty] private bool startStatus;
+        [ObservableProperty] private Brush startBackground = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
+        [ObservableProperty] private Brush startForeground = new SolidColorBrush(Color.FromRgb(0x00, 0x4E, 0x79));
+        //暫停
+        [ObservableProperty] private bool pauseStatus;
+        [ObservableProperty]private Brush pauseBackground = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
+        [ObservableProperty]private Brush pauseForeground = new SolidColorBrush(Color.FromRgb(0x00, 0x4E, 0x79));
+        //停止
+        [ObservableProperty] private bool stopStatus;
+        [ObservableProperty] private Brush stopBackground = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
+        [ObservableProperty] private Brush stopForeground = new SolidColorBrush(Color.FromRgb(0x00, 0x4E, 0x79));
+        //派工
+        [ObservableProperty] private bool dispatchStatus;
+        [ObservableProperty] private string dispatchText = "派工啟動";
+        [ObservableProperty] private Brush dispatchBackground = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
+        [ObservableProperty] private Brush dispatchForeground = new SolidColorBrush(Color.FromRgb(0x00, 0x4E, 0x79));
 
         //電極門 與 工件門
-
-        [ObservableProperty]
-        private Brush _leftTitleBrush = new SolidColorBrush(Color.FromRgb(0x27, 0x79, 0xA7));
-
-        [ObservableProperty]
-        private string _leftTitle = "電極";
-
-        [ObservableProperty]
-        private Brush _rightTitleBrush = new SolidColorBrush(Color.FromRgb(0xE0, 0x8E, 0x45));
-
-        [ObservableProperty]
-        private string _rightTitle = "工件";
-        [ObservableProperty]
-        public ObservableCollection<Brush> _upperDoorLights1 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
-
-        [ObservableProperty]
-        public ObservableCollection<Brush> _upperDoorLights2 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
-
-        [ObservableProperty]
-        public ObservableCollection<Brush> _lowerDoorLights1 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
-
-        [ObservableProperty]
-        public ObservableCollection<Brush> _lowerDoorLights2 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
-
+        [ObservableProperty] private Brush _leftTitleBrush = new SolidColorBrush(Color.FromRgb(0x27, 0x79, 0xA7));
+        [ObservableProperty] private string _leftTitle = "電極";
+        [ObservableProperty] private Brush _rightTitleBrush = new SolidColorBrush(Color.FromRgb(0xE0, 0x8E, 0x45));
+        [ObservableProperty] private string _rightTitle = "工件";
+        [ObservableProperty] public ObservableCollection<Brush> _upperDoorLights1 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
+        [ObservableProperty] public ObservableCollection<Brush> _upperDoorLights2 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
+        [ObservableProperty] public ObservableCollection<Brush> _lowerDoorLights1 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
+        [ObservableProperty] public ObservableCollection<Brush> _lowerDoorLights2 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
+        // ASRS 參數輪詢計時器
+        DispatcherTimer asrsTimer;
         // ✅ 新增：關機儲存UI設定
-        public void SaveCurrentStoragePageType() 
-        {          
+        public void SaveCurrentStoragePageType()
+        {
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             string pageType = (StorageControlPage is FMSFrontend.Views.StorageUnitMiniControlPage).ToString();
             ini.Write("Prarm", "IsStorageUnitControlMini", pageType);
 
-            if (productionLines?.DataContext is FMSFrontend.ViewModels.ProductionLinesViewModel vm)     
+            if (productionLines?.DataContext is FMSFrontend.ViewModels.ProductionLinesViewModel vm)
                 pageType = (vm.CurrentStorageView is FMSFrontend.Controls.StorageOverviewControl).ToString();
-            else  
+            else
                 pageType = false.ToString();
             ini.Write("Prarm", "IsStorageOverviewControl", pageType);
         }
+
+      
         public MainWindowViewModel(IHttpService httpService, AlarmPageViewModel alarmVM)
         {
             _httpService = httpService;
-
+            
             // 使用 DispatcherTimer 在 UI Thread 週期性更新時間（比起背景執行緒直接更新屬性更安全且不會產生跨執行緒問題）
             var timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Normal, (s, e) =>
             {
                 CurrentDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
             }, Application.Current.Dispatcher);
             timer.Start();
-
-            Robot = new Robot()
-            {
-                Name = "機器人",
-                CurrentLocation = "EDM",
-                CurrentAction = "搬運",
-                NextAction = "上架",
-                SelectedRobotIndexDisplay = _robotActionIndex.ToString() + " / "+ _robotActionNum.ToString(),
-                IsMultipleRobotVisible = true
-            };
+            
             AlarmVM = alarmVM;
 
             //✅ 新增：電極倉門初始頁面 -> 延遲建立到 UI Thread 空閒時再建立，避免啟動卡住
@@ -147,12 +125,110 @@ namespace FMSFrontend.ViewModels
             {
                 StorageControlPage = b ? new StorageUnitMiniControlPage() : new StorageUnitControlPage();
             }), DispatcherPriority.Background);
-
-            // ✅ 新增：啟動背景執行緒，先執行輕量的 InitializeDataAsync（目前為 stub，可後續加入真正的 API 呼叫）
-            Task.Run(InitializeDataAsync);
-
+            
+            //✅ 新增：讀取初始參數,然後開啟輪詢
+            _ = MainWindowViewModelAsync_Init();
         }
 
+        //讀取初始參數
+        private async Task MainWindowViewModelAsync_Init()
+        {
+            try  //取得Robot資料
+            {
+                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Robot/DB_GetAllRobots", default);
+                List<Robots> list = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
+                     JsonSerializer.Deserialize<List<Robots>>(json.Value.GetRawText()) ?? new List<Robots>() :
+                     new List<Robots>();
+                RobotNames = new List<string>();
+                RobotNames.Clear();
+                foreach (var r in list)
+                {
+                    RobotNames.Add(r.robotName);
+
+                }
+            }
+            catch { }
+            _ = FetchASRSParameterAsync();
+            
+            // Start ASRS parameter polling timer
+            asrsTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, async (s, e) =>
+            {
+                await FetchASRSParameterAsync();
+                await FetchDoorAsync();
+            }, Application.Current.Dispatcher);
+            asrsTimer.Start();
+        }
+        //輪尋讀取ASRS參數
+        private async Task FetchASRSParameterAsync()
+        {
+            try
+            {
+                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("ASRS/GetASRSParameter", default);
+                ASRSParameter a = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
+                      JsonSerializer.Deserialize<ASRSParameter>(json.Value.GetRawText()) ?? new ASRSParameter() :
+                      new ASRSParameter();
+                if (a != null)
+                {
+                    //更新機器人狀態
+                    if (Robot == null ) Robot = new Robot();
+                    Robot.Name = RobotNames[0];
+                    Robot.IsRobotConnected = a.isRobotConnected;
+                    Robot.CurrentLocation = a.robotPosition ?? "未知";
+                    Robot.CurrentAction = a.robotDoingNow ?? "未知";
+                    Robot.NextAction = a.robotDoingNext ?? "未知";
+                    if(RobotNames.Count >1)
+                        Robot.SelectedRobotIndexDisplay = a.robotNumber.ToString() + " / " + RobotNames.Count.ToString();
+                    else
+                        Robot.SelectedRobotIndexDisplay = "1 / 1";
+
+                    //更新按鈕狀態
+                    var dark = new SolidColorBrush(Color.FromRgb(0x00, 0x4E, 0x79));
+                    var light = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
+                    // Use generated properties so PropertyChanged is raised
+                    StartStatus = a.asrsControlStart;
+                    PauseBackground = a.asrsControlPause ? dark : light;
+                    PauseForeground = a.asrsControlPause ? light : dark;
+
+                    PauseStatus = a.asrsControlStart;
+                    StartBackground = a.asrsControlStart ? dark : light;
+                    StartForeground = a.asrsControlStart ? light : dark;
+
+                    StopStatus = a.asrsControlStop;
+                    StopBackground = a.asrsControlStop ? dark : light;
+                    StopForeground = a.asrsControlStop ? light : dark;
+
+                    DispatchStatus = a.dispatchSwitch;
+                    DispatchText = DispatchStatus ? "派工中" : "派工啟動";
+                    DispatchBackground = a.dispatchSwitch ? dark : light;
+                    DispatchForeground = a.dispatchSwitch ? light : dark;
+                }
+            }
+            catch
+            {
+                // ignore transient errors
+            }
+        }
+        private async Task FetchDoorAsync()
+        {
+            try
+            {
+                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("PLC/GetALLMagazinePara", default);
+                MagazinePara p = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
+                      JsonSerializer.Deserialize<MagazinePara>(json.Value.GetRawText()) ?? new MagazinePara() :
+                      new MagazinePara();
+                if (p != null)
+                {
+                    UpperDoorLights1[0] = p.ShouldScanEle ? Brushes.Lime : Brushes.Gray;
+                    UpperDoorLights2[0] = p.EleMagzineDoorOpen[0] ? Brushes.Lime : Brushes.Gray;
+                    LowerDoorLights1[0] = p.ShouldScanPart ? Brushes.Lime : Brushes.Gray;
+                    LowerDoorLights2[0] = p.PartMagzineDoorOpen[0] ? Brushes.Lime : Brushes.Gray;
+                }
+            }
+            catch
+            {
+                // ignore transient errors
+            }
+        }
         #region PageChange
 
         [RelayCommand]
@@ -256,30 +332,52 @@ namespace FMSFrontend.ViewModels
 
         // 上門 -> 使用第 0 顆燈
         [RelayCommand]
-        private void UpperDoor(string storageId)
+        private async Task UpperDoor(string storageId)
         {
             if (!int.TryParse(storageId, out int n)) return;
             int idx = n - 1;
             if (idx is < 0 or > 7) return;
-
             isUpperDoorOpen[idx] = !isUpperDoorOpen[idx];
-
-            UpperDoorLights1[idx] = isUpperDoorOpen[idx] ? Brushes.Lime : Brushes.Gray;
-
-            // new DialogMessageWindow(isUpperDoorOpen[idx] ? $"{storageId} 的上門已開啟" : $"{storageId} 的上門已關閉").ShowDialog();
+            try 
+            {
+                var route = $"PLC/ELEMagzineDoorSwitch/0/0/{isUpperDoorOpen[idx].ToString().ToLower()}";
+                await _httpService.SendPutAsync(route, new { });
+            }
+            catch { }
         }
 
         // 下門 -> 使用 LowerDoorLights1 對應索引
         [RelayCommand]
-        private void LowerDoor(string storageId)
+        private async Task LowerDoor(string storageId)
         {
             if (!int.TryParse(storageId, out int n)) return;
             int idx = n - 1;
             if (idx is < 0 or > 7) return;
-
             isLowerDoorOpen[idx] = !isLowerDoorOpen[idx];
 
-            LowerDoorLights1[idx] = isLowerDoorOpen[idx] ? Brushes.Lime : Brushes.Gray;
+            try
+            {
+                var route = $"PLC/ELEMagzineDoorSwitch/0/1/{isUpperDoorOpen[idx].ToString().ToLower()}";
+                await _httpService.SendPutAsync(route, new { });
+            }
+            catch { }
+        }
+       
+        [ObservableProperty]
+        private bool _isDoorLightOn;
+
+        // 新增命令：ToggleButton 切換時呼叫
+        [RelayCommand]
+        private async Task DoorLightSwitchChanged(bool isChecked)
+        {
+            // 0: 關閉, 1: 開啟
+            int lightSwitch = isChecked ? 1 : 0;
+            try
+            {
+                var route = $"PLC/EleMagazineDoorLightSwitch/0/{lightSwitch}";
+                await _httpService.SendPutAsync(route, new { });
+            }
+            catch { }
         }
 
         [RelayCommand]
@@ -332,136 +430,113 @@ namespace FMSFrontend.ViewModels
         }
         #endregion
 
-        #region ControlUnit
+        #region ControlUnit Start Pause Stop  Reset Dispatch
         [RelayCommand]
         private async Task RobotStartButton()
         {
-            var dialog = new DialogMessageWindow("Start");
-            dialog.ShowDialog();
-            try
+            if (!StartStatus)
             {
-                const string route = "http://localhost:5032/ASRS/SetASRSRobotStart";
-                await _httpService.SendPutAsync(route, new { });
+                try
+                {
+                    const string route = "ASRS/SetASRSRobotStart";
+                    await _httpService.SendPutAsync(route, new { });
+                    await Task.Delay(300);
+                    var op = Application.Current.Dispatcher.InvokeAsync(async () => await FetchASRSParameterAsync());
+                    await op.Task;
+                }
+                catch
+                {
+                    new DialogMessageWindow("Start Fail").ShowDialog();
+                }
             }
-            catch { }
-        }
+       }
         [RelayCommand]
-        private async Task RobotPauseButtonClickCommand()
+        private async Task RobotPauseButtonClick()
         {
-
-            var dialog = new DialogMessageWindow("Pause");
-            dialog.ShowDialog();
-            try
+            if (!PauseStatus)
             {
-                const string route = "http://localhost:5032/ASRS/SetASRSRobotPause";
-                await _httpService.SendPutAsync(route, new { });
+                // 非同步等待 1 秒，避免阻塞 UI 執行緒，然後在 UI 執行緒上更新按鈕顏色
+                try
+                {
+                    const string route = "ASRS/SetASRSRobotPause";
+                    await _httpService.SendPutAsync(route, new { });
+                    await Task.Delay(100);
+                    var op = Application.Current.Dispatcher.InvokeAsync(async () => await FetchASRSParameterAsync());
+                    await op.Task;
+                }
+                catch
+                {
+                    new DialogMessageWindow("Pause Fail").ShowDialog();
+                }
             }
-            catch { }
         }
         [RelayCommand]
         private async Task RobotStopButtonClick()
         {
-         
-            var dialog = new DialogMessageWindow("Stop");
-            dialog.ShowDialog();
-            try
+            if (!StopStatus)
             {
-                string route = "http://localhost:5032/ASRS/SetASRSRobotStop";
-                await _httpService.SendPutAsync(route, new { });
+                try
+                {
+                    string route = "ASRS/SetASRSRobotStop";
+                    await _httpService.SendPutAsync(route, new { });
+                    await Task.Delay(300);
+                    var op = Application.Current.Dispatcher.InvokeAsync(async () => await FetchASRSParameterAsync());
+                    await op.Task;
+                }
+                catch
+                {
+                    new DialogMessageWindow("Stop Fail").ShowDialog();
+                }
             }
-            catch { }
         }
         [RelayCommand]
         private async Task RobotResetButtonClick()
         {
-            const string route = "http://localhost:5032/ASRS/SetASRSRobotReset";
-            var dialog = new DialogMessageWindow("Reset");
-            dialog.ShowDialog();
             try
             {
+                var route = "Robot/ASRSRobotResetStatus/0";
                 await _httpService.SendPutAsync(route, new { });
             }
-            catch { }
+            catch 
+            {
+                new DialogMessageWindow("Reset Fail").ShowDialog();
+            }
         }
         [RelayCommand]
         private async Task RobotDispatchButtonClick()
         {
-            IsDispatch = !IsDispatch;
-            SDispatchText = IsDispatch ? "派工中" : "派工啟動";
-
-            var dialog = new DialogMessageWindow("Dispatch");
-            dialog.ShowDialog();
+            DispatchStatus = !DispatchStatus;
+            DispatchText = DispatchStatus ? "派工中" : "派工啟動";
             try
             {
-                const string route = "http://localhost:5032/ASRS/SetASRSRobotDispatch";
+                var route = $"ASRS/SetASRSDispatchSwitch/{DispatchStatus.ToString().ToLower()}";
                 await _httpService.SendPutAsync(route, new { });
+                await Task.Delay(300);
+                var op = Application.Current.Dispatcher.InvokeAsync(async () => await FetchASRSParameterAsync());
+                await op.Task;
             }
-            catch { }
+            catch 
+            {
+                new DialogMessageWindow("Dispatch Fail").ShowDialog();
+            }
         }
         #endregion
 
-        #region Robot
-        // 加入：目前指向 NextAction 的索引（-1 代表尚未初始化）
-        private int _robotActionIndex = 1;
-        private int _robotActionNum = 1;
+        #region RobotNavigation
 
         [RelayCommand]
         private void NextRobot()
         {
-            if (Robot == null) return;
-            /*
-            if (_robotActionIndex == 1) _robotActionIndex = 1;
-            else _robotActionIndex++;
-            */
-            Robot.Name = "名稱" + _robotActionIndex.ToString();
-            Robot.CurrentLocation = "目前位置" + _robotActionIndex.ToString();
-            Robot.CurrentAction = "目前動作 " + _robotActionIndex.ToString();
-            Robot.NextAction = "下個動作 " + _robotActionIndex.ToString();
-            Robot.SelectedRobotIndexDisplay = _robotActionIndex.ToString() + " / " + _robotActionNum.ToString();
-            Robot.IsMultipleRobotVisible = false;
+            if (Robot == null || RobotNames.Count<2) return;
+            //待增加
         }
         [RelayCommand]
         private void LastRobot()
         {
-            if (Robot == null) return;
-            if (_robotActionIndex == 1) _robotActionIndex = 3;
-            else _robotActionIndex--;
-            Robot.Name = "名稱" + _robotActionIndex.ToString();
-            Robot.CurrentLocation = "目前位置" + _robotActionIndex.ToString();
-            Robot.CurrentAction = "目前動作 " + _robotActionIndex.ToString();
-            Robot.NextAction = "下個動作 " + _robotActionIndex.ToString();
-            Robot.SelectedRobotIndexDisplay = _robotActionIndex.ToString() + " / " + _robotActionNum.ToString();
-            Robot.IsMultipleRobotVisible = true;
+            if (Robot == null || RobotNames.Count < 2) return;
+            //待增加
+
         }
         #endregion
-
-        #region DoorLight
-        // 新增屬性：綁定 ToggleButton 狀態
-        [ObservableProperty]
-        private bool _isDoorLightOn;
-
-        // 新增命令：ToggleButton 切換時呼叫
-        [RelayCommand]
-        private async Task DoorLightSwitchChanged(bool isChecked)
-        {
-            // 0: 關閉, 1: 開啟
-            int lightSwitch = isChecked ? 1 : 0;
-            try
-            {
-                string url = $"http://localhost:5032/PLC/EleMagazineDoorLightSwitch/0/{lightSwitch}";
-                await _httpService.SendPutAsync(url, new { });
-            }
-            catch
-            {
-                // 可加上錯誤提示
-            }
-        }
-        #endregion
-
-        #region Title
-
-        #endregion
-
-        // 新增：如果原本有要在啟動時並行呼叫 API，可在此實作；目前先放空的 stub，不會阻塞 UI
     }
 }

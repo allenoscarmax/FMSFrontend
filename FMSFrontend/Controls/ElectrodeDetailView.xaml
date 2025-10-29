@@ -30,7 +30,7 @@
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 
-       
+
     </UserControl.Resources>
 
     <Border CornerRadius="12" BorderBrush="#000" BorderThickness="1" Background="White">
@@ -71,17 +71,17 @@
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="37" />
+                        <RowDefinition Height="37" />
+                        <RowDefinition Height="37" />
+                        <RowDefinition Height="37" />
+                        <RowDefinition Height="37" />
+                        <RowDefinition Height="37" />
+                        <RowDefinition Height="37" />
+                        <RowDefinition Height="37" />
+                        <RowDefinition Height="37" />
+                        <RowDefinition Height="37" />
+                        <RowDefinition Height="37" />
                         <!-- 被加工次數 -->
                     </Grid.RowDefinitions>
 
@@ -142,27 +142,24 @@
                 </Grid>
             </ScrollViewer>
 
-            <!-- 底部按鈕列：可自動換行，顏色比照圖片 -->
-            <Border Grid.Row="3" Padding="8,6,8,10" Background="{x:Null}">
-                <WrapPanel HorizontalAlignment="Left">
-                    <!-- 1 電極再使用（綠） -->
-                    <Button Style="{StaticResource PrimaryButtonStyle}" Background="#4CAF50" Content="電極再使用" Command="{Binding ReuseElectrodeCommand}" />
+            <!-- 底部按鈕列：兩排排列，顏色比照圖片 -->
+            <Border Grid.Row="3" Padding="8,1,8,10" Background="{x:Null}">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
+                    <!-- 第一排：4 個按鈕 -->
+                    <WrapPanel Margin="0,0,0,8">
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#2F64CF" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="電極再使用" Command="{Binding ReuseElectrodeCommand}" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#C0392B" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="解除異常" Command="{Binding ClearAbnormalCommand}" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#9C27B0" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="修改補償值" Command="{Binding EditCompensationCommand}" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#56C06C" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="電極再使用" Command="{Binding ReuseElectrodeAltCommand}" />
+                    </WrapPanel>
 
-                    <!-- 2 電極再使用（藍）※ 若你有第二種再使用情境，可換文案；否則可移除 -->
-                    <Button Style="{StaticResource PrimaryButtonStyle}" Background="#1976D2" Content="電極再使用" Command="{Binding ReuseElectrodeAltCommand}" />
-
-                    <!-- 3 修改補償值（紫） -->
-                    <Button Style="{StaticResource PrimaryButtonStyle}" Background="#9C27B0" Content="修改補償值" Command="{Binding EditCompensationCommand}" />
-
-                    <!-- 4 解除異常（橘） -->
-                    <Button Style="{StaticResource PrimaryButtonStyle}" Background="#FF9800" Content="解除異常" Command="{Binding ClearAbnormalCommand}" />
-
-                    <!-- 5 解除碰撞（青藍） -->
-                    <Button Style="{StaticResource PrimaryButtonStyle}" Background="#2196F3" Content="解除碰撞" Command="{Binding ClearCollisionCommand}" />
-
-                    <!-- 6 解除預約（藍綠） -->
-                    <Button Style="{StaticResource PrimaryButtonStyle}" Background="#00ACC1" Content="解除預約" Command="{Binding ClearReservationCommand}" />
-                </WrapPanel>
+                    <!-- 第二排：3 個按鈕 -->
+                    <WrapPanel>
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#6E6E6E" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="解除碰撞" Command="{Binding ClearCollisionCommand}" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#E6B93E" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="解除預約" Command="{Binding ClearReservationCommand}" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#000000" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="電極補償值" Command="{Binding EditCompensationCommand}" />
+                    </WrapPanel>
+                </StackPanel>
             </Border>
         </Grid>
     </Border>

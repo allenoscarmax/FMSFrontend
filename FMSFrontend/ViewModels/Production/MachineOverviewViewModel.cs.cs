@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Windows;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
+using System.Linq;
 
 namespace FMSFrontend.ViewModels.Production
 {
@@ -18,7 +19,7 @@ namespace FMSFrontend.ViewModels.Production
     {
         private readonly ProductionLinesViewModel _parent;
         private readonly IHttpService _httpService;
-        public Task RefreshAsync() => Task.Run(async () => await LoadMachinesAsync());
+        public Task RefreshAsync() => Task.Run(async () => await UpdateMachinesAsync());
         public ObservableCollection<MachineCardViewModel> Machines { get; } = new();
 
         public MachineOverviewViewModel(ProductionLinesViewModel parent, IHttpService httpService)
@@ -53,7 +54,56 @@ namespace FMSFrontend.ViewModels.Production
                 Debug.WriteLine($"LoadMachinesAsync error: {ex}");
             }
         }
+        private async Task UpdateMachinesAsync()
+        {
+            try
+            {
+                var machines = await _httpService.GetJsonAsync<List<Machines>>("Machine/DB_GetAllMachines", default) ?? new List<Machines>();
 
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var fetchedByName = machines
+                        .Where(m => !string.IsNullOrWhiteSpace(m.machineName))
+                        .ToDictionary(m => m.machineName!, StringComparer.OrdinalIgnoreCase);
+
+                    var processed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                    // Update existing or remove missing
+                    foreach (var existing in Machines.ToList())
+                    {
+                        if (existing == null) continue;
+                        var name = existing.MachineName ?? string.Empty;
+                        if (fetchedByName.TryGetValue(name, out var m))
+                        {
+                            existing.Status = m.status;
+                            existing.Type = MapToMachineType(m.MachineCode?.ToString() ?? "");
+                            processed.Add(name);
+                        }
+                        else
+                        {
+                            Machines.Remove(existing);
+                        }
+                    }
+
+                    // Add new
+                    foreach (var m in machines)
+                    {
+                        var name = m.machineName ?? string.Empty;
+                        if (string.IsNullOrWhiteSpace(name)) continue;
+                        if (processed.Contains(name)) continue;
+
+                        var card = MapToWorkOrderData(m);
+                        card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl);
+                        card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl);
+                        Machines.Add(card);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"UpdateMachinesAsync error: {ex}");
+            }
+        }
         private static MachineCardViewModel MapToWorkOrderData(Machines m)
         {
             return new MachineCardViewModel

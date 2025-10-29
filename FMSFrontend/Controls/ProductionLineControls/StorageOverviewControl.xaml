@@ -37,7 +37,7 @@
 				<!-- 狀態統計列 -->
 				<Grid Grid.Row="1" FocusVisualStyle="{x:Null}" HorizontalAlignment="Center" Margin="0,20,0,10">
 					<StackPanel Orientation="Horizontal" Margin="8,0,0,0">
-                        <Border Background="DarkGoldenrod" CornerRadius="4" Margin="0,0,8,0" Height="24" Width="88" HorizontalAlignment="Center">
+                        <Border Background="#E6B93E" CornerRadius="4" Margin="0,0,8,0" Height="24" Width="88" HorizontalAlignment="Center">
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 								<TextBlock Text="待加工" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
 								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">
@@ -45,7 +45,7 @@
 								</Border>
 							</StackPanel>
 						</Border>
-                        <Border Background="Green" CornerRadius="4" Margin="0,0,8,0" Height="24" Width="80" HorizontalAlignment="Center">
+                        <Border Background="#56C06C" CornerRadius="4" Margin="0,0,8,0" Height="24" Width="80" HorizontalAlignment="Center">
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 								<TextBlock Text="加工中" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
 								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">
@@ -53,7 +53,7 @@
 								</Border>
 							</StackPanel>
 						</Border>
-                        <Border Background="IndianRed" CornerRadius="4" Margin="0,0,8,0" Height="24" Width="80" HorizontalAlignment="Center">
+                        <Border Background="#C0392B" CornerRadius="4" Margin="0,0,8,0" Height="24" Width="80" HorizontalAlignment="Center">
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 								<TextBlock Text="異常" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
 								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">
@@ -61,7 +61,7 @@
 								</Border>
 							</StackPanel>
 						</Border>
-                        <Border Background="RoyalBlue" CornerRadius="4" Margin="0,0,8,0" Height="24" Width="80" HorizontalAlignment="Center">
+                        <Border Background="#2F64CF" CornerRadius="4" Margin="0,0,8,0" Height="24" Width="80" HorizontalAlignment="Center">
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 								<TextBlock Text="完成" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
 								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">

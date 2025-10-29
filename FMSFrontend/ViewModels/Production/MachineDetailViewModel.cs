@@ -10,6 +10,8 @@ using System.Windows;
 using System.Diagnostics;
 using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 using System.Security.Cryptography;
+using System.Linq;
+using System.Windows.Threading;
 
 namespace FMSFrontend.ViewModels.Production
 {
@@ -17,7 +19,7 @@ namespace FMSFrontend.ViewModels.Production
     {
         private readonly ProductionLinesViewModel _parent;
         private readonly IHttpService _httpService;
-        public Task RefreshAsync() => Task.Run(async () => await LoadMachinesAsync());
+        public Task RefreshAsync() => Task.Run(async () => await UpdateMachinesAsync());
         public MachineDetailViewModel(ProductionLinesViewModel parent, IHttpService httpService)
         {
             _parent = parent ?? throw new ArgumentNullException(nameof(parent));
@@ -27,30 +29,36 @@ namespace FMSFrontend.ViewModels.Production
             _ = LoadMachinesAsync();
         }
 
+        // Make the collection settable so we can replace it in one UI operation to avoid per-item layout churn
+        private ObservableCollection<MachineCardViewModel> _machineDetails = new();
+        public ObservableCollection<MachineCardViewModel> MachineDetails
+        {
+            get => _machineDetails;
+            private set => SetProperty(ref _machineDetails, value);
+        }
+
         private async Task LoadMachinesAsync()
         {
             try
             {
-                // 讀取 API 回傳的 JSON
-                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Machine/DB_GetAllMachines", default);
-                List<Machines> machines = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined)
-                    ? JsonSerializer.Deserialize<List<Machines>>(json.Value.GetRawText()) ?? new List<Machines>()
-                    : new List<Machines>();
+                // 1) 取得資料（在背景執行）
+                var machines = await _httpService.GetJsonAsync<List<Machines>>("Machine/DB_GetAllMachines", default) ?? new List<Machines>();
 
-                // 清除舊資料
-                MachineDetails.Clear();
+                // 2) 在背景建立要綁定的 view models（避免在 UI 執行緒建立大量物件）
+                var cards = machines.Select(m => MapToWorkOrderData(m)).ToList();
 
-                foreach (var m in machines)
+                // 3) 在 UI 執行緒一次性設定 delegate 並替換集合（使用低優先順序以讓 UI 互動先行）
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    var card = MapToWorkOrderData(m);
+                    foreach (var card in cards)
+                    {
+                        card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl);
+                        card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl);
+                    }
 
-                    // 綁定開啟資訊的動作
-                    card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl);
-                    card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl);
-
-                    // 加入集合（在同步上下文中執行，await 會回到 UI 執行緒）
-                    MachineDetails.Add(card);
-                }
+                    // Replace the whole collection in one operation to minimize layout/measure passes
+                    MachineDetails = new ObservableCollection<MachineCardViewModel>(cards);
+                }, DispatcherPriority.Background);
             }
             catch (Exception ex)
             {
@@ -60,12 +68,61 @@ namespace FMSFrontend.ViewModels.Production
         }
         private async Task UpdateMachinesAsync()
         {
-            // 讀取 API 回傳的 JSON
-            JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Machine/DB_GetAllMachines", default);
-            List<Machines> machines = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined)
-                ? JsonSerializer.Deserialize<List<Machines>>(json.Value.GetRawText()) ?? new List<Machines>()
-                : new List<Machines>();
+            try
+            {
+                // 直接用強型別取得 List<Machines>（在背景執行）
+                var machines = await _httpService.GetJsonAsync<List<Machines>>("Machine/DB_GetAllMachines", default) ?? new List<Machines>();
 
+                // 在 UI 執行緒更新集合（使用非同步 Invoke，且較低優先順序）
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    // 建立快速搜尋表
+                    var fetchedByName = machines
+                        .Where(m => !string.IsNullOrWhiteSpace(m.machineName))
+                        .ToDictionary(m => m.machineName!, StringComparer.OrdinalIgnoreCase);
+
+                    // 記錄已處理的機台名稱
+                    var processed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                    // 更新現有項目或移除已不存在的機台
+                    foreach (var existing in MachineDetails.ToList())
+                    {
+                        if (existing == null) continue;
+
+                        var name = existing.MachineName ?? string.Empty;
+                        if (fetchedByName.TryGetValue(name, out var m))
+                        {
+                            // 更新欄位（只更新可能變動的欄位）
+                            existing.Status = m.status;
+                            existing.Type = MapToMachineType(m.MachineCode?.ToString() ?? "");
+
+                            processed.Add(name);
+                        }
+                        else
+                        {
+                            // 若伺服器回傳已不包含該機台，從集合移除
+                            MachineDetails.Remove(existing);
+                        }
+                    }
+
+                    // 新增伺服器有但集合裡沒有的機台
+                    foreach (var m in machines)
+                    {
+                        var name = m.machineName ?? string.Empty;
+                        if (string.IsNullOrWhiteSpace(name)) continue;
+                        if (processed.Contains(name)) continue;
+
+                        var card = MapToWorkOrderData(m);
+                        card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl);
+                        card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl);
+                        MachineDetails.Add(card);
+                    }
+                }, DispatcherPriority.Background);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"UpdateMachinesAsync error: {ex}");
+            }
         }
         private static MachineCardViewModel MapToWorkOrderData(Machines m)
         {
@@ -106,6 +163,5 @@ namespace FMSFrontend.ViewModels.Production
             win.ShowDialog();
         }
 
-        public ObservableCollection<MachineCardViewModel> MachineDetails { get; } = new();
     }
 }

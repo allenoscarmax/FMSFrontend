@@ -1,23 +1,24 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ControlzEx.Standard;
 using FMSFrontend.Extensions; // SelectItemWindow / SelectItemType / SelectItem
 using FMSFrontend.Interfaces;
+using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
 using MaterialDesignThemes.Wpf.Transitions;
 using OSCARMAXFMS_V3.DBmodels;
+using OSCARMAXFMS_V3.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using System.Threading.Tasks;
-using FMSFrontend.Services;
-using ControlzEx.Standard;
 // 新增的 using
 using System.Windows.Threading;
-using System.Threading;
 
 public partial class MaterialPairViewModel : ObservableObject
 {
@@ -335,52 +336,62 @@ public partial class MaterialPairViewModel : ObservableObject
         }
     }
     // 新增：計時器事件讀取RFID最新Tag
+    private bool _isPolling = false;
     private async void PollTimer_Tick(object? sender, EventArgs e)
     {
+        if (_isPolling) return; // 避重入
+        _isPolling = true;
         try
         {
-            JsonElement? json = null;
-            // 嘗試取得最新 Tag；若失敗代表未連線
+            string? json = null;
             try
             {
-                // 成功呼叫 API 視為連線正常
-                json = await _httpService.GetJsonAsync<JsonElement>("RFIDMgmtModule/Read_Tag_ID/0/0", default);
-                var RFIDWriteLog = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined)?
-                    JsonSerializer.Deserialize<List<RFIDWriteLog>>(json.Value.GetRawText()) ?? new List<RFIDWriteLog>() : 
-                    new List<RFIDWriteLog>();
-                RfidConnectedBrush = Brushes.LimeGreen;
+                // 取得原始回傳字串（API 回傳 body 為純文字 TagSerial）
+                json = await _httpService.GetJsonAsyncNoDeserialize("RFIDMgmtModule/Read_Tag_ID/0/2", default);
             }
             catch
             {
-                RfidConnectedBrush = Brushes.Gray;
+                // 忽略單次錯誤（可加日誌）
+                json = null;
             }
 
-            if (json.HasValue)
+            if (!string.IsNullOrWhiteSpace(json))
             {
-                string newTag;
-                try
-                {
-                    newTag = JsonSerializer.Deserialize<string>(json.Value.GetRawText()) ?? string.Empty;
-                }
-                catch
-                {
-                    newTag = json.Value.GetRawText().Trim('"');
-                }
                 // 若 Tag 有變動，更新並亮起 Tag 燈 3 秒
-                if (!string.Equals(newTag, TagSerial, StringComparison.Ordinal))
+                if (!string.Equals(json, TagSerial, StringComparison.Ordinal))
                 {
-                    TagSerial = newTag;
+                    TagSerial = json;
                     RfidTagBrush = Brushes.LimeGreen;
                     _tagOffTimer.Stop();
                     _tagOffTimer.Start();
                 }
             }
+            else
+            {
+                // 若沒有讀到 tag，顯示未連線/灰色（但不要覆蓋現有 TagSerial）
+                RfidTagBrush = Brushes.Gray;
+            }
+            JsonElement? json2;
+            try
+            {
+                json2 = await _httpService.GetJsonAsync<JsonElement>("RFIDMgmtModule/GetRFIDParas", default);
+                RFIDParas r = (json2.HasValue && json2.Value.ValueKind != JsonValueKind.Undefined) ?
+                      JsonSerializer.Deserialize<RFIDParas>(json2.Value.GetRawText()) ?? new RFIDParas() :
+                      new RFIDParas();
+                 RfidConnectedBrush = r.RFID_Is_connect[2] ? Brushes.LimeGreen : RfidConnectedBrush = Brushes.Gray;
+            }
+            catch
+            {
+                // 忽略單次錯誤（可加日誌）
+                json2 = null;
+            }
         }
-        catch
+        finally
         {
-            // 靜默忽略例外，避免 UI 被打斷
+            _isPolling = false;
         }
-    }
+    }   
+    
     private void TagOffTimer_Tick(object? sender, EventArgs e)
     {
         _tagOffTimer.Stop();
