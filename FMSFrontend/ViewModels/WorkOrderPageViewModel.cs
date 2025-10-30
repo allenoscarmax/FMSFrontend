@@ -279,15 +279,15 @@ namespace FMSFrontend.ViewModels
             return new WorkOrderData
             {
                 Id = ws._id ?? string.Empty,
-                WorksheetNumber = ws.worksheetNumber ?? string.Empty,
-                WorkpieceName = ws.workpieceName ?? string.Empty,
-                Status = ws.workStatus ?? string.Empty,
-                StatusColor = ToStatusBrush(ws.workStatus),
-                TargetEDM = ws.targetEDM ?? string.Empty,
-                Coordinate = ws.coordinate ?? string.Empty,
-                SetupUser = ws.setupUser ?? string.Empty,
-                ProcessStep = ws.processStep ?? 0,
-                TotalProcessStep = ws.totalProcessStep ?? 0,
+                WorksheetNumber = ws.WorksheetNumber ?? string.Empty,
+                WorkpieceName = ws.WorkpieceName ?? string.Empty,
+                Status = ws.WorkStatus ?? string.Empty,
+                StatusColor = ToStatusBrush(ws.WorkStatus),
+                TargetEDM = ws.TargetEDM ?? string.Empty,
+                Coordinate = ws.Coordinate ?? string.Empty,
+                SetupUser = ws.SetupUser ?? string.Empty,
+                ProcessStep = ws.ProcessStep ?? 0,
+                TotalProcessStep = ws.TotalProcessStep ?? 0,
                 EDMDetails = new ObservableCollection<EDMDetail>() // Worksheets 不含電極明細，先回傳空集合
             };
         }

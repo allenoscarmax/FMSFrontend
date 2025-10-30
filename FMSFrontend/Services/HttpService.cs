@@ -61,6 +61,7 @@ namespace FMSFrontend.Services
         // 改為有過濾的 GetJsonAsync：當回傳為 null / undefined / 空陣列 / 空字串 時回傳 null (default)
         public async Task<T?> GetJsonAsync<T>(string route, CancellationToken cancellationToken = default)
         {
+            try { 
             using var response = await _httpClient.GetAsync(route, cancellationToken).ConfigureAwait(false);
 
             // 無內容或 204
@@ -78,6 +79,12 @@ namespace FMSFrontend.Services
 
             var result = JsonSerializer.Deserialize<T>(content, _jsonOptions);
             return result;
+            }
+            catch
+            {
+                return default;
+            }
+
         }
 
         // 取得原始字串（不反序列化）

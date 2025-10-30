@@ -46,11 +46,11 @@ namespace FMSFrontend.ViewModels.Windows
         [ObservableProperty]
         private ObservableCollection<string> availableEdms = new()
         {
-            "EDM1","EDM2","EDM3"
+            "Unset","EDM1","EDM2","EDM3"
         };
 
         [ObservableProperty]
-        private string selectedEdm = "EDM1";
+        private string selectedEdm = "Unset";
 
         // ▼ 下拉選單：座標
         [ObservableProperty]
@@ -97,7 +97,63 @@ namespace FMSFrontend.ViewModels.Windows
             WorkItems.Clear();
             if (!File.Exists(csvPath)) return;
 
-            var lines = File.ReadAllLines(csvPath);
+            var baseDir = Path.GetDirectoryName(csvPath) ?? "";
+
+            // 先檢查是否有任一 .NCD 檔以及可能的 Workpieces/EDM 資料夾
+            bool hasWorkpiecesFolder = Directory.Exists(Path.Combine(baseDir, "Workpieces")) || Directory.Exists(Path.Combine(baseDir, "EDM", "Workpieces"));
+            bool hasAnyNcd = false;
+            try { hasAnyNcd = Directory.GetFiles(baseDir, "*.NCD", SearchOption.AllDirectories).Any(); }
+            catch { /* 忽略權限錯誤 */ }
+
+            if (!hasWorkpiecesFolder || !hasAnyNcd)
+            {
+                new DialogMessageWindow("Format Error").ShowDialog();
+                return;
+            }
+
+            string? FindFirstNcd(params string[] folders)
+            {
+                try
+                {
+                    foreach (var f in folders)
+                    {
+                        if (string.IsNullOrWhiteSpace(f)) continue;
+                        if (!Directory.Exists(f)) continue;
+                        var files = Directory.GetFiles(f, "*.NCD", SearchOption.TopDirectoryOnly);
+                        if (files.Length > 0) return files[0];
+                    }
+                }
+                catch { /* 忽略 IO/權限問題 */ }
+                return null;
+            }
+
+            bool IsMatchToCandidate(string foundPath, string candidate)
+            {
+                if (string.IsNullOrEmpty(foundPath) || string.IsNullOrEmpty(candidate)) return false;
+                var fileName = Path.GetFileNameWithoutExtension(foundPath) ?? "";
+                if (fileName.StartsWith(candidate, StringComparison.OrdinalIgnoreCase)) return true;
+
+                // 檢查目錄名稱是否包含或以 candidate 結尾
+                var parts = foundPath.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var p in parts)
+                {
+                    if (string.Equals(p, candidate, StringComparison.OrdinalIgnoreCase)) return true;
+                    if (p.EndsWith(candidate, StringComparison.OrdinalIgnoreCase)) return true;
+                }
+                return false;
+            }
+
+            string[] lines;
+            try
+            {
+                lines = File.ReadAllLines(csvPath);
+            }
+            catch (IOException)
+            {
+                new DialogMessageWindow("檔案被其他程式使用中，請先關閉該檔案後再試。").ShowDialog();
+                return;
+            }
+
             if (lines.Length == 0) return;
 
             // 假設第一列為標題，從第2列開始讀
@@ -109,17 +165,69 @@ namespace FMSFrontend.ViewModels.Windows
                 var cols = line.Split(',');
                 if (cols.Length == 0) continue;
 
-                var workpieceName = cols[0]?.Trim(); // A 欄 Workpieces
-                if (string.IsNullOrWhiteSpace(workpieceName)) continue;
+                var workpieceNameRaw = cols[0]?.Trim();
+                if (string.IsNullOrWhiteSpace(workpieceNameRaw)) continue;
 
-                // 量測程式：尋找 Workpieces\{工作名稱}\*.NCD 的第一個檔名
-                var folder = Path.Combine(Path.GetDirectoryName(csvPath) ?? "", "Workpieces", workpieceName);
-                var ncdFiles = Directory.Exists(folder) ? Directory.GetFiles(folder, "*.NCD") : Array.Empty<string>();
-                var measurementProgram = ncdFiles.Length > 0 ? Path.GetFileName(ncdFiles[0]) : "";
+                // 產生候選名稱（清理常見尾碼與附註）
+                var candidate = workpieceNameRaw;
+                if (candidate.Contains(' ')) candidate = candidate.Split(' ')[0].Trim();
+                candidate = System.Text.RegularExpressions.Regex.Replace(candidate, @"(-W\d*$|_W\d*$|-W$|_W$)", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase).Trim();
+
+                string? found = null;
+
+                var tryFolders = new[]
+                {
+                    Path.Combine(baseDir, "EDM", "Workpieces", candidate),
+                    Path.Combine(baseDir, "EDM", "Workpieces", candidate, candidate),
+                    Path.Combine(baseDir, "Workpieces", candidate),
+                    Path.Combine(baseDir, "Workpieces", candidate, candidate),
+                    Path.Combine(baseDir, candidate),
+                    Path.Combine(baseDir, "EDM", candidate),
+                };
+
+                found = FindFirstNcd(tryFolders);
+
+                if (found == null)
+                {
+                    try
+                    {
+                        var edmRoot = Path.Combine(baseDir, "EDM");
+                        if (Directory.Exists(edmRoot))
+                        {
+                            var dirs = Directory.GetDirectories(edmRoot, "*", SearchOption.AllDirectories);
+                            foreach (var d in dirs)
+                            {
+                                if (d.EndsWith(candidate, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    var f = FindFirstNcd(d);
+                                    if (f != null) { found = f; break; }
+                                }
+                            }
+                        }
+                    }
+                    catch { /* 忽略 */ }
+                }
+
+                // 最後保守搜尋 baseDir 下任一 .NCD，但之後必須檢查是否符合 candidate
+                if (found == null)
+                {
+                    try { found = Directory.GetFiles(baseDir, "*.NCD", SearchOption.AllDirectories).FirstOrDefault(); }
+                    catch { /* 忽略 */ }
+                }
+
+                // 若找不到或找到的檔案與候選名稱不符 -> 視為格式錯誤
+                if (string.IsNullOrEmpty(found) || !IsMatchToCandidate(found, candidate))
+                {
+                    new DialogMessageWindow("Format Error").ShowDialog();
+                    return;
+                }
+
+                var measurementProgram = Path.GetFileNameWithoutExtension(found);
+
                 WorkItems.Add(new WorkItem
                 {
                     IsSelected = true,
-                    WorkpieceName = workpieceName,
+                    WorkpieceName = workpieceNameRaw,
                     Status = "new",
                     MeasurementProgram = measurementProgram ?? "",
                     SetupUser = CurrentUserName
@@ -130,30 +238,168 @@ namespace FMSFrontend.ViewModels.Windows
         private void LoadElectrodeCsv(string csvPath)
         {
             ElectrodeItems.Clear();
-            var lines = File.ReadAllLines(csvPath);
+            if (!File.Exists(csvPath)) return;
+
+            var baseDir = Path.GetDirectoryName(csvPath) ?? "";
+
+            // 初步檢查：是否有 EDM\Electrodes 或 Electrodes 資料夾，且是否有任何 .NCD 檔
+            bool hasElectrodesFolder = Directory.Exists(Path.Combine(baseDir, "EDM", "Electrodes")) || Directory.Exists(Path.Combine(baseDir, "Electrodes"));
+            bool hasAnyNcd = false;
+            try { hasAnyNcd = Directory.GetFiles(baseDir, "*.NCD", SearchOption.AllDirectories).Any(); }
+            catch { /* 忽略權限錯誤 */ }
+
+            if (!hasElectrodesFolder || !hasAnyNcd)
+            {
+                new DialogMessageWindow("Format Error").ShowDialog();
+                return;
+            }
+
+            string? FindFirstNcd(params string[] folders)
+            {
+                try
+                {
+                    foreach (var f in folders)
+                    {
+                        if (string.IsNullOrWhiteSpace(f)) continue;
+                        if (!Directory.Exists(f)) continue;
+                        var files = Directory.GetFiles(f, "*.NCD", SearchOption.TopDirectoryOnly);
+                        if (files.Length > 0) return files[0];
+                    }
+                }
+                catch { /* 忽略 IO/權限問題 */ }
+                return null;
+            }
+
+            bool IsMatchToCandidate(string foundPath, string candidate)
+            {
+                if (string.IsNullOrEmpty(foundPath) || string.IsNullOrEmpty(candidate)) return false;
+                var fileName = Path.GetFileNameWithoutExtension(foundPath) ?? "";
+                if (fileName.StartsWith(candidate, StringComparison.OrdinalIgnoreCase)) return true;
+
+                var parts = foundPath.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var p in parts)
+                {
+                    if (string.Equals(p, candidate, StringComparison.OrdinalIgnoreCase)) return true;
+                    if (p.EndsWith(candidate, StringComparison.OrdinalIgnoreCase)) return true;
+                }
+                return false;
+            }
+
+            string[] lines;
+            try
+            {
+                lines = File.ReadAllLines(csvPath);
+            }
+            catch (IOException)
+            {
+                new DialogMessageWindow("檔案被其他程式使用中，請先關閉該檔案後再試。").ShowDialog();
+                return;
+            }
+
             if (lines.Length < 2) return; // 沒有資料
 
-            // 假設第一行是標題
+            // 以標題行找出欄位索引（更穩定）：Electrode, Work_pieces（代表 lifeTimes）, Offset
+            var headers = lines[0].Split(',');
+            int idxElectrode = Array.FindIndex(headers, h => (h ?? "").IndexOf("electrode", StringComparison.OrdinalIgnoreCase) >= 0);
+            int idxWorkPieces = Array.FindIndex(headers, h => (h ?? "").IndexOf("work_piec", StringComparison.OrdinalIgnoreCase) >= 0);
+            int idxOffset = Array.FindIndex(headers, h => (h ?? "").IndexOf("offset", StringComparison.OrdinalIgnoreCase) >= 0);
+
+            // 假如沒找到標題，退回到預設索引（保守處理）
+            if (idxElectrode < 0) idxElectrode = 0;
+
             for (int i = 1; i < lines.Length; i++)
             {
                 var cols = lines[i].Split(',');
+                if (cols.Length == 0) continue;
 
-                // 請根據你的CSV欄位順序調整索引
-                var electrode = cols[0];      // A欄 Electrode
-                var workPieces = cols[1];     // B欄 Work_pieces
-                var offset = cols.Length > 18 ? cols[18] : ""; // S欄 Offset (第19欄, 索引18，先做長度保護)
+                var electrodeRaw = idxElectrode >= 0 && cols.Length > idxElectrode ? cols[idxElectrode].Trim() : (cols.Length > 0 ? cols[0].Trim() : "");
+                if (string.IsNullOrWhiteSpace(electrodeRaw)) continue;
 
-                // 量測程式：尋找 Electrodes\{工作名稱} 資料夾下的 .NCD 檔名
-                var folder = Path.Combine(Path.GetDirectoryName(csvPath) ?? "", "Electrodes", electrode);
-                var ncdFiles = Directory.Exists(folder) ? Directory.GetFiles(folder, "*.NCD") : Array.Empty<string>();
-                var measurementProgram = ncdFiles.Length > 0 ? Path.GetFileName(ncdFiles[0]) : "";
+                // 產生候選名稱（清理常見尾碼與附註）
+                var candidate = electrodeRaw;
+                if (candidate.Contains(' ')) candidate = candidate.Split(' ')[0].Trim();
+                candidate = System.Text.RegularExpressions.Regex.Replace(candidate, @"(-W\d*$|_W\d*$|-W$|_W$)", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase).Trim();
+
+                string? found = null;
+
+                // 可能的資料夾位置（以 CSV 所在資料夾為基準）
+                var tryFolders = new[]
+                {
+                    Path.Combine(baseDir, "EDM", "Electrodes", candidate),
+                    Path.Combine(baseDir, "EDM", "Electrodes", candidate, candidate),
+                    Path.Combine(baseDir, "Electrodes", candidate),
+                    Path.Combine(baseDir, "Electrodes", candidate, candidate),
+                    Path.Combine(baseDir, candidate),
+                    Path.Combine(baseDir, "EDM", candidate),
+                };
+
+                found = FindFirstNcd(tryFolders);
+
+                if (found == null)
+                {
+                    try
+                    {
+                        var edmRoot = Path.Combine(baseDir, "EDM");
+                        if (Directory.Exists(edmRoot))
+                        {
+                            var dirs = Directory.GetDirectories(edmRoot, "*", SearchOption.AllDirectories);
+                            foreach (var d in dirs)
+                            {
+                                if (d.EndsWith(candidate, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    var f = FindFirstNcd(d);
+                                    if (f != null) { found = f; break; }
+                                }
+                            }
+                        }
+
+                        // 也嘗試 EDM\Electrodes 的所有子資料夾去抓第一個 .NCD
+                        if (found == null)
+                        {
+                            var electrodesRoot = Path.Combine(baseDir, "EDM", "Electrodes");
+                            if (Directory.Exists(electrodesRoot))
+                            {
+                                var any = Directory.GetFiles(electrodesRoot, "*.NCD", SearchOption.AllDirectories).FirstOrDefault();
+                                if (!string.IsNullOrEmpty(any)) found = any;
+                            }
+                        }
+                    }
+                    catch { /* 忽略 */ }
+                }
+
+                // 最後保守搜尋 baseDir 下任一 .NCD，但之後必須檢查是否符合 candidate
+                if (found == null)
+                {
+                    try { found = Directory.GetFiles(baseDir, "*.NCD", SearchOption.AllDirectories).FirstOrDefault(); }
+                    catch { /* 忽略 */ }
+                }
+
+                // 若找不到或找到的檔案與候選名稱不符 -> 視為格式錯誤
+                if (string.IsNullOrEmpty(found) || !IsMatchToCandidate(found, candidate))
+                {
+                    new DialogMessageWindow("Format Error").ShowDialog();
+                    return;
+                }
+
+                // 量測程式名稱：以 .NCD 檔名（不含副檔名）為主，找不到再使用資料夾名稱
+                var measurementProgram = Path.GetFileNameWithoutExtension(found) ?? candidate;
+
+                // 解析 lifeTimes（來自 Work_pieces 欄位）與 offset（Offset 欄位）
+                int lifeTimes = 0;
+                if (idxWorkPieces >= 0 && cols.Length > idxWorkPieces)
+                    int.TryParse(cols[idxWorkPieces].Trim(), out lifeTimes);
+
+                int offsetVal = 0;
+                if (idxOffset >= 0 && cols.Length > idxOffset)
+                    int.TryParse(cols[idxOffset].Trim(), out offsetVal);
 
                 ElectrodeItems.Add(new ElectrodeItem
                 {
                     IsSelected = true,
-                    ElectrodeName = electrode,
-                    WorkPieces = workPieces,
-                   // OffsetStatus = offset,
+                    ElectrodeName = electrodeRaw,
+                    WorkPieces = (idxWorkPieces >= 0 && cols.Length > idxWorkPieces) ? cols[idxWorkPieces].Trim() : "",
+                    LifeTimes = lifeTimes,
+                    OffsetStatus = offsetVal,
                     State = "new",
                     MeasurementProgram = measurementProgram,
                     SetupUser = CurrentUserName
@@ -178,28 +424,37 @@ namespace FMSFrontend.ViewModels.Windows
             if (selectedWorks.Count == 0 && selectedEles.Count == 0)
                 return;
 
-            string worksheetNumber = DateTime.Now.ToString("yyyyMMddHHmm"); // 年月日時分
-            string targetEDM = MapTargetEdm(SelectedEdm);   // EDM1 -> EDM-1
-            string pairedEDM = MapPairedEdm(SelectedEdm);   // EDM1 -> EMD1
+            string worksheetNumber = DateTime.Now.ToString("yyyyMMddHHmmss"); // 年月日時分秒
+            string targetEDM
+;            if (SelectedEdm.Contains("EDM"))
+            {
+                targetEDM = MapTargetEdm(SelectedEdm);   // EDM1 -> EDM-
+            }
+            else 
+            {
+                targetEDM = "";
+            }
+                string pairedEDM = MapPairedEdm(SelectedEdm);   // EDM1 -> EMD1
             string coordinate = SelectedCoordinate;
 
             int extraOffset = selectedEles.Count(e => IsOffsetOneOrTwo(e.OffsetStatus));
             int totalProcessStep = selectedWorks.Count + selectedEles.Count + extraOffset;
-          
+
             // 1) 先上傳工單
-            var worksheetPayload = new
+            Worksheets worksheetPayload;
+            worksheetPayload = new Worksheets
             {
-                worksheetNumber,
-                workpieceName = selectedWorks.FirstOrDefault()?.WorkpieceName ?? "",
-                workPriority = 0,
-                workEnabled = true,
-                workStatus = "New",
-                workPercentage = "0",
-                targetEDM,          // EDM-1 風格
-                processStep = 0,
-                totalProcessStep,
-                coordinate,         // 依座標下拉
-                setupUser = "admin"
+                WorksheetNumber = worksheetNumber,
+                WorkpieceName = selectedWorks.FirstOrDefault()?.WorkpieceName ?? "",
+                WorkPriority = 0,
+                WorkEnabled = true,
+                WorkStatus = "New",
+                WorkPercentage = "0",
+                TargetEDM = targetEDM,
+                ProcessStep = 0,
+                TotalProcessStep = totalProcessStep,
+                Coordinate = coordinate,
+                SetupUser = "admin"
             };
             ok = await _httpService.SendPutAsync("Worksheet/DB_InsertNewWorkSheetData", worksheetPayload);
             if (!ok)
@@ -261,6 +516,8 @@ namespace FMSFrontend.ViewModels.Windows
                     lifeTimes = e.LifeTimes,
                     offsetStatus = e.OffsetStatus,
                     underSize = "",
+                    shared = false,
+                    shareLink = "",
                     worksheetDone = "",
                     setupUser = "admin"
                 };
@@ -296,19 +553,34 @@ namespace FMSFrontend.ViewModels.Windows
             if (string.IsNullOrWhiteSpace(edm)) return "EMD1";
             return edm.Replace("EDM", "EMD", StringComparison.OrdinalIgnoreCase);
         }
+
+        [RelayCommand]
+        private void Share(ElectrodeItem item)
+        {
+            if (item == null) return;
+
+            // TODO: 實作分享邏輯，例如呼叫 API 或顯示對話框
+            new DialogMessageWindow($"Share: {item.ElectrodeName}").ShowDialog();
+        }
     }
 
-    public class ElectrodeItem
+    public partial class ElectrodeItem : ObservableObject
     {
-        public bool IsSelected { get; set; }
-        public string ElectrodeName { get; set; } = "";
-        public string WorkPieces { get; set; } = "";
-        public int LifeTimes { get; set; } = 0;
+        [ObservableProperty] public bool isSelected;
+        [ObservableProperty] public string electrodeName = "";
+        [ObservableProperty] public string workPieces = "";
+        [ObservableProperty] public int lifeTimes = 0;
+        [ObservableProperty] public int offsetStatus = 0;
+        [ObservableProperty] public string state = "new";
+        [ObservableProperty] public string measurementProgram = "";
+        [ObservableProperty] public string setupUser = "";
 
-        public int OffsetStatus { get; set; } = 0;
-        public string State { get; set; } = "new";
-        public string MeasurementProgram { get; set; } = "";
-        public string SetupUser { get; set; } = "";
+        // 根據電極名稱尾碼決定是否可分享 (例如尾碼為 "02")
+        public bool CanShare => !string.IsNullOrWhiteSpace(ElectrodeName) && ElectrodeName.Trim().EndsWith("02", StringComparison.OrdinalIgnoreCase);
+
+        // 當影響 CanShare 的欄位變更時發通知以更新 UI
+        partial void OnElectrodeNameChanged(string value) => OnPropertyChanged(nameof(CanShare));
+        partial void OnOffsetStatusChanged(int value) => OnPropertyChanged(nameof(CanShare));
     }
 
     public class WorkItem
