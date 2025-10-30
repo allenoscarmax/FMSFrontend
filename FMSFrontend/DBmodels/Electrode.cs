@@ -33,6 +33,9 @@ namespace OSCARMAXFMS_V3.DBmodels
         public bool measuremented { get; set; } // 是否已量測（對應 OffsetStatus 1 或 2 才需）
         public string measurementStatus { get; set; } = ""; // 量測結果（PASS/FAIL/NG/OK…）
         public string tempRetSLocation { get; set; } = ""; // 暫存返回儲位（例：ER:1:1:1:1 或 WR:...）
+        public bool shared { get; set; } // 是否被交棒
+        public string shareLink { get; set; } = ""; // 放要share的電極完整名稱
+
         public string setupUser { get; set; } = "";// 建置/設定人員（帳號或姓名）
     }
 }

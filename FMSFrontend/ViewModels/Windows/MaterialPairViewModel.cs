@@ -295,27 +295,37 @@ public partial class MaterialPairViewModel : ObservableObject
         // 1) 準備資料
         var items = new List<WorksheetItem>();
 
-        // 從 API 取得資料
-        JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Worksheet/DB_GetAllWorkSheet", default);
-        if (!json.HasValue || json.Value.ValueKind == JsonValueKind.Undefined)
+        var worksheets = await _httpService.GetJsonAsync<List<Worksheets>>("Worksheet/DB_GetAllWorkSheet", default);
+        foreach (var ws in worksheets)
         {
-            _windowService.ShowMessage("請先新增工單");
-            return;
-        }
-        else
-        {
-            var worksheets = JsonSerializer.Deserialize<List<Worksheets>>(json.Value.GetRawText()) ?? new List<Worksheets>();
-            // 將 API model 轉成 UI 用的 WorksheetItem
-            foreach (var ws in worksheets)
+            items.Add(new WorksheetItem
             {
-                items.Add(new WorksheetItem
-                {
-                    PartName = ws.workpieceName ?? string.Empty,
-                    WorkOrderNo = ws.worksheetNumber ?? string.Empty
-                });
-            }
+                PartName = ws.WorkpieceName ?? string.Empty,
+                WorkOrderNo = ws.WorksheetNumber ?? string.Empty
+            });
         }
-           
+
+        //從 API 取得資料
+        //JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Worksheet/DB_GetAllWorkSheet", default);
+        // if (!json.HasValue || json.Value.ValueKind == JsonValueKind.Undefined)
+        // {
+        //     _windowService.ShowMessage("請先新增工單");
+        //     return;
+        // }
+        // else
+        // {
+        //     var worksheets = JsonSerializer.Deserialize<List<Worksheets>>(json.Value.GetRawText()) ?? new List<Worksheets>();
+        //     // 將 API model 轉成 UI 用的 WorksheetItem
+        //     foreach (var ws in worksheets)
+        //     {
+        //         items.Add(new WorksheetItem
+        //         {
+        //             PartName = ws.WorkpieceName ?? string.Empty,
+        //             WorkOrderNo = ws.WorksheetNumber ?? string.Empty
+        //         });
+        //     }
+        // }
+
 
 
         if (items.Count != 0)
