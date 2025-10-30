@@ -32,7 +32,7 @@ namespace FMSFrontend.ViewModels
     public partial class MainWindowViewModel : ObservableObject
     {
         // 開啟頁面視窗（改為延遲建立：避免啟動時一次建立大量 UI）
-        private ProductionLines? productionLines;
+        private ProductionLines? productionLines ;
         private FactoryOverviewPage? factoryOverviewPage;
         private MachineOverviewPage? machineOverviewPage;
         private WorkOrder? workOrder;
@@ -47,7 +47,7 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private string _loggedInUser = string.Empty; //登入的名稱
         [ObservableProperty] private UserControl? _currentPageView;
         [ObservableProperty] private string currentPageKey = "";  // 存目前的頁面
-        [ObservableProperty] private UserControl storageControlPage;
+        [ObservableProperty] private UserControl? storageControlPage ;
         
 
         [ObservableProperty] private bool _isIdle;
@@ -58,7 +58,6 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private bool isDispatch;
 
         //控制區按鈕
-        private bool MuRobot = false;
         private List<string> RobotNames = new List<string>() ;
         [ObservableProperty] private Robot _robot = new Robot();
         //開始
@@ -89,7 +88,7 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] public ObservableCollection<Brush> _lowerDoorLights1 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
         [ObservableProperty] public ObservableCollection<Brush> _lowerDoorLights2 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
         // ASRS 參數輪詢計時器
-        DispatcherTimer asrsTimer;
+        DispatcherTimer? asrsTimer;
         // ✅ 新增：關機儲存UI設定
         public void SaveCurrentStoragePageType()
         {
@@ -173,9 +172,9 @@ namespace FMSFrontend.ViewModels
                     if (Robot == null ) Robot = new Robot();
                     Robot.Name = RobotNames[0];
                     Robot.IsRobotConnected = a.isRobotConnected;
-                    Robot.CurrentLocation = a.robotPosition ?? "未知";
-                    Robot.CurrentAction = a.robotDoingNow ?? "未知";
-                    Robot.NextAction = a.robotDoingNext ?? "未知";
+                    Robot.CurrentLocation = a.robotPosition ?? "-";
+                    Robot.CurrentAction = a.robotDoingNow ?? "-";
+                    Robot.NextAction = a.robotDoingNext ?? "-";
                     if(RobotNames.Count >1)
                         Robot.SelectedRobotIndexDisplay = a.robotNumber.ToString() + " / " + RobotNames.Count.ToString();
                     else
@@ -334,13 +333,9 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private async Task UpperDoor(string storageId)
         {
-            if (!int.TryParse(storageId, out int n)) return;
-            int idx = n - 1;
-            if (idx is < 0 or > 7) return;
-            isUpperDoorOpen[idx] = !isUpperDoorOpen[idx];
-            try 
+            try
             {
-                var route = $"PLC/ELEMagzineDoorSwitch/0/0/{isUpperDoorOpen[idx].ToString().ToLower()}";
+                var route = $"/PLC/ELEMagzineDoorSwitch/0/0/true";
                 await _httpService.SendPutAsync(route, new { });
             }
             catch { }
@@ -350,31 +345,26 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private async Task LowerDoor(string storageId)
         {
-            if (!int.TryParse(storageId, out int n)) return;
-            int idx = n - 1;
-            if (idx is < 0 or > 7) return;
-            isLowerDoorOpen[idx] = !isLowerDoorOpen[idx];
-
             try
             {
-                var route = $"PLC/ELEMagzineDoorSwitch/0/1/{isUpperDoorOpen[idx].ToString().ToLower()}";
+                var route = $"PLC/ELEMagzineDoorSwitch/0/1/true";
                 await _httpService.SendPutAsync(route, new { });
             }
             catch { }
         }
        
         [ObservableProperty]
-        private bool _isDoorLightOn;
+        //private bool _isDoorLightOn;
 
+        private bool _isDoorLightOn;
         // 新增命令：ToggleButton 切換時呼叫
         [RelayCommand]
         private async Task DoorLightSwitchChanged(bool isChecked)
         {
-            // 0: 關閉, 1: 開啟
-            int lightSwitch = isChecked ? 1 : 0;
             try
             {
-                var route = $"PLC/EleMagazineDoorLightSwitch/0/{lightSwitch}";
+
+                var route = $"PLC/EleMagzineDoorLightSwitch/0/{(isChecked).ToString().ToLower()}";
                 await _httpService.SendPutAsync(route, new { });
             }
             catch { }
@@ -432,7 +422,7 @@ namespace FMSFrontend.ViewModels
 
         #region ControlUnit Start Pause Stop  Reset Dispatch
         [RelayCommand]
-        private async Task RobotStartButton()
+        private async Task RobotStartButtonClick()
         {
             if (!StartStatus)
             {

@@ -12,9 +12,7 @@ namespace OSCARMAXFMS_V3.DBmodels
     public class AppointmentMaintenance
     {
         [BsonRepresentation(BsonType.ObjectId)]
-        public string _id { get; set; } // ID（MongoDB 物件識別碼）
-
-        //未知
+        public string _id { get; set; } = ""; // ID（MongoDB 物件識別碼）
         public string maintenance { get; set; } = "";  // 保養項目或設備名稱（例：EDM1 潤滑）
         public string productLine {  get; set; } = "";  // 所屬產線（第 x 條產線）
         public int index {  get; set; } // 該產線中的第幾台

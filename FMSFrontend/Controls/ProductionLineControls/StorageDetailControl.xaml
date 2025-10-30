@@ -20,7 +20,7 @@
 
     <Grid>
         <!-- 陰影層 -->
-        <Border Background="#33000000" CornerRadius="18" Margin="-2,-2,-2,-2" />
+        <Border Background="#33000000" CornerRadius="18" Margin="2,-2,-2,-2" />
 
         <!-- 外層圓角白底 + 陰影 -->
         <Border CornerRadius="18" Background="#FFFFFF" BorderBrush="#DDD" ClipToBounds="True" SnapsToDevicePixels="True">
@@ -100,7 +100,7 @@
                         </Border>
 
                         <!-- 狀態列 -->
-                        <Grid Grid.Column="2" FocusVisualStyle="{x:Null}" HorizontalAlignment="Left" Margin="182,0,0,0">
+                        <Grid Grid.Column="2" FocusVisualStyle="{x:Null}" HorizontalAlignment="Left" Margin="60,0,0,0">
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Right">
                                 <!-- 上排：彩色狀態統計 -->
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">

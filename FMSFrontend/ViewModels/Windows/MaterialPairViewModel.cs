@@ -346,6 +346,7 @@ public partial class MaterialPairViewModel : ObservableObject
             string? json = null;
             try
             {
+                RfidTagBrush = Brushes.Gray;
                 // 取得原始回傳字串（API 回傳 body 為純文字 TagSerial）
                 json = await _httpService.GetJsonAsyncNoDeserialize("RFIDMgmtModule/Read_Tag_ID/0/2", default);
             }
@@ -354,17 +355,10 @@ public partial class MaterialPairViewModel : ObservableObject
                 // 忽略單次錯誤（可加日誌）
                 json = null;
             }
-
             if (!string.IsNullOrWhiteSpace(json))
             {
-                // 若 Tag 有變動，更新並亮起 Tag 燈 3 秒
-                if (!string.Equals(json, TagSerial, StringComparison.Ordinal))
-                {
-                    TagSerial = json;
-                    RfidTagBrush = Brushes.LimeGreen;
-                    _tagOffTimer.Stop();
-                    _tagOffTimer.Start();
-                }
+                TagSerial = json;
+                RfidTagBrush = Brushes.LimeGreen;
             }
             else
             {
