@@ -1,14 +1,18 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Interfaces;
+using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
 using FMSFrontend.ViewModels.Production;
+using OSCARMAXFMS_V3.DBmodels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
-using CommunityToolkit.Mvvm.Input;
 
 namespace FMSFrontend.ViewModels.Windows
 {
@@ -16,6 +20,9 @@ namespace FMSFrontend.ViewModels.Windows
 
     public sealed partial class ShowMaterialWindowViewModel : ObservableObject
     {
+        private readonly IWindowService _windowService;
+        private readonly IHttpService _httpService;
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(KindText))]
         private MaterialKind kind;
@@ -33,6 +40,9 @@ namespace FMSFrontend.ViewModels.Windows
         // 鎖定狀態（供 ElectrodeDetailView 使用）
         [ObservableProperty]
         private bool isLocked;
+
+        [ObservableProperty]
+        private bool isDisabled;
 
         // 1 電極再使用（綠）
         [RelayCommand]
@@ -73,7 +83,82 @@ namespace FMSFrontend.ViewModels.Windows
         [RelayCommand]
         private void ClearReservation()
         {
-            // TODO: 解除預約
+        }
+        [RelayCommand]
+        private async Task UpdataElectrode()  //電極鎖定
+        {
+            if (DetailViewModel is ElectrodeDetailViewModel )
+            {
+                ElectrodeDetailViewModel e = (ElectrodeDetailViewModel)DetailViewModel;
+                Electrode electrode = new()
+                {
+                    _id = e.Id,
+                    restriction = IsLocked
+                };
+                var ok = await _httpService.SendPutAsync("Electrode/DB_UpdateElectrodeData", electrode);
+            }
+        }
+        [RelayCommand]
+        private async Task  UpdataWorkpiece() //工件鎖定
+        {
+            if (DetailViewModel is WorkpieceDetailViewModel)
+            {
+                WorkpieceDetailViewModel w = (WorkpieceDetailViewModel)DetailViewModel;
+                Workpiece workpiece = new()
+                {
+                    _id = w.Id,
+                    restriction = IsLocked
+                };
+                var ok = await _httpService.SendPutAsync("Workpiece/DB_UpdateWorkpieceData", workpiece);
+            }
+        }
+        [RelayCommand]
+        private async Task UpdataStorage() //電擊庫鎖定
+        {
+            Storage storage = new();
+            if (DetailViewModel is WorkpieceDetailViewModel)
+            {
+                WorkpieceDetailViewModel w = (WorkpieceDetailViewModel)DetailViewModel;
+                    storage = new()
+                    {
+                        _id = w.StorageId,
+                        restriction = IsLocked
+                    };
+            }
+            else if (DetailViewModel is ElectrodeDetailViewModel)
+            {
+                ElectrodeDetailViewModel e = (ElectrodeDetailViewModel)DetailViewModel;
+                storage = new()
+                {
+                    _id = e.StorageId,
+                    restriction = IsLocked
+                };
+            }
+            var ok = await _httpService.SendPutAsync("Storage/DB_UpdateStorageData", storage);
+        }
+        [RelayCommand]
+        private async Task CancelBookStorage() //解除預約
+        {
+            Storage storage = new();
+            if (DetailViewModel is WorkpieceDetailViewModel)
+            {
+                WorkpieceDetailViewModel w = (WorkpieceDetailViewModel)DetailViewModel;
+                storage = new()
+                {
+                    _id = w.StorageId,
+                    restriction = IsLocked
+                };
+            }
+            else if (DetailViewModel is ElectrodeDetailViewModel)
+            {
+                ElectrodeDetailViewModel e = (ElectrodeDetailViewModel)DetailViewModel;
+                storage = new()
+                {
+                    _id = e.StorageId,
+                    restriction = IsLocked
+                };
+            }
+            var ok = await _httpService.SendPutAsync("Storage/DB_UpdateStorageData", storage);
         }
 
         public string KindText => Kind switch
@@ -84,11 +169,13 @@ namespace FMSFrontend.ViewModels.Windows
         };
 
         // 空畫面
-        public ShowMaterialWindowViewModel()
+        public ShowMaterialWindowViewModel(IHttpService httpService)
         {
             Kind = MaterialKind.None;
             DetailViewModel = new EmptyMaterialDetailViewModel();
+            _httpService = httpService;
         }
+
 
         // ★ 由點擊的格位載入資料
         public void LoadFrom(SlotViewModel slot)

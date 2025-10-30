@@ -43,8 +43,8 @@ namespace FMSFrontend.ViewModels.Production
                 foreach (var m in machines)
                 {
                     var card = MapToWorkOrderData(m);
-                    card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl);
-                    card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl);
+                    card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl, _httpService);
+                    card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl, _httpService);
                     Machines.Add(card);
                 }
             }
@@ -93,8 +93,8 @@ namespace FMSFrontend.ViewModels.Production
                         if (processed.Contains(name)) continue;
 
                         var card = MapToWorkOrderData(m);
-                        card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl);
-                        card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl);
+                        card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl, _httpService);
+                        card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl, _httpService);
                         Machines.Add(card);
                     }
                 });

@@ -10,7 +10,7 @@ namespace OSCARMAXFMS_V3.DBmodels
     public class ASRSParameter
     {
         [BsonRepresentation(BsonType.ObjectId)]
-        public string _id { get; set; } // MongoDB 物件識別碼
+        public string _id { get; set; } = "";// MongoDB 物件識別碼
 
         [JsonPropertyName("isRobotConnected")]
         public bool isRobotConnected { get; set; } // 與控制器連線（通訊心跳正常）

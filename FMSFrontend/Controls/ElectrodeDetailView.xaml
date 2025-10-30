@@ -51,7 +51,7 @@
                 <Grid>
                     <TextBlock Text="電極資訊" Margin="16,0" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="#111" />
                     <!-- 右上角鎖定膠囊 -->
-                    <ToggleButton Style="{StaticResource LockPillButton}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0" ToolTip="鎖定/解除鎖定" IsChecked="{Binding Restriction, Mode=TwoWay, TargetNullValue=False}" />
+                    <ToggleButton Name ="ElecRestriction" Command="{Binding DataContext.UpdataElectrodeCommand, RelativeSource={RelativeSource AncestorType=Window}}"  Style="{StaticResource LockPillButton}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0" ToolTip="鎖定/解除鎖定" IsChecked="{Binding Restriction, Mode=TwoWay, TargetNullValue=False}" />
                 </Grid>
             </Border>
 

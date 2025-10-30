@@ -261,7 +261,8 @@ namespace FMSFrontend.ViewModels.Production
                                     Electrode = new ElectrodeModel
                                     {
                                         TagSerial = info2.Tag ?? tag,
-                                        Restriction = info2.Restriction
+                                        ElecRestriction = info2.Restriction,
+                                        StorageRestriction = rec?.restriction ?? false
                                     },
                                     Timeline = Enumerable.Empty<TimelineItemModel>()
                                 };
@@ -274,7 +275,7 @@ namespace FMSFrontend.ViewModels.Production
                                     Workpiece = new WorkpieceModel
                                     {
                                         SerialCode = info2.Tag ?? tag,
-                                        Restriction = info2.Restriction
+                                        WorkRestriction = info2.Restriction
                                     },
                                     Timeline = Enumerable.Empty<TimelineItemModel>()
                                 };
@@ -295,7 +296,8 @@ namespace FMSFrontend.ViewModels.Production
                                         Electrode = new ElectrodeModel
                                         {
                                             TagSerial = rec?.ondeskTagserial ?? string.Empty,
-                                            Restriction = restr
+                                            ElecRestriction = restr,
+                                            StorageRestriction = rec?.restriction ?? false
                                         },
                                         Timeline = Enumerable.Empty<TimelineItemModel>()
                                     };
@@ -308,7 +310,7 @@ namespace FMSFrontend.ViewModels.Production
                                         Workpiece = new WorkpieceModel
                                         {
                                             SerialCode = rec?.ondeskTagserial ?? string.Empty,
-                                            Restriction = restr
+                                            WorkRestriction = restr
                                         },
                                         Timeline = Enumerable.Empty<TimelineItemModel>()
                                     };
@@ -492,7 +494,9 @@ namespace FMSFrontend.ViewModels.Production
                                     Electrode = new ElectrodeModel
                                     {
                                         TagSerial = info2.Tag ?? tag,
-                                        Restriction = info2.Restriction
+                                        ElecRestriction = info2.Restriction,
+                                        StorageRestriction = rec?.restriction ?? false
+
                                     },
                                     Timeline = Enumerable.Empty<TimelineItemModel>()
                                 };
@@ -505,7 +509,7 @@ namespace FMSFrontend.ViewModels.Production
                                     Workpiece = new WorkpieceModel
                                     {
                                         SerialCode = info2.Tag ?? tag,
-                                        Restriction = info2.Restriction
+                                        WorkRestriction = info2.Restriction
                                     },
                                     Timeline = Enumerable.Empty<TimelineItemModel>()
                                 };
@@ -525,10 +529,12 @@ namespace FMSFrontend.ViewModels.Production
                                         Electrode = new ElectrodeModel
                                         {
                                             TagSerial = rec?.ondeskTagserial ?? string.Empty,
-                                            Restriction = restr
+                                            ElecRestriction = restr,
+                                            StorageRestriction = rec.restriction ?? false
                                         },
                                         Timeline = Enumerable.Empty<TimelineItemModel>()
                                     };
+
                                 }
                                 else
                                 {
@@ -538,7 +544,8 @@ namespace FMSFrontend.ViewModels.Production
                                         Workpiece = new WorkpieceModel
                                         {
                                             SerialCode = rec?.ondeskTagserial ?? string.Empty,
-                                            Restriction = restr
+                                            WorkRestriction = restr,
+                                            StorageRestriction = rec?.restriction ?? false
                                         },
                                         Timeline = Enumerable.Empty<TimelineItemModel>()
                                     };
@@ -657,7 +664,7 @@ namespace FMSFrontend.ViewModels.Production
 
     public class StoragePageViewModel : ObservableObject
     {
-        public string StorageName { get; set; } = string.Empty;
+        public string StorageName { get; set; } = string.Empty; //storge Name
         public int Rows { get; set; }
         public int Columns { get; set; }
 
@@ -668,7 +675,7 @@ namespace FMSFrontend.ViewModels.Production
     {
         // 讓 Status 有變更通知（CommunityToolkit 會產生公開屬性）
         [ObservableProperty]
-        private string status = "Empty";
+        private string status = "Empty"; //電極 狀態
 
         [ObservableProperty]
         private string text = "";

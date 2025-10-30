@@ -33,7 +33,7 @@
     </UserControl.Resources>
 
     <Border CornerRadius="12" BorderBrush="#000" BorderThickness="1" Background="White">
-        <Grid>
+        <Grid Cursor="Hand">
             <Grid.RowDefinitions>
                 <RowDefinition Height="44" />
                 <!-- 標題列 -->
@@ -48,7 +48,7 @@
                 <Grid>
                     <TextBlock Text="工件資訊" Margin="16,0" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="#111" />
                     <!-- 右上角鎖定膠囊 -->
-                    <ToggleButton Style="{StaticResource LockPillButton}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0" ToolTip="鎖定/解除鎖定" IsChecked="{Binding Restriction, Mode=TwoWay}" />
+                    <ToggleButton  Name ="WorkRestriction" Command="{Binding DataContext.UpdataWorkpieceCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource LockPillButton}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0" ToolTip="鎖定/解除鎖定" IsChecked="{Binding Restriction, Mode=TwoWay}" />
                 </Grid>
             </Border>
 

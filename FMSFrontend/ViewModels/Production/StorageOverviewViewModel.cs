@@ -219,12 +219,14 @@ namespace FMSFrontend.ViewModels.Production
                                 Electrode = new ElectrodeModel
                                 {
                                     TagSerial = rec?.ondeskTagserial ?? string.Empty,
-                                    Restriction = restrictionValue
+                                    ElecRestriction = restrictionValue,
+                                    StorageRestriction = rec?.restriction ?? false
                                 },
                                 Workpiece = new WorkpieceModel
                                 {
                                     SerialCode = rec?.ondeskTagserial ?? string.Empty,
-                                    Restriction = restrictionValue
+                                    WorkRestriction = restrictionValue,
+                                    StorageRestriction = rec?.restriction ?? false
                                 }
                             }
                         };

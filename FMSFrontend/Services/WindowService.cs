@@ -20,7 +20,7 @@ namespace FMSFrontend.Services
     public class WindowService : IWindowService
     {
         private ShowMaterialWindow? _materialWindow;
-        private readonly ShowMaterialWindowViewModel _vm = new();  // ← 單一 VM，重複使用
+        private readonly ShowMaterialWindowViewModel _vm ;  // ← 單一 VM，重複使用
         public void ShowUploadSheetWindow()
         {
             var window = new UploadsheetsWindow();
@@ -166,9 +166,9 @@ namespace FMSFrontend.Services
         private ShowMaterialWindowViewModel? _infoVm;
 
         // ===== 你要的公開 API：Electrode =====
-        public void ShowMaterialInformation(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline)
+        public void ShowMaterialInformation(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline,IHttpService httpService)
         {
-            EnsureMaterialInformationWindow();
+            EnsureMaterialInformationWindow(httpService);
 
             _infoVm!.Kind = MaterialKind.Electrode;
             _infoVm.SlotCode = null; // 資訊視窗不顯示倉位/操作列
@@ -179,9 +179,9 @@ namespace FMSFrontend.Services
         }
 
         // ===== 你要的公開 API：Workpiece（補齊介面需求） =====
-        public void ShowMaterialInformation(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline)
+        public void ShowMaterialInformation(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, IHttpService httpService)
         {
-            EnsureMaterialInformationWindow();
+            EnsureMaterialInformationWindow(httpService);
 
             _infoVm!.Kind = MaterialKind.Workpiece;
             _infoVm.SlotCode = null; // 資訊視窗不顯示倉位/操作列
@@ -192,11 +192,11 @@ namespace FMSFrontend.Services
         }
 
         // 建立 / 還原視窗
-        private void EnsureMaterialInformationWindow()
+        private void EnsureMaterialInformationWindow(IHttpService httpService)
         {
             if (_infoWindow is { IsLoaded: true }) return;
 
-            _infoVm = new ShowMaterialWindowViewModel();
+            _infoVm = new ShowMaterialWindowViewModel(httpService);
             _infoWindow = new ShowMaterialInformationWindow
             {
                 DataContext = _infoVm,
@@ -227,7 +227,6 @@ namespace FMSFrontend.Services
                 _infoWindow.Show();
             }
         }
-
     }
     // 新增：簡單的訊息型別（放在同一 namespace 下）
     public sealed class UploadSheetsClosedMessage : ValueChangedMessage<bool>
