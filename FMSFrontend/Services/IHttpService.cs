@@ -13,6 +13,8 @@ namespace FMSFrontend.Services
         // 取得並反序列化 JSON（GET）
         Task<T?> GetJsonAsync<T>(string route, CancellationToken cancellationToken = default);
 
+        // 取得原始字串（不反序列化）
+        Task<string?> GetJsonAsyncNoDeserialize(string route, CancellationToken cancellationToken = default);
 
 
         //送出 PUT JSON，並反序列化回傳 JSON

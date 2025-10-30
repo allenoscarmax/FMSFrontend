@@ -25,6 +25,8 @@ namespace FMSFrontend.ViewModels
         public List<string> DateFilterOptions { get; set; } = new() { "今天", "過去7天", "自訂" };
         [ObservableProperty]
         private string selectedFilterOption = "今天";
+        [ObservableProperty]
+        private int selectedFilterIndex = 0;
 
         private DateTime? lastValidFromDate = DateTime.Today;
         private DateTime? lastValidToDate = DateTime.Today;
@@ -40,6 +42,17 @@ namespace FMSFrontend.ViewModels
         {
             OnPropertyChanged(nameof(IsCustomDateMode));
             ApplyDateFilter();
+            // 當改變篩選模式時重新抓取並套用新的日期範圍
+            RefreshFetch();
+        }
+
+        partial void OnSelectedFilterIndexChanged(int value)
+        {
+            // 當以 index 選擇時，轉成對應的選項文字，讓現有的文字處理流程負責套用與抓取
+            if (value >= 0 && value < DateFilterOptions.Count)
+            {
+                SelectedFilterOption = DateFilterOptions[value];
+            }
         }
 
         [ObservableProperty]
@@ -67,6 +80,8 @@ namespace FMSFrontend.ViewModels
                 return;
             }
             lastValidFromDate = value;
+            // 若為自訂模式且日期變更，重新抓取
+            if (IsCustomDateMode) RefreshFetch();
         }
 
         [ObservableProperty]
@@ -95,12 +110,17 @@ namespace FMSFrontend.ViewModels
             }
 
             lastValidToDate = value;
+            // 若為自訂模式且日期變更，重新抓取
+            if (IsCustomDateMode) RefreshFetch();
         }
 
         public RFIDBindPageViewModel(IWindowService windowService, IHttpService httpService)
         {
             _windowService = windowService;
             _httpService = httpService;
+
+            // 初始化 SelectedFilterIndex 根據 SelectedFilterOption
+            SelectedFilterIndex = DateFilterOptions.IndexOf(SelectedFilterOption);
 
             // 進入時自動刷新（第一次載入）
             RefreshFetch();
@@ -186,8 +206,16 @@ namespace FMSFrontend.ViewModels
                  new List<RFIDWriteLog>();
 
             BurnHistoryList.Clear();
+
+            // 應用日期過濾：若 FromDate/ToDate 設定則以其範圍過濾（包含整天）
+            DateTime from = FromDate?.Date ?? DateTime.MinValue;
+            DateTime to = ToDate?.Date.AddDays(1).AddTicks(-1) ?? DateTime.MaxValue; // inclusive end of day
+
             foreach (var w in rFIDWriteLog)
+            {
+                if (w.timeStamp < from || w.timeStamp > to) continue;
                 BurnHistoryList.Add(MapToBurnRecordData(w));
+            }
         }
 
         private static BurnRecord MapToBurnRecordData(RFIDWriteLog ws)

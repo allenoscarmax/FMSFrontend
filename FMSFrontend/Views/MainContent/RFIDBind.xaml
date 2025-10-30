@@ -2,6 +2,7 @@
 
     <UserControl.Resources>
         <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </UserControl.Resources>
 
     <Border Background="{DynamicResource PageViewBrush}">
@@ -116,9 +117,8 @@
                     <!-- 🔍 篩選與清除 -->
                     <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12" VerticalAlignment="Center">
                         <DockPanel LastChildFill="True" Margin="0,0,0,0" VerticalAlignment="Center">
-                            <ComboBox Width="200" Height="32" FontSize="20" Margin="0,0,30,0" Background="White" BorderBrush="#444" BorderThickness="1" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{StaticResource PillComboBoxStyle}"/>
-
-                            <DatePicker SelectedDate="{Binding FromDate}" IsEnabled="{Binding IsCustomDateMode}" Width="200" Height="32" Style="{StaticResource CustomDatePickerStyle}">
+                            <ComboBox Width="200" Name="cbb_Day" Height="32" FontSize="20" Margin="0,0,30,0" Background="White" BorderBrush="#444" BorderThickness="1" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" SelectedIndex="{Binding SelectedFilterIndex, Mode=TwoWay}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{StaticResource PillComboBoxStyle}"/>
+                            <DatePicker Name ="DayPicker1" SelectedDate="{Binding FromDate}" IsEnabled="{Binding IsCustomDateMode}" Width="200" Height="32" Style="{StaticResource CustomDatePickerStyle}" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVis}}">
                                 <DatePicker.CalendarStyle>
                                     <Style TargetType="Calendar">
                                         <Setter Property="CalendarItemStyle">
@@ -135,8 +135,8 @@
 
                                 
                             </DatePicker>
-                            <TextBlock Text="→" FontSize="20" VerticalAlignment="Center" Margin="12,0" />
-                            <DatePicker SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" Width="200" Height="32" Style="{StaticResource CustomDatePickerStyle}">
+                            <TextBlock Name="ttb_DayPicker" Text="→" FontSize="20" VerticalAlignment="Center" Margin="12,0" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVis}}" />
+                            <DatePicker Name="DayPicker2" SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" Width="200" Height="32" Style="{StaticResource CustomDatePickerStyle}" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVis}}">
                                 <DatePicker.CalendarStyle>
                                     <Style TargetType="Calendar">
                                         <Setter Property="CalendarItemStyle">

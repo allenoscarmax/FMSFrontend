@@ -20,7 +20,7 @@
 
     <Grid>
         <!-- 陰影層 -->
-        <Border Background="#33000000" CornerRadius="18" Margin="-2,-2,-2,-2" />
+        <Border Background="#33000000" CornerRadius="18" Margin="2,-2,-2,-2" />
 
         <!-- 外層圓角白底 + 陰影 -->
         <Border CornerRadius="18" Background="#FFFFFF" BorderBrush="#DDD" ClipToBounds="True" SnapsToDevicePixels="True">
@@ -90,21 +90,22 @@
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="84*" />
+                            <ColumnDefinition Width="737*"/>
                         </Grid.ColumnDefinitions>
 
                         <!-- 膠囊樣式（左側貼齊，右側圓角） -->
-                        <Border d:Background="#2779A7" Background="{Binding StorageType, Converter={StaticResource StorageTypeToBrushConverter}}" Height="40" CornerRadius="0,20,20,0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Padding="24,0" Width="172">
+                        <Border d:Background="#2779A7" Background="{Binding StorageType, Converter={StaticResource StorageTypeToBrushConverter}}" Height="40" CornerRadius="0,20,20,0" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,0" Width="172">
                             <TextBlock Text="{Binding StorageName}" d:Text="ES1" Foreground="White" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" />
                         </Border>
 
                         <!-- 狀態列 -->
-                        <Grid Grid.Column="1" FocusVisualStyle="{x:Null}" HorizontalAlignment="Right">
+                        <Grid Grid.Column="2" FocusVisualStyle="{x:Null}" HorizontalAlignment="Left" Margin="60,0,0,0">
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Right">
                                 <!-- 上排：彩色狀態統計 -->
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
                                     <!--待加工-->
-                                    <Border Background="DarkGoldenrod" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                    <Border Name ="BorderWaiting" Background="#E6B93E" CornerRadius="6" Margin="4,0" Padding="12,4">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="待加工" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
@@ -114,7 +115,7 @@
                                     </Border>
 
                                     <!--加工中-->
-                                    <Border Background="Green" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                    <Border  Name ="BorderProcessing" Background="#56C06C" CornerRadius="6" Margin="4,0" Padding="12,4">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="加工中" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
@@ -124,7 +125,7 @@
                                     </Border>
 
                                     <!--異常-->
-                                    <Border Background="IndianRed" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                    <Border Name ="BorderError" Background="#C0392B" CornerRadius="6" Margin="4,0" Padding="12,4">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="異常" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
@@ -134,7 +135,7 @@
                                     </Border>
 
                                     <!--完成-->
-                                    <Border Background="RoyalBlue" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                    <Border Name ="BorderCompleted" Background="#2F64CF" CornerRadius="6" Margin="4,0" Padding="12,4">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="完成" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
@@ -166,7 +167,7 @@
 
                                 <!-- 下排：灰底圖示狀態列 -->
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="-50,0,0,0" Visibility="{Binding IsElectrode, Converter={StaticResource BoolToVis}}">
-                                   <!--
+                                    <!--
                                     <Border Style="{StaticResource GrayTagStatusStyle}">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                             <Path Data="{StaticResource CheckIconGeometry}" 
@@ -233,12 +234,12 @@
                                                         <!-- Row 0: 鎖 icon（禁用） -->
                                                         <materialDesign:PackIcon Grid.Row="0" Kind="Lock" Width="16" Height="16" Foreground="Black" Visibility="{Binding IsLocked, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" />
 
-                                                       
+
                                                         <!-- Row 1: 工件名稱 -->
                                                         <TextBlock Grid.Row="1" Text="{Binding Text}" FontSize="14" FontWeight="SemiBold" Foreground="{Binding TextColor, FallbackValue=Black}" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                                       
+
                                                         <!-- Row 2: 狀態 icon（左：檢查狀態，右：加工結果） -->
-                                                        
+
                                                         <Grid Grid.Row="2" Margin="0">
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition Width="*" />
@@ -249,7 +250,7 @@
                                                             <!--
                                                             <Path Grid.Column="0" Width="16" Height="16" Fill="#555" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding IsElectrode, Converter={StaticResource BoolToVisibilityConverter}}" Data="{Binding ResultStatus, Converter={StaticResource ResultStatusToGeometryConverter}}" />
                                                             -->
-                                                            
+
                                                             <!-- 右：加工結果狀態 -->
                                                             <!--
                                                             <Image Grid.Column="1" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding IsElectrode, Converter={StaticResource BoolToVisibilityConverter}}" Source="{Binding CheckStatus, Converter={StaticResource CheckStatusToImageConverter}}" />
