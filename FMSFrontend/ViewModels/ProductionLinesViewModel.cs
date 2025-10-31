@@ -28,6 +28,9 @@ namespace FMSFrontend.ViewModels
 {
     public partial class ProductionLinesViewModel : ObservableObject
     {
+        public readonly IWindowService _windowService;
+        private readonly IHttpService _httpService;
+
         private object? _currentStorageView;
         public object? CurrentStorageView
         {
@@ -42,21 +45,20 @@ namespace FMSFrontend.ViewModels
             set => SetProperty(ref _currentWorkingZoneView, value);
         }
 
-        public readonly IWindowService _windowService;
-        private readonly IHttpService _httpService; // ← 新增
+
          // 新增：Timer 欄位
         private readonly DispatcherTimer _refreshTimer;
         public ProductionLinesViewModel(IWindowService windowService, IHttpService httpService) // ← 變更簽章
         {
             _windowService = windowService;
-            _httpService = httpService; // ← 新增
+            _httpService = httpService;
 
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             bool b = ini.Read("Prarm", "IsStorageOverviewControl") == "True";
             // 新增：建立並啟動每秒刷新 Timer
             _refreshTimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromSeconds(1)
+                Interval = TimeSpan.FromSeconds(100)
             };
             _refreshTimer.Tick += RefreshTimer_Tick;
             _refreshTimer.Start();
@@ -140,10 +142,9 @@ namespace FMSFrontend.ViewModels
 
             if (material == null)
             {
-                _windowService.ShowMaterialEmpty();
+                _windowService.ShowMaterialEmpty(_httpService);
                 return;
             }
-
             //try
             //{
             // 先依 TagSerial 呼叫對應 API，更新詳細資料與時間軸
@@ -157,7 +158,7 @@ namespace FMSFrontend.ViewModels
                 {
                     // 沒有 TagSerial 就 fallback
                     ElectrodeModel elecFallback = material.Electrode ?? new ElectrodeModel();
-                    _windowService.ShowElectrode(elecFallback, material.Timeline ?? Array.Empty<TimelineItemModel>(), slotCode);
+                    _windowService.ShowElectrode(elecFallback, material.Timeline ?? Array.Empty<TimelineItemModel>(),_httpService, slotCode);
                     return;
                 }
 
@@ -172,7 +173,7 @@ namespace FMSFrontend.ViewModels
                   var elecTimeline = await _httpService.GetJsonAsync<IEnumerable<TimelineItemModel>>($"Electrode/DB_GetElectrodeTimelinebyId/{id}")
                                        ?? Array.Empty<TimelineItemModel>();
                 //3.顯示資料
-                _windowService.ShowElectrode(elecVm, elecTimeline, slotCode);
+                _windowService.ShowElectrode(elecVm, elecTimeline, _httpService, slotCode);
             }
             else // Workpiece
             {
@@ -180,7 +181,7 @@ namespace FMSFrontend.ViewModels
                 if (string.IsNullOrWhiteSpace(tagSerial))
                 {
                     WorkpieceModel wpFallback = material.Workpiece ?? new WorkpieceModel();
-                    _windowService.ShowWorkpiece(wpFallback, material.Timeline ?? Array.Empty<TimelineItemModel>(), slotCode);
+                    _windowService.ShowWorkpiece(wpFallback, material.Timeline ?? Array.Empty<TimelineItemModel>(), _httpService, slotCode);
                     return;
                 }
                 // 1. 資料
@@ -196,7 +197,7 @@ namespace FMSFrontend.ViewModels
                 var wpTimeline = await _httpService.GetJsonAsync<IEnumerable<TimelineItemModel>>($"Workpiece/DB_GetWorkpieceTimelineByWorkpieceId/{id}")
                                  ?? Array.Empty<TimelineItemModel>();
                 //3.顯示資料
-                _windowService.ShowWorkpiece(wpVm, wpTimeline, slotCode);
+                _windowService.ShowWorkpiece(wpVm, wpTimeline, _httpService, slotCode);
             }
             /*
             }

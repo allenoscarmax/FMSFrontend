@@ -24,17 +24,20 @@ namespace FMSFrontend.Interfaces
         void ShowMaterial(object detailViewModel,
                      IEnumerable<TimelineItemViewModel> timeline,
                      MaterialKind kind,
+                     IHttpService httpService,
                      string? slotCode = null);
 
         void ShowElectrode(ElectrodeModel elec,
                            IEnumerable<TimelineItemModel> tl,
+                           IHttpService httpService,
                            string? slotCode = null);
 
         void ShowWorkpiece(WorkpieceModel wp,
                            IEnumerable<TimelineItemModel> tl,
+                           IHttpService httpService,
                            string? slotCode = null);
 
-        void ShowMaterialEmpty();
+        void ShowMaterialEmpty(IHttpService httpService);
 
         // 新增：純資訊視窗（不顯示倉位/操作列）
         void ShowMaterialInformation(ElectrodeModel elec, IEnumerable<TimelineItemModel> tl, IHttpService httpService);

@@ -30,13 +30,16 @@
                     <Border Name ="RobotBorderStatus" Grid.Row="1" Height="12" Width="90" CornerRadius="6" Margin="0,0,0,0">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="Background" Value="Gray" />
+                                <!-- Default when not connected -->
+                                <Setter Property="Background" Value="#FF808080" />
                                 <Style.Triggers>
+                                    <!-- When connected, use SelectedRobot.StatusBrush -->
                                     <DataTrigger Binding="{Binding SelectedRobot.IsRobotConnected, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
-                                        <Setter Property="Background" Value="Green" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding SelectedRobot.IsRobotConnected, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="False">
-                                        <Setter Property="Background" Value="#FF808080" />
+                                        <Setter Property="Background">
+                                            <Setter.Value>
+                                                <Binding Path="SelectedRobot.StatusBrush" RelativeSource="{RelativeSource AncestorType=UserControl}" />
+                                            </Setter.Value>
+                                        </Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

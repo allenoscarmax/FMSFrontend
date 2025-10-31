@@ -20,13 +20,16 @@ namespace FMSFrontend.Services
     public class WindowService : IWindowService
     {
         private ShowMaterialWindow? _materialWindow;
-        private readonly ShowMaterialWindowViewModel _vm ;  // ← 單一 VM，重複使用
+        // 移除 readonly，改為可為 null 的欄位，稍後在 EnsureMaterialWindow 建立
+        private ShowMaterialWindowViewModel? _vm;  // ← 單一 VM，重複使用
+
         public void ShowUploadSheetWindow()
         {
             var window = new UploadsheetsWindow();
             window.ShowDialog();
             // 新增：上傳視窗關閉後廣播訊息，讓其他 ViewModel 可接收到並刷新資料
             WeakReferenceMessenger.Default.Send(new UploadSheetsClosedMessage(true));
+
         }
 
         public void ShowMessage(string message)
@@ -65,10 +68,10 @@ namespace FMSFrontend.Services
         //}
 
         // ★ 通用：detail VM + timeline + 類別
-        public void ShowMaterial(object detailViewModel, IEnumerable<TimelineItemViewModel> timeline, MaterialKind kind, string? slotCode = null)
+        public void ShowMaterial(object detailViewModel, IEnumerable<TimelineItemViewModel> timeline, MaterialKind kind, IHttpService httpService, string? slotCode = null)
         {
-            EnsureMaterialWindow();
-            _vm.Kind = kind;
+            EnsureMaterialWindow(httpService);
+            _vm!.Kind = kind;
             _vm.SlotCode = slotCode;
             _vm.DetailViewModel = detailViewModel;
 
@@ -82,10 +85,10 @@ namespace FMSFrontend.Services
             ShowOrActivate();
         }
 
-        public void ShowWorkpiece(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, string? slotCode = null)
+        public void ShowWorkpiece(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, IHttpService httpService, string? slotCode = null)
         {
-            EnsureMaterialWindow();
-            _vm.Kind = MaterialKind.Workpiece;
+            EnsureMaterialWindow(httpService);
+            _vm!.Kind = MaterialKind.Workpiece;
             _vm.SlotCode = slotCode ?? (!string.IsNullOrWhiteSpace(workpiece?.No) ? workpiece.No : workpiece?.Name);
             _vm.DetailViewModel = new WorkpieceDetailViewModel(workpiece ?? new WorkpieceModel());
 
@@ -93,10 +96,10 @@ namespace FMSFrontend.Services
             ShowOrActivate();
         }
 
-        public void ShowElectrode(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, string? slotCode = null)
+        public void ShowElectrode(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, IHttpService httpService, string? slotCode = null)
         {
-            EnsureMaterialWindow();
-            _vm.Kind = MaterialKind.Electrode;
+            EnsureMaterialWindow(httpService);
+            _vm!.Kind = MaterialKind.Electrode;
             _vm.SlotCode = slotCode ?? (!string.IsNullOrWhiteSpace(electrode?.No) ? electrode.No : electrode?.Name);
             _vm.DetailViewModel = new ElectrodeDetailViewModel(electrode?? new ElectrodeModel());
 
@@ -104,10 +107,10 @@ namespace FMSFrontend.Services
             ShowOrActivate();
         }
 
-        public void ShowMaterialEmpty()
+        public void ShowMaterialEmpty( IHttpService httpService)
         {
-            EnsureMaterialWindow();
-            _vm.Kind = MaterialKind.None;
+            EnsureMaterialWindow(httpService);
+            _vm!.Kind = MaterialKind.None;
             _vm.SlotCode = null;
             _vm.DetailViewModel = new EmptyMaterialDetailViewModel();
             _vm.Timeline.Clear();
@@ -115,10 +118,11 @@ namespace FMSFrontend.Services
         }
 
 
-        private void EnsureMaterialWindow()
+        private void EnsureMaterialWindow(IHttpService httpService)
         {
             if (_materialWindow == null)
             {
+                _vm = new ShowMaterialWindowViewModel(httpService);
                 _materialWindow = new ShowMaterialWindow(_vm)   // ← 傳入 vm
                 {
                     Owner = Application.Current.MainWindow
@@ -134,7 +138,7 @@ namespace FMSFrontend.Services
         }
         private void FillTimeline(IEnumerable<TimelineItemModel> timeline)
         {
-            _vm.Timeline.Clear();
+            _vm!.Timeline.Clear();
             if (timeline == null) return;
 
             foreach (var t in timeline)

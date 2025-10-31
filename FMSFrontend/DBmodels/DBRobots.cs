@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace OSCARMAXFMS_V3.DBmodels
 {
-    public class Robots // 機器人主檔資料模型
+    public class DBRobots // 機器人主檔資料模型
     {
         [BsonRepresentation(BsonType.ObjectId)]
         public string _id { get; set; } = "";// ID（MongoDB 物件識別碼）

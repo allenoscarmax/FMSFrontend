@@ -48,7 +48,8 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private UserControl? _currentPageView;
         [ObservableProperty] private string currentPageKey = "";  // 存目前的頁面
         [ObservableProperty] private UserControl? storageControlPage ;
-        
+       
+
 
         [ObservableProperty] private bool _isIdle;
         [ObservableProperty] private bool _isHint = true;
@@ -135,16 +136,10 @@ namespace FMSFrontend.ViewModels
             try  //取得Robot資料
             {
                 JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Robot/DB_GetAllRobots", default);
-                List<Robots> list = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
-                     JsonSerializer.Deserialize<List<Robots>>(json.Value.GetRawText()) ?? new List<Robots>() :
-                     new List<Robots>();
-                RobotNames = new List<string>();
-                RobotNames.Clear();
-                foreach (var r in list)
-                {
-                    RobotNames.Add(r.robotName);
-
-                }
+                List<DBRobots> list = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
+                     JsonSerializer.Deserialize<List<DBRobots>>(json.Value.GetRawText()) ?? new List<DBRobots>() :
+                     new List<DBRobots>();
+               
             }
             catch { }
             _ = FetchASRSParameterAsync();
@@ -152,6 +147,7 @@ namespace FMSFrontend.ViewModels
             // Start ASRS parameter polling timer
             asrsTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, async (s, e) =>
             {
+                await FetchRobotAsync();
                 await FetchASRSParameterAsync();
                 await FetchDoorAsync();
             }, Application.Current.Dispatcher);
@@ -163,23 +159,35 @@ namespace FMSFrontend.ViewModels
             try
             {
                 JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("ASRS/GetASRSParameter", default);
-                ASRSParameter a = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
-                      JsonSerializer.Deserialize<ASRSParameter>(json.Value.GetRawText()) ?? new ASRSParameter() :
-                      new ASRSParameter();
+                ASRSParameter a = new ASRSParameter();
+                if (json.HasValue)
+                {
+                    var root = json.Value;
+                    if (root.ValueKind == JsonValueKind.Object)
+                        a = JsonSerializer.Deserialize<ASRSParameter>(root.GetRawText()) ?? new ASRSParameter();
+                    else if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
+                        a = JsonSerializer.Deserialize<ASRSParameter>(root[0].GetRawText()) ?? new ASRSParameter();
+                    else return;
+                }
                 if (a != null)
                 {
                     //更新機器人狀態
-                    if (Robot == null ) Robot = new Robot();
-                    Robot.Name = RobotNames[0];
+                    if (Robot == null) Robot = new Robot();
+
+
+                    Robot.IsRobotConnected = a.isRobotConnected;
+                    Robot.StatusBrush = a.robotStatus switch
+                    {
+                        0 => new SolidColorBrush(Color.FromRgb(0x55, 0x55, 0x55)), // 灰色
+                        1 => new SolidColorBrush(Color.FromRgb(0x3D, 0xBE, 0x4C)), // 綠色
+                        2 => new SolidColorBrush(Color.FromRgb(0xF2, 0xC2, 0x30)), // 黃色
+                        3 => new SolidColorBrush(Color.FromRgb(0xC8, 0x3A, 0x33)), // 紅色
+                        _ => Brushes.Gray
+                    };
                     Robot.IsRobotConnected = a.isRobotConnected;
                     Robot.CurrentLocation = a.robotPosition ?? "-";
                     Robot.CurrentAction = a.robotDoingNow ?? "-";
                     Robot.NextAction = a.robotDoingNext ?? "-";
-                    if(RobotNames.Count >1)
-                        Robot.SelectedRobotIndexDisplay = a.robotNumber.ToString() + " / " + RobotNames.Count.ToString();
-                    else
-                        Robot.SelectedRobotIndexDisplay = "1 / 1";
-
                     //更新按鈕狀態
                     var dark = new SolidColorBrush(Color.FromRgb(0x00, 0x4E, 0x79));
                     var light = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
@@ -202,10 +210,66 @@ namespace FMSFrontend.ViewModels
                     DispatchForeground = a.dispatchSwitch ? light : dark;
                 }
             }
-            catch
+            catch { }
+        }
+        private async Task FetchRobotAsync()
+        {
+            JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Robot/DB_GetAllRobots", default);
+            if (json.HasValue)
             {
-                // ignore transient errors
+                var root = json.Value;
+                if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
+                {
+                    List<DBRobots> List = JsonSerializer.Deserialize<List<DBRobots>>(root.GetRawText()) ?? new();
+                    if (List != null && List.Count > 0)
+                    {
+                        DBRobots a = List[0];
+                        Robot.TagSerial = a.onDeckObjSerial;
+                        Robot.Name = a.robotName;
+                        Robot.SelectedRobotIndexDisplay = "1 / 1";
+                    }
+                }
+                else return;
             }
+            if (CurrentPageKey == "ProductionLines")
+            {
+                var s = $"Electrode/DB_GetElectrodesByTagSerial/{Robot.TagSerial}";
+                json = await _httpService.GetJsonAsync<JsonElement>(s, default);
+                if (json.HasValue)
+                {
+                    var root = json.Value;
+                    if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
+                    {
+                        List<Electrode> List = JsonSerializer.Deserialize<List<Electrode>>(root.GetRawText()) ?? new();
+                        if (List != null && List.Count > 0)
+                        {
+                            Electrode a = List[0];
+                            Robot.MaterialKind = "電極";
+                            Robot.MaterialName = "電極: " + a.electrodeName;
+                            return;
+                        }
+                    }
+                }
+
+                string wroute = $"Workpiece/DB_GetWorkpieceByTagSerial/{Robot.TagSerial}";
+                json = await _httpService.GetJsonAsync<JsonElement>(wroute, default);
+                if (json.HasValue)
+                {
+                    var root = json.Value;
+                    if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
+                    {
+                        List<Workpiece> List = JsonSerializer.Deserialize<List<Workpiece>>(root.GetRawText()) ?? new();
+                        if (List != null && List.Count > 0)
+                        {
+                            Workpiece a = List[0];
+                            Robot.MaterialKind = "工件";
+                            Robot.MaterialName = "工件: " + a.workpieceName;
+                            return;
+                        }
+                    }
+                }
+            }
+            Robot.MaterialName = "";
         }
         private async Task FetchDoorAsync()
         {
@@ -223,10 +287,7 @@ namespace FMSFrontend.ViewModels
                     LowerDoorLights2[0] = p.PartMagzineDoorOpen[0] ? Brushes.Lime : Brushes.Gray;
                 }
             }
-            catch
-            {
-                // ignore transient errors
-            }
+            catch { }
         }
         #region PageChange
 
