@@ -8,6 +8,7 @@ namespace FMSFrontend.ViewModels
 {
     public class WorkpieceDetailViewModel
     {
+        public string Id { get; set; } = "";
         public string JigSerial { get; set; } = "";
         public string WorkName { get; set; } = "";
         public string WorkNo { get; set; } = "";
@@ -20,9 +21,12 @@ namespace FMSFrontend.ViewModels
         public string PartName { get; set; } = "";
         public string SerialCode { get; set; } = "";
         public string RouteNo { get; set; } = "";
-
+        public bool Restriction { get; set; } = false;
+        public string StorageId { get; set; }    = "";
+        public bool StorageRestriction { get; set; }  
         public WorkpieceDetailViewModel(WorkpieceModel model)
         {
+            Id = model.Id?? "";
             JigSerial = model?.JigSerial ?? "";
             WorkName = model?.Name ?? "";
             WorkNo = model?.No ?? "";
@@ -39,6 +43,7 @@ namespace FMSFrontend.ViewModels
     }
     public class WorkpieceModel
     {
+        public string Id { get; set; } = "";
         public string JigSerial { get; set; } = "";   // 治具序號
         public string Name { get; set; } = "";         // 工件/零件名稱
         public string No { get; set; } = "";          // 工件編號
@@ -51,6 +56,8 @@ namespace FMSFrontend.ViewModels
         public string PartName { get; set; } = "";    // 零件名稱
         public string SerialCode { get; set; } = "";   // 序號順序碼
         public string RouteNo { get; set; } = "";     // 途程號碼
-        public bool Restriction { get; set; }        //限制/鎖定（DB 為 bool）
+        public bool WorkRestriction { get; set; }        //限制/鎖定（DB 為 bool）
+        public string StorageId { get; set; } = "";// 新增： Storage 限制/鎖定
+        public bool StorageRestriction { get; set; }        //限制/鎖定（DB 為 bool）
     }
 }

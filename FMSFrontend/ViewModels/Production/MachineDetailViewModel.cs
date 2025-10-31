@@ -52,8 +52,8 @@ namespace FMSFrontend.ViewModels.Production
                 {
                     foreach (var card in cards)
                     {
-                        card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl);
-                        card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl);
+                        card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl, _httpService);
+                        card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl, _httpService);
                     }
 
                     // Replace the whole collection in one operation to minimize layout/measure passes
@@ -113,8 +113,8 @@ namespace FMSFrontend.ViewModels.Production
                         if (processed.Contains(name)) continue;
 
                         var card = MapToWorkOrderData(m);
-                        card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl);
-                        card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl);
+                        card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl, _httpService);
+                        card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl, _httpService);
                         MachineDetails.Add(card);
                     }
                 }, DispatcherPriority.Background);

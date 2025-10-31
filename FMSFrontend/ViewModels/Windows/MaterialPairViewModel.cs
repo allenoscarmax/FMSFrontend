@@ -66,7 +66,6 @@ public partial class MaterialPairViewModel : ObservableObject
     private readonly DispatcherTimer _tagOffTimer;
     Electrode electrode = new Electrode();
     Workpiece workpiece = new Workpiece();
-    string SelecteId = "";
     // 方便 UI 綁定顯示文字（可選）
     public string CurrentTitle => ShowElectrodeSection ? "電極配對" : "工件配對";
 
@@ -189,8 +188,6 @@ public partial class MaterialPairViewModel : ObservableObject
             newPairWindow.ShowDialog();
         }
     }
-
-
     // =========================
     // 新增：選擇工件 / 電極
     // =========================
@@ -296,6 +293,7 @@ public partial class MaterialPairViewModel : ObservableObject
         var items = new List<WorksheetItem>();
 
         var worksheets = await _httpService.GetJsonAsync<List<Worksheets>>("Worksheet/DB_GetAllWorkSheet", default);
+
         foreach (var ws in worksheets)
         {
             items.Add(new WorksheetItem

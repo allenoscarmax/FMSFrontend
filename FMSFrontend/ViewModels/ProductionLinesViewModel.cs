@@ -20,6 +20,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
 
@@ -27,6 +28,9 @@ namespace FMSFrontend.ViewModels
 {
     public partial class ProductionLinesViewModel : ObservableObject
     {
+        public readonly IWindowService _windowService;
+        private readonly IHttpService _httpService;
+
         private object? _currentStorageView;
         public object? CurrentStorageView
         {
@@ -41,21 +45,20 @@ namespace FMSFrontend.ViewModels
             set => SetProperty(ref _currentWorkingZoneView, value);
         }
 
-        public readonly IWindowService _windowService;
-        private readonly IHttpService _httpService; // ← 新增
+
          // 新增：Timer 欄位
         private readonly DispatcherTimer _refreshTimer;
         public ProductionLinesViewModel(IWindowService windowService, IHttpService httpService) // ← 變更簽章
         {
             _windowService = windowService;
-            _httpService = httpService; // ← 新增
+            _httpService = httpService;
 
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             bool b = ini.Read("Prarm", "IsStorageOverviewControl") == "True";
             // 新增：建立並啟動每秒刷新 Timer
             _refreshTimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromSeconds(1)
+                Interval = TimeSpan.FromSeconds(100)
             };
             _refreshTimer.Tick += RefreshTimer_Tick;
             _refreshTimer.Start();
@@ -139,63 +142,63 @@ namespace FMSFrontend.ViewModels
 
             if (material == null)
             {
-                _windowService.ShowMaterialEmpty();
+                _windowService.ShowMaterialEmpty(_httpService);
                 return;
             }
-
             //try
             //{
-                // 先依 TagSerial 呼叫對應 API，更新詳細資料與時間軸
-                if (material.Kind == MaterialKind.Electrode)
+            // 先依 TagSerial 呼叫對應 API，更新詳細資料與時間軸
+            // 1. 資料
+      
+            if (material.Kind == MaterialKind.Electrode)
+            {
+                // ElectrodeModel 使用 TagSerial
+                var tagSerial = material.Electrode?.TagSerial;
+                if (string.IsNullOrWhiteSpace(tagSerial))
                 {
-                    // ElectrodeModel 使用 TagSerial
-                    var tagSerial = material.Electrode?.TagSerial;
-                    if (string.IsNullOrWhiteSpace(tagSerial))
-                    {
-                        // 沒有 TagSerial 就 fallback
-                        ElectrodeModel elecFallback = material.Electrode ?? new ElectrodeModel();
-                        _windowService.ShowElectrode(elecFallback, material.Timeline ?? Array.Empty<TimelineItemModel>(), slotCode);
-                        return;
-                    }
-
-                    // 1. 資料
-                    var elecList = await _httpService.GetJsonAsync<List<Electrode>>($"Electrode/DB_GetElectrodesByTagSerial/{tagSerial}");
-                    var dbElec = elecList?.FirstOrDefault();
-                    // 2. 時間軸
-                    var elecTimeline = await _httpService.GetJsonAsync<IEnumerable<TimelineItemModel>>($"Electrode/DB_GetElectrodesTimelineByTagSerial/{tagSerial}")
-                                       ?? Array.Empty<TimelineItemModel>();
-
-                    // 映射 DB → View Model（若 API 無部分欄位，用舊值補）
-                    var elecVm = MapElectrode(dbElec, material.Electrode);
-
-                    _windowService.ShowElectrode(elecVm, elecTimeline, slotCode);
+                    // 沒有 TagSerial 就 fallback
+                    ElectrodeModel elecFallback = material.Electrode ?? new ElectrodeModel();
+                    _windowService.ShowElectrode(elecFallback, material.Timeline ?? Array.Empty<TimelineItemModel>(),_httpService, slotCode);
+                    return;
                 }
-                else // Workpiece
-                {
-                    var tagSerial = material.Workpiece?.SerialCode;
-                    if (string.IsNullOrWhiteSpace(tagSerial))
-                    {
-                        WorkpieceModel wpFallback = material.Workpiece ?? new WorkpieceModel();
-                        _windowService.ShowWorkpiece(wpFallback, material.Timeline ?? Array.Empty<TimelineItemModel>(), slotCode);
-                        return;
-                    }
 
                 // 1. 資料
-                //var wpList = await _httpService.GetJsonAsync<List<Workpiece>>($"Workpiece/DB_GetWorkpieceByTagSerial/{tagSerial}");
-                //var dbWp = wpList?.FirstOrDefault();
-                    string route = $"Workpiece/DB_GetWorkpieceByTagSerial/{tagSerial}";
-                    JsonElement? json = await _httpService.GetJsonAsync<JsonElement>(route, default);
-                    Workpiece dbWp = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
-                    JsonSerializer.Deserialize<Workpiece>(json.Value.GetRawText()) ?? new Workpiece() :
-                    new Workpiece();
-                    // 2. 時間軸
-                    var wpTimeline = await _httpService.GetJsonAsync<IEnumerable<TimelineItemModel>>($"Workpiece/DB_GetWorkpieceTimelineByTagSerial/{tagSerial}")
-                                     ?? Array.Empty<TimelineItemModel>();
-
-                    var wpVm = MapWorkpiece(dbWp, material.Workpiece);
-
-                    _windowService.ShowWorkpiece(wpVm, wpTimeline, slotCode);
+                var elecList = await _httpService.GetJsonAsync<List<Electrode>>($"Electrode/DB_GetElectrodesByTagSerial/{tagSerial}");
+                var dbElec = elecList?.FirstOrDefault();
+                // 映射 DB → View Model（若 API 無部分欄位，用舊值補）
+                var elecVm = MapElectrode(dbElec, material.Electrode);
+                var id = elecVm.Id;
+                elecVm.StorageRestriction = material.Electrode?.StorageRestriction ?? false;
+                  // 2. 時間軸
+                  var elecTimeline = await _httpService.GetJsonAsync<IEnumerable<TimelineItemModel>>($"Electrode/DB_GetElectrodeTimelinebyId/{id}")
+                                       ?? Array.Empty<TimelineItemModel>();
+                //3.顯示資料
+                _windowService.ShowElectrode(elecVm, elecTimeline, _httpService, slotCode);
+            }
+            else // Workpiece
+            {
+                var tagSerial = material.Workpiece?.SerialCode;
+                if (string.IsNullOrWhiteSpace(tagSerial))
+                {
+                    WorkpieceModel wpFallback = material.Workpiece ?? new WorkpieceModel();
+                    _windowService.ShowWorkpiece(wpFallback, material.Timeline ?? Array.Empty<TimelineItemModel>(), _httpService, slotCode);
+                    return;
                 }
+                // 1. 資料
+                string route = $"Workpiece/DB_GetWorkpieceByTagSerial/{tagSerial}";
+                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>(route, default);
+                Workpiece dbWp = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
+                JsonSerializer.Deserialize<Workpiece>(json.Value.GetRawText()) ?? new Workpiece() :
+                new Workpiece();
+                var wpVm = MapWorkpiece(dbWp, material.Workpiece);
+                wpVm.StorageRestriction = material.Workpiece?.StorageRestriction ?? false;
+                var id = wpVm.Id;
+                // 2. 時間軸
+                var wpTimeline = await _httpService.GetJsonAsync<IEnumerable<TimelineItemModel>>($"Workpiece/DB_GetWorkpieceTimelineByWorkpieceId/{id}")
+                                 ?? Array.Empty<TimelineItemModel>();
+                //3.顯示資料
+                _windowService.ShowWorkpiece(wpVm, wpTimeline, _httpService, slotCode);
+            }
             /*
             }
             catch
@@ -221,6 +224,7 @@ namespace FMSFrontend.ViewModels
             return new ElectrodeModel
             {
                 // 以 API 為主，缺的用舊值補
+                Id = db._id,
                 JigSerial = "",
                 Name = db.electrodeName ?? "",
                 No = "", // DB 未提供 → 沿用舊值
@@ -232,7 +236,7 @@ namespace FMSFrontend.ViewModels
                 UsageRate = "",
                 Compensation = db.offset ?? "",
                 ProcessedCount = db.useTimes?.ToString() ?? "",
-                Restriction = db.restriction 
+                ElecRestriction = db.restriction 
             };
         }
 
@@ -247,6 +251,7 @@ namespace FMSFrontend.ViewModels
             return new WorkpieceModel
             {
                 // 以 API 為主，缺的用舊值補
+                Id = db._id,
                 JigSerial = "",
                 Name = db.workpieceName ?? "",
                 No = "",
@@ -259,7 +264,7 @@ namespace FMSFrontend.ViewModels
                 PartName = "",
                 SerialCode = "",
                 RouteNo = "",
-                Restriction = db.restriction?? false
+                WorkRestriction = db.restriction ?? false
             };
         }
 
@@ -356,16 +361,16 @@ namespace FMSFrontend.ViewModels
                     Name = "示範電極"
                     // 其他屬性依你的模型可再補
                 };
-                _windowService.ShowMaterialInformation(demoElec, Array.Empty<TimelineItemModel>());
+                _windowService.ShowMaterialInformation(demoElec, Array.Empty<TimelineItemModel>(), _httpService);
                 return;
             }
 
             var tl = m.Timeline ?? Enumerable.Empty<TimelineItemModel>();
 
             if (m.Kind == MaterialKind.Electrode && m.Electrode != null)
-                _windowService.ShowMaterialInformation(m.Electrode, tl);
+                _windowService.ShowMaterialInformation(m.Electrode, tl, _httpService);
             else if (m.Kind == MaterialKind.Workpiece && m.Workpiece != null)
-                _windowService.ShowMaterialInformation(m.Workpiece, tl);
+                _windowService.ShowMaterialInformation(m.Workpiece, tl, _httpService);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace OSCARMAXFMS_V3.DBmodels
         public string edmpgm { get; set; } = "";// EDM 加工程式名稱/代碼
         public bool? needInspect { get; set; } // 是否需要檢驗（可為 null 表示未知）
         public bool? inspected { get; set; } // 是否已檢驗（可為 null 表示未知）
-        public string inspectStatus { get; set; } = ""; // 檢驗結果狀態（例如 PASS/FAIL/NG/待檢）
+        public string? inspectStatus { get; set; } = ""; // 檢驗結果狀態（例如 PASS/FAIL/NG/待檢）
         public string inspectOffset { get; set; } = ""; // 檢驗偏移/量測值（文字表示，單位/格式依系統定義）
         public string setupUser { get; set; } = ""; // 建置/設定人員帳號或名稱
     }

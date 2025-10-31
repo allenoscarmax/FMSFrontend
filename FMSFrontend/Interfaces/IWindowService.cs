@@ -1,4 +1,5 @@
-﻿using FMSFrontend.ViewModels;
+﻿using FMSFrontend.Services;
+using FMSFrontend.ViewModels;
 using FMSFrontend.ViewModels.Windows;
 using System;
 using System.Collections.Generic;
@@ -23,20 +24,23 @@ namespace FMSFrontend.Interfaces
         void ShowMaterial(object detailViewModel,
                      IEnumerable<TimelineItemViewModel> timeline,
                      MaterialKind kind,
+                     IHttpService httpService,
                      string? slotCode = null);
 
         void ShowElectrode(ElectrodeModel elec,
                            IEnumerable<TimelineItemModel> tl,
+                           IHttpService httpService,
                            string? slotCode = null);
 
         void ShowWorkpiece(WorkpieceModel wp,
                            IEnumerable<TimelineItemModel> tl,
+                           IHttpService httpService,
                            string? slotCode = null);
 
-        void ShowMaterialEmpty();
+        void ShowMaterialEmpty(IHttpService httpService);
 
         // 新增：純資訊視窗（不顯示倉位/操作列）
-        void ShowMaterialInformation(ElectrodeModel elec, IEnumerable<TimelineItemModel> tl);
-        void ShowMaterialInformation(WorkpieceModel wp, IEnumerable<TimelineItemModel> tl);
+        void ShowMaterialInformation(ElectrodeModel elec, IEnumerable<TimelineItemModel> tl, IHttpService httpService);
+        void ShowMaterialInformation(WorkpieceModel wp, IEnumerable<TimelineItemModel> tl, IHttpService httpService);
     }
 }

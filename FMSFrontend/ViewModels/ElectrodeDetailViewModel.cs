@@ -8,6 +8,7 @@ namespace FMSFrontend.ViewModels
 {
     public class ElectrodeDetailViewModel
     {
+        public string Id { get; set; } = "";
         public string JigSerial { get; set; } //治具序號
         public string ElectrodeName { get; set; } //電極名稱
         public string ElectrodeNo { get; set; } //電極編號
@@ -19,9 +20,13 @@ namespace FMSFrontend.ViewModels
         public string UsageRate { get; set; } //電極使用率
         public string Compensation { get; set; } //電極補償值
         public string ProcessedCount { get; set; }//被加工次數
+        public bool ElecRestriction { get; set; } // 新增：工件或電極 限制/鎖定
+        public string StorageId { get; set; } = ""; // 新增： Storage 限制/鎖定
+        public bool StorageRestriction { get; set; } // 新增： Storage 限制/鎖定
         // ... 其他欄位
         public ElectrodeDetailViewModel(ElectrodeModel model)
         {
+            Id = model.Id;
             JigSerial = model.JigSerial;
             ElectrodeName = model.Name;
             ElectrodeNo = model.No;
@@ -29,13 +34,17 @@ namespace FMSFrontend.ViewModels
             Status = model.Status;
             HolderNo = model.HolderNo;
             TagSerial = model.TagSerial;
-            MaxDischargeCount   = model.MaxDischargeCount;
+            MaxDischargeCount = model.MaxDischargeCount;
             UsageRate = model.UsageRate;
             Compensation = model.Compensation;
             ProcessedCount = model.ProcessedCount;
+            ElecRestriction = model.ElecRestriction;
+            StorageRestriction = model.StorageRestriction;
         }
+        
         public class ElectrodeModel
         {
+            public string Id { get; set; } = "";
             public string JigSerial { get; set; } = "";//治具序號
             public string Name { get; set; } = "";//名稱
             public string No { get; set; } = ""; //編號
@@ -47,7 +56,10 @@ namespace FMSFrontend.ViewModels
             public string UsageRate { get; set; } = "";//電極使用率
             public string Compensation { get; set; } = "";//電極補償值
             public string ProcessedCount { get; set; } = "";//被加工次數
-            public bool? Restriction { get; set; } // 新增：限制/鎖定
+            public string StoragStatus { get; set; } = "";// 新增： Storage 狀態
+            public bool ElecRestriction { get; set; } // 新增：工件或電極 限制/鎖定
+            public string StorageId { get; set; } = ""; // 新增： Storage 限制/鎖定
+            public bool StorageRestriction { get; set; } // 新增： Storage 限制/鎖定
         }
     }
 }
