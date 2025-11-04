@@ -297,7 +297,7 @@ namespace FMSFrontend.ViewModels
             if (productionLines == null) productionLines = new ProductionLines();
             CurrentPageView = productionLines;
             CurrentPageKey = "ProductionLines";
-            WeakReferenceMessenger.Default.Send(new ValueChangedMessage<string>(CurrentPageKey));
+           // WeakReferenceMessenger.Default.Send(new ValueChangedMessage<string>(CurrentPageKey));
         }
 
         [RelayCommand]
@@ -358,13 +358,13 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void OpenAlarm()
         {
-            // 延遲建立 AlarmPage（避免一次建立過多 UI）
+                                          // 延遲建立 AlarmPage（避免一次建立過多 UI）
             var alarm = new AlarmPage();
-            CurrentPageView = alarm; // 你的 Alarm UserControl / Page
-                                               // 讓下方 PageMenu 不顯示選中狀態
-            CurrentPageKey = "";             // 或 string.Empty 都可
-                                               // 若你的 PageMenu 是用 SelectedIndex 套樣式，這行也一起用：
-                                               // SelectedPageIndex = -1;
+            CurrentPageView = alarm;      // 你的 Alarm UserControl / Page
+                                          // 讓下方 PageMenu 不顯示選中狀態
+            CurrentPageKey = "";          // 或 string.Empty 都可
+                                          // 若你的 PageMenu 是用 SelectedIndex 套樣式，這行也一起用：
+                                          // SelectedPageIndex = -1;
         }
 
         #endregion

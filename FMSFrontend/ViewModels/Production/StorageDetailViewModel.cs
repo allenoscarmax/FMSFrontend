@@ -2,18 +2,19 @@
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Controls;
 using FMSFrontend.Interfaces;
+using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
+using OSCARMAXFMS_V3.DBmodels;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows.Media;
-using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
 using System.Linq;  // ← 需要
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Windows;
-using OSCARMAXFMS_V3.DBmodels;
-using FMSFrontend.Services;
+using System.Windows.Media;
+using System.Windows.Threading;
+using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
 namespace FMSFrontend.ViewModels.Production
 {
     public partial class StorageDetailViewModel : ObservableObject
@@ -168,6 +169,7 @@ namespace FMSFrontend.ViewModels.Production
 
                 var page = new StoragePageViewModel
                 {
+
                     StorageName = unitName,
                     Rows = maxRow,
                     Columns = maxCol
@@ -180,7 +182,7 @@ namespace FMSFrontend.ViewModels.Production
                           .ToList();
 
                 // 現在也儲存 status 字串（若有）
-                var tagMap = new ConcurrentDictionary<string, (string Tag, bool Restriction, string Status)>(System.StringComparer.OrdinalIgnoreCase);
+                var tagMap = new ConcurrentDictionary<string, (string Tag, bool Restriction, string Status, string Name )>(System.StringComparer.OrdinalIgnoreCase);
 
                 if (tagSerials.Count > 0)
                 {
@@ -195,7 +197,7 @@ namespace FMSFrontend.ViewModels.Production
                                 var e = list.FirstOrDefault();
                                 if (e != null)
                                 {
-                                    tagMap[ts] = (e.tagSerial ?? ts, e.restriction, e.state);
+                                    tagMap[ts] = (e.tagSerial ?? ts, e.restriction, e.state, e.electrodeName);
                                 }
                             }
                             else
@@ -207,7 +209,7 @@ namespace FMSFrontend.ViewModels.Production
                                 new Workpiece();
                                 if (w != null)
                                 {
-                                    tagMap[ts] = (w.tagSerial ?? ts, w.restriction ?? false, w.status);
+                                    tagMap[ts] = (w.tagSerial ?? ts, w.restriction ?? false, w.status, w.workpieceName);
                                 }
                             }
                         }
@@ -230,15 +232,17 @@ namespace FMSFrontend.ViewModels.Production
 
                         // 決定格位的 Status（優先：tagMap 的 DB status → rec.state → Empty）
                         string slotStatus = "";
+                        string name = "";
                         if (!string.IsNullOrWhiteSpace(tag) && tagMap.TryGetValue(tag, out var info))
                         {
                             slotStatus = string.IsNullOrWhiteSpace(info.Status) ? "Empty" : info.Status;
+                            name = info.Name;
                         }
 
                         var slot = new SlotViewModel
                         {
                             Status = slotStatus,
-                            Text = "",
+                            Text = name,
                             IsElectrode = isElectrodeStore,
                             Line = int.TryParse(new string(unitName.Where(char.IsDigit).ToArray()), out var n) ? n : 0,
                             Row = r,
@@ -351,7 +355,7 @@ namespace FMSFrontend.ViewModels.Production
                 CompletedCount = completed.ToString();
                 BookedCount = booked.ToString();
                 RestrictionCount = restriction.ToString();
-            });
+            }, DispatcherPriority.Background);
         }
 
         /// <summary>
@@ -417,7 +421,7 @@ namespace FMSFrontend.ViewModels.Production
                           .Distinct()
                           .ToList();
 
-                var tagMap = new ConcurrentDictionary<string, (string Tag, bool Restriction, string Status)>(System.StringComparer.OrdinalIgnoreCase);
+                var tagMap = new ConcurrentDictionary<string, (string Tag, bool Restriction, string Status, string name)>(System.StringComparer.OrdinalIgnoreCase);
 
                 if (tagSerials.Count > 0)
                 {
@@ -432,7 +436,7 @@ namespace FMSFrontend.ViewModels.Production
                                 var e = list.FirstOrDefault();
                                 if (e != null)
                                 {
-                                    tagMap[ts] = (e.tagSerial ?? ts, e.restriction, e.state);
+                                    tagMap[ts] = (e.tagSerial ?? ts, e.restriction, e.state, e.electrodeName);
                                 }
                             }
                             else
@@ -444,7 +448,7 @@ namespace FMSFrontend.ViewModels.Production
                                 new Workpiece();
                                 if (w != null)
                                 {
-                                    tagMap[ts] = (w.tagSerial ?? ts, w.restriction ?? false, w.status);
+                                    tagMap[ts] = (w.tagSerial ?? ts, w.restriction ?? false, w.status, w.workpieceName);
                                 }
                             }
                         }
@@ -465,15 +469,17 @@ namespace FMSFrontend.ViewModels.Production
                         var tag = rec?.ondeskTagserial;
 
                         string slotStatus = "";
+                        string name = "";
                         if (!string.IsNullOrWhiteSpace(tag) && tagMap.TryGetValue(tag, out var info))
                         {
                             slotStatus = string.IsNullOrWhiteSpace(info.Status) ? "Empty" : info.Status;
+                            name = info.name;
                         }
 
                         var slot = new SlotViewModel
                         {
                             Status = slotStatus,
-                            Text = "",
+                            Text = name,
                             IsElectrode = isElectrodeStore,
                             Line = int.TryParse(new string(unitName.Where(char.IsDigit).ToArray()), out var n) ? n : 0,
                             Row = r,
@@ -647,7 +653,7 @@ namespace FMSFrontend.ViewModels.Production
                 CompletedCount = completed2.ToString();
                 BookedCount = booked2.ToString();
                 RestrictionCount = restriction2.ToString();
-            });
+            }, DispatcherPriority.Background);
         }
 
         private void UpdateCurrentStorageName()

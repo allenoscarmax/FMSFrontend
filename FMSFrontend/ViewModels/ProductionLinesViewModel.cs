@@ -31,6 +31,8 @@ namespace FMSFrontend.ViewModels
         public readonly IWindowService _windowService;
         private readonly IHttpService _httpService;
 
+        MachineDetailViewModel? machineDetailViewModel;
+        MachineOverviewViewModel? machineOverviewViewModel;
         private object? _currentStorageView;
         public object? CurrentStorageView
         {
@@ -52,7 +54,7 @@ namespace FMSFrontend.ViewModels
         {
             _windowService = windowService;
             _httpService = httpService;
-
+  
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             bool b = ini.Read("Prarm", "IsStorageOverviewControl") == "True";
             // 新增：建立並啟動每秒刷新 Timer
@@ -62,6 +64,11 @@ namespace FMSFrontend.ViewModels
             };
             _refreshTimer.Tick += RefreshTimer_Tick;
             _refreshTimer.Start();
+            if (b)
+                ShowOverview();
+            else
+                ShowDetail("0");
+            ShowMachineOverview();
             // 訂閱 MainWindowViewModel 的頁面刷新訊息：當切換到 RFIDBind 時重新抓取
             WeakReferenceMessenger.Default.Register<ValueChangedMessage<string>>(this, (r, message) =>
             {
@@ -98,7 +105,7 @@ namespace FMSFrontend.ViewModels
                 }
                 else if (workingDc is Production.MachineOverviewViewModel movm)
                 {
-                    _ = movm.RefreshAsync();
+                    _ = movm.UpdataAsync();
                 }
             }
             catch (Exception ex)
@@ -186,10 +193,12 @@ namespace FMSFrontend.ViewModels
                 }
                 // 1. 資料
                 string route = $"Workpiece/DB_GetWorkpieceByTagSerial/{tagSerial}";
-                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>(route, default);
-                Workpiece dbWp = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
-                JsonSerializer.Deserialize<Workpiece>(json.Value.GetRawText()) ?? new Workpiece() :
-                new Workpiece();
+                //JsonElement? json = await _httpService.GetJsonAsync<JsonElement>(route, default);
+                //Workpiece dbWp = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
+                //JsonSerializer.Deserialize<Workpiece>(json.Value.GetRawText()) ?? new Workpiece() :
+                //new Workpiece();
+                var wpList = await _httpService.GetJsonAsync<List<Workpiece>>(route);
+                var dbWp = wpList?.FirstOrDefault();
                 var wpVm = MapWorkpiece(dbWp, material.Workpiece);
                 wpVm.StorageRestriction = material.Workpiece?.StorageRestriction ?? false;
                 var id = wpVm.Id;
@@ -294,20 +303,22 @@ namespace FMSFrontend.ViewModels
         public void ShowMachineDetail()
         {
             // TODO: 傳入 storageId 給 DetailControl，如果要的話
-            var overviewVM = new MachineDetailViewModel(this, _httpService); // 傳入自己當 parent 與 httpService
+          if(machineDetailViewModel == null) 
+                machineDetailViewModel = new MachineDetailViewModel(this, _httpService); // 傳入自己當 parent 與 httpService
             var overviewView = new MachineDetailControl
             {
-                DataContext = overviewVM // 這一步非常重要！
+                DataContext = machineDetailViewModel // 這一步非常重要！
             };
             CurrentWorkingZoneView = overviewView;
         }
         [RelayCommand]
         public void ShowMachineOverview()
         {
-            var overviewVM = new MachineOverviewViewModel(this, _httpService); // 傳入自己當 parent
+            if (machineOverviewViewModel == null)
+                machineOverviewViewModel = new MachineOverviewViewModel(this, _httpService); // 傳入自己當 parent
             var overviewView = new MachineOverviewControl
             {
-                DataContext = overviewVM // 這一步非常重要！
+                DataContext = machineOverviewViewModel // 這一步非常重要！
             };
             CurrentWorkingZoneView = overviewView;
         }

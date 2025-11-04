@@ -236,7 +236,7 @@
 
 
                                                         <!-- Row 1: 工件名稱 -->
-                                                        <TextBlock Grid.Row="1" Text="{Binding Text}" FontSize="14" FontWeight="SemiBold" Foreground="{Binding TextColor, FallbackValue=Black}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                        <TextBlock Grid.Row="1" Text="{Binding Text}" FontSize="14" FontWeight="SemiBold" Foreground="{Binding TextColor, FallbackValue=White}" VerticalAlignment="Center" HorizontalAlignment="Center" />
 
                                                         <!-- Row 2: 狀態 icon（左：檢查狀態，右：加工結果） -->
 

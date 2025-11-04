@@ -8,10 +8,11 @@ using FMSFrontend.Views.Windows;
 using OSCARMAXFMS_V3.DBmodels;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Threading;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
-using System.Linq;
 
 namespace FMSFrontend.ViewModels.Production
 {
@@ -19,7 +20,8 @@ namespace FMSFrontend.ViewModels.Production
     {
         private readonly ProductionLinesViewModel _parent;
         private readonly IHttpService _httpService;
-        public Task RefreshAsync() => Task.Run(async () => await UpdateMachinesAsync());
+        public Task UpdataAsync() => Task.Run(async () => await UpdateMachinesAsync());
+        public Task LoadAsync() => Task.Run(async () => await LoadMachinesAsync());
         public ObservableCollection<MachineCardViewModel> Machines { get; } = new();
 
         public MachineOverviewViewModel(ProductionLinesViewModel parent, IHttpService httpService)
@@ -27,7 +29,8 @@ namespace FMSFrontend.ViewModels.Production
             _parent = parent ?? throw new ArgumentNullException(nameof(parent));
             _httpService = httpService ?? throw new ArgumentNullException(nameof(httpService));
 
-            _ = LoadMachinesAsync();
+            //_ = LoadMachinesAsync();
+            LoadAsync();
         }
         private async Task LoadMachinesAsync()
         {
@@ -35,18 +38,22 @@ namespace FMSFrontend.ViewModels.Production
             {
                 // 讀取 API 回傳的 JSON
                 JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Machine/DB_GetAllMachines", default);
+
                 List<Machines> machines = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined)
                     ? JsonSerializer.Deserialize<List<Machines>>(json.Value.GetRawText()) ?? new List<Machines>()
                     : new List<Machines>();
                 // 顯示機器資料
-                Machines.Clear();
-                foreach (var m in machines)
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    var card = MapToWorkOrderData(m);
-                    card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl, _httpService);
-                    card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl, _httpService);
-                    Machines.Add(card);
-                }
+                    Machines.Clear();
+                    foreach (var m in machines)
+                    {
+                        var card = MapToWorkOrderData(m);
+                        card.OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl, _httpService);
+                        card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl, _httpService);
+                        Machines.Add(card);
+                    }
+                }, DispatcherPriority.Background);
             }
             catch (Exception ex)
             {
@@ -97,7 +104,7 @@ namespace FMSFrontend.ViewModels.Production
                         card.OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl, _httpService);
                         Machines.Add(card);
                     }
-                });
+                }, DispatcherPriority.Background);
             }
             catch (Exception ex)
             {

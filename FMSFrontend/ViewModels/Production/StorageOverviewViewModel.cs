@@ -42,7 +42,8 @@ namespace FMSFrontend.ViewModels.Production
             _httpService = httpService;
 
             // 啟動即載入
-            _ = LoadStorageAsync();
+            // _ = LoadStorageAsync();
+            RefreshAsync();
         }
 
         [RelayCommand]
@@ -61,34 +62,18 @@ namespace FMSFrontend.ViewModels.Production
         private async Task LoadStorageAsync()
         {
             // 1) 取得 Storage JSON（依你的需求先抓 JsonElement）
-            JsonElement json;
+            List<Storage> storages = new();
             try
             {
-                json = await _httpService.GetJsonAsync<JsonElement>("Storage/DB_GetAllStorageData");
-            }
-            catch
-            {
-                return;
-            }
-
-            // 2) 轉成模型並解析
-            List<Storage> storages;
-            try
-            {
+                JsonElement json = await _httpService.GetJsonAsync<JsonElement>("Storage/DB_GetAllStorageData");
                 storages = JsonSerializer.Deserialize<List<Storage>>(json.GetRawText()) ?? new List<Storage>();
             }
-            catch
-            {
-                return;
-            }
-
-            // 無資料
+            catch { return;  }
             if (storages.Count == 0)
             {
                 await Application.Current.Dispatcher.InvokeAsync(() => StorageUnits.Clear());
                 return;
             }
-
             // 依 StorageName + StorageNumber 分組（例如 E + 1 → ES1、W + 1 → W1，這裡直接 StorageName+StorageNumber）
             var groups = storages
                 .GroupBy(s => new { s.storageName, s.storageNumber })
@@ -171,8 +156,6 @@ namespace FMSFrontend.ViewModels.Production
                     });
                     await Task.WhenAll(tasks);
                 }
-
-
                 // 4) 依 row/col 建立所有格位，並依查回的資料更新 Status/IsReserved
                 for (int r = 1; r <= maxRow; r++)
                 {
@@ -230,14 +213,11 @@ namespace FMSFrontend.ViewModels.Production
                                 }
                             }
                         };
-
                         unit.Slots.Add(slot);
                     }
                 }
-
                 newUnits.Add(unit);
             }
-
             // 由 Storage 原始資料計算：restriction == true
             int restriction = storages.Count(s => s.restriction == true);
             // 由 Storage 原始資料計算：state == "Book"（大小寫不敏感）
