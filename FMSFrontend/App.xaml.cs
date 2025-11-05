@@ -1,4 +1,7 @@
-﻿using FMSFrontend.Helpers;
+﻿using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Threading;
+using FMSFrontend.Helpers;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
@@ -36,24 +39,77 @@ namespace FMSFrontend
 
             var services = new ServiceCollection();
 
-            // 原本的 typed client 會要求建構子有 HttpClient → 改用一般 Singleton
-            // services.AddHttpClient<IHttpService, HttpService>();
+            // === 共用服務層 ===
             services.AddSingleton<IHttpService, HttpService>();
-
-            // Services
             services.AddSingleton<IWindowService, WindowService>();
 
-            // 註冊 ViewModel
-            services.AddSingleton<MainWindowViewModel>();
-            services.AddSingleton<AlarmPageViewModel>();          // 需要共用狀態 → Singleton
+            #region RestoreSingleton
+            // === Robot ===
+            services.AddSingleton<RobotStore>();
+            services.AddSingleton<IRobotService, RobotService>();
+            services.AddSingleton<RobotLiveUpdater>();
 
-            // 註冊 MainWindow，讓 DI 可以注入 ViewModel
+
+            #endregion
+
+
+            // === ViewModel 註冊 ===
+            RegisterViewModels(services);
+
+            // === View 註冊 ===
+            RegisterViews(services);
+
+
+            // === MainWindow ===
             services.AddSingleton<MainWindow>();
 
             ServiceProvider = services.BuildServiceProvider();
 
+            // 啟動手臂資訊輪詢（只要啟一次）
+            ServiceProvider.GetRequiredService<RobotLiveUpdater>().Start();
+
+            // 啟動主視窗
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
         }
+
+        private void RegisterViewModels(IServiceCollection services)
+        {
+            // 單例 ViewModel（跨頁共用資料）
+            services.AddSingleton<MainWindowViewModel>();
+            services.AddSingleton<AlarmPageViewModel>();
+
+            // 一般頁面 (Transient，每次開啟新頁面會重新建立)
+            services.AddTransient<FactoryOverviewPageViewModel>();
+            services.AddTransient<InventoryInformationViewModel>();
+            services.AddTransient<MachineOverviewMainViewModel>();
+            services.AddTransient<MachineMainDetailViewModel>();
+            services.AddTransient<OperationHistoryViewModel>();
+            services.AddTransient<ProductionLinesViewModel>();
+            services.AddTransient<RFIDBindPageViewModel>();
+            services.AddTransient<SettingsPageViewModel>();
+            services.AddTransient<WorkOrderPageViewModel>();
+
+            // 細節頁或子頁面
+            services.AddTransient<ElectrodeDetailViewModel>();
+            services.AddTransient<WorkpieceDetailViewModel>();
+            services.AddTransient<EmptyMaterialDetailViewModel>();
+            services.AddTransient<TimelineItemViewModel>();
+            services.AddTransient<StorageUnitControlPageViewModel>();
+        }
+        private void RegisterViews(IServiceCollection services)
+        {
+            services.AddTransient<AlarmPage>();
+            services.AddTransient<FactoryOverviewPage>();
+            services.AddTransient<InventoryInformationPage>();
+            services.AddTransient<MachineOverviewPage>();
+            services.AddTransient<Manual>();
+            services.AddTransient<OperationHistory>();
+            services.AddTransient<ProductionLines>();
+            services.AddTransient<RFIDBind>();
+            services.AddTransient<SettingsView>();
+            services.AddTransient<WorkOrder>();
+        }
+
     }
 }

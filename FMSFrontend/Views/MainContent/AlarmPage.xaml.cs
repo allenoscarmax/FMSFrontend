@@ -24,7 +24,7 @@ namespace FMSFrontend.Views
     /// </summary>
     public partial class AlarmPage : UserControl
     {
-        public AlarmPage()
+        public AlarmPage(AlarmPageViewModel viewModel)
         {
             InitializeComponent();
             // 建立服務實例
@@ -38,7 +38,7 @@ namespace FMSFrontend.Views
             if (!DesignerProperties.GetIsInDesignMode(this))
             {
                 // 執行時：從 DI 取同一個 Singleton VM
-                DataContext = App.ServiceProvider!.GetRequiredService<AlarmPageViewModel>();
+                DataContext = viewModel;
             }
             else
             {

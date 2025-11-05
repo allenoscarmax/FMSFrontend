@@ -26,17 +26,10 @@ namespace FMSFrontend.Views
     /// </summary>
     public partial class WorkOrder : UserControl
     {
-        public WorkOrder()
+        public WorkOrder(WorkOrderPageViewModel viewModel)
         {
             InitializeComponent();
             this.PreviewMouseLeftButtonDown += WorkOrder_PreviewMouseLeftButtonDown;
-
-                // 透過 DI 取得服務
-            var windowService = App.ServiceProvider.GetRequiredService<IWindowService>();
-            var httpService   = App.ServiceProvider.GetRequiredService<IHttpService>();
-
-            // 建立 ViewModel 並注入服務
-            var viewModel = new WorkOrderPageViewModel(windowService, httpService);
 
             this.DataContext = viewModel;
 

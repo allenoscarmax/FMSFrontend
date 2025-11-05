@@ -22,15 +22,9 @@ namespace FMSFrontend.Views
     /// </summary>
     public partial class OperationHistory : UserControl
     {
-        public OperationHistory()
+        public OperationHistory(OperationHistoryViewModel viewModel)
         {
             InitializeComponent();
-            // 建立服務實例
-            var windowService = new WindowService();
-
-            // 建立 ViewModel 並注入服務
-            var viewModel = new OperationHistoryViewModel(windowService);
-
             this.DataContext = viewModel;
         }
     }

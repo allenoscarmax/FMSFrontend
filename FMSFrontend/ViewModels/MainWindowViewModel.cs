@@ -1,17 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 //using OSCARMAXFMS_V3.DBmodels;
-using CommunityToolkit.Mvvm.Messaging; // ← 新增
-using CommunityToolkit.Mvvm.Messaging.Messages; // ← 新增：Message 型別
-using ControlzEx.Standard;
 using FMSFrontend.Controls;
 using FMSFrontend.Extensions;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
 using FMSFrontend.Helpers;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
 using IniFile;
+using Microsoft.Extensions.DependencyInjection;
 using OSCARMAXFMS_V3.DBmodels;
 using OSCARMAXFMS_V3.Models;
 using System;
@@ -31,16 +31,15 @@ namespace FMSFrontend.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
+        // 建議做成 static readonly，避免每次輪詢都 new
+        private static readonly SolidColorBrush Dark = new(Color.FromRgb(0x00, 0x4E, 0x79));
+        private static readonly SolidColorBrush Light = new(Color.FromRgb(0xFF, 0xFF, 0xFF));
         // 開啟頁面視窗（改為延遲建立：避免啟動時一次建立大量 UI）
         private ProductionLines? productionLines ;
-        private FactoryOverviewPage? factoryOverviewPage;
-        private MachineOverviewPage? machineOverviewPage;
-        private WorkOrder? workOrder;
-        private RFIDBind? rFIDBind;
-        private OperationHistory? operationHistory;
-        private InventoryInformationPage? inventoryInformationPage;
-        private SettingsView? settingsView;
+
         private readonly IHttpService _httpService;
+        private readonly IRobotService _robotService;
+
         public AlarmPageViewModel AlarmVM { get; }
         [ObservableProperty] private bool _isMenuVisible;
         [ObservableProperty] private string currentDateTime = "";  //存現在的時間
@@ -59,8 +58,10 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private bool isDispatch;
 
         //控制區按鈕
+        public RobotStore RobotStore { get; }
         private List<string> RobotNames = new List<string>() ;
-        [ObservableProperty] private Robot _robot = new Robot();
+     //   [ObservableProperty] private Robot _robot = new Robot();
+        public Robot Robot => RobotStore.Robot;
         //開始
         [ObservableProperty] private bool startStatus;
         [ObservableProperty] private Brush startBackground = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
@@ -105,10 +106,12 @@ namespace FMSFrontend.ViewModels
         }
 
       
-        public MainWindowViewModel(IHttpService httpService, AlarmPageViewModel alarmVM)
+        public MainWindowViewModel(IHttpService httpService, IRobotService robotService, AlarmPageViewModel alarmVM, RobotStore store)
         {
             _httpService = httpService;
-            
+            RobotStore = store;
+            _robotService = robotService;
+
             // 使用 DispatcherTimer 在 UI Thread 週期性更新時間（比起背景執行緒直接更新屬性更安全且不會產生跨執行緒問題）
             var timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Normal, (s, e) =>
             {
@@ -125,12 +128,54 @@ namespace FMSFrontend.ViewModels
             {
                 StorageControlPage = b ? new StorageUnitMiniControlPage() : new StorageUnitControlPage();
             }), DispatcherPriority.Background);
-            
+
+
+            // 初始 & 監聽 Robot 變化
+            RefreshFromStore();
+            RobotStore.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(RobotStore.Robot))
+                    RefreshFromStore();
+            };
+            // 如果你會改 Robot 內部屬性，也可加：
+            RobotStore.Robot.PropertyChanged += (_, __) => RefreshFromStore();
+
             //✅ 新增：讀取初始參數,然後開啟輪詢
-            _ = MainWindowViewModelAsync_Init();
+            // _ = MainWindowViewModelAsync_Init();
+        }
+
+        // === 將 Store 狀態轉成 UI ===
+        private void RefreshFromStore()
+        {
+            var r = Robot;
+            var start = r.AsrsState == AsrsControlState.Started;
+            var pause = r.AsrsState == AsrsControlState.Paused;
+            var stop = r.AsrsState == AsrsControlState.Stopped;
+
+            // Start
+            StartStatus = start;
+            StartBackground = start ? Dark : Light;
+            StartForeground = start ? Light : Dark;
+
+            // Pause（修正原本的誤設）
+            PauseStatus = pause;
+            PauseBackground = pause ? Dark : Light;
+            PauseForeground = pause ? Light : Dark;
+
+            // Stop
+            StopStatus = stop;
+            StopBackground = stop ? Dark : Light;
+            StopForeground = stop ? Light : Dark;
+
+            // Dispatch
+            DispatchStatus = r.DispatchEnabled;
+            DispatchText = DispatchStatus ? "派工中" : "派工啟動";
+            DispatchBackground = DispatchStatus ? Dark : Light;
+            DispatchForeground = DispatchStatus ? Light : Dark;
         }
 
         //讀取初始參數
+        /*
         private async Task MainWindowViewModelAsync_Init()
         {
             try  //取得Robot資料
@@ -154,64 +199,6 @@ namespace FMSFrontend.ViewModels
             asrsTimer.Start();
         }
         //輪尋讀取ASRS參數
-        private async Task FetchASRSParameterAsync()
-        {
-            try
-            {
-                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("ASRS/GetASRSParameter", default);
-                ASRSParameter a = new ASRSParameter();
-                if (json.HasValue)
-                {
-                    var root = json.Value;
-                    if (root.ValueKind == JsonValueKind.Object)
-                        a = JsonSerializer.Deserialize<ASRSParameter>(root.GetRawText()) ?? new ASRSParameter();
-                    else if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
-                        a = JsonSerializer.Deserialize<ASRSParameter>(root[0].GetRawText()) ?? new ASRSParameter();
-                    else return;
-                }
-                if (a != null)
-                {
-                    //更新機器人狀態
-                    if (Robot == null) Robot = new Robot();
-
-
-                    Robot.IsRobotConnected = a.isRobotConnected;
-                    Robot.StatusBrush = a.robotStatus switch
-                    {
-                        0 => new SolidColorBrush(Color.FromRgb(0x55, 0x55, 0x55)), // 灰色
-                        1 => new SolidColorBrush(Color.FromRgb(0x3D, 0xBE, 0x4C)), // 綠色
-                        2 => new SolidColorBrush(Color.FromRgb(0xF2, 0xC2, 0x30)), // 黃色
-                        3 => new SolidColorBrush(Color.FromRgb(0xC8, 0x3A, 0x33)), // 紅色
-                        _ => Brushes.Gray
-                    };
-                    Robot.IsRobotConnected = a.isRobotConnected;
-                    Robot.CurrentLocation = a.robotPosition ?? "-";
-                    Robot.CurrentAction = a.robotDoingNow ?? "-";
-                    Robot.NextAction = a.robotDoingNext ?? "-";
-                    //更新按鈕狀態
-                    var dark = new SolidColorBrush(Color.FromRgb(0x00, 0x4E, 0x79));
-                    var light = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
-                    // Use generated properties so PropertyChanged is raised
-                    StartStatus = a.asrsControlStart;
-                    PauseBackground = a.asrsControlPause ? dark : light;
-                    PauseForeground = a.asrsControlPause ? light : dark;
-
-                    PauseStatus = a.asrsControlStart;
-                    StartBackground = a.asrsControlStart ? dark : light;
-                    StartForeground = a.asrsControlStart ? light : dark;
-
-                    StopStatus = a.asrsControlStop;
-                    StopBackground = a.asrsControlStop ? dark : light;
-                    StopForeground = a.asrsControlStop ? light : dark;
-
-                    DispatchStatus = a.dispatchSwitch;
-                    DispatchText = DispatchStatus ? "派工中" : "派工啟動";
-                    DispatchBackground = a.dispatchSwitch ? dark : light;
-                    DispatchForeground = a.dispatchSwitch ? light : dark;
-                }
-            }
-            catch { }
-        }
         private async Task FetchRobotAsync()
         {
             JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Robot/DB_GetAllRobots", default);
@@ -271,6 +258,7 @@ namespace FMSFrontend.ViewModels
             }
             Robot.MaterialName = "";
         }
+        */
         private async Task FetchDoorAsync()
         {
             try
@@ -292,79 +280,38 @@ namespace FMSFrontend.ViewModels
         #region PageChange
 
         [RelayCommand]
-        private void GoToProductionLines()
-        {
-            if (productionLines == null) productionLines = new ProductionLines();
-            CurrentPageView = productionLines;
-            CurrentPageKey = "ProductionLines";
-           // WeakReferenceMessenger.Default.Send(new ValueChangedMessage<string>(CurrentPageKey));
-        }
+        private void GoToProductionLines() => NavigateTo<ProductionLines>("ProductionLines");
 
         [RelayCommand]
-        private void GoToFactoryOverview()
-        {
-            if (factoryOverviewPage == null) factoryOverviewPage = new FactoryOverviewPage();
-            CurrentPageView = factoryOverviewPage;
-            CurrentPageKey = "FactoryOverview";
-        }
-        [RelayCommand]
-        private void GoToMachineOverview()
-        {
-            if (machineOverviewPage == null) machineOverviewPage = new MachineOverviewPage();
-            CurrentPageView = machineOverviewPage;
-            CurrentPageKey = "MachineOverview";
-        }
+        private void GoToFactoryOverview() => NavigateTo<FactoryOverviewPage>("FactoryOverview");
 
         [RelayCommand]
-        private void GoToWorkOrder()
-        {
-            if (workOrder == null) workOrder = new WorkOrder();
-            CurrentPageView = workOrder;
-            CurrentPageKey = "WorkOrder";
-            WeakReferenceMessenger.Default.Send(new ValueChangedMessage<string>(CurrentPageKey));
-        }
+        private void GoToMachineOverview() => NavigateTo<MachineOverviewPage>("MachineOverview");
+
         [RelayCommand]
-        private void GoToRFIDBind()
-        {
-            if (rFIDBind == null) rFIDBind = new RFIDBind();
-            CurrentPageView = rFIDBind;
-            CurrentPageKey = "RFIDBind";
-            WeakReferenceMessenger.Default.Send(new ValueChangedMessage<string>(CurrentPageKey));
-        }
+        private void GoToWorkOrder() => NavigateTo<WorkOrder>("WorkOrder");
+
         [RelayCommand]
-        private void GoToOperationHistory()
-        {
-            if (operationHistory == null) operationHistory = new OperationHistory();
-            CurrentPageView = operationHistory;
-            CurrentPageKey = "OperationHistory";
-        }
+        private void GoToRFIDBind() => NavigateTo<RFIDBind>("RFIDBind");
+
         [RelayCommand]
-        private void GoToMaterial()
-        {
-            if (inventoryInformationPage == null) inventoryInformationPage = new InventoryInformationPage();
-            CurrentPageView = inventoryInformationPage;
-            CurrentPageKey = "Material";
-        }
+        private void GoToOperationHistory() => NavigateTo<OperationHistory>("OperationHistory");
+
         [RelayCommand]
-        private void GoToSettingsView()
-        {
-            if (settingsView == null) settingsView = new SettingsView();
-            CurrentPageView = settingsView;
-            CurrentPageKey = "SettingsView";
-        }
-        /// <summary>
-        /// 由狀態列「提示訊息」進入 Alarm 頁，並讓 PageMenu 看起來沒有選中
-        /// </summary>
+        private void GoToMaterial() => NavigateTo<InventoryInformationPage>("Material");
+
         [RelayCommand]
-        private void OpenAlarm()
+        private void GoToSettingsView() => NavigateTo<SettingsView>("SettingsView");
+        [RelayCommand]
+        private void OpenAlarm() => NavigateTo<AlarmPage>("Alarm");
+
+        private void NavigateTo<TPage>(string pageKey) where TPage : UserControl
         {
-                                          // 延遲建立 AlarmPage（避免一次建立過多 UI）
-            var alarm = new AlarmPage();
-            CurrentPageView = alarm;      // 你的 Alarm UserControl / Page
-                                          // 讓下方 PageMenu 不顯示選中狀態
-            CurrentPageKey = "";          // 或 string.Empty 都可
-                                          // 若你的 PageMenu 是用 SelectedIndex 套樣式，這行也一起用：
-                                          // SelectedPageIndex = -1;
+            // 從 DI 取出頁面實例（會自動帶入 ViewModel）
+            var page = App.ServiceProvider.GetRequiredService<TPage>();
+            CurrentPageView = page;
+            CurrentPageKey = pageKey;
+            //  SelectedPageIndex = -1;
         }
 
         #endregion
@@ -489,36 +436,64 @@ namespace FMSFrontend.ViewModels
             {
                 try
                 {
-                    const string route = "ASRS/SetASRSRobotStart";
-                    await _httpService.SendPutAsync(route, new { });
-                    await Task.Delay(300);
-                    var op = Application.Current.Dispatcher.InvokeAsync(async () => await FetchASRSParameterAsync());
-                    await op.Task;
+                    if (Robot.AsrsState == AsrsControlState.Started)
+                        return;
+
+                    try
+                    {
+                        var success = await _robotService.SetRobotStartAsync();
+                        if (!success)
+                        {
+                            new DialogMessageWindow("API 回傳失敗").ShowDialog();
+                            return;
+                        }
+
+                        // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
+                        Robot.AsrsState = AsrsControlState.Started;
+                    }
+                    catch (Exception ex)
+                    {
+                        new DialogMessageWindow($"Start Fail\n{ex.Message}").ShowDialog();
+                    }
                 }
                 catch
                 {
                     new DialogMessageWindow("Start Fail").ShowDialog();
                 }
             }
-       }
+        }
         [RelayCommand]
         private async Task RobotPauseButtonClick()
         {
             if (!PauseStatus)
             {
-                // 非同步等待 1 秒，避免阻塞 UI 執行緒，然後在 UI 執行緒上更新按鈕顏色
                 try
                 {
-                    const string route = "ASRS/SetASRSRobotPause";
-                    await _httpService.SendPutAsync(route, new { });
-                    await Task.Delay(100);
-                    var op = Application.Current.Dispatcher.InvokeAsync(async () => await FetchASRSParameterAsync());
-                    await op.Task;
+                    if (Robot.AsrsState == AsrsControlState.Paused)
+                        return;
+
+                    try
+                    {
+                        var success = await _robotService.SetRobotPauseAsync();
+                        if (!success)
+                        {
+                            new DialogMessageWindow("API 回傳失敗").ShowDialog();
+                            return;
+                        }
+
+                        // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
+                        Robot.AsrsState = AsrsControlState.Paused;
+                    }
+                    catch (Exception ex)
+                    {
+                        new DialogMessageWindow($"Pause Fail\n{ex.Message}").ShowDialog();
+                    }
                 }
                 catch
                 {
                     new DialogMessageWindow("Pause Fail").ShowDialog();
                 }
+
             }
         }
         [RelayCommand]
@@ -528,16 +503,32 @@ namespace FMSFrontend.ViewModels
             {
                 try
                 {
-                    string route = "ASRS/SetASRSRobotStop";
-                    await _httpService.SendPutAsync(route, new { });
-                    await Task.Delay(300);
-                    var op = Application.Current.Dispatcher.InvokeAsync(async () => await FetchASRSParameterAsync());
-                    await op.Task;
+                    if (Robot.AsrsState == AsrsControlState.Stopped)
+                        return;
+
+                    try
+                    {
+                        var success = await _robotService.SetRobotStopAsync();
+                        if (!success)
+                        {
+                            new DialogMessageWindow("API 回傳失敗").ShowDialog();
+                            return;
+                        }
+
+                        // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
+                        Robot.AsrsState = AsrsControlState.Stopped;
+                    }
+                    catch (Exception ex)
+                    {
+                        new DialogMessageWindow($"Stop Fail\n{ex.Message}").ShowDialog();
+                    }
                 }
                 catch
                 {
                     new DialogMessageWindow("Stop Fail").ShowDialog();
                 }
+
+              
             }
         }
         [RelayCommand]
@@ -545,8 +536,12 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
-                var route = "Robot/ASRSRobotResetStatus/0";
-                await _httpService.SendPutAsync(route, new { });
+                var success = await _robotService.ASRSRobotResetStatus(0);
+                if (!success)
+                {
+                    new DialogMessageWindow("API 回傳失敗").ShowDialog();
+                    return;
+                }
             }
             catch 
             {
@@ -556,17 +551,24 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private async Task RobotDispatchButtonClick()
         {
-            DispatchStatus = !DispatchStatus;
-            DispatchText = DispatchStatus ? "派工中" : "派工啟動";
+            var target = !DispatchStatus;
+
             try
             {
-                var route = $"ASRS/SetASRSDispatchSwitch/{DispatchStatus.ToString().ToLower()}";
-                await _httpService.SendPutAsync(route, new { });
-                await Task.Delay(300);
-                var op = Application.Current.Dispatcher.InvokeAsync(async () => await FetchASRSParameterAsync());
-                await op.Task;
+                var ok = await _robotService.SetASRSDispatchSwitchAsync(target);
+                if (!ok)
+                {
+                    new DialogMessageWindow("Dispatch Fail").ShowDialog();
+                    return;
+                }
+
+                // 成功更新畫面
+                DispatchStatus = target;
+                DispatchText = DispatchStatus ? "派工中" : "派工啟動";
+                DispatchBackground = DispatchStatus ? Dark : Light;
+                DispatchForeground = DispatchStatus ? Light : Dark;
             }
-            catch 
+            catch
             {
                 new DialogMessageWindow("Dispatch Fail").ShowDialog();
             }

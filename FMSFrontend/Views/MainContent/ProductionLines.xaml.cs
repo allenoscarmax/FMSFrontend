@@ -13,14 +13,10 @@ namespace FMSFrontend.Views
     /// </summary>
     public partial class ProductionLines : UserControl
     {
-        public ProductionLines()
+        public ProductionLines(ProductionLinesViewModel viewModel)
         {
             InitializeComponent();
-
-            var windowService = new WindowService();
-            var httpService = new HttpService();
-
-            this.DataContext = new ProductionLinesViewModel(windowService, httpService); // ← 傳入
+            this.DataContext = viewModel;
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)

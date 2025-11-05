@@ -12,8 +12,9 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using FMSFrontend.ViewModels.Windows;
 
-namespace FMSFrontend.ViewModels.Windows
+namespace FMSFrontend.ViewModels
 {
     public partial class SettingsPageViewModel : ObservableObject
     {
