@@ -21,10 +21,10 @@ namespace FMSFrontend.Views
     /// </summary>
     public partial class FactoryOverviewPage : UserControl
     {
-        public FactoryOverviewPage()
+        public FactoryOverviewPage(FactoryOverviewPageViewModel viewModel)
         {
             InitializeComponent();
-            this.DataContext = new FactoryOverviewPageViewModel(); // ← 關鍵
+            this.DataContext = viewModel; // ← 關鍵
         }
     }
 }

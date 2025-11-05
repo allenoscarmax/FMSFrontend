@@ -21,10 +21,10 @@ namespace FMSFrontend.Views
     /// </summary>
     public partial class InventoryInformationPage : UserControl
     {
-        public InventoryInformationPage()
+        public InventoryInformationPage(InventoryInformationViewModel viewModel)
         {
             InitializeComponent();
-            DataContext = new InventoryInformationViewModel(); // ← 綁 VM
+            DataContext = viewModel; // ← 綁 VM
         }
     }
 }

@@ -24,14 +24,9 @@ namespace FMSFrontend.Views
     /// </summary>
     public partial class SettingsView : UserControl
     {
-        public SettingsView()
+        public SettingsView(SettingsPageViewModel viewModel)
         {
             InitializeComponent();
-            // 建立服務實例
-            var windowService = new WindowService();
-            var httpService = new HttpService();
-            // 建立 ViewModel 並注入服務
-            var viewModel = new SettingsPageViewModel(windowService, httpService);
 
             this.DataContext = viewModel;
 

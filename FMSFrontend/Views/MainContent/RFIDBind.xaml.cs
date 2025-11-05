@@ -22,15 +22,9 @@ namespace FMSFrontend.Views
     /// </summary>
     public partial class RFIDBind : UserControl
     {
-        public RFIDBind()
+        public RFIDBind(RFIDBindPageViewModel viewModel)
         {
             InitializeComponent();
-            // 建立服務實例
-            var windowService = new WindowService();
-            var httpService = new HttpService();
-            // 建立 ViewModel 並注入服務
-            var viewModel = new RFIDBindPageViewModel(windowService, httpService);
-
             this.DataContext = viewModel;
         }
     }

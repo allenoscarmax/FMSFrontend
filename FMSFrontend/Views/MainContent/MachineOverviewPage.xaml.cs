@@ -21,10 +21,10 @@ namespace FMSFrontend.Views
     /// </summary>
     public partial class MachineOverviewPage : UserControl
     {
-        public MachineOverviewPage()
+        public MachineOverviewPage(MachineOverviewMainViewModel viewModel)
         {
             InitializeComponent();
-            DataContext = new MachineOverviewMainViewModel();
+            DataContext = viewModel;
         }
     }
 }

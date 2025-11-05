@@ -146,7 +146,7 @@
                             <Border Padding="10" HorizontalAlignment="Center">
                                 <WrapPanel HorizontalAlignment="Center" ItemWidth="120" ItemHeight="120" Orientation="Horizontal">
                                     <!-- 手臂啟動 -->
-                                    <Button Command="{Binding RobotStartButtonClickCommand}" Margin="5" Background="{Binding StartBackground}" BorderBrush="{Binding StartForeground}" BorderThickness="2" Focusable="False">
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotStartButtonClickCommand}" Margin="5" Background="{Binding StartBackground}" BorderBrush="{Binding StartForeground}" BorderThickness="2" Focusable="False">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
@@ -164,7 +164,7 @@
                                     </Button>
 
                                     <!-- 手臂暫停 -->
-                                    <Button Command="{Binding RobotPauseButtonClickCommand}" Margin="5" Background="{Binding PauseBackground}" BorderBrush="{Binding PauseForeground}" BorderThickness="2" Focusable="False">
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotPauseButtonClickCommand}" Margin="5" Background="{Binding PauseBackground}" BorderBrush="{Binding PauseForeground}" BorderThickness="2" Focusable="False">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
@@ -182,7 +182,7 @@
                                     </Button>
 
                                     <!-- 手臂停止 -->
-                                    <Button Command="{Binding RobotStopButtonClickCommand}" Margin="5" Background="{Binding StopBackground}" BorderBrush="{Binding StopForeground}" BorderThickness="2" Focusable="False">
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotStopButtonClickCommand}" Margin="5" Background="{Binding StopBackground}" BorderBrush="{Binding StopForeground}" BorderThickness="2" Focusable="False">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
@@ -200,7 +200,7 @@
                                     </Button>
 
                                     <!-- 手臂重置 -->
-                                    <Button Command="{Binding RobotResetButtonClickCommand}" Margin="5" Background="#FFFFFF" BorderBrush="#004E79" BorderThickness="2" Focusable="False">
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotResetButtonClickCommand}" Margin="5" Background="#FFFFFF" BorderBrush="#004E79" BorderThickness="2" Focusable="False">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
@@ -218,7 +218,7 @@
                                     </Button>
 
                                     <!-- 派工啟動 -->
-                                    <Button Command="{Binding RobotDispatchButtonClickCommand}" Margin="5" Background="{Binding DispatchBackground}" BorderBrush="{Binding DispatchForeground}" BorderThickness="2" Focusable="False">
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotDispatchButtonClickCommand}" Margin="5" Background="{Binding DispatchBackground}" BorderBrush="{Binding DispatchForeground}" BorderThickness="2" Focusable="False">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
