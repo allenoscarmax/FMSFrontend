@@ -8,7 +8,7 @@ namespace FMSFrontend.Models.Storage
 {
     public class SlotModel
     {
-        public string Text { get; set; }
-        public string Status { get; set; } // 可配合轉顏色用
+        public string Text { get; set; } = "";
+        public string Status { get; set; } = "";// 可配合轉顏色用
     }
 }

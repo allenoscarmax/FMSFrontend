@@ -2,7 +2,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 
-namespace OSCARMAXFMS_V3.DBmodels
+namespace FMSFrontend.Features.Dtos
 {
     // RFID 寫入紀錄（寫入標籤時的操作日誌）
     public class RFIDWriteLogDto

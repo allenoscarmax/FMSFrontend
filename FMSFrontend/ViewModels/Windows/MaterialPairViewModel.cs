@@ -154,7 +154,7 @@ public partial class MaterialPairViewModel : ObservableObject
                 }
             }
 
-            var RFIDWriteLog = new RFIDWriteLog
+            var RFIDWriteLog = new RFIDWriteLogDto
             {
                 timeStamp = DateTime.Now,
                 type = ShowElectrodeSection ? "Electrode" : "Workpiece",
