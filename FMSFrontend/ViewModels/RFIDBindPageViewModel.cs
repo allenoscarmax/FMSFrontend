@@ -3,11 +3,16 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 using FMSFrontend.Extensions;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
+using FMSFrontend.Models;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
-using OSCARMAXFMS_V3.DBmodels;
 using FMSFrontend.Views.Windows;
+using Microsoft.Extensions.DependencyInjection;
+using OSCARMAXFMS_V3.DBmodels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,13 +29,17 @@ namespace FMSFrontend.ViewModels
 {
     public partial class RFIDBindPageViewModel : ObservableObject
     {
+        //RFID
+        private readonly IRFIDMgmtModuleService _iRfidMgmtModuleService;
+        public RFIDBindStore RfidBindStore { get; }
+        public RFIDBindData rFIDBindData  => RfidBindStore.RfidBind;
+        public RFIDBindLiveUpdater rFIDBindLiveUpdater;
+
         public ObservableCollection<BurnRecord> BurnHistoryList { get; set; } = new ();
         public List<string> DateFilterOptions { get; set; } = new() { "今天", "過去7天", "自訂" };
-        [ObservableProperty]
-        private string selectedFilterOption = "今天";
-        [ObservableProperty]
-        private int selectedFilterIndex = 0;
-
+        [ObservableProperty] private string selectedFilterOption = "今天";
+        [ObservableProperty] private int selectedFilterIndex = 0;
+        
         private DateTime? lastValidFromDate = DateTime.Today;
         private DateTime? lastValidToDate = DateTime.Today;
 
@@ -46,7 +55,7 @@ namespace FMSFrontend.ViewModels
             OnPropertyChanged(nameof(IsCustomDateMode));
             ApplyDateFilter();
             // 當改變篩選模式時重新抓取並套用新的日期範圍
-            RefreshFetch();
+           // RefreshFetch();
         }
 
         partial void OnSelectedFilterIndexChanged(int value)
@@ -117,25 +126,18 @@ namespace FMSFrontend.ViewModels
             if (IsCustomDateMode) RefreshFetch();
         }
 
-        public RFIDBindPageViewModel(IWindowService windowService, IHttpService httpService)
+        public RFIDBindPageViewModel(IWindowService windowService, IHttpService httpService,
+            IRFIDMgmtModuleService iRFIDMgmtModuleService, RFIDBindStore rfidBindStore)
         {
             _windowService = windowService;
             _httpService = httpService;
 
+            _iRfidMgmtModuleService = iRFIDMgmtModuleService;
+             RfidBindStore = rfidBindStore;
+
+
             // 初始化 SelectedFilterIndex 根據 SelectedFilterOption
             SelectedFilterIndex = DateFilterOptions.IndexOf(SelectedFilterOption);
-
-            // 進入時自動刷新（第一次載入）
-            RefreshFetch();
-
-            // 訂閱 MainWindowViewModel 的頁面刷新訊息：當切換到 RFIDBind 時重新抓取
-            WeakReferenceMessenger.Default.Register<ValueChangedMessage<string>>(this, (r, message) =>
-            {
-                if (string.Equals(message.Value, "RFIDBind", StringComparison.Ordinal))
-                {
-                    RefreshFetch();
-                }
-            });
         }
 
         [RelayCommand]
@@ -155,7 +157,7 @@ namespace FMSFrontend.ViewModels
 
 
                 // 關閉視窗後重新抓取並綁定
-                RefreshFetch();
+               // RefreshFetch();
             }
         }
 
@@ -172,7 +174,7 @@ namespace FMSFrontend.ViewModels
                 if (ok)
                 {
                     _windowService.ShowMessage("清除成功");
-                    RefreshFetch(); // 重新抓資料
+                 //   RefreshFetch(); // 重新抓資料
                 }
                 else
                 {
@@ -185,9 +187,7 @@ namespace FMSFrontend.ViewModels
             }
         }
 
-        /// <summary>
-        /// 取消之前的 fetch（如有），建立新的 CancellationTokenSource，並啟動 FetchAndBindByStatusAsync。
-        /// </summary>
+        
         private void RefreshFetch()
         {
             try
@@ -195,8 +195,7 @@ namespace FMSFrontend.ViewModels
                 _fetchCts?.Cancel();
                 _fetchCts?.Dispose();
             }
-            catch { /* 忽略 Dispose 錯誤 */ }
-
+            catch { }
             _fetchCts = new CancellationTokenSource();
             // 不等待，背景執行；FetchAndBindByStatusAsync 內部支援 CancellationToken
             _ = FetchAndBindByStatusAsync(_fetchCts.Token);
@@ -208,9 +207,9 @@ namespace FMSFrontend.ViewModels
             JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("RFIDMgmtModule/DB_GetAllRFIDWriteLog", ct);
             ct.ThrowIfCancellationRequested();
 
-            List<RFIDWriteLog> rFIDWriteLog = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
-                 JsonSerializer.Deserialize<List<RFIDWriteLog>>(json.Value.GetRawText()) ?? new List<RFIDWriteLog>() :
-                 new List<RFIDWriteLog>();
+            List<RFIDWriteLogDto> rFIDWriteLog = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
+                 JsonSerializer.Deserialize<List<RFIDWriteLogDto>>(json.Value.GetRawText()) ?? new List<RFIDWriteLogDto>() :
+                 new List<RFIDWriteLogDto>();
 
             BurnHistoryList.Clear();
 
@@ -224,8 +223,8 @@ namespace FMSFrontend.ViewModels
                 BurnHistoryList.Add(MapToBurnRecordData(w));
             }
         }
-
-        private static BurnRecord MapToBurnRecordData(RFIDWriteLog ws)
+        
+        private static BurnRecord MapToBurnRecordData(RFIDWriteLogDto ws)
         {
             if (ws == null) return new BurnRecord();
             return new BurnRecord

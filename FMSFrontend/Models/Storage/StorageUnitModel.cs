@@ -8,7 +8,7 @@ namespace FMSFrontend.Models.Storage
 {
     public class StorageUnitModel
     {
-        public string StorageId { get; set; }
+        public string StorageId { get; set; } = "";
         public int Rows { get; set; }
         public int Columns { get; set; }
 

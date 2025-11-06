@@ -77,7 +77,7 @@ namespace FMSFrontend.ViewModels
         public MagazinePara MagazinePara => PlcStore.MagazinePara;
 
         // ASRS 參數輪詢計時器
-        DispatcherTimer? asrsTimer;
+       // DispatcherTimer? asrsTimer;
         // ✅ 新增：關機儲存UI設定
         public void SaveCurrentStoragePageType()
         {
@@ -93,8 +93,8 @@ namespace FMSFrontend.ViewModels
         }
 
       
-        public MainWindowViewModel(IHttpService httpService, IRobotService robotService,IPlcService plcService ,AlarmPageViewModel alarmVM, RobotStore store, 
-            PlcStore plcStore)
+        public MainWindowViewModel(IHttpService httpService, IRobotService robotService,IPlcService plcService ,
+            AlarmPageViewModel alarmVM, RobotStore store, PlcStore plcStore)
         {
             _httpService = httpService;
             
@@ -300,7 +300,12 @@ namespace FMSFrontend.ViewModels
 
         private void NavigateTo<TPage>(string pageKey) where TPage : UserControl
         {
-            // 從 DI 取出頁面實例（會自動帶入 ViewModel）
+            // 檢查 ServiceProvider 是否為 null
+            if (App.ServiceProvider == null)
+            {
+                new DialogMessageWindow("ServiceProvider 尚未初始化，無法切換頁面。").ShowDialog();
+                return;
+            }
             var page = App.ServiceProvider.GetRequiredService<TPage>();
             CurrentPageView = page;
             CurrentPageKey = pageKey;
