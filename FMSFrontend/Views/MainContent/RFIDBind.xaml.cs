@@ -26,6 +26,9 @@ namespace FMSFrontend.Views
         {
             InitializeComponent();
             this.DataContext = viewModel;
+
+            Loaded += (_, __) => viewModel.OnPageActivated();
+            Unloaded += (_, __) => viewModel.OnPageDeactivated();
         }
     }
 }

@@ -77,7 +77,7 @@ namespace FMSFrontend
             // 啟動手臂資訊輪詢（只要啟一次）
             ServiceProvider.GetRequiredService<RobotLiveUpdater>().Start();
             ServiceProvider.GetRequiredService<PlcLiveUpdater>().Start();
-            ServiceProvider.GetRequiredService<RFIDBindLiveUpdater>().Stop();
+
             // 啟動主視窗
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();

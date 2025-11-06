@@ -33,7 +33,7 @@ namespace FMSFrontend.ViewModels
         private readonly IRFIDMgmtModuleService _iRfidMgmtModuleService;
         public RFIDBindStore RfidBindStore { get; }
         public RFIDBindData rFIDBindData  => RfidBindStore.RfidBind;
-        public RFIDBindLiveUpdater rFIDBindLiveUpdater;
+        public RFIDBindLiveUpdater _rfidUpdater;
 
         public ObservableCollection<BurnRecord> BurnHistoryList { get; set; } = new ();
         public List<string> DateFilterOptions { get; set; } = new() { "今天", "過去7天", "自訂" };
@@ -127,13 +127,15 @@ namespace FMSFrontend.ViewModels
         }
 
         public RFIDBindPageViewModel(IWindowService windowService, IHttpService httpService,
-            IRFIDMgmtModuleService iRFIDMgmtModuleService, RFIDBindStore rfidBindStore)
+            IRFIDMgmtModuleService iRFIDMgmtModuleService, RFIDBindStore rfidBindStore, RFIDBindLiveUpdater rfidUpdater)
         {
             _windowService = windowService;
             _httpService = httpService;
 
             _iRfidMgmtModuleService = iRFIDMgmtModuleService;
              RfidBindStore = rfidBindStore;
+
+            _rfidUpdater = rfidUpdater;
 
 
             // 初始化 SelectedFilterIndex 根據 SelectedFilterOption
@@ -187,7 +189,18 @@ namespace FMSFrontend.ViewModels
             }
         }
 
-        
+        // 當頁面載入時啟動
+        public void OnPageActivated()
+        {
+            _rfidUpdater.Start();
+        }
+
+        // 當頁面卸載時停止
+        public void OnPageDeactivated()
+        {
+            _rfidUpdater.Stop();
+        }
+
         private void RefreshFetch()
         {
             try
