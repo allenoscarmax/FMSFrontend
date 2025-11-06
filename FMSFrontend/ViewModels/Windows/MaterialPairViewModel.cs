@@ -9,6 +9,7 @@ using FMSFrontend.Views;
 using MaterialDesignThemes.Wpf.Transitions;
 using OSCARMAXFMS_V3.DBmodels;
 using OSCARMAXFMS_V3.Models;
+using FMSFrontend.Views.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -181,11 +182,18 @@ public partial class MaterialPairViewModel : ObservableObject
     {
         _window?.Close();
 
-        var selectWindow = new MaterialTypeSelectWindow();
-        if (selectWindow.ShowDialog() == true)
+      //  var selectWindow = new MaterialTypeSelectWindow();
+        if (_windowService.ShowMaterialTypeSelectWindow(out MaterialKind kind))
         {
-            var newPairWindow = new MaterialPairWindow(selectWindow.IsElectrodeSelected);
-            newPairWindow.ShowDialog();
+            Window? window = kind switch
+            {
+                MaterialKind.Electrode => new MaterialPairWindow(isElectrode: true),
+                MaterialKind.Workpiece => new MaterialPairWindow(isElectrode: false),
+                MaterialKind.Probe => new ProbePairWindow(),   // 新增的探針視窗
+                _ => null
+            };
+
+            window?.ShowDialog();
         }
     }
     // =========================
@@ -200,7 +208,7 @@ public partial class MaterialPairViewModel : ObservableObject
             "Working" => Brushes.Green,
             "Error" => Brushes.IndianRed,
             "Completed" => Brushes.RoyalBlue,
-            "Reserved" => Brushes.Gray,
+            "Booked" => Brushes.Gray,
             "Empty" => Brushes.White,
             _ => Brushes.White
         };

@@ -43,11 +43,13 @@ namespace FMSFrontend.Services
             var dialog = new DialogYesNoWindow(message);
             return dialog.ShowDialog() == true;
         }
-        public bool ShowMaterialTypeSelectWindow(out bool isElectrode)
+        public bool ShowMaterialTypeSelectWindow(out MaterialKind Kind)
         {
             var window = new MaterialTypeSelectWindow();
             bool? retu = window.ShowDialog();
-            isElectrode = window.IsElectrodeSelected;
+            Kind = window.materialKind;
+
+
             return retu == true;
         }
         public void ShowMaterialPairWindow(bool isElectrode)

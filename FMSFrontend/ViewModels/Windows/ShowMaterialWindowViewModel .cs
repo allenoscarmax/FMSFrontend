@@ -16,7 +16,7 @@ using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
 
 namespace FMSFrontend.ViewModels.Windows
 {
-    public enum MaterialKind { None, Electrode, Workpiece }
+    public enum MaterialKind { None, Electrode, Workpiece, Probe }
 
     public sealed partial class ShowMaterialWindowViewModel : ObservableObject
     {

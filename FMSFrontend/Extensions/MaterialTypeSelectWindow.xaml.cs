@@ -22,7 +22,7 @@ namespace FMSFrontend.Extensions
     /// </summary>
     public partial class MaterialTypeSelectWindow : Window
     {
-        public bool IsElectrodeSelected { get; private set; }
+        public MaterialKind materialKind { get; private set; }
         public MaterialTypeSelectWindow()
         {
             InitializeComponent();
@@ -40,14 +40,20 @@ namespace FMSFrontend.Extensions
 
         private void SelectElectrodeCommand(object sender, RoutedEventArgs e)
         {
-            IsElectrodeSelected = true;
+            materialKind = MaterialKind.Electrode;
             DialogResult = true;
             Close();
         }
 
         private void SelectWorkpieceCommand(object sender, RoutedEventArgs e)
         {
-            IsElectrodeSelected = false;
+            materialKind = MaterialKind.Workpiece;
+            DialogResult = true;
+            Close();
+        }
+        private void SelectProbeCommand(object sender, RoutedEventArgs e)
+        {
+            materialKind = MaterialKind.Probe;
             DialogResult = true;
             Close();
         }
