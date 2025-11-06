@@ -50,7 +50,6 @@ namespace FMSFrontend.Features.Mappings
 
             // 判斷連線狀態
             robot.IsRobotConnected = dto.status?.Equals("Connected", StringComparison.OrdinalIgnoreCase) == true;
-
         }
     }
 }

@@ -1,30 +1,21 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 //using OSCARMAXFMS_V3.DBmodels;
-using FMSFrontend.Controls;
 using FMSFrontend.Extensions;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
-using FMSFrontend.Helpers;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
 using IniFile;
 using Microsoft.Extensions.DependencyInjection;
-using OSCARMAXFMS_V3.DBmodels;
 using OSCARMAXFMS_V3.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 using System.Text.Json; // ← 新增：JsonElement
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls; // 放在你的 ViewModel 上方
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
 namespace FMSFrontend.ViewModels
@@ -39,7 +30,6 @@ namespace FMSFrontend.ViewModels
 
         private readonly IHttpService _httpService;
         private readonly IRobotService _robotService;
-
         public AlarmPageViewModel AlarmVM { get; }
         [ObservableProperty] private bool _isMenuVisible;
         [ObservableProperty] private string currentDateTime = "";  //存現在的時間
@@ -59,8 +49,9 @@ namespace FMSFrontend.ViewModels
 
         //控制區按鈕
         public RobotStore RobotStore { get; }
+
         private List<string> RobotNames = new List<string>() ;
-     //   [ObservableProperty] private Robot _robot = new Robot();
+        //[ObservableProperty] private Robot _robot = new Robot();
         public Robot Robot => RobotStore.Robot;
         //開始
         [ObservableProperty] private bool startStatus;
@@ -68,8 +59,8 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private Brush startForeground = new SolidColorBrush(Color.FromRgb(0x00, 0x4E, 0x79));
         //暫停
         [ObservableProperty] private bool pauseStatus;
-        [ObservableProperty]private Brush pauseBackground = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
-        [ObservableProperty]private Brush pauseForeground = new SolidColorBrush(Color.FromRgb(0x00, 0x4E, 0x79));
+        [ObservableProperty] private Brush pauseBackground = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
+        [ObservableProperty] private Brush pauseForeground = new SolidColorBrush(Color.FromRgb(0x00, 0x4E, 0x79));
         //停止
         [ObservableProperty] private bool stopStatus;
         [ObservableProperty] private Brush stopBackground = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
@@ -80,15 +71,11 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private Brush dispatchBackground = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
         [ObservableProperty] private Brush dispatchForeground = new SolidColorBrush(Color.FromRgb(0x00, 0x4E, 0x79));
 
-        //電極門 與 工件門
-        [ObservableProperty] private Brush _leftTitleBrush = new SolidColorBrush(Color.FromRgb(0x27, 0x79, 0xA7));
-        [ObservableProperty] private string _leftTitle = "電極";
-        [ObservableProperty] private Brush _rightTitleBrush = new SolidColorBrush(Color.FromRgb(0xE0, 0x8E, 0x45));
-        [ObservableProperty] private string _rightTitle = "工件";
-        [ObservableProperty] public ObservableCollection<Brush> _upperDoorLights1 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
-        [ObservableProperty] public ObservableCollection<Brush> _upperDoorLights2 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
-        [ObservableProperty] public ObservableCollection<Brush> _lowerDoorLights1 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
-        [ObservableProperty] public ObservableCollection<Brush> _lowerDoorLights2 = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
+        //PLC
+        private readonly IPlcService _PlcService;
+        public PlcStore PlcStore { get; }
+        public MagazinePara MagazinePara => PlcStore.MagazinePara;
+
         // ASRS 參數輪詢計時器
         DispatcherTimer? asrsTimer;
         // ✅ 新增：關機儲存UI設定
@@ -106,11 +93,16 @@ namespace FMSFrontend.ViewModels
         }
 
       
-        public MainWindowViewModel(IHttpService httpService, IRobotService robotService, AlarmPageViewModel alarmVM, RobotStore store)
+        public MainWindowViewModel(IHttpService httpService, IRobotService robotService,IPlcService plcService ,AlarmPageViewModel alarmVM, RobotStore store, 
+            PlcStore plcStore)
         {
             _httpService = httpService;
+            
             RobotStore = store;
             _robotService = robotService;
+            
+            _PlcService = plcService;
+            PlcStore = plcStore;
 
             // 使用 DispatcherTimer 在 UI Thread 週期性更新時間（比起背景執行緒直接更新屬性更安全且不會產生跨執行緒問題）
             var timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Normal, (s, e) =>
@@ -139,7 +131,7 @@ namespace FMSFrontend.ViewModels
             };
             // 如果你會改 Robot 內部屬性，也可加：
             RobotStore.Robot.PropertyChanged += (_, __) => RefreshFromStore();
-
+           
             //✅ 新增：讀取初始參數,然後開啟輪詢
             // _ = MainWindowViewModelAsync_Init();
         }
@@ -258,7 +250,7 @@ namespace FMSFrontend.ViewModels
             }
             Robot.MaterialName = "";
         }
-        */
+       
         private async Task FetchDoorAsync()
         {
             try
@@ -277,6 +269,7 @@ namespace FMSFrontend.ViewModels
             }
             catch { }
         }
+         */
         #region PageChange
 
         [RelayCommand]
@@ -343,10 +336,17 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
-                var route = $"/PLC/ELEMagzineDoorSwitch/0/0/true";
-                await _httpService.SendPutAsync(route, new { });
+                var success = await _PlcService.EleMagzineDoorSwitchAsync(0,0,true);
+                if (!success)
+                {
+                    new DialogMessageWindow("API 回傳失敗").ShowDialog();
+                    return;
+                }
             }
-            catch { }
+            catch
+            {
+                new DialogMessageWindow("Reset Fail").ShowDialog();
+            }
         }
 
         // 下門 -> 使用 LowerDoorLights1 對應索引
@@ -355,27 +355,42 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
-                var route = $"PLC/ELEMagzineDoorSwitch/0/1/true";
-                await _httpService.SendPutAsync(route, new { });
+                var success = await _PlcService.EleMagzineDoorSwitchAsync(0, 1, true);
+                if (!success)
+                {
+                    new DialogMessageWindow("API 回傳失敗").ShowDialog();
+                    return;
+                }
             }
-            catch { }
+            catch
+            {
+                new DialogMessageWindow("Reset Fail").ShowDialog();
+            }
         }
        
         [ObservableProperty]
         //private bool _isDoorLightOn;
 
         private bool _isDoorLightOn;
+        private int Cnt = 0;
         // 新增命令：ToggleButton 切換時呼叫
         [RelayCommand]
         private async Task DoorLightSwitchChanged(bool isChecked)
         {
             try
             {
-
-                var route = $"PLC/EleMagzineDoorLightSwitch/0/{(isChecked).ToString().ToLower()}";
-                await _httpService.SendPutAsync(route, new { });
+                Cnt++;
+                var success = await _PlcService.EleMagzineDoorLightSwitchAsync(0, isChecked);
+                if (!success)
+                {
+                    new DialogMessageWindow("API 回傳失敗").ShowDialog();
+                    return;
+                }
             }
-            catch { }
+            catch
+            {
+               new DialogMessageWindow("Reset Fail").ShowDialog();
+            }
         }
 
         [RelayCommand]
@@ -527,8 +542,6 @@ namespace FMSFrontend.ViewModels
                 {
                     new DialogMessageWindow("Stop Fail").ShowDialog();
                 }
-
-              
             }
         }
         [RelayCommand]
@@ -552,7 +565,6 @@ namespace FMSFrontend.ViewModels
         private async Task RobotDispatchButtonClick()
         {
             var target = !DispatchStatus;
-
             try
             {
                 var ok = await _robotService.SetASRSDispatchSwitchAsync(target);
@@ -563,10 +575,10 @@ namespace FMSFrontend.ViewModels
                 }
 
                 // 成功更新畫面
-                DispatchStatus = target;
-                DispatchText = DispatchStatus ? "派工中" : "派工啟動";
-                DispatchBackground = DispatchStatus ? Dark : Light;
-                DispatchForeground = DispatchStatus ? Light : Dark;
+               // DispatchStatus = target;
+               // DispatchText = DispatchStatus ? "派工中" : "派工啟動";
+               // DispatchBackground = DispatchStatus ? Dark : Light;
+               // DispatchForeground = DispatchStatus ? Light : Dark;
             }
             catch
             {

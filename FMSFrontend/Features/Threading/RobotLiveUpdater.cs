@@ -41,7 +41,7 @@ namespace FMSFrontend.Features.Threading
                         _store.ApplyRobotDto(robotDto);
                 }
             }
-            catch (Exception ex)
+            catch //(Exception ex)
             {
                 // TODO: 可加 log
                 // ex.Message 或紀錄至 LogService

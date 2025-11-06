@@ -49,7 +49,12 @@ namespace FMSFrontend
             services.AddSingleton<IRobotService, RobotService>();
             services.AddSingleton<RobotLiveUpdater>();
 
+            //==PLC ===
+            services.AddSingleton<PlcStore>();
+            services.AddSingleton<IPlcService, PlcService>();
+            services.AddSingleton<PlcLiveUpdater>();
 
+            
             #endregion
 
 
@@ -67,6 +72,7 @@ namespace FMSFrontend
 
             // 啟動手臂資訊輪詢（只要啟一次）
             ServiceProvider.GetRequiredService<RobotLiveUpdater>().Start();
+            ServiceProvider.GetRequiredService<PlcLiveUpdater>().Start();
 
             // 啟動主視窗
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
