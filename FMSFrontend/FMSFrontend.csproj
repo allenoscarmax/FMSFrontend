@@ -22,6 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Dtos\MagazinePara.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Image\ControlUnit\06-1-lightbulbOn.png" />
     <None Remove="Image\ControlUnit\06-2-lightbulbOff.png" />
     <None Remove="Image\MachineIcons\03-.png" />

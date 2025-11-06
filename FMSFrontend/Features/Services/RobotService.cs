@@ -30,7 +30,7 @@ namespace FMSFrontend.Features.Services
             // TODO: 改成你的實際路由
             return await _http.GetJsonAsync<AsrsParameterDto>("ASRS/GetASRSParameter", ct);
         }
-        public async Task<List<RobotDto>> DB_GetAllRobotsAsync(CancellationToken ct = default)
+        public async Task<List<RobotDto>?> DB_GetAllRobotsAsync(CancellationToken ct = default)
         {
             return await _http.GetJsonAsync<List<RobotDto>>("Robot/DB_GetAllRobots", ct)
                    ?? new List<RobotDto>();
@@ -55,7 +55,6 @@ namespace FMSFrontend.Features.Services
         public async Task<bool> SetASRSDispatchSwitchAsync(bool enabled, CancellationToken ct = default)
         {
             var route = $"ASRS/SetASRSDispatchSwitch/{enabled.ToString().ToLower()}";
-            // 這裡 payload 可以是 new { } 空物件
             return await _http.SendPutAsync(route, new { });
         }
         public async Task<bool> ASRSRobotResetStatus(int no, CancellationToken ct = default)

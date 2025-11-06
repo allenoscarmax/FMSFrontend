@@ -8,10 +8,10 @@
                                              UpperDoorCommand="{Binding UpperDoorCommand}"
                                              LowerDoorCommand="{Binding LowerDoorCommand}"
                                              ShowDetailCommand="{Binding ShowDetailCommand}"
-                                             UpperDoorLight1="{Binding UpperDoorLights1[0]}"
-                                             UpperDoorLight2="{Binding UpperDoorLights2[0]}"
-                                             LowerDoorLight1="{Binding LowerDoorLights1[0]}"
-                                             LowerDoorLight2="{Binding LowerDoorLights2[0]}" />
+                                             UpperScanStatus="{Binding MagazinePara.UpperScanStatus[0]}"
+                                             UpperDoorStatus="{Binding MagazinePara.UpperDoorStatus[0]}"
+                                             LowerScanStatus="{Binding MagazinePara.LowerScanStatus[0]}"
+                                             LowerDoorStatus="{Binding MagazinePara.LowerDoorStatus[0]}" />
             <!--
             <controls:StorageUnitMiniControl StorageTitle="2號" StorageId="2"
                                              UpperDoorCommand="{Binding UpperDoorCommand}"

@@ -84,55 +84,7 @@ namespace FMSFrontend.Controls
         }
         #endregion
 
-        #region DoorLight
-        // 狀態燈 Brush（單一 Brush 即可）
-        public static readonly DependencyProperty UpperDoorLight1Property =
-            DependencyProperty.Register(
-                nameof(UpperDoorLight1), 
-                typeof(Brush), 
-                typeof(StorageUnitMiniControl),
-                new PropertyMetadata(Brushes.Gray)
-            );
-
-        public Brush UpperDoorLight1
-        {
-            get => (Brush)GetValue(UpperDoorLight1Property);
-            set => SetValue(UpperDoorLight1Property, value);
-        }
-
-        public static readonly DependencyProperty UpperDoorLight2Property =
-            DependencyProperty.Register(nameof(UpperDoorLight2), typeof(Brush), typeof(StorageUnitMiniControl),
-                new PropertyMetadata(Brushes.Gray));
-
-        public Brush UpperDoorLight2
-        {
-            get => (Brush)GetValue(UpperDoorLight2Property);
-            set => SetValue(UpperDoorLight2Property, value);
-        }
-
-        public static readonly DependencyProperty LowerDoorLight1Property =
-            DependencyProperty.Register(nameof(LowerDoorLight1), typeof(Brush), typeof(StorageUnitMiniControl),
-                new PropertyMetadata(Brushes.Gray));
-
-        public Brush LowerDoorLight1
-        {
-            get => (Brush)GetValue(LowerDoorLight1Property);
-            set => SetValue(LowerDoorLight1Property, value);
-        }
-
-        public static readonly DependencyProperty LowerDoorLight2Property =
-            DependencyProperty.Register(nameof(LowerDoorLight2), typeof(Brush), typeof(StorageUnitMiniControl),
-                new PropertyMetadata(Brushes.Gray));
-
-        public Brush LowerDoorLight2
-        {
-            get => (Brush)GetValue(LowerDoorLight2Property);
-            set => SetValue(LowerDoorLight2Property, value);
-        }
-
-        #endregion
-
-        #region 新增的 DP
+        #region 標題名稱的屬性 (Left/Right Title & Brush)
         public static readonly DependencyProperty LeftTitleBrushProperty =
             DependencyProperty.Register(nameof(LeftTitleBrush), typeof(Brush), typeof(StorageUnitMiniControl), new PropertyMetadata(Brushes.SteelBlue));
 
@@ -167,6 +119,44 @@ namespace FMSFrontend.Controls
         {
             get => (string)GetValue(RightTitleProperty);
             set => SetValue(RightTitleProperty, value);
+        }
+        #endregion
+
+        #region 狀態燈對應的屬性 (Upper/Lower Scan & Door)
+        public static readonly DependencyProperty UpperScanStatusProperty =
+            DependencyProperty.Register(nameof(UpperScanStatus), typeof(Brush), typeof(StorageUnitMiniControl), new PropertyMetadata(Brushes.Gray));
+
+        public Brush UpperScanStatus
+        {
+            get => (Brush)GetValue(UpperScanStatusProperty);
+            set => SetValue(UpperScanStatusProperty, value);
+        }
+
+        public static readonly DependencyProperty UpperDoorStatusProperty =
+            DependencyProperty.Register(nameof(UpperDoorStatus), typeof(Brush), typeof(StorageUnitMiniControl), new PropertyMetadata(Brushes.Gray));
+
+        public Brush UpperDoorStatus
+        {
+            get => (Brush)GetValue(UpperDoorStatusProperty);
+            set => SetValue(UpperDoorStatusProperty, value);
+        }
+
+        public static readonly DependencyProperty LowerScanStatusProperty =
+            DependencyProperty.Register(nameof(LowerScanStatus), typeof(Brush), typeof(StorageUnitMiniControl), new PropertyMetadata(Brushes.Gray));
+
+        public Brush LowerScanStatus
+        {
+            get => (Brush)GetValue(LowerScanStatusProperty);
+            set => SetValue(LowerScanStatusProperty, value);
+        }
+
+        public static readonly DependencyProperty LowerDoorStatusProperty =
+            DependencyProperty.Register(nameof(LowerDoorStatus), typeof(Brush), typeof(StorageUnitMiniControl), new PropertyMetadata(Brushes.Gray));
+
+        public Brush LowerDoorStatus
+        {
+            get => (Brush)GetValue(LowerDoorStatusProperty);
+            set => SetValue(LowerDoorStatusProperty, value);
         }
         #endregion
     }

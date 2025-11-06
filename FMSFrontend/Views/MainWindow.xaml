@@ -252,9 +252,10 @@
                                 <controls:GradientTextBlock Text="料倉控制" FontSize="24" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="55" />
                                 <!-- 滑動按鈕 -->
                                 <ToggleButton x:Name="ToggleLight" Width="136" Height="40" HorizontalAlignment="Right" Margin="0,0,30,0" 
-                                                IsChecked="{Binding IsDoorLightOn, Mode=TwoWay}"
+                                                IsChecked="{Binding  MagazinePara.IsDoorLightOn, Mode=TwoWay}"
                                                 Command="{Binding DoorLightSwitchChangedCommand}"
-                                                CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}">
+                                                CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                                                ClickMode="Press">
                                     <ToggleButton.Template>
                                         <ControlTemplate TargetType="ToggleButton">
                                             <Grid Width="136" Height="40">
@@ -277,12 +278,12 @@
                                                     <VisualStateGroup x:Name="CheckStates">
                                                         <VisualState x:Name="Unchecked">
                                                             <Storyboard>
-                                                                <DoubleAnimation Storyboard.TargetName="KnobTransform" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.2" />
+                                                                <DoubleAnimation Storyboard.TargetName="KnobTransform" Storyboard.TargetProperty="X" To="74" Duration="0:0:0.2" />
                                                             </Storyboard>
                                                         </VisualState>
                                                         <VisualState x:Name="Checked">
                                                             <Storyboard>
-                                                                <DoubleAnimation Storyboard.TargetName="KnobTransform" Storyboard.TargetProperty="X" To="74" Duration="0:0:0.2" />
+                                                                <DoubleAnimation Storyboard.TargetName="KnobTransform" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.2" />
                                                             </Storyboard>
                                                         </VisualState>
                                                     </VisualStateGroup>
@@ -291,11 +292,11 @@
 
                                             <!-- 圖片切換：用 Triggers 控制 Visibility -->
                                             <ControlTemplate.Triggers>
-                                                <Trigger Property="IsChecked" Value="True">
+                                                <Trigger Property="IsChecked" Value="False">
                                                     <Setter TargetName="ImageOn" Property="Visibility" Value="Collapsed" />
                                                     <Setter TargetName="ImageOff" Property="Visibility" Value="Visible" />
                                                 </Trigger>
-                                                <Trigger Property="IsChecked" Value="False">
+                                                <Trigger Property="IsChecked" Value="True">
                                                     <Setter TargetName="ImageOn" Property="Visibility" Value="Visible" />
                                                     <Setter TargetName="ImageOff" Property="Visibility" Value="Collapsed" />
                                                 </Trigger>

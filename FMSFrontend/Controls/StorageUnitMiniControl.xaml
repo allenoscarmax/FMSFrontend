@@ -79,18 +79,18 @@
             <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Vertical">
                 <Ellipse Width="8" Height="8" Margin="0,5,0,0"
                          Stroke="#FF717171" StrokeThickness="0.5"
-                         Fill="{Binding UpperDoorLight1, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                         Fill="{Binding UpperScanStatus, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                 <Ellipse Width="8" Height="8" Margin="0,5,0,0"
                          Stroke="#FF717171" StrokeThickness="0.5"
-                         Fill="{Binding UpperDoorLight2, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                         Fill="{Binding UpperDoorStatus, RelativeSource={RelativeSource AncestorType=UserControl}}" />
             </StackPanel>
             <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical">
                 <Ellipse Width="8" Height="8" Margin="0,5,0,0"
                          Stroke="#FF717171" StrokeThickness="0.5"
-                         Fill="{Binding LowerDoorLight1, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                         Fill="{Binding LowerScanStatus, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                 <Ellipse Width="8" Height="8" Margin="0,5,0,0"
                          Stroke="#FF717171" StrokeThickness="0.5"
-                         Fill="{Binding LowerDoorLight2, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                         Fill="{Binding LowerDoorStatus, RelativeSource={RelativeSource AncestorType=UserControl}}" />
             </StackPanel>
 
             <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Height="0.5" Background="#2779A7" VerticalAlignment="Top" Margin="-0.5" />

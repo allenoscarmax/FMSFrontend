@@ -109,52 +109,44 @@ namespace FMSFrontend.Controls
             get => (ICommand)GetValue(LowerDoorCommandProperty);
             set => SetValue(LowerDoorCommandProperty, value);
         }
-        #region DoorLight
-        // 狀態燈 Brush（單一 Brush 即可）
-        public static readonly DependencyProperty UpperDoorLight1Property =
-            DependencyProperty.Register(
-                nameof(UpperDoorLight1),
-                typeof(Brush),
-                typeof(StorageUnitControl),
-                new PropertyMetadata(Brushes.Gray)
-            );
 
-        public Brush UpperDoorLight1
+        // 狀態燈（供 XAML 綁定）
+        public static readonly DependencyProperty UpperScanStatusProperty =
+            DependencyProperty.Register(nameof(UpperScanStatus), typeof(Brush), typeof(StorageUnitControl), new PropertyMetadata(Brushes.Gray));
+
+        public Brush UpperScanStatus
         {
-            get => (Brush)GetValue(UpperDoorLight1Property);
-            set => SetValue(UpperDoorLight1Property, value);
+            get => (Brush)GetValue(UpperScanStatusProperty);
+            set => SetValue(UpperScanStatusProperty, value);
         }
 
-        public static readonly DependencyProperty UpperDoorLight2Property =
-            DependencyProperty.Register(nameof(UpperDoorLight2), typeof(Brush), typeof(StorageUnitControl),
-                new PropertyMetadata(Brushes.Gray));
+        public static readonly DependencyProperty UpperDoorStatusProperty =
+            DependencyProperty.Register(nameof(UpperDoorStatus), typeof(Brush), typeof(StorageUnitControl), new PropertyMetadata(Brushes.Gray));
 
-        public Brush UpperDoorLight2
+        public Brush UpperDoorStatus
         {
-            get => (Brush)GetValue(UpperDoorLight2Property);
-            set => SetValue(UpperDoorLight2Property, value);
+            get => (Brush)GetValue(UpperDoorStatusProperty);
+            set => SetValue(UpperDoorStatusProperty, value);
         }
 
-        public static readonly DependencyProperty LowerDoorLight1Property =
-            DependencyProperty.Register(nameof(LowerDoorLight1), typeof(Brush), typeof(StorageUnitControl),
-                new PropertyMetadata(Brushes.Gray));
+        public static readonly DependencyProperty LowerScanStatusProperty =
+            DependencyProperty.Register(nameof(LowerScanStatus), typeof(Brush), typeof(StorageUnitControl), new PropertyMetadata(Brushes.Gray));
 
-        public Brush LowerDoorLight1
+        public Brush LowerScanStatus
         {
-            get => (Brush)GetValue(LowerDoorLight1Property);
-            set => SetValue(LowerDoorLight1Property, value);
+            get => (Brush)GetValue(LowerScanStatusProperty);
+            set => SetValue(LowerScanStatusProperty, value);
         }
 
-        public static readonly DependencyProperty LowerDoorLight2Property =
-            DependencyProperty.Register(nameof(LowerDoorLight2), typeof(Brush), typeof(StorageUnitControl),
-                new PropertyMetadata(Brushes.Gray));
+        public static readonly DependencyProperty LowerDoorStatusProperty =
+            DependencyProperty.Register(nameof(LowerDoorStatus), typeof(Brush), typeof(StorageUnitControl), new PropertyMetadata(Brushes.Gray));
 
-        public Brush LowerDoorLight2
+        public Brush LowerDoorStatus
         {
-            get => (Brush)GetValue(LowerDoorLight2Property);
-            set => SetValue(LowerDoorLight2Property, value);
+            get => (Brush)GetValue(LowerDoorStatusProperty);
+            set => SetValue(LowerDoorStatusProperty, value);
         }
 
-        #endregion
+
     }
 }

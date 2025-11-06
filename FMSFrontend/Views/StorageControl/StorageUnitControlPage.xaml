@@ -5,16 +5,16 @@
             <StackPanel x:Name="MainStackPanel" Orientation="Vertical" Margin="10">
                 <controls:StorageUnitControl
                     StorageId="1"
-                    LeftTitleBrush="{Binding LeftTitleBrush}"
-                    LeftTitle="{Binding LeftTitle}"
-                    RightTitleBrush="{Binding RightTitleBrush}"
-                    RightTitle="{Binding RightTitle}"   
                     UpperDoorCommand="{Binding UpperDoorCommand}"
                     LowerDoorCommand="{Binding LowerDoorCommand}" 
-                    UpperDoorLight1="{Binding UpperDoorLights1[0]}"
-                    UpperDoorLight2="{Binding UpperDoorLights2[0]}"
-                    LowerDoorLight1="{Binding LowerDoorLights1[0]}"
-                    LowerDoorLight2="{Binding LowerDoorLights2[0]}" />
+                    LeftTitleBrush= "{Binding MagazinePara.LeftTitleBrush[0]}"
+                    LeftTitle=      "{Binding MagazinePara.LeftTitle[0]}"
+                    RightTitleBrush="{Binding MagazinePara.RightTitleBrush[0]}"
+                    RightTitle=     "{Binding MagazinePara.RightTitle[0]}"   
+                    UpperScanStatus="{Binding MagazinePara.UpperScanStatus[0]}"
+                    UpperDoorStatus="{Binding MagazinePara.UpperDoorStatus[0]}"
+                    LowerScanStatus="{Binding MagazinePara.LowerScanStatus[0]}"
+                    LowerDoorStatus="{Binding MagazinePara.LowerDoorStatus[0]}" />
                 <!--
                 <controls:StorageUnitControl StorageId="2" StorageTitle="2號倉門" SidebarBrush="#2779A7" Margin="0,0,0,20" />
                 <controls:StorageUnitControl StorageId="3" StorageTitle="3號倉門" SidebarBrush="#2779A7" Margin="0,0,0,20" />
