@@ -34,9 +34,10 @@
 
             <!-- 🎯 主內容：選擇類型 -->
             <Grid Grid.Row="1">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,16">
-                    <Button Content="電極" Width="240" Height="78" FontSize="24" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Margin="0,0,30,0" Click="SelectElectrodeCommand" />
-                    <Button Content="工件" Width="240" Height="78" FontSize="24" Style="{StaticResource PrimaryButtonStyle}" Background="#DE8C3E" Click="SelectWorkpieceCommand" />
+                <StackPanel  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0">
+                    <Button Content="電極" Width="240" Height="78" FontSize="24" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Margin="0,0,0,10" Click="SelectElectrodeCommand" />
+                    <Button Content="工件" Width="240" Height="78" FontSize="24" Style="{StaticResource PrimaryButtonStyle}" Background="#DE8C3E" Margin="0,0,0,10" Click="SelectWorkpieceCommand" />
+                    <Button Content="探針" Width="240" Height="78" FontSize="24" Style="{StaticResource PrimaryButtonStyle}" Background="BlueViolet" Click="SelectProbeCommand" />
                 </StackPanel>
             </Grid>
         </Grid>

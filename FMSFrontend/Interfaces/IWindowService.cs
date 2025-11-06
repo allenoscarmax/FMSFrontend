@@ -18,7 +18,7 @@ namespace FMSFrontend.Interfaces
 
         bool ShowYesNoDialog(string message);
 
-        bool ShowMaterialTypeSelectWindow(out bool Isele);
+        bool ShowMaterialTypeSelectWindow(out MaterialKind kind);
         void ShowMaterialPairWindow(bool isElectrode);
 
         void ShowMaterial(object detailViewModel,

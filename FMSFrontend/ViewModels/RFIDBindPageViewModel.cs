@@ -5,7 +5,9 @@ using CommunityToolkit.Mvvm.Messaging.Messages;
 using FMSFrontend.Extensions;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
+using FMSFrontend.ViewModels.Windows;
 using OSCARMAXFMS_V3.DBmodels;
+using FMSFrontend.Views.Windows;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,6 +16,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using static FMSFrontend.ViewModels.MainWindowViewModel;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -138,14 +141,18 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void OpenMaterialTypeSelect()
         {
-            if (_windowService.ShowMaterialTypeSelectWindow(out bool isElectrode))
+            if (_windowService.ShowMaterialTypeSelectWindow(out MaterialKind kind))
             {
-                var pairWindow = new MaterialPairWindow(isElectrode)
+                Window? window = kind switch
                 {
-
-                   // DataContext = new MaterialPairViewModel(isElectrode)
+                    MaterialKind.Electrode => new MaterialPairWindow(isElectrode: true),
+                    MaterialKind.Workpiece => new MaterialPairWindow(isElectrode: false),
+                    MaterialKind.Probe => new ProbePairWindow(),   // 新增的探針視窗
+                    _ => null
                 };
-                pairWindow.ShowDialog();
+
+                window?.ShowDialog();
+
 
                 // 關閉視窗後重新抓取並綁定
                 RefreshFetch();
@@ -262,4 +269,5 @@ namespace FMSFrontend.ViewModels
             public string TagSerial { get; set; } = "";
         }
     }
+
 }

@@ -576,7 +576,7 @@ namespace FMSFrontend.ViewModels.Windows
         [ObservableProperty] public string setupUser = "";
 
         // 根據電極名稱尾碼決定是否可分享 (例如尾碼為 "02")
-        public bool CanShare => !string.IsNullOrWhiteSpace(ElectrodeName) && ElectrodeName.Trim().EndsWith("02", StringComparison.OrdinalIgnoreCase);
+        public bool CanShare => !string.IsNullOrWhiteSpace(ElectrodeName) && ElectrodeName.Trim().EndsWith("01", StringComparison.OrdinalIgnoreCase);
 
         // 當影響 CanShare 的欄位變更時發通知以更新 UI
         partial void OnElectrodeNameChanged(string value) => OnPropertyChanged(nameof(CanShare));
