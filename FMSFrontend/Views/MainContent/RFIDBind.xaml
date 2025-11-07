@@ -202,7 +202,7 @@
                     <!-- 📑 表格 -->
                     <Border Grid.Row="2" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,20,0,0">
 
-                        <DataGrid ItemsSource="{Binding BurnHistoryList}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="15" Style="{StaticResource ModernFlatDataGridStyle}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
+                        <DataGrid ItemsSource="{Binding rFIDBindmodel.BurnHistoryList}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="15" Style="{StaticResource ModernFlatDataGridStyle}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
 
                             <!-- 移除每個儲存格的邊框 -->
                             <DataGrid.CellStyle>

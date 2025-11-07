@@ -12,13 +12,13 @@ namespace FMSFrontend.Features.Dtos
     {
         [BsonRepresentation(BsonType.ObjectId)]
         public string _id { get; set; } = "";
-        public string TagSerial { get; set; } = "";
-        public string ProbeName { get; set; } = "";
-        public string ProbeType { get; set; } = "";
-        public string CurrentLocation { get; set; } = "";
-        public string State { get; set; } = "";
-        public bool? Restriction { get; set; }
-        public string PairedEDM { get; set; } = "";
+        public string tagSerial { get; set; } = "";
+        public string probeName { get; set; } = "";
+        public string probeType { get; set; } = "";
+        public string currentLocation { get; set; } = "";
+        public string state { get; set; } = "";
+        public bool? restriction { get; set; }
+        public string pairedEDM { get; set; } = "";
 
     }
 }

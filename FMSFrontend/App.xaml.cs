@@ -1,11 +1,14 @@
-﻿using FMSFrontend.Features.Services;
+﻿using FMSFrontend.Extensions;
+using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Helpers;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
+using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
+using FMSFrontend.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
 using System.Data;
@@ -44,19 +47,23 @@ namespace FMSFrontend
             services.AddSingleton<IWindowService, WindowService>();
 
             #region RestoreSingleton
-            // === Robot ===
-            services.AddSingleton<RobotStore>();
+            // === Services ===
+            services.AddSingleton<IElectrodeService, ElectrodeService>();
+            services.AddSingleton<IProbeService, ProbeService>();
+            services.AddSingleton<IRfidService, RfidService>();
             services.AddSingleton<IRobotService, RobotService>();
-            services.AddSingleton<RobotLiveUpdater>();
-
-            //==PLC ===
-            services.AddSingleton<PlcStore>();
             services.AddSingleton<IPlcService, PlcService>();
-            services.AddSingleton<PlcLiveUpdater>();
+            services.AddSingleton<IWorkpieceService, WorkpieceService>();
+            services.AddSingleton<IWorksheetsService, WorksheetsService>();
 
-            //RFIDBindData 
+            // === Singleton ===
+            services.AddSingleton<PlcStore>();
             services.AddSingleton<RFIDBindStore>();
-            services.AddSingleton<IRFIDMgmtModuleService, RFIDMgmtModuleService>();
+            services.AddSingleton<RobotStore>();
+         
+            // ==LiveUpdater===
+            services.AddSingleton<RobotLiveUpdater>();
+            services.AddSingleton<PlcLiveUpdater>();          
             services.AddSingleton<RFIDBindLiveUpdater>();
 
             #endregion
@@ -106,6 +113,8 @@ namespace FMSFrontend
             services.AddTransient<EmptyMaterialDetailViewModel>();
             services.AddTransient<TimelineItemViewModel>();
             services.AddTransient<StorageUnitControlPageViewModel>();
+            services.AddTransient<MaterialPairViewModel>();
+            services.AddTransient<ProbePairViewModel>();
         }
         private void RegisterViews(IServiceCollection services)
         {
@@ -119,6 +128,8 @@ namespace FMSFrontend
             services.AddTransient<RFIDBind>();
             services.AddTransient<SettingsView>();
             services.AddTransient<WorkOrder>();
+            services.AddTransient<MaterialPairWindow>();
+            services.AddTransient<ProbePairWindow>();
         }
 
     }

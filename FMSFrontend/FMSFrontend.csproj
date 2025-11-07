@@ -123,10 +123,6 @@
     </Resource>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Probe\" />
-  </ItemGroup>
-
 
 
 </Project>

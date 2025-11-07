@@ -38,9 +38,9 @@
                 </Button>
 
                 <StackPanel Orientation="Horizontal" Margin="16,0,0,0" VerticalAlignment="Center">
-                    <Ellipse Width="12" Height="12" Fill="{Binding RfidConnectedBrush}" VerticalAlignment="Center" />
+                    <Ellipse Width="12" Height="12" Fill="{Binding RfidBindmodel.ConnectedBrush}" VerticalAlignment="Center" />
                     <TextBlock Text="RFID Connected" FontSize="14" Margin="6,0,16,0" VerticalAlignment="Center" />
-                    <Ellipse Width="12" Height="12" Fill="{Binding RfidTagBrush}" VerticalAlignment="Center" />
+                    <Ellipse Width="12" Height="12" Fill="{Binding RfidBindmodel.TagBrush}" VerticalAlignment="Center" />
                     <TextBlock Text="RFID Tag" FontSize="14" Margin="6,0,0,0" VerticalAlignment="Center" />
                 </StackPanel>
             </StackPanel>
@@ -109,7 +109,7 @@
                                 <!-- 標籤序號 -->
                                 <StackPanel Grid.Column="2" Margin="8,0">
                                     <TextBlock Text="標籤序號：" FontSize="16" FontWeight="Bold" />
-                                    <TextBox x:Name="TagSerial" Text="{Binding TagSerial, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
+                                    <TextBox x:Name="TagSerial" Text="{Binding RfidBindmodel.TagSerial, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
                                     <!--   <Border BorderBrush="Black" BorderThickness="0,0,0,1" Margin="0,0,32,0" /> -->
                                 </StackPanel>
                             </Grid>
@@ -189,7 +189,7 @@
                             <!-- 右：選擇工件 -->
                             <StackPanel Grid.Column="2" HorizontalAlignment="Center">
                                 <TextBlock Text="選擇工件" FontSize="16" HorizontalAlignment="Left" Margin="0,0,0,15" Background="#555555" Foreground="#CCCCCC" Width="96" TextAlignment="Center" />
-                                <Button Content="{Binding SelectedWorkpieceNameDisplay, FallbackValue='請選擇工件'}" Width="375" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="4,2" Command="{Binding SelectWorkpieceCommand}" />
+                                <Button IsEnabled="{Binding SelectEnable}" Content="{Binding SelectedWorkpieceNameDisplay, FallbackValue='請選擇工件'}" Width="375" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="4,2" Command="{Binding SelectWorkpieceCommand}" />
                             </StackPanel>
                         </Grid>
 
@@ -211,7 +211,7 @@
                                 <!-- 標籤序號 -->
                                 <StackPanel Grid.Column="1" Margin="8,0">
                                     <TextBlock Text="標籤序號：" FontSize="16" FontWeight="Bold" />
-                                    <TextBox x:Name="ETagSerial" Text="{Binding TagSerial, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
+                                    <TextBox x:Name="ETagSerial" Text="{Binding RfidBindmodel.TagSerial, UpdateSourceTrigger=PropertyChanged}" Width="300" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="2,0" />
                                     <!-- <Border BorderBrush="Black" BorderThickness="0,0,0,1" Margin="10,0,32,0" /> -->
                                 </StackPanel>
                             </Grid>
