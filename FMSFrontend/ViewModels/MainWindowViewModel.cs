@@ -26,7 +26,7 @@ namespace FMSFrontend.ViewModels
         private static readonly SolidColorBrush Dark = new(Color.FromRgb(0x00, 0x4E, 0x79));
         private static readonly SolidColorBrush Light = new(Color.FromRgb(0xFF, 0xFF, 0xFF));
         // 開啟頁面視窗（改為延遲建立：避免啟動時一次建立大量 UI）
-        private ProductionLines? productionLines ;
+        //private ProductionLines? productionLines ;
 
         private readonly IHttpService _httpService;
         private readonly IRobotService _robotService;
@@ -81,6 +81,7 @@ namespace FMSFrontend.ViewModels
         // ✅ 新增：關機儲存UI設定
         public void SaveCurrentStoragePageType()
         {
+            /*
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             string pageType = (StorageControlPage is FMSFrontend.Views.StorageUnitMiniControlPage).ToString();
             ini.Write("Prarm", "IsStorageUnitControlMini", pageType);
@@ -90,6 +91,7 @@ namespace FMSFrontend.ViewModels
             else
                 pageType = false.ToString();
             ini.Write("Prarm", "IsStorageOverviewControl", pageType);
+            */
         }
 
       

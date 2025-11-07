@@ -13,6 +13,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using FMSFrontend.Features.Services; // 新增: 各種服務介面/實作
+using FMSFrontend.Features.Singleton; // 新增: RFIDBindStore
+using FMSFrontend.Features.Threading; // 新增: RFIDBindLiveUpdater
 
 namespace FMSFrontend.Views.Windows
 {
@@ -22,13 +25,36 @@ namespace FMSFrontend.Views.Windows
     public partial class ProbePairWindow : Window
     {
         public ProbePairWindow()
-        {
+        {   
             InitializeComponent();
             var windowService = new WindowService();
             var httpService = new HttpService();
 
-            InitializeComponent();
-            DataContext = new ProbePairViewModel(this, windowService, httpService);
+            // 建立必要服務 (需傳入 httpService)
+            var electrodeService = new ElectrodeService(httpService);
+            var probeService = new ProbeService(httpService);
+            var rfidService = new RfidService(httpService);
+            var workpieceService = new WorkpieceService(httpService);
+            var worksheetsService = new WorksheetsService(httpService);
+
+            // 建立資料存放與即時更新元件 (RFIDBindLiveUpdater 需 rfidService 與 store)
+            var rfidBindStore = new RFIDBindStore();
+            var rfidBindLiveUpdater = new RFIDBindLiveUpdater(rfidService, rfidBindStore);
+
+            DataContext = new ProbePairViewModel(
+                this,
+                windowService,
+                httpService,
+                electrodeService,
+                probeService,
+                rfidService,
+                workpieceService,
+                worksheetsService,
+                rfidBindStore,
+                rfidBindLiveUpdater
+            );
+            Loaded += (_, __) => ((ProbePairViewModel)DataContext).OnPageActivated();
+            Unloaded += (_, __) => ((ProbePairViewModel)DataContext).OnPageDeactivated();
         }
         private void Close_Click(object sender, RoutedEventArgs e)
         {

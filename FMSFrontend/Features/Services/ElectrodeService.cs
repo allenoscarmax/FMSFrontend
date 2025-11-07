@@ -7,7 +7,7 @@ namespace FMSFrontend.Features.Services
 {
     public interface IElectrodeService
     {
-        Task<ElectrodeDto?> GetAllElectrodeAsync(CancellationToken ct = default); //取得所有電極資料
+        Task<List<ElectrodeDto>?> GetAllElectrodeAsync(CancellationToken ct = default); //取得所有電極資料
         Task<bool> UpdateElectrodeDataAsync(ElectrodeDto electrodeDto, CancellationToken ct = default); //更新電極資料
     }
 
@@ -16,9 +16,9 @@ namespace FMSFrontend.Features.Services
         private readonly IHttpService _http;
         public ElectrodeService(IHttpService http) => _http = http;
         //====GET====
-        public async Task<ElectrodeDto?> GetAllElectrodeAsync(CancellationToken ct = default) //取得所有電極資料
+        public async Task<List<ElectrodeDto>?> GetAllElectrodeAsync(CancellationToken ct = default) //取得所有電極資料
         {
-            return await _http.GetJsonAsync<ElectrodeDto>("Electrode/DB_GetAllElectrode", ct);
+            return await _http.GetJsonAsync<List<ElectrodeDto>>("Electrode/DB_GetAllElectrode", ct);
         }
         //====PUT====
         public async Task<bool> UpdateElectrodeDataAsync(ElectrodeDto electrodeDto, CancellationToken ct = default) //更新電極資料

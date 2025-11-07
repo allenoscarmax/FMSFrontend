@@ -7,7 +7,7 @@ namespace FMSFrontend.Features.Services
 {
     public interface IProbeService
     {
-        Task<ProbeDto?> GetAllProbeAsync(CancellationToken ct = default); //取得所有探針資料
+        Task<List<ProbeDto>?> GetAllProbeAsync(CancellationToken ct = default); //取得所有探針資料
         Task<bool> UpdateProbeDataAsync(ProbeDto payload, CancellationToken ct = default); //更新探針資料
     }
 
@@ -16,9 +16,9 @@ namespace FMSFrontend.Features.Services
         private readonly IHttpService _http;
         public ProbeService(IHttpService http) => _http = http;
         //====GET====
-        public async Task<ProbeDto?> GetAllProbeAsync(CancellationToken ct = default)
+        public async Task<List<ProbeDto>?> GetAllProbeAsync(CancellationToken ct = default)
         {
-            return await _http.GetJsonAsync<ProbeDto>("Probe/DB_GetAllProbe", ct);
+            return await _http.GetJsonAsync<List<ProbeDto>>("Probe/DB_GetAllProbe", ct);
         }
         //====PUT====
         public async Task<bool> UpdateProbeDataAsync(ProbeDto payload, CancellationToken ct = default)

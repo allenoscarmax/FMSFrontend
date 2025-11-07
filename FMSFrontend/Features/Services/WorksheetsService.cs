@@ -7,7 +7,7 @@ namespace FMSFrontend.Features.Services
 {
     public interface IWorksheetsService
     {
-        public Task<WorksheetsDto?> GetAllWorkSheetAsync(CancellationToken ct = default);
+        public Task<List<WorksheetsDto>?> GetAllWorkSheetAsync(CancellationToken ct = default);
     }
 
     public class WorksheetsService : IWorksheetsService
@@ -15,9 +15,9 @@ namespace FMSFrontend.Features.Services
         private readonly IHttpService _http;
         public WorksheetsService(IHttpService http) => _http = http;
         //====GET====
-        public async Task<WorksheetsDto?> GetAllWorkSheetAsync(CancellationToken ct = default)
+        public async Task<List<WorksheetsDto>?> GetAllWorkSheetAsync(CancellationToken ct = default)
         {
-            return await _http.GetJsonAsync<WorksheetsDto>("Worksheet/DB_GetAllWorkSheet", ct);
+            return await _http.GetJsonAsync<List<WorksheetsDto>>("Worksheet/DB_GetAllWorkSheet", ct);
         }
         //====PUT====
     }

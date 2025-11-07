@@ -7,7 +7,7 @@ namespace FMSFrontend.Features.Services
 {
     public interface IWorkpieceService
     {
-        Task<MagazineParaDto?> GetAllWorkpieceAsync(CancellationToken ct = default);
+        Task<List<WorkpieceDto>?> GetAllWorkpieceAsync(CancellationToken ct = default);
         Task<bool> UpdateWorkpieceDataAsync(WorkpieceDto payload, CancellationToken ct = default);
     }
 
@@ -18,9 +18,9 @@ namespace FMSFrontend.Features.Services
         //====GET====
 
         //取得所有工件資料
-        public async Task<MagazineParaDto?> GetAllWorkpieceAsync(CancellationToken ct = default)
+        public async Task<List<WorkpieceDto>?> GetAllWorkpieceAsync(CancellationToken ct = default)
         {
-            return await _http.GetJsonAsync<MagazineParaDto>("Workpiece/DB_GetAllWorkpiece", ct);
+            return await _http.GetJsonAsync<List<WorkpieceDto>>("Workpiece/DB_GetAllWorkpiece", ct);
         }
 
         //====PUT====
