@@ -286,6 +286,7 @@ public partial class MaterialPairViewModel : ObservableObject
     [RelayCommand]
     private async Task SelectElectrode()
     {
+
        // if(SelectedWorksheetItem)
         // 1) 準備資料
         var items = new List<SelectItem>();
