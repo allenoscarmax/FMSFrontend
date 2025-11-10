@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Extensions;
+using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
@@ -10,24 +11,18 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace FMSFrontend.ViewModels.Windows
 {
     public partial class UploadSheetViewModel : ObservableObject
     {
         private readonly IHttpService _httpService;
+        private readonly IWindowService _windowService;
 
-        // 支援 DI 與無 DI
-        public UploadSheetViewModel() : this(
-            FMSFrontend.App.ServiceProvider != null
-                ? FMSFrontend.App.ServiceProvider.GetRequiredService<IHttpService>()
-                : new HttpService()
-        )
-        { }
-
-        public UploadSheetViewModel(IHttpService httpService)
+        public UploadSheetViewModel(IHttpService httpService, IWindowService windowService)
         {
-            _httpService = httpService;
+            _httpService = httpService; _windowService = windowService;
         }
 
         [ObservableProperty]
@@ -559,8 +554,37 @@ namespace FMSFrontend.ViewModels.Windows
         {
             if (item == null) return;
 
-            // TODO: 實作分享邏輯，例如呼叫 API 或顯示對話框
-            new DialogMessageWindow($"Share: {item.ElectrodeName}").ShowDialog();
+            // 從 electrodeName 萃取工件名稱（第一個 '_' 之前的字串）
+            var workpieceName = ExtractWorkpieceNameFromElectrodeName(item.ElectrodeName);
+            if (string.IsNullOrEmpty(workpieceName)) return;
+
+            // 開窗（把工件名稱丟進去）
+            _windowService.ShowSelectSharedElectrodeWindow(workpieceName);
+
+            // 若你還要接回傳結果，可用：
+            // if (_windowService.ShowSelectSharedElectrodeWindow(workpieceName, out var selection) && selection != null)
+            // { ...後續處理... }
+
+        }
+        /// <summary>
+        /// 例： "2504AF019617-001_3-001A-01" -> "2504AF019617-001"
+        /// 規則：取第一個 '_' 前的所有字元；若沒有 '_'，就回傳原字串。
+        /// </summary>
+        private static string ExtractWorkpieceNameFromElectrodeName(string? electrodeName)
+        {
+            if (string.IsNullOrWhiteSpace(electrodeName))
+                return string.Empty;
+
+            // 方式一：最快，找第一個底線
+            int idx = electrodeName.IndexOf('_');
+            if (idx > 0)
+                return electrodeName.Substring(0, idx);
+
+            // 方式二（防極端格式）：取到 "-01"、"-02" 前面的主體再去掉後段，但通常不會走到這
+            // var m = Regex.Match(electrodeName, @"^(.+?)_");
+            // return m.Success ? m.Groups[1].Value : electrodeName;
+
+            return electrodeName;
         }
     }
 

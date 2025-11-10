@@ -42,5 +42,8 @@ namespace FMSFrontend.Interfaces
         // 新增：純資訊視窗（不顯示倉位/操作列）
         void ShowMaterialInformation(ElectrodeModel elec, IEnumerable<TimelineItemModel> tl, IHttpService httpService);
         void ShowMaterialInformation(WorkpieceModel wp, IEnumerable<TimelineItemModel> tl, IHttpService httpService);
+
+
+        void ShowSelectSharedElectrodeWindow(string targetWorkpieceName);
     }
 }

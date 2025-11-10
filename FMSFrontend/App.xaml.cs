@@ -75,6 +75,9 @@ namespace FMSFrontend
             // === View 註冊 ===
             RegisterViews(services);
 
+            // === Window 註冊 ===
+        //    RegisterWindows(services);
+
 
             // === MainWindow ===
             services.AddSingleton<MainWindow>();
@@ -115,6 +118,9 @@ namespace FMSFrontend
             services.AddTransient<StorageUnitControlPageViewModel>();
             services.AddTransient<MaterialPairViewModel>();
             services.AddTransient<ProbePairViewModel>();
+
+            //Windows
+          //  services.AddTransient<SelectSharedElectrodeViewModel>();
         }
         private void RegisterViews(IServiceCollection services)
         {
@@ -130,6 +136,11 @@ namespace FMSFrontend
             services.AddTransient<WorkOrder>();
             services.AddTransient<MaterialPairWindow>();
             services.AddTransient<ProbePairWindow>();
+        }
+
+        private void RegisterWindows(IServiceCollection services)
+        {
+            services.AddTransient<SelectSharedElectrodeWindow>();
         }
 
     }
