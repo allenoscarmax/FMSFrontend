@@ -12,6 +12,7 @@ using FMSFrontend.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
 using System.Data;
+using System.Reflection;
 using System.Windows;
 
 namespace FMSFrontend
@@ -45,8 +46,8 @@ namespace FMSFrontend
             // === 共用服務層 ===
             services.AddSingleton<IHttpService, HttpService>();
             services.AddSingleton<IWindowService, WindowService>();
-
             #region RestoreSingleton
+            
             // === Services ===
             services.AddSingleton<IElectrodeService, ElectrodeService>();
             services.AddSingleton<IProbeService, ProbeService>();
@@ -55,6 +56,9 @@ namespace FMSFrontend
             services.AddSingleton<IPlcService, PlcService>();
             services.AddSingleton<IWorkpieceService, WorkpieceService>();
             services.AddSingleton<IWorksheetsService, WorksheetsService>();
+            services.AddSingleton<IMachinesService, MachinesService>();
+            services.AddSingleton<IStorageService, StorageService>();
+
 
             // === Singleton ===
             services.AddSingleton<PlcStore>();
@@ -65,7 +69,7 @@ namespace FMSFrontend
             services.AddSingleton<RobotLiveUpdater>();
             services.AddSingleton<PlcLiveUpdater>();          
             services.AddSingleton<RFIDBindLiveUpdater>();
-
+            
             #endregion
 
 
@@ -92,7 +96,29 @@ namespace FMSFrontend
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
         }
+        private static void RegisterAllSingletons(IServiceCollection services)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
 
+            var types = assembly.GetTypes()
+                .Where(t => !t.IsInterface && !t.IsAbstract &&
+                       (t.Name.EndsWith("Service") ||
+                        t.Name.EndsWith("Store") ||
+                        t.Name.EndsWith("LiveUpdater")));
+
+            foreach (var implType in types)
+            {
+                var interfaceType = implType.GetInterfaces().FirstOrDefault();
+                if (interfaceType != null)
+                {
+                    services.AddSingleton(interfaceType, implType);
+                }
+                else
+                {
+                    services.AddSingleton(implType);  // 沒有介面也直接註冊自己
+                }
+            }
+        }
         private void RegisterViewModels(IServiceCollection services)
         {
             // 單例 ViewModel（跨頁共用資料）

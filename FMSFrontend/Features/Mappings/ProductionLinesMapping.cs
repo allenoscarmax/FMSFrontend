@@ -11,7 +11,7 @@ namespace FMSFrontend.Features.Mappings
 {
     public static class ProductionLinesMapping
     {
-        public static void ApplyStorageDto(this List<StorageDto> dto, ProductionLinesModel productionLinesModel)
+        public static void ApplyStorageDto(this List<Storage> dto, ProductionLinesModel productionLinesModel)
         {
           
         }

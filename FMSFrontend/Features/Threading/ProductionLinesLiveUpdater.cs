@@ -1,5 +1,6 @@
 ﻿using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
+using FMSFrontend.Models;
 using FMSFrontend.Views.Windows;
 using System;
 using System.Collections.Generic;
@@ -43,20 +44,22 @@ namespace FMSFrontend.Features.Threading
             else 
             {
                 var storage = await _svc_Storage.GetAllStorageAsync();
-                if (storage != null) 
+                if (storage == null)  return false;
                     _store.ApplyStorageDto(storage);
-
+                /*
                 var SerialList  = _store.ReadSerialList();
-                foreach (string s in SerialList)
+                foreach (Slot s in SerialList)
                 { 
-                    var wpDto = await _svc_Workpiece.ge(s);
+                    var wpDto = await _svc_Workpiece.GetWorkpieceByTagSerialAsync(s.Serial);
                     if (wpDto != null)
                         _store.ApplyWorkpieceDto(wpDto);
-                    var eleDto = await _svc_electrode.GetElectrodesbyTagSerialAsync(s);
+                    var eleDto = await _svc_electrode.GetElectrodesbyTagSerialAsync(s.Serial);
                     if (eleDto != null)
                         _store.ApplyElectrodeDto(eleDto);
                 }
+                */
             }
+            return true;
             //}
             //catch //(Exception ex)
             //{
