@@ -4,7 +4,7 @@ using MongoDB.Bson;
 namespace FMSFrontend.Features.Dtos
 {
     [BsonIgnoreExtraElements]
-    public class Storage
+    public class StorageDto
     {
         [BsonRepresentation(BsonType.ObjectId)]
         public string _id { get; set; } = "";//現有：ID

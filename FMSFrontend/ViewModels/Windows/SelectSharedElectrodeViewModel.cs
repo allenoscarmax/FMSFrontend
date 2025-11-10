@@ -93,7 +93,7 @@ namespace FMSFrontend.ViewModels.Windows
             if (SelectedWorksheetItem == null)
                 return;
 
-            _cachedElectrodes = await _electrodeService.GetAllElectrodeAsync() ?? new List<ElectrodeDto>();
+            _cachedElectrodes = await _electrodeService.DB_GetAllElectrodeAsync() ?? new List<ElectrodeDto>();
 
             var items = new List<SelectItem>();
 

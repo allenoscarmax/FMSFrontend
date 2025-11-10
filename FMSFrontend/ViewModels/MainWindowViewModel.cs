@@ -556,7 +556,7 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
-                var success = await _robotService.ASRSRobotResetStatus(0);
+                var success = await _robotService.ASRSRobotResetStatusAsync(0);
                 if (!success)
                 {
                     new DialogMessageWindow("API 回傳失敗").ShowDialog();

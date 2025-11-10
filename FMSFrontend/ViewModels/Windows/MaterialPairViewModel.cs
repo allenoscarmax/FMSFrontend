@@ -159,7 +159,7 @@ public partial class MaterialPairViewModel : ObservableObject
                 electrode.state = SelectStatus;
                 electrode.worksheetNumber = SelectedWorksheetItem?.WorkOrderNo ?? string.Empty;
                 electrode.tagSerial = RfidBindmodel.TagSerial ?? "";
-                ok = await _ElectrodeService.UpdateElectrodeDataAsync(electrode);
+                ok = await _ElectrodeService.DB_UpdateElectrodeDataAsync(electrode);
                 if (!ok)
                 {
                     _windowService.ShowMessage("電極上傳失敗");
@@ -298,7 +298,7 @@ public partial class MaterialPairViewModel : ObservableObject
        // if(SelectedWorksheetItem)
         // 1) 準備資料
         var items = new List<SelectItem>();
-        List<ElectrodeDto> Electrodes = await _ElectrodeService.GetAllElectrodeAsync()?? new List<ElectrodeDto>();
+        List<ElectrodeDto> Electrodes = await _ElectrodeService.DB_GetAllElectrodeAsync()?? new List<ElectrodeDto>();
       
         foreach (var e in Electrodes)
         {

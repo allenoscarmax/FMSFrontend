@@ -10,7 +10,7 @@ namespace FMSFrontend.Features.Singleton
     public partial class ProductionLinesStore : ObservableObject
     {
         [ObservableProperty] private ProductionLinesModel productionLinesModel = new();
-        public void ApplyStorageDto(List<Storage> dto)
+        public void ApplyStorageDto(List<StorageDto> dto)
         {
             var disp = Application.Current?.Dispatcher; //這樣才能在非UI執行緒更新UI綁定的屬性
             void apply() => dto.ApplyStorageDto(ProductionLinesModel); //利用擴充方法進行映射 (使用產生的屬性)
