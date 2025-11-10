@@ -333,6 +333,20 @@ public partial class MaterialPairViewModel : ObservableObject
             electrode = e!;
         }
     }
+    // 取得尾碼：預設回傳 "02"（不帶連字號）；若你想帶 "-02" 改 return parts[^1] 前面加 "-"
+    private static string ExtractTailSuffix(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName)) return string.Empty;
+
+        // 以最後一個 '-' 切
+        int idx = fullName.LastIndexOf('-');
+        if (idx < 0 || idx == fullName.Length - 1) return fullName;
+
+        var part = fullName.Substring(idx + 1);
+        // 僅保留兩碼數字（若有需要）
+        // if (part.Length >= 2) part = part[^2..];
+        return part; // 回 "02"
+    }
     [RelayCommand]
     private async Task SelectWorkOrder()
     {
