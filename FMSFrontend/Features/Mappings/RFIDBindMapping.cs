@@ -35,9 +35,9 @@ namespace FMSFrontend.Features.Mappings
         {
             output.ConnectedBrush = dtos.rFID_Is_Present[2] ? RFIDBindModel.LightOff : RFIDBindModel.LightOn;
             Random rnd = new Random();
-            output.ConnectedBrush = rnd.Next(2) == 1 ? RFIDBindModel.LightOff : RFIDBindModel.LightOn;
-            output.TagBrush = rnd.Next(2) == 1 ? RFIDBindModel.LightOff : RFIDBindModel.LightOn;
-            output.TagSerial = rnd.Next(10000).ToString();
+          //  output.ConnectedBrush = rnd.Next(2) == 1 ? RFIDBindModel.LightOff : RFIDBindModel.LightOn;
+          //  output.TagBrush = rnd.Next(2) == 1 ? RFIDBindModel.LightOff : RFIDBindModel.LightOn;
+          //  output.TagSerial = rnd.Next(10000).ToString();
         }
 
         public static void ApplyTagDto(this string dtos, RFIDBindModel output)

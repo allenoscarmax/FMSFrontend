@@ -170,7 +170,8 @@ namespace FMSFrontend.ViewModels
                 bool ok = await _RfidService.DeleteAllRFIDWriteLogDataAsync();
                 if (ok)
                 {
-                    _windowService.ShowMessage("清除成功");
+                   // _windowService.ShowMessage("清除成功");
+                    rFIDBindmodel.BurnHistoryList.Clear(); // 清除本地列表
                     RefreshFetch(); // 重新抓資料
                 }
                 else
