@@ -105,6 +105,7 @@ namespace FMSFrontend.ViewModels.Production
         }
 
         // 重新實作：與 StorageOverviewViewModel.LoadStorageUnitsAsync 相同模式
+        
         private async Task LoadStoragePagesAsync()
         {
             StoragePages.Clear();

@@ -16,30 +16,6 @@ namespace OSCARMAXFMS_V3.DBmodels
         public string onDeckElectrodeSerial { get; set; } = "";// 夾持中電極標籤序號（RFID）
         public string onDeckWorksheetSerial { get; set; } = "";// 當前工單號/序號    
         public string onDeckWorkpieceSerial { get; set; } = "";// 夾持中工件標籤序號（RFID）
-        //
-        //加工程式??
-        //
-        //加工時間??
-        //
-        //加工進度??
-        //
-        //刀具號碼??
-        //
-        //機台溫度??
-        //
-        //主軸轉速??
-        //
-        //油位狀態??
-        //
-        //冷卻液量??
-        //
-        //工作座標??
-        //
-        //加工參數??
-        //
-        //Type?
-
-        //未知
         public string MachineCode { get; set; } = "";// 機台代碼（系統內唯一識別，如 EDM1）
         public int ProductionLine { get; set; } // 所屬產線編號
         public int MachineNumber { get; set; } // 機台編號（現場資產/牌號）

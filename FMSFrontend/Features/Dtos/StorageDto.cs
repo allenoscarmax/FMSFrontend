@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
-namespace OSCARMAXFMS_V3.DBmodels
+namespace FMSFrontend.Features.Dtos
 {
     [BsonIgnoreExtraElements]
     public class Storage

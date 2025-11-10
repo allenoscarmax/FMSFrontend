@@ -2,10 +2,10 @@
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 
-namespace OSCARMAXFMS_V3.DBmodels
+namespace FMSFrontend.Features.Dtos
 {
     // 電極時間軸事件紀錄：記錄電極在製程中的關鍵事件與關聯對象
-    public class ElectrodeTimeline
+    public class EleTimelineDto
     {
 
         [BsonRepresentation(BsonType.ObjectId)]
