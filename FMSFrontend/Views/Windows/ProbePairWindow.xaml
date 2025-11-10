@@ -3,6 +3,20 @@
     <Window.Resources>
         <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <!-- Disabled 紫色樣式 -->
+        <Style x:Key="PairButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="Background" Value="BlueViolet" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Width" Value="160" />
+            <Setter Property="Height" Value="42" />
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#D8C7FF" /> <!-- 淡紫色 -->
+                    <Setter Property="Foreground" Value="#666" />
+                    <Setter Property="Cursor" Value="Arrow" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
     <Border Background="White" CornerRadius="10" Effect="{StaticResource ShadowEffect}">
@@ -65,9 +79,9 @@
                 </StackPanel>
             </Grid>
 
-            <!-- PAIR 按鈕（沿用樣式；顏色可改與標題一致） -->
+            <!-- PAIR 按鈕 -->
             <StackPanel Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Button Content="PAIR" Width="160" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="BlueViolet" Command="{Binding PairCommand}" />
+                <Button Content="PAIR" Style="{StaticResource PairButtonStyle}" Command="{Binding PairCommand}" CommandParameter="{Binding ElementName=TagSerial, Path=Text}" />
             </StackPanel>
         </Grid>
     </Border>

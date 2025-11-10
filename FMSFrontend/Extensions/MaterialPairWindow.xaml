@@ -79,7 +79,7 @@
                             <!-- 右：選擇電極 -->
                             <StackPanel Grid.Column="2" HorizontalAlignment="Center">
                                 <TextBlock Text="選擇電極" FontSize="16" HorizontalAlignment="Left" Margin="0,0,0,15" Background="#555555" Foreground="#CCCCCC" Width="96" TextAlignment="Center" />
-                                <Button Content="{Binding SelectedElectrodeNameDisplay, FallbackValue='請選擇電極'}" Width="375" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="4,2" Command="{Binding SelectElectrodeCommand}" />
+                                <Button IsEnabled="{Binding SelectEnable}" Content="{Binding SelectedElectrodeNameDisplay, FallbackValue='請選擇電極'}" Width="375" Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Black" FontSize="16" Padding="4,2" Command="{Binding SelectElectrodeCommand}" />
                             </StackPanel>
                         </Grid>
 

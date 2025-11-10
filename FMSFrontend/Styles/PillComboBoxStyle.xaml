@@ -33,6 +33,7 @@
     <!-- ▼ 膠囊形 ComboBox 主樣式 -->
     <Style x:Key="PillComboBoxStyle" TargetType="ComboBox">
         <!-- 基本外觀 -->
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Foreground" Value="#333" />
         <Setter Property="Background" Value="White" />
         <Setter Property="BorderBrush" Value="#444" />
@@ -49,14 +50,23 @@
                 <ControlTemplate TargetType="ComboBox">
                     <Grid>
                         <!-- 外框（圓角） -->
-                        <Border x:Name="Bd" CornerRadius="12" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                            <!-- 顯示選取內容 -->
-                            <ContentPresenter x:Name="ContentSite" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        <Border x:Name="Bd" CornerRadius="12" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" />
 
-                        </Border>
+                        <!-- 顯示選取內容 -->
+                        <ContentPresenter x:Name="ContentSite" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
 
-                        <!-- 右側下拉按鈕（覆蓋在上面） -->
-                        <ToggleButton x:Name="DropDownToggle" Grid.ZIndex="1" Style="{StaticResource PillComboToggleButton}" Focusable="False" ClickMode="Press" HorizontalAlignment="Right" Width="36" Margin="0" IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
+                        <!-- 透明覆蓋按鈕；整區可點擊（使用自訂樣式避免藍色底） -->
+                        <ToggleButton x:Name="DropDownToggle"
+                                      Grid.ZIndex="2"
+                                      Style="{StaticResource PillComboToggleButton}"
+                                      Focusable="False"
+                                      ClickMode="Press"
+                                      Background="Transparent"
+                                      BorderThickness="0"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Margin="0"
+                                      IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
 
                         <!-- 下拉清單 -->
                         <Popup x:Name="PART_Popup" Placement="Bottom" AllowsTransparency="True" Focusable="False" IsOpen="{TemplateBinding IsDropDownOpen}" PopupAnimation="Slide">
@@ -70,7 +80,7 @@
 
                     <!-- 狀態觸發 -->
                     <ControlTemplate.Triggers>
-                        <!-- 滑過 -->
+                        <!-- 滑過：僅變更邊框，不填滿藍色底 -->
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Bd" Property="BorderBrush" Value="#222" />
                         </Trigger>
@@ -110,6 +120,11 @@
                                     <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                                 </Border>
                                 <ControlTemplate.Triggers>
+                                    <!-- 滑鼠移動到項目：透明 -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="ItemBd" Property="Background" Value="Transparent" />
+                                    </Trigger>
+                                    <!-- 鍵盤導覽高亮：透明 -->
                                     <Trigger Property="IsHighlighted" Value="True">
                                         <Setter TargetName="ItemBd" Property="Background" Value="#F2F2F2" />
                                     </Trigger>

@@ -48,20 +48,35 @@ namespace FMSFrontend.ViewModels.Windows
             RfidBindStore = rFIDBindStore;
             // ==LiveUpdater===
             _rfidUpdater = rFIDBindLiveUpdater;
+
+            // 監聽 TagSerial 變化以更新配對按鈕可用狀態
+            RfidBindmodel.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(RFIDBindModel.TagSerial))
+                {
+                    PairCommand.NotifyCanExecuteChanged();
+                }
+            };
         }
         // 使視窗可在 Loaded/Unloaded 中呼叫的公開方法
         public void OnPageActivated()
         {
             _rfidUpdater.Start();
             _rfidUpdater.ReadTagFlag = true;
+            // 確保進入頁面時更新一次按鈕狀態
+            PairCommand.NotifyCanExecuteChanged();
         }
         public void OnPageDeactivated()
         {
             _rfidUpdater.Stop();
             _rfidUpdater.ReadTagFlag = false;
         }
+
+        // 僅在有 Tag 時可配對
+        private bool CanPair() => !string.IsNullOrWhiteSpace(RfidBindmodel.TagSerial);
+
         // Pair
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanPair))]
         private async Task Pair()
         {
             ProbeDto probe = new();
@@ -101,6 +116,9 @@ namespace FMSFrontend.ViewModels.Windows
                     return;
                 }
                 _windowService.ShowMessage($"Probe上傳成功!");
+
+                // 配對成功後離開
+                _window?.Close();
             }
             catch { _windowService.ShowMessage("發生錯誤"); }
         }

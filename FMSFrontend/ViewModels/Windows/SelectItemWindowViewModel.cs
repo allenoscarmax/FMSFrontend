@@ -69,6 +69,7 @@ namespace FMSFrontend.Extensions
             else
             {
                 // 2) Demo 假資料（你之後可移除）
+                /*
                 if (Type == SelectItemType.Electrode)
                 {
                     Items.Add(new SelectItem("25-001-015-001A-01", "Verified", Brushes.Green));
@@ -81,6 +82,7 @@ namespace FMSFrontend.Extensions
                     Items.Add(new SelectItem("WP-2025-0002", "Queued", BrushFrom("#E6C229")));
                     Items.Add(new SelectItem("WP-2025-0003", "Completed", BrushFrom("#3379FF")));
                 }
+                */
             }
 
             ItemsView.Refresh();
@@ -101,6 +103,12 @@ namespace FMSFrontend.Extensions
 
         partial void OnSearchTextChanged(string value) => ItemsView.Refresh();
 
+        // 當選擇改變時更新 ConfirmCommand 可執行狀態
+        partial void OnSelectedItemChanged(SelectItem? value)
+        {
+            ConfirmCommand.NotifyCanExecuteChanged();
+        }
+
         // 你 TextBox 的 Enter 已用 Converter 篩過了，只要刷新或執行搜尋即可
         [RelayCommand]
         private void Search(object _)
@@ -108,10 +116,12 @@ namespace FMSFrontend.Extensions
             ItemsView.Refresh();
         }
 
-        [RelayCommand]
-        private void Confirm(Window win)
+        // 禁用確認按鈕直到選擇項目後才可使用
+        private bool CanConfirm(Window? win) => SelectedItem != null;
+        [RelayCommand(CanExecute = nameof(CanConfirm))]
+        private void Confirm(Window? win)
         {
-            if (SelectedItem == null) return;
+            if (win == null || SelectedItem == null) return;
             // 用 Window.Tag 回傳選擇結果（跟你同事風格一致）
             win.Tag = SelectedItem;
             win.DialogResult = true;

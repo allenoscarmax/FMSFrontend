@@ -138,6 +138,11 @@ public partial class MaterialPairViewModel : ObservableObject
         try
         {
             bool ok = false;
+            if (RfidBindmodel.TagSerial == null || RfidBindmodel.TagSerial == "")
+            {
+                _windowService.ShowMessage("無標籤序號");
+                return;
+            }
             if (ShowElectrodeSection)
             {
                 // 電極配對頁面：更新 / 上傳電極資料
@@ -254,9 +259,12 @@ public partial class MaterialPairViewModel : ObservableObject
         var Workpiece = await _WorkpieceService.GetAllWorkpieceAsync();
         foreach (var wp in Workpiece)
         {
-            Brush statusBrush = StatusColor(wp.status);
-            // 使用 SelectItem 的建構子（SelectItem 擁有 read-only 屬性與 constructor）
-            items.Add(new SelectItem(wp.workpieceName ?? string.Empty, wp.status ?? string.Empty, statusBrush));
+            if (SelectedWorksheetItem != null && SelectedWorksheetItem.WorkOrderNo == wp.worksheetNumber)
+            {
+                Brush statusBrush = StatusColor(wp.status);
+                // 使用 SelectItem 的建構子（SelectItem 擁有 read-only 屬性與 constructor）
+                items.Add(new SelectItem(wp.workpieceName ?? string.Empty, wp.status ?? string.Empty, statusBrush));
+            }
         }
 
         // 2) 建立視窗與 VM
@@ -294,9 +302,12 @@ public partial class MaterialPairViewModel : ObservableObject
       
         foreach (var e in Electrodes)
         {
-            Brush statusBrush = StatusColor(e.state);
-            // 使用 SelectItem 的建構子（SelectItem 擁有 read-only 屬性與 constructor）
-            items.Add(new SelectItem(e.electrodeName ?? string.Empty, e.state ?? string.Empty, statusBrush));
+            if (SelectedWorksheetItem != null && SelectedWorksheetItem.WorkOrderNo == e.worksheetNumber) 
+            {
+                Brush statusBrush = StatusColor(e.state);
+                // 使用 SelectItem 的建構子（SelectItem 擁有 read-only 屬性與 constructor）
+                items.Add(new SelectItem(e.electrodeName ?? string.Empty, e.state ?? string.Empty, statusBrush));
+            }
         }
 
         // 2) 建立視窗與 VM — 傳入 loader（否則視窗不會有資料）
