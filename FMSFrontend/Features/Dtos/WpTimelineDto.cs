@@ -2,9 +2,9 @@
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 
-namespace OSCARMAXFMS_V3.DBmodels
+namespace FMSFrontend.Features.Dtos
 {
-    public class WorkpieceTimeline // 工件時間軸事件紀錄
+    public class WpTimelineDto // 工件時間軸事件紀錄
     {
         [BsonRepresentation(BsonType.ObjectId)]
         public string _id { get; set; } = "";// ID（MongoDB 物件識別碼）
@@ -18,6 +18,6 @@ namespace OSCARMAXFMS_V3.DBmodels
 
         public string electrodeId { get; set; } = ""; // 相關電極 ID（若事件涉及對應電極則填）
 
-        public string eDMNumber { get; set; } // 相關 EDM 機台編號（事件發生或關聯之機台）
+        public string eDMNumber { get; set; } = ""; // 相關 EDM 機台編號（事件發生或關聯之機台）
     }
 }

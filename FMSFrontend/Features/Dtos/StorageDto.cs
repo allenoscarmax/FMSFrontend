@@ -1,16 +1,16 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
-namespace OSCARMAXFMS_V3.DBmodels
+namespace FMSFrontend.Features.Dtos
 {
     [BsonIgnoreExtraElements]
-    public class Storage
+    public class StorageDto
     {
         [BsonRepresentation(BsonType.ObjectId)]
         public string _id { get; set; } = "";//現有：ID
         public string storageName{ get; set; } = "";//現有：儲位名稱
         public string storageNumber { get; set; } = "";//現有：儲位編號
-        public int region { get; set; } //現有：區域                   //No Use
+        public int region { get; set; } //現有：區域               
         public int column { get; set; } //現有：列
         public int row { get; set; } //現有：行
         public string ondeskTagserial { get; set; } = "";//現有：桌上型標籤序號
