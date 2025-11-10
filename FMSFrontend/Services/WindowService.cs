@@ -1,4 +1,6 @@
-﻿using ControlzEx.Standard;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages; 
+using ControlzEx.Standard;
 using FMSFrontend.Extensions;
 using FMSFrontend.Interfaces;
 using FMSFrontend.ViewModels;
@@ -12,8 +14,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
-using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging.Messages; 
 
 namespace FMSFrontend.Services
 {
@@ -22,6 +22,9 @@ namespace FMSFrontend.Services
         private ShowMaterialWindow? _materialWindow;
         // 移除 readonly，改為可為 null 的欄位，稍後在 EnsureMaterialWindow 建立
         private ShowMaterialWindowViewModel? _vm;  // ← 單一 VM，重複使用
+
+      //  private readonly IServiceProvider _serviceProvider;
+
 
         public void ShowUploadSheetWindow()
         {
@@ -119,6 +122,12 @@ namespace FMSFrontend.Services
             ShowOrActivate();
         }
 
+        public void ShowSelectSharedElectrodeWindow(string targetWorkpieceName)
+        {
+
+            var window = new SelectSharedElectrodeWindow(targetWorkpieceName);
+            window.ShowDialog();
+        }
 
         private void EnsureMaterialWindow(IHttpService httpService)
         {
@@ -165,6 +174,7 @@ namespace FMSFrontend.Services
                 dst.Add(new TimelineItemViewModel(it));
             }
         }
+
 
 
         // ===== 資訊版視窗的欄位 =====
@@ -233,6 +243,8 @@ namespace FMSFrontend.Services
                 _infoWindow.Show();
             }
         }
+
+        
     }
     // 新增：簡單的訊息型別（放在同一 namespace 下）
     public sealed class UploadSheetsClosedMessage : ValueChangedMessage<bool>
