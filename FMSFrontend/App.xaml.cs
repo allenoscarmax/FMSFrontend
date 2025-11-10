@@ -5,6 +5,7 @@ using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Helpers;
 using FMSFrontend.Interfaces;
+using FMSFrontend.Models;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
 using FMSFrontend.ViewModels.Windows;
@@ -59,18 +60,24 @@ namespace FMSFrontend
             services.AddSingleton<IWorksheetsService, WorksheetsService>();
             services.AddSingleton<IMachinesService, MachinesService>();
             services.AddSingleton<IStorageService, StorageService>();
+            services.AddSingleton<IDevicesService, DevicesService>();
+            services.AddSingleton<IMongoDBService, MongoDBService>();
+            services.AddSingleton<IServerHealthService, ServerHealthService>();
+            services.AddSingleton<IWorkerService, WorkerService>();
 
 
             // === Singleton ===
             services.AddSingleton<PlcStore>();
             services.AddSingleton<RFIDBindStore>();
             services.AddSingleton<RobotStore>();
-         
+            services.AddSingleton<GlobalProperties>();
+
             // ==LiveUpdater===
             services.AddSingleton<RobotLiveUpdater>();
             services.AddSingleton<PlcLiveUpdater>();          
             services.AddSingleton<RFIDBindLiveUpdater>();
-            
+            services.AddSingleton<ServerHealthLiveUpdater>();
+
             #endregion
 
 
@@ -92,6 +99,7 @@ namespace FMSFrontend
             // 啟動手臂資訊輪詢（只要啟一次）
             ServiceProvider.GetRequiredService<RobotLiveUpdater>().Start();
             ServiceProvider.GetRequiredService<PlcLiveUpdater>().Start();
+            ServiceProvider.GetRequiredService<ServerHealthLiveUpdater>().Start();
 
             // 啟動主視窗
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();

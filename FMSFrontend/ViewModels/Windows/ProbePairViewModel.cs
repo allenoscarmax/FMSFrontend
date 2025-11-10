@@ -83,7 +83,7 @@ namespace FMSFrontend.ViewModels.Windows
             var OK = false;
             try
             {
-                List<ProbeDto> List = await _ProbeService.GetAllProbeAsync() ?? new List<ProbeDto>();
+                List<ProbeDto> List = await _ProbeService.DB_GetAllProbeAsync() ?? new List<ProbeDto>();
                 if (List == null) return;
                 probe = List.FirstOrDefault() ?? new ProbeDto();
             }
@@ -91,7 +91,7 @@ namespace FMSFrontend.ViewModels.Windows
             try
             {
                 probe.tagSerial = RfidBindmodel.TagSerial ?? "";
-                OK = await _ProbeService.UpdateProbeDataAsync(probe);
+                OK = await _ProbeService.DB_UpdateProbeDataAsync(probe);
                 if (!OK)
                 {
                     _windowService.ShowMessage("Probe上傳失敗");

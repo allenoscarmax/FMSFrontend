@@ -123,11 +123,6 @@
     </Resource>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Dtos\Database\" />
-    <Folder Include="Features\Dtos\Paras\" />
-  </ItemGroup>
-
 
 
 </Project>

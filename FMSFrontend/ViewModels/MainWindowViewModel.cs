@@ -30,6 +30,8 @@ namespace FMSFrontend.ViewModels
 
         private readonly IHttpService _httpService;
         private readonly IRobotService _robotService;
+
+        public GlobalProperties _globalProperties { get; }
         public AlarmPageViewModel AlarmVM { get; }
         [ObservableProperty] private bool _isMenuVisible;
         [ObservableProperty] private string currentDateTime = "";  //存現在的時間
@@ -96,7 +98,7 @@ namespace FMSFrontend.ViewModels
 
       
         public MainWindowViewModel(IHttpService httpService, IRobotService robotService,IPlcService plcService ,
-            AlarmPageViewModel alarmVM, RobotStore store, PlcStore plcStore)
+            AlarmPageViewModel alarmVM, RobotStore store, PlcStore plcStore, GlobalProperties globalProperties)
         {
             _httpService = httpService;
             
@@ -105,6 +107,8 @@ namespace FMSFrontend.ViewModels
             
             _PlcService = plcService;
             PlcStore = plcStore;
+
+            _globalProperties = globalProperties;
 
             // 使用 DispatcherTimer 在 UI Thread 週期性更新時間（比起背景執行緒直接更新屬性更安全且不會產生跨執行緒問題）
             var timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Normal, (s, e) =>
