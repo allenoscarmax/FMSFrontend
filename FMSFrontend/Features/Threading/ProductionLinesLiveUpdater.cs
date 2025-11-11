@@ -21,7 +21,7 @@ namespace FMSFrontend.Features.Threading
   
         private readonly ProductionLinesStore _store;
         private readonly DispatcherTimer _timer;
-        public bool ShowMaterialWindowFlag { get; set; } = false;
+        public string PageName = "";
         public ProductionLinesLiveUpdater(IElectrodeService electrodeService, IMachinesService machinesService, 
             IStorageService storageService, IWorkpieceService workpieceService, ProductionLinesStore store)
         {
@@ -38,26 +38,30 @@ namespace FMSFrontend.Features.Threading
         {
             //try
             //{
-            if (ShowMaterialWindowFlag)
+
+            switch (PageName)
             {
-            }
-            else 
-            {
-                var storage = await _svc_Storage.GetAllStorageAsync();
-                if (storage == null)  return false;
+                case "StorageUnitControl":
+                case "StorageUnitMiniControl":
+                    var storage = await _svc_Storage.GetAllStorageAsync();
+                    if (storage == null) return false;
                     _store.ApplyStorageDto(storage);
-                /*
-                var SerialList  = _store.ReadSerialList();
-                foreach (Slot s in SerialList)
-                { 
-                    var wpDto = await _svc_Workpiece.GetWorkpieceByTagSerialAsync(s.Serial);
-                    if (wpDto != null)
-                        _store.ApplyWorkpieceDto(wpDto);
-                    var eleDto = await _svc_electrode.GetElectrodesbyTagSerialAsync(s.Serial);
-                    if (eleDto != null)
-                        _store.ApplyElectrodeDto(eleDto);
-                }
-                */
+
+                    var SerialList = _store.ReadSerialList();
+                    foreach (Slot s in SerialList)
+                    {
+                        var wpDto = await _svc_Workpiece.GetWorkpieceByTagSerialAsync(s.Serial);
+                        if (wpDto != null)
+                            _store.ApplyWorkpieceDto(wpDto);
+                        var eleDto = await _svc_electrode.GetElectrodesbyTagSerialAsync(s.Serial);
+                        if (eleDto != null)
+                            _store.ApplyElectrodeDto(eleDto);
+                    }
+                    break;
+                case "ProductionLines":
+                    break;
+                case "ProductionLines":
+                    break;
             }
             return true;
             //}

@@ -10,6 +10,10 @@ namespace FMSFrontend.Features.Singleton
     public partial class ProductionLinesStore : ObservableObject
     {
         [ObservableProperty] private ProductionLinesModel productionLinesModel = new();
+        public List<Slot> ReadSerialList()
+        {
+            return ProductionLinesModel.SlotList;
+        }
         public void ApplyStorageDto(List<Storage> dto)
         {
             var disp = Application.Current?.Dispatcher; //這樣才能在非UI執行緒更新UI綁定的屬性
@@ -18,7 +22,7 @@ namespace FMSFrontend.Features.Singleton
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply); //如果不是UI執行緒就用Dispatcher.Invoke切換到UI執行緒
             else apply();
         }
-      //  public List<Slot> ReadSerialList() => ProductionLinesModel.SlotList; // 使用屬性
+    
 
         public void ApplyElectrodeDto(List<ElectrodeDto> dto)
         {

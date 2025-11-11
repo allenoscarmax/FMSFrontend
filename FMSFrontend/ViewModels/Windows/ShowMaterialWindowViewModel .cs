@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
@@ -22,7 +23,10 @@ namespace FMSFrontend.ViewModels.Windows
     {
        // private readonly IWindowService _windowService;
         private readonly IHttpService _httpService;
-
+        // === Services ===
+        private readonly IElectrodeService _ElectrodeService;
+        private readonly IWorkpieceService _WorkpieceService;
+        
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(KindText))]
         private MaterialKind kind;

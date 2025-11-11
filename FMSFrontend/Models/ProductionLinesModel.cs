@@ -1,33 +1,35 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows.Media;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FMSFrontend.Models
 {
     public partial class ProductionLinesModel : ObservableObject
     {
-        public bool? restriction { get; set; } //庫是否有限制  (true/false)
-        public string status { get; set; } //工件/電極是否有限制  (true/false)
-
-      //  public List<Slot> SlotList =  new();
+        public bool? restriction { get; set; } //材料庫是否有限制  (true/false)
+        public string status { get; set; } = "";//材料庫是否預約
+        public List<Slot> SlotList { get; } = new();
     }
-    class Slot : ObservableObject
+    public class StorageDetail //對應前端的 Slot格子
     {
         public bool isElectrode { get; set; } = false; //是否為電極
-        public string Serial { get; set; } = "";
-        public string Status { get; set; } = "";
-        public bool? restriction { get; set; } //現有：是否有限制  (true/false)
-
-
+        public string Serial { get; set; } = ""; //材料序號
+        public string Status { get; set; } = "";// 
+         public bool? restriction { get; set; } //現有：是否有限制  (true/false)
     }
-    class SelectSlot : ObservableObject
+    public class StorageDetail //對應前端的 Slot格子
     {
         public bool isElectrode { get; set; } = false; //是否為電極
-        public string Serial { get; set; } = "";
-        public string Status { get; set; } = "";
+        public string Serial { get; set; } = ""; //材料序號
+        public string Status { get; set; } = "";// 
         public bool? restriction { get; set; } //現有：是否有限制  (true/false)
-
     }
-
+    public class SelectSlot 
+    {
+        public string Serial { get; set; } = ""; //材料序號
+        public string id { get; set; } = ""; //材料id
+        public bool isElectrode { get; set; } = false;
+        public string Status { get; set; } = "";
+        public bool? restriction { get; set; }
+    }
 }

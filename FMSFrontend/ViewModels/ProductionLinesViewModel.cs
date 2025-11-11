@@ -2,8 +2,10 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging; // ← 新增
 using CommunityToolkit.Mvvm.Messaging.Messages; // ← 新增：Message 型別
-
 using FMSFrontend.Controls;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.Services; // ← 新增
@@ -30,9 +32,11 @@ namespace FMSFrontend.ViewModels
     {
         public readonly IWindowService _windowService;
         private readonly IHttpService _httpService;
-
-        MachineDetailViewModel? machineDetailViewModel;
-        MachineOverviewViewModel? machineOverviewViewModel;
+        // === Services ===
+        private readonly IElectrodeService _ElectrodeService;
+        private readonly IWorkpieceService _WorkpieceService;
+        //MachineDetailViewModel? machineDetailViewModel;
+        //MachineOverviewViewModel? machineOverviewViewModel;
         private object? _currentStorageView;
         public object? CurrentStorageView
         {
@@ -47,9 +51,6 @@ namespace FMSFrontend.ViewModels
             set => SetProperty(ref _currentWorkingZoneView, value);
         }
 
-
-         // 新增：Timer 欄位
-        private readonly DispatcherTimer _refreshTimer;
         public ProductionLinesViewModel(IWindowService windowService, IHttpService httpService) // ← 變更簽章
         {
             _windowService = windowService;
@@ -57,63 +58,12 @@ namespace FMSFrontend.ViewModels
   
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             bool b = ini.Read("Prarm", "IsStorageOverviewControl") == "True";
-            // 新增：建立並啟動每秒刷新 Timer
-            _refreshTimer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(100)
-            };
-            _refreshTimer.Tick += RefreshTimer_Tick;
-            _refreshTimer.Start();
             if (b)
                 ShowOverview();
             else
                 ShowDetail("0");
             ShowMachineOverview();
-            // 訂閱 MainWindowViewModel 的頁面刷新訊息：當切換到 RFIDBind 時重新抓取
-            WeakReferenceMessenger.Default.Register<ValueChangedMessage<string>>(this, (r, message) =>
-            {
-                if (string.Equals(message.Value, "ProductionLines", StringComparison.Ordinal))
-                {
-                    if (b)
-                        ShowOverview();
-                    else
-                        ShowDetail("0");
-                    ShowMachineOverview();
-                }
-            });
         }
-        // 新增：Timer Tick 處理器（輕量、fire-and-forget）
-        private void RefreshTimer_Tick(object? sender, EventArgs e)
-        {
-            try
-            {
-                // 如果 CurrentStorageView 為 FrameworkElement（你的 View），取其 DataContext
-                var storageDc = (CurrentStorageView as System.Windows.FrameworkElement)?.DataContext;
-                if (storageDc is Production.StorageOverviewViewModel sovm)
-                {
-                    _ = sovm.RefreshAsync();
-                }
-                else if (storageDc is Production.StorageDetailViewModel sdvm)
-                {
-                    _ = sdvm.RefreshAsync();
-                }
-
-                var workingDc = (CurrentWorkingZoneView as System.Windows.FrameworkElement)?.DataContext;
-                if (workingDc is Production.MachineDetailViewModel mdvm)
-                {
-                    _ = mdvm.RefreshAsync();
-                }
-                else if (workingDc is Production.MachineOverviewViewModel movm)
-                {
-                    _ = movm.UpdataAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"RefreshTimer_Tick error: {ex}");
-            }
-        }
-
         public class RobotStatusViewModel
         {
             public MachineStatus Status { get; set; }
@@ -154,9 +104,6 @@ namespace FMSFrontend.ViewModels
             }
             //try
             //{
-            // 先依 TagSerial 呼叫對應 API，更新詳細資料與時間軸
-            // 1. 資料
-      
             if (material.Kind == MaterialKind.Electrode)
             {
                 // ElectrodeModel 使用 TagSerial
@@ -208,18 +155,7 @@ namespace FMSFrontend.ViewModels
                 //3.顯示資料
                 _windowService.ShowWorkpiece(wpVm, wpTimeline, _httpService, slotCode);
             }
-            /*
-            }
-            catch
-            {
-                // API 失敗 → 使用既有資料顯示，確保不影響操作
-                var tl = material.Timeline ?? Array.Empty<TimelineItemModel>();
-                if (material.Kind == MaterialKind.Electrode)
-                    _windowService.ShowElectrode(material.Electrode, tl, slotCode);
-                else
-                    _windowService.ShowWorkpiece(material.Workpiece, tl, slotCode);
-            }
-            */
+            //}catch{}
         }
 
         private static ElectrodeModel MapElectrode(Electrode? db, ElectrodeModel? fallback)
@@ -303,8 +239,8 @@ namespace FMSFrontend.ViewModels
         public void ShowMachineDetail()
         {
             // TODO: 傳入 storageId 給 DetailControl，如果要的話
-          if(machineDetailViewModel == null) 
-                machineDetailViewModel = new MachineDetailViewModel(this, _httpService); // 傳入自己當 parent 與 httpService
+          //if(machineDetailViewModel == null) 
+            var    machineDetailViewModel = new MachineDetailViewModel(this, _httpService); // 傳入自己當 parent 與 httpService
             var overviewView = new MachineDetailControl
             {
                 DataContext = machineDetailViewModel // 這一步非常重要！
@@ -314,8 +250,8 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         public void ShowMachineOverview()
         {
-            if (machineOverviewViewModel == null)
-                machineOverviewViewModel = new MachineOverviewViewModel(this, _httpService); // 傳入自己當 parent
+          //  if (machineOverviewViewModel == null)
+             var   machineOverviewViewModel = new MachineOverviewViewModel(this, _httpService); // 傳入自己當 parent
             var overviewView = new MachineOverviewControl
             {
                 DataContext = machineOverviewViewModel // 這一步非常重要！
