@@ -422,6 +422,23 @@
                                 <materialDesign:PackIcon Kind="Bug" Width="25" Height="25" Margin="10,0" Foreground="White" VerticalAlignment="Center" />
                                 <materialDesign:PackIcon Kind="Tablet" Width="25" Height="25" Margin="10,0" Foreground="White" VerticalAlignment="Center" />
                                 <materialDesign:PackIcon Kind="AccountAlert" Width="25" Height="25" Margin="10,0" Foreground="White" VerticalAlignment="Center" />
+                                <!-- 新增：後端健康狀態 -->
+                                <materialDesign:PackIcon Kind="Server" Width="25" Height="25" Margin="10,0" VerticalAlignment="Center">
+                                    <materialDesign:PackIcon.Style>
+                                        <Style TargetType="materialDesign:PackIcon">
+                                            <Setter Property="Foreground" Value="Gray" />
+                                            <Setter Property="ToolTip" Value="{Binding _globalProperties.LastCheckedAt, StringFormat=Last check: {0:HH:mm:ss}}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding _globalProperties.IsServerAlive}" Value="True">
+                                                    <Setter Property="Foreground" Value="LimeGreen" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding _globalProperties.IsServerAlive}" Value="False">
+                                                    <Setter Property="Foreground" Value="Red" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </materialDesign:PackIcon.Style>
+                                </materialDesign:PackIcon>
                             </StackPanel>
                         </DockPanel>
                     </Border>
