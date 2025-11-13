@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel;
 
 namespace FMSFrontend.Features.Dtos
 {
@@ -33,5 +34,55 @@ namespace FMSFrontend.Features.Dtos
         public string tempRetSLocation { get; set; } = "";
         public string setupUser { get; set; } = "";
 
+    }
+
+    public enum ElectrodeCurrentLocation
+    {
+        [Description("倉庫內")]
+        inStore,
+        [Description("在交換倉庫內")]
+        inExchangeStore,
+        [Description("在手臂背包內")]
+        inBackpackStore,
+        [Description("手臂上")]
+        onLoader,
+        [Description("量測站上")]
+        onMeasStation,
+        [Description("機台上")]
+        onEDM,
+    }
+    
+    public enum ElectrodeState
+    {
+        [Description("無")]
+        NA = 0,
+        [Description("加工中")]
+        Processing = 1,
+        [Description("待加工")]
+        Verified = 2,
+        [Description("已用罄")]
+        Completed = 3,
+        [Description("已預約")]
+        Booked = 5,
+        [Description("位置重疊")]
+        Collided = 6,
+        [Description("量測錯誤")]
+        Faulty = 7,
+        [Description("量測中")]
+        Measuring = 8,
+        [Description("位置異常")]
+        Mislocated = 9,
+        [Description("無法辨認")]
+        UnknownObject = 10,
+        [Description("待量測")]
+        WaitMeasure = 11,
+        [Description("待回備料倉")]
+        WaitReturnStorage = 12,
+        [Description("待回交換倉")]
+        WaitReturnEXStorage = 13,
+        [Description("待回卸料倉")]
+        WaitReturnUnloadingStorage = 14,
+        [Description("已下架")]
+        OffShelf = 100
     }
 }

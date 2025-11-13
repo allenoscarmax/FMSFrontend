@@ -33,4 +33,11 @@ namespace FMSFrontend.Features.Dtos
         [JsonPropertyName("fenceopen")]
         public bool FenceOpen { get; set; } = false; // ON=圍籬開啟(M8-11)
     }
+
+    public enum PLC_NUM
+    {
+        MainLineTrack = 0,
+        Magzine = 1,
+        WorkpieceAssemblyStation = 2,
+    }
 }

@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel;
 using System.Text.Json.Serialization;
 
 namespace OSCARMAXFMS_V3.DBmodels
@@ -85,4 +86,6 @@ namespace OSCARMAXFMS_V3.DBmodels
         [JsonPropertyName("robotCantReceiveNewTask")]
         public bool robotCantReceiveNewTask { get; set; } // 無法接收新任務（錯誤/暫停/條件不符）
     }
+
+    
 }

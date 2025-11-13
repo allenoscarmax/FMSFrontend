@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel;
 
 
 namespace FMSFrontend.Features.Dtos
@@ -20,4 +21,34 @@ namespace FMSFrontend.Features.Dtos
         public string coordinate { get; set; } = "";
         public string setupUser { get; set; } = "";
     }
+
+    public enum WorksheetStatus
+    {
+        [Description("新加入工單")]
+        NewJoinSheet,
+        [Description("等待工件可派工(組裝量測OK)")]
+        Waiting,
+        [Description("待派工")]
+        Queue,
+        [Description("加工中")]
+        Processing,
+        [Description("加工完成")]
+        Completed,
+        [Description("已暫停")]
+        Paused,
+        [Description("失敗")]
+        Failure,
+    }
+    public enum WorkCommand
+    {
+        [Description("設定")]
+        Setup,
+        [Description("派工")]
+        Dispatched,
+        [Description("開始")]
+        Start,
+        [Description("結束")]
+        Finish
+    }
+    
 }

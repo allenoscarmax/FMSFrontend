@@ -23,4 +23,21 @@ namespace OSCARMAXFMS_V3.DBmodels
         public bool isEnabled { get; set; } = true; // 是否啟用（預設啟用）
         public string note {  get; set; } = ""; // 說明/備註
     }
+    enum Type
+    {
+        Weekly,
+        Monthly,
+    }
+
+    enum Day_value
+    {
+        Sun = 0,
+        Mon = 1,
+        Tue = 2,
+        Wed = 3,
+        Thu = 4,
+        Fri = 5,
+        Sat = 6,
+    }
+
 }

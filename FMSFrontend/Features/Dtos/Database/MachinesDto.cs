@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel;
 
 
 namespace FMSFrontend.Features.Dtos
@@ -21,5 +22,18 @@ namespace FMSFrontend.Features.Dtos
         public string onDeckWorkpieceSerial { get; set; } = "";// 夾持中工件標籤序號（RFID）
         public string onDeckWorksheetSerial { get; set; } = "";// 當前工單號/序號    
         public string setupUser { get; set; } = "";// 建置/設定人員（帳號或姓名）
+    }
+
+    public enum MachineStatus
+    {
+        Connection = 4,
+        [Description("離線中")]
+        Disconnection = 0,
+        [Description("運作中")]
+        Running = 1,
+        [Description("閒置中")]
+        Stopping = 2,
+        [Description("急停中")]
+        EmergencyStop = 3
     }
 }

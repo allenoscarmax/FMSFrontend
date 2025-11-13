@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -26,5 +27,15 @@ namespace FMSFrontend.Features
 
         [JsonPropertyName("password")]
         public string Password { get; set; }           // 密碼
+    }
+
+    public enum AccountGroup
+    {
+        [Description("使用者")]
+        User,
+        [Description("專家")]
+        Expert,
+        [Description("工程師")]
+        Engineer,
     }
 }
