@@ -171,15 +171,15 @@ namespace FMSFrontend.ViewModels.Windows
 
 
         // ★ 由點擊的格位載入資料
-        public void LoadFrom(SlotViewModel slot)
-        {
-            ApplyMaterial(slot.Material, slot.Kind, slot.SlotCode);
-        }
+        // public void LoadFrom(SlotViewModel slot) //Allen
+        // {
+        //     ApplyMaterial(slot.Material, slot.Kind, slot.SlotCode);
+        // }
 
-        public void LoadFrom(StorageSlotViewModel slot)
-        {
-            ApplyMaterial(slot.Material, slot.Material?.Kind ?? MaterialKind.None, slot.Material?.Electrode?.Name ?? slot.Material?.Workpiece?.Name ?? slot.Status);
-        }
+        //public void LoadFrom(StorageSlotViewModel slot) //Allen
+        // {
+        // ApplyMaterial(slot.Material, slot.Material?.Kind ?? MaterialKind.None, slot.Material?.Electrode?.Name ?? slot.Material?.Workpiece?.Name ?? slot.Status);
+        // }
 
         /// <summary>
         /// 把 MaterialRef 套用到視窗 VM

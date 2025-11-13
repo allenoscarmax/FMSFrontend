@@ -64,12 +64,12 @@ namespace FMSFrontend.ViewModels
 
 
             MachineList = new ObservableCollection<MachineInfo>{
-    new MachineInfo { MachineId="EDM1", MachineName="EDM1", MachineType="EDM1", IpAddress="192.168.21.232", Port=13101, AssetNo="-", Owner="OscarMax" },
-    new MachineInfo { MachineId="EDM2", MachineName="EDM2", MachineType="EDM2", IpAddress="192.168.21.233", Port=13102, AssetNo="-", Owner="OscarMax" },
-    new MachineInfo { MachineId="EDM3", MachineName="EDM3", MachineType="EDM3", IpAddress="192.168.21.234", Port=13103, AssetNo="-", Owner="OscarMax" },
-    new MachineInfo { MachineId="EDM4", MachineName="EDM4", MachineType="EDM4", IpAddress="192.168.21.235", Port=13104, AssetNo="-", Owner="OscarMax" },
-    new MachineInfo { MachineId="EDM5", MachineName="EDM5", MachineType="EDM5", IpAddress="192.168.21.236", Port=13105, AssetNo="-", Owner="OscarMax" },
-};
+                new MachineInfo { MachineId="EDM1", MachineName="EDM1", MachineType="EDM1", IpAddress="192.168.21.232", Port=13101, AssetNo="-", Owner="OscarMax" },
+                new MachineInfo { MachineId="EDM2", MachineName="EDM2", MachineType="EDM2", IpAddress="192.168.21.233", Port=13102, AssetNo="-", Owner="OscarMax" },
+                new MachineInfo { MachineId="EDM3", MachineName="EDM3", MachineType="EDM3", IpAddress="192.168.21.234", Port=13103, AssetNo="-", Owner="OscarMax" },
+                new MachineInfo { MachineId="EDM4", MachineName="EDM4", MachineType="EDM4", IpAddress="192.168.21.235", Port=13104, AssetNo="-", Owner="OscarMax" },
+                new MachineInfo { MachineId="EDM5", MachineName="EDM5", MachineType="EDM5", IpAddress="192.168.21.236", Port=13105, AssetNo="-", Owner="OscarMax" },
+            };
             _machinesView = CollectionViewSource.GetDefaultView(MachineList);
             _machinesView.Filter = FilterMachine;        // 設定一次即可
 
@@ -81,11 +81,11 @@ namespace FMSFrontend.ViewModels
 
             // Device 假資料（依你的截圖）
             DeviceList = new ObservableCollection<DeviceInfo>
-{
-    new() { DeviceId="Delta_IO",      DeviceName="Delta_IO",      IpAddress="192.168.21.239", Port=10001, AssetNo="-", Owner="OscarMax" },
-    new() { DeviceId="Balluff_RFID",  DeviceName="Balluff_RFID",  IpAddress="192.168.21.236", Port=10001, AssetNo="-", Owner="OscarMax" },
-    new() { DeviceId="ESL",           DeviceName="ESL",           IpAddress="192.168.21.238", Port=10001, AssetNo="-", Owner="OscarMax" },
-};
+            {
+                new() { DeviceId="Delta_IO",      DeviceName="Delta_IO",      IpAddress="192.168.21.239", Port=10001, AssetNo="-", Owner="OscarMax" },
+                new() { DeviceId="Balluff_RFID",  DeviceName="Balluff_RFID",  IpAddress="192.168.21.236", Port=10001, AssetNo="-", Owner="OscarMax" },
+                new() { DeviceId="ESL",           DeviceName="ESL",           IpAddress="192.168.21.238", Port=10001, AssetNo="-", Owner="OscarMax" },
+            };
 
             // 建立 View + Filter
             _devicesView = CollectionViewSource.GetDefaultView(DeviceList);
@@ -301,19 +301,20 @@ namespace FMSFrontend.ViewModels
                 _windowService.ShowMessage("IP 位址格式不正確，請輸入有效的 IPv4，例如：192.168.1.100");
                 return;
             }
-            try
-            {
+          //  try
+          //  {
                 _httpService.UpdateServerIp(ip);
                 StatusMessage = "🤖 設定IP OK";
                 _windowService.ShowMessage($"已設定 IP：{ip}");
                 INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
                 ini.Write("Prarm", "IP", ip);
-            }
+          /*  }
             catch (Exception ex)
             {
                 StatusMessage = "❌ 設定 IP 失敗";
                 _windowService.ShowMessage($"設定 IP 失敗：{ex.Message}");
             }
+          */
         }
             
 

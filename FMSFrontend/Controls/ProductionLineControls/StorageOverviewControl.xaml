@@ -41,7 +41,7 @@
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 								<TextBlock Text="待加工" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
 								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding WaitingCount}" d:Text ="12"  Foreground="#222"  FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding StorageGroup.WaitingTotal}" d:Text ="12"  Foreground="#222"  FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
 								</Border>
 							</StackPanel>
 						</Border>
@@ -49,7 +49,7 @@
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 								<TextBlock Text="加工中" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
 								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">
-									<TextBlock Text="{Binding ProcessingCount}" d:Text="3" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding StorageGroup.ProcessingTotal}" d:Text="3" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
 								</Border>
 							</StackPanel>
 						</Border>
@@ -57,7 +57,7 @@
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 								<TextBlock Text="異常" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
 								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">
-									<TextBlock Text="{Binding ErrorCount}" d:Text="4" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding StorageGroup.ErrorTotal}" d:Text="4" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
 								</Border>
 							</StackPanel>
 						</Border>
@@ -65,7 +65,7 @@
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 								<TextBlock Text="完成" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
 								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">
-									<TextBlock Text="{Binding CompletedCount}" d:Text="5" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding StorageGroup.CompletedTotal}" d:Text="5" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
 								</Border>
 							</StackPanel>
 						</Border>
@@ -73,7 +73,7 @@
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 								<TextBlock Text="禁用" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center" />
 								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">
-									<TextBlock Text="{Binding RestrictionCount}" d:Text="8" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding StorageGroup.RestrictionTotal}" d:Text="8" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
 								</Border>
 							</StackPanel>
 						</Border>
@@ -81,7 +81,7 @@
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 								<TextBlock Text="預約" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center"  />
 								<Border Width="20" Height="16" Background="#D6D6D6" CornerRadius="8" Margin="12,0,0,0" VerticalAlignment="Center" >
-									<TextBlock Text="{Binding BookedCount}" d:Text="9" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding StorageGroup.BookedTotal}" d:Text="9" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
 								</Border>
 							</StackPanel>
 						</Border>
@@ -91,7 +91,7 @@
 				<!-- 多倉位區塊（針對某個 StorageUnit 顯示）-->
 				<Border Grid.Row="2" CornerRadius="12" Background="#FFFFFF" SnapsToDevicePixels="True" ClipToBounds="True" Padding="8">
 					<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalAlignment="Center">
-						<ItemsControl ItemsSource="{Binding StorageUnits}">
+                        <ItemsControl ItemsSource="{Binding StorageGroup.Storage}">
 							<ItemsControl.ItemsPanel>
 								<ItemsPanelTemplate>
 									<WrapPanel Orientation="Horizontal" />
@@ -103,12 +103,12 @@
 									<Border Width="260" Margin="10" Padding="10" Background="White" CornerRadius="12" BorderBrush="#CCC" BorderThickness="1" SnapsToDevicePixels="True">
 										<StackPanel>
 											<!-- 倉儲名稱 -->
-											<Border Background="{Binding HeaderColor}" CornerRadius="6" Height="28" Margin="0,0,0,10">
-												<TextBlock Text="{Binding StorageName}" Foreground="White" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="6,0" />
+                                            <Border Background="{Binding KindBrush}" CornerRadius="6" Height="28" Margin="0,0,0,10">
+                                                <TextBlock Text="{Binding Title}" Foreground="White" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="6,0" />
 											</Border>
 
 											<!-- 倉儲格子 -->
-											<ItemsControl ItemsSource="{Binding Slots}">
+                                            <ItemsControl ItemsSource="{Binding Slots}">
 												<ItemsControl.ItemsPanel>
 													<ItemsPanelTemplate>
 														<UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
@@ -125,7 +125,7 @@
                                                             <Button.Template>
                                                                 <ControlTemplate TargetType="Button">
                                                                     <!-- 你原本的格子外觀 -->
-                                                                    <Border Width="22" Height="22" Margin="2" Background="{Binding Background}" CornerRadius="4" BorderBrush="#DDD" BorderThickness="0.5" />
+                                                                    <Border Width="22" Height="22" Margin="2" Background="{Binding StatusBrush}" CornerRadius="4" BorderBrush="#DDD" BorderThickness="0.5" />
                                                                 </ControlTemplate>
                                                             </Button.Template>
                                                         </Button>

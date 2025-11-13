@@ -10,24 +10,24 @@ namespace FMSFrontend.Features.Dtos
     public class WorksheetsTimelineDto
     {
         [JsonPropertyName("_id")]
-        public string Id { get; set; }
+        public string Id { get; set; } = "";
 
         [JsonPropertyName("worksheetid")]
-        public string WorkSheetId { get; set; }
+        public string WorkSheetId { get; set; } = "";
 
         [JsonPropertyName("worksheetserial")]
-        public string WorkSheetSerial { get; set; }
+        public string WorkSheetSerial { get; set; } = "";
 
         [JsonPropertyName("workcommand")]
-        public string WorkCommand { get; set; }
+        public string WorkCommand { get; set; } = "";
 
         [JsonPropertyName("timestampe")]
         public DateTime TimeStampe { get; set; } // 前端仍維持本地時間顯示
 
         [JsonPropertyName("electrodeserial")]
-        public string ElectrodeSerial { get; set; }
+        public string ElectrodeSerial { get; set; } = "";
 
         [JsonPropertyName("edmnumber")]
-        public string EDMnumber { get; set; }
+        public string EDMnumber { get; set; } = "";
     }
 }
