@@ -12,19 +12,19 @@ namespace FMSFrontend.Features.Dtos
         // ===== 基本資料（從 Worksheets 衍生的主要屬性） =====
 
         [JsonPropertyName("_id")]
-        public string Id { get; set; }
+        public string _id { get; set; } = "";
 
         [JsonPropertyName("worksheetnumber")]
-        public string WorkSheetNumber { get; set; }
+        public string workSheetNumber { get; set; } = "";
 
         [JsonPropertyName("workpiecename")]
-        public string WorkpieceName { get; set; }
+        public string workpieceName { get; set; } = "";
 
         [JsonPropertyName("status")]
-        public string Status { get; set; }
+        public string status { get; set; } = "";
 
         [JsonPropertyName("targetedm")]
-        public string TargetEDM { get; set; }
+        public string TargetEDM { get; set; } = "";
 
         [JsonPropertyName("createdtime")]
         public DateTime? CreatedTime { get; set; }

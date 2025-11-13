@@ -13,7 +13,7 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Threading;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
-
+using FMSFrontend.Models;
 namespace FMSFrontend.ViewModels.Production
 {
     public partial class MachineOverviewViewModel : ObservableObject

@@ -26,7 +26,22 @@ namespace FMSFrontend.ViewModels.Windows
         // === Services ===
         private readonly IElectrodeService _ElectrodeService;
         private readonly IWorkpieceService _WorkpieceService;
-        
+        private readonly IProbeService _ProbeService;
+
+        // 空畫面
+        public ShowMaterialWindowViewModel(IHttpService httpService) 
+        //    IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService)
+        {
+            Kind = MaterialKind.None;
+
+          //  _ElectrodeService = electrodeService;
+          //  _WorkpieceService = workpieceService;
+          //  _ProbeService = probeService;
+
+            DetailViewModel = new EmptyMaterialDetailViewModel();
+            _httpService = httpService;
+        }
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(KindText))]
         private MaterialKind kind;
@@ -161,13 +176,7 @@ namespace FMSFrontend.ViewModels.Windows
             _ => "物料"
         };
 
-        // 空畫面
-        public ShowMaterialWindowViewModel(IHttpService httpService)
-        {
-            Kind = MaterialKind.None;
-            DetailViewModel = new EmptyMaterialDetailViewModel();
-            _httpService = httpService;
-        }
+
 
 
         // ★ 由點擊的格位載入資料

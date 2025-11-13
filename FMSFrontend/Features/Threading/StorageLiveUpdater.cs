@@ -75,7 +75,7 @@ namespace FMSFrontend.Features.Threading
                         slot.Serial = rec?.ondeskTagserial ?? "";
                         slot.StorageStatus = rec?.state ?? "";
                         slot.StorageRestriction = rec?.restriction ?? false;
-                        slot.SlotCode = $"E:{}:{rec.row}:{rec.column}:1";
+                       // slot.SlotCode = $"E:{}:{rec.row}:{rec.column}:1";
                         if (!string.IsNullOrWhiteSpace(slot.Serial))
                         {
                             if (Storage.Kind == MaterialType.Electrode) //檢查是否為電極
