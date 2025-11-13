@@ -124,13 +124,14 @@ namespace FMSFrontend.Features.Threading
                 Storage.CompletedCount = Storage.Slots.Count(s => s.MaterialStatus == "Completed");
                 Storage.RestrictionCount = Storage.Slots.Count(s => s.StorageRestriction == true);
                 Storage.BookedCount = Storage.Slots.Count(s => s.StorageStatus == "Book");
-
+                /*
                 Storage.WaitingCount = Cnt;
                 Storage.ProcessingCount = Cnt;
                 Storage.ErrorCount = Cnt;
                 Storage.CompletedCount = Cnt;
                 Storage.RestrictionCount = Cnt;
                 Storage.BookedCount = Cnt;
+                */
                 // 加入庫列表
                 storageGroup.Storage.Add(Storage); 
             }
