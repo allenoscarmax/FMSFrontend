@@ -62,7 +62,7 @@ namespace FMSFrontend.ViewModels
 
         public ProductionLinesViewModel(IWindowService windowService, IHttpService httpService,
             IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService,
-            StorageStore storageStore, StorageLiveUpdater storageLiveUpdater) // ← 變更簽章
+            StorageStore storageStore, StorageLiveUpdater storageLiveUpdater) 
         {
             _windowService = windowService;
             _httpService = httpService;
@@ -101,7 +101,10 @@ namespace FMSFrontend.ViewModels
         }
         public async void OpenMaterial(Slot slot)
         {
-            if (string.IsNullOrEmpty(slot.Serial)) return;
+            if (string.IsNullOrEmpty(slot.Serial))
+            {
+                _windowService.ShowMaterialEmpty(_httpService);
+            }
             //try
             //{
             switch (slot.Kind)
@@ -121,7 +124,6 @@ namespace FMSFrontend.ViewModels
                         ProbeDto prrobe = await _probeService.DB_GetProbeByTagSerialAsync(slot.Serial);
                         _windowService.ShowElectrode(MapProbe(prrobe), new List<TimelineItemModel>(), _httpService, slot.SlotCode);
                     }
-
                     break;
                 case MaterialType.Workpiece:
                     WorkpieceDto wp = await _WorkpieceService.GetWorkpieceByTagSerialAsync(slot.Serial);

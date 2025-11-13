@@ -8,6 +8,7 @@ using System.Linq; // ← for PageList
 using System.Windows.Media;
 using System.Windows.Shapes;
 using static System.Net.Mime.MediaTypeNames;
+using System.Text.RegularExpressions;
 namespace FMSFrontend.Models
 {
     public enum MaterialType { None, Electrode, Workpiece, Probe }
@@ -76,12 +77,12 @@ namespace FMSFrontend.Models
         [ObservableProperty] private MaterialType kind = MaterialType.None;
         [ObservableProperty] private string id = "";
         [ObservableProperty] private string serial = "";
-        [ObservableProperty] private string name = "";
+        [ObservableProperty] private string shortName = "";
         [ObservableProperty] private string materialStatus = "";        // 材料狀態
         [ObservableProperty] private bool materialRestriction = false;  // 材料是否有鎖定
         [ObservableProperty] private string storageStatus = "";         // 材料庫是否預約
         [ObservableProperty] private bool storageRestriction;           // 材料庫是否有鎖定
-
+        public string Name = "";
         public Brush StatusBrush => Kind == MaterialType.Probe
             ? Brushes.BlueViolet
             : MaterialStatus switch
@@ -95,7 +96,9 @@ namespace FMSFrontend.Models
                 _           => Brushes.White
             };
         public string SlotCode = "";
-              
+       
+
+
         // 影響 StatusBrush 的來源變更時，主動通知
         partial void OnKindChanged(MaterialType value) => OnPropertyChanged(nameof(StatusBrush));
         partial void OnMaterialStatusChanged(string value) => OnPropertyChanged(nameof(StatusBrush));
