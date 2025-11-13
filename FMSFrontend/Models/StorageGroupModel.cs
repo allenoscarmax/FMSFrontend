@@ -77,15 +77,16 @@ namespace FMSFrontend.Models
         [ObservableProperty] private MaterialType kind = MaterialType.None;
         [ObservableProperty] private string id = "";
         [ObservableProperty] private string serial = "";
-        [ObservableProperty] private string shortName = "";
+        public string SlotCode = "";
+        public string Name = "";                                        // 名稱 (全名)
+        [ObservableProperty] private string shortName = "";             // 名稱 (顯示用)
         [ObservableProperty] private string materialStatus = "";        // 材料狀態
         [ObservableProperty] private bool materialRestriction = false;  // 材料是否有鎖定
         [ObservableProperty] private string storageStatus = "";         // 材料庫是否預約
         [ObservableProperty] private bool storageRestriction;           // 材料庫是否有鎖定
-        public string Name = "";
-        public Brush StatusBrush => Kind == MaterialType.Probe
-            ? Brushes.BlueViolet
-            : MaterialStatus switch
+
+         public Brush StatusBrush =>
+            MaterialStatus switch
             {
                 "Verified"  => new SolidColorBrush(Color.FromRgb(0xE6, 0xB9, 0x3E)),
                 "Working"   => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)),
@@ -95,7 +96,7 @@ namespace FMSFrontend.Models
                 "Empty"     => Brushes.White,
                 _           => Brushes.White
             };
-        public string SlotCode = "";
+        
        
 
 

@@ -107,29 +107,41 @@ namespace FMSFrontend.ViewModels
             }
             //try
             //{
+            bool NullFlag = false;
             switch (slot.Kind)
             {
                 case MaterialType.Electrode:
                 case MaterialType.Probe:
-                    List<ElectrodeDto> es = await _ElectrodeService.DB_GetElectrodesByTagSerialAsync(slot.Serial);
-                    if (es != null)
+                    List<ElectrodeDto>? es = await _ElectrodeService.DB_GetElectrodesByTagSerialAsync(slot.Serial);
+                    if (es != null) //檢查是否為電極
                     {
                         var e = es.FirstOrDefault();
-                        List<EleTimelineDto> eleTimelineDto = await _ElectrodeService.DB_GetElectrodeTimelineByIdAsync(e._id);
+                        List<EleTimelineDto>? eleTimelineDto = await _ElectrodeService.DB_GetElectrodeTimelineByIdAsync(e._id);
+                       // eleTimelineDto = null;
                         var timelineModels = eleTimelineDto?.Select(MapElectrodeTimeline).ToList() ?? new List<TimelineItemModel>();
                         _windowService.ShowElectrode(MapElectrode(e), timelineModels, _httpService, slot.SlotCode);
                     }
-                    else
+                    else //檢查是否為探針
                     {
-                        ProbeDto prrobe = await _probeService.DB_GetProbeByTagSerialAsync(slot.Serial);
-                        _windowService.ShowElectrode(MapProbe(prrobe), new List<TimelineItemModel>(), _httpService, slot.SlotCode);
+                        ProbeDto? prrobe = await _probeService.DB_GetProbeByTagSerialAsync(slot.Serial);
+                        if (prrobe != null) 
+                            _windowService.ShowElectrode(MapProbe(prrobe), new List<TimelineItemModel>(), _httpService, slot.SlotCode);
+                        else // 皆非 則顯示空資料
+                            _windowService.ShowMaterialEmpty(_httpService);
                     }
                     break;
                 case MaterialType.Workpiece:
-                    WorkpieceDto wp = await _WorkpieceService.GetWorkpieceByTagSerialAsync(slot.Serial);
-                    List<WpTimelineDto> wpTimelineDto = await _WorkpieceService.GetWorkpieceTimelineByWorkpieceIdAsync(wp._id);
-                    var wpTimelineModels = wpTimelineDto?.Select(MapWorkpieceTimeline).ToList() ?? new List<TimelineItemModel>();
-                    _windowService.ShowWorkpiece(MapWorkpiece(wp), wpTimelineModels, _httpService, slot.SlotCode);
+                    WorkpieceDto? wp = await _WorkpieceService.GetWorkpieceByTagSerialAsync(slot.Serial);
+                    if (wp != null) //檢查是否為工件
+                    {
+                        List<WpTimelineDto>? wpTimelineDto = await _WorkpieceService.GetWorkpieceTimelineByWorkpieceIdAsync(wp._id);
+                        var wpTimelineModels = wpTimelineDto?.Select(MapWorkpieceTimeline).ToList() ?? new List<TimelineItemModel>();
+                        _windowService.ShowWorkpiece(MapWorkpiece(wp), wpTimelineModels, _httpService, slot.SlotCode);
+                    }
+                    else // 皆非 則顯示空資料
+                    {
+                        _windowService.ShowMaterialEmpty(_httpService);
+                    }
                     break;
             }
             /*
@@ -197,7 +209,7 @@ namespace FMSFrontend.ViewModels
                 ElecRestriction = db.restriction ?? false
             };
         }
-        private static ElectrodeModel MapProbe(ProbeDto db)
+        private static ElectrodeModel MapProbe(ProbeDto? db)
         {
             if (db == null)
                 throw new ArgumentNullException(nameof(db));
@@ -248,8 +260,8 @@ namespace FMSFrontend.ViewModels
             return new TimelineItemModel
             {
                 Time = dto?.timeStamp ?? DateTime.MinValue,
+                WorkCommand = dto?.workCommand?? "",
                 Status = "", //待定義
-                Text = "", //待定義
             };
         }
         private static TimelineItemModel MapWorkpieceTimeline(WpTimelineDto dto)
@@ -258,8 +270,8 @@ namespace FMSFrontend.ViewModels
             return new TimelineItemModel
             {
                 Time = dto?.timeStampe ?? DateTime.MinValue,
+                WorkCommand = dto?.workCommand ?? "",
                 Status = "", //待定義
-                Text = "", //待定義
             };
         }
         private static TimelineItemModel MapProbeTimeline(WpTimelineDto? dto)
@@ -268,8 +280,8 @@ namespace FMSFrontend.ViewModels
             return new TimelineItemModel
             {
                 Time = dto?.timeStampe ?? DateTime.MinValue,
+                WorkCommand = dto?.workCommand ?? "",
                 Status = "", //待定義
-                Text = "", //待定義
             };
         }
 

@@ -11,9 +11,11 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Xml.Linq;
 namespace FMSFrontend.Features.Threading
 {
     public class StorageLiveUpdater : IDisposable
@@ -86,6 +88,7 @@ namespace FMSFrontend.Features.Threading
                                     var eleDto = eleDtos.FirstOrDefault();
                                     slot.Kind = MaterialType.Electrode;
                                     slot.Name = eleDto?.electrodeName ?? "";
+                                    slot.ShortName = Regex.Match(slot.Name, @"_(\d+-[A-Za-z0-9]+)").Groups[1].Value;
                                     slot.MaterialStatus = eleDto?.state ?? "";
                                     slot.MaterialRestriction = eleDto?.restriction ?? false;
                                 }
@@ -96,6 +99,7 @@ namespace FMSFrontend.Features.Threading
                                     {
                                         slot.Kind = MaterialType.Probe;
                                         slot.Name = probeDto.probeName ?? "";
+                                        slot.ShortName = slot.Name;
                                         slot.MaterialStatus = probeDto.state ?? "";
                                         slot.MaterialRestriction = probeDto.restriction ?? false;
                                     }
@@ -108,6 +112,7 @@ namespace FMSFrontend.Features.Threading
                                 {
                                     slot.Kind = MaterialType.Workpiece;
                                     slot.Name = workpieceDto?.workpieceName ?? "";
+                                    slot.ShortName = Regex.Match(slot.Name, @"_(\d+-[A-Za-z0-9]+)").Groups[1].Value;
                                     slot.MaterialStatus = workpieceDto?.status ?? "";
                                     slot.MaterialRestriction = workpieceDto?.restriction ?? false;
                                 }

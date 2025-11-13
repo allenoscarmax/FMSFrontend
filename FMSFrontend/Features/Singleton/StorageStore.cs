@@ -96,6 +96,7 @@ namespace FMSFrontend.Features.Singleton
                             var t = targetSlots[i];
                             var s = sourceSlots[i];
                             t.Name = s.Name;
+                            t.ShortName = s.ShortName;
                             t.Serial = s.Serial;
                             t.Kind = s.Kind;
                             t.MaterialStatus = s.MaterialStatus;
