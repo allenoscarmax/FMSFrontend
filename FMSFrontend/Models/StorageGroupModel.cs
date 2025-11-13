@@ -77,7 +77,6 @@ namespace FMSFrontend.Models
         [ObservableProperty] private MaterialType kind = MaterialType.None;
         [ObservableProperty] private string id = "";
         [ObservableProperty] private string serial = "";
-        public string SlotCode = "";
         public string Name = "";                                        // 名稱 (全名)
         [ObservableProperty] private string shortName = "";             // 名稱 (顯示用)
         [ObservableProperty] private string materialStatus = "";        // 材料狀態
@@ -96,8 +95,22 @@ namespace FMSFrontend.Models
                 "Empty"     => Brushes.White,
                 _           => Brushes.White
             };
-        
-       
+      
+        string Code => Kind switch
+        {
+            MaterialType.Electrode => "E",
+            MaterialType.Probe => "P",
+            MaterialType.Workpiece => "W",
+            _ => ""
+        };
+        public int Line { get; set; }   // 倉線/倉號
+        public int Row { get; set; }    // 行
+        public int Col { get; set; }    // 列
+        public int Layer { get; set; } = 1;
+        public string SlotCode =>
+            !string.IsNullOrWhiteSpace(Name)
+                ? Name
+                : $"{Code}:{Line}:{Row}:{Col}:{Layer}";
 
 
         // 影響 StatusBrush 的來源變更時，主動通知
