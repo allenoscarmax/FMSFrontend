@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
-
+using FMSFrontend.Models;
 namespace FMSFrontend.Services
 {
     public class WindowService : IWindowService

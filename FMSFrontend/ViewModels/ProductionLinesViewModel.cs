@@ -2,8 +2,11 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging; // ← 新增
 using CommunityToolkit.Mvvm.Messaging.Messages; // ← 新增：Message 型別
-
 using FMSFrontend.Controls;
+using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.Services; // ← 新增
@@ -20,6 +23,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
@@ -30,9 +34,18 @@ namespace FMSFrontend.ViewModels
     {
         public readonly IWindowService _windowService;
         private readonly IHttpService _httpService;
+        // === Services ===
+        private readonly IElectrodeService _ElectrodeService;
+        private readonly IWorkpieceService _WorkpieceService;
+        private readonly IProbeService _probeService;
 
-        MachineDetailViewModel? machineDetailViewModel;
-        MachineOverviewViewModel? machineOverviewViewModel;
+        // === Singleton ===
+        private readonly StorageStore _storageStore;
+        public StorageGroupModel StorageGroup => _storageStore.StorageGroup;
+        // ==LiveUpdater===
+        public StorageLiveUpdater _storageUpdater;
+
+
         private object? _currentStorageView;
         public object? CurrentStorageView
         {
@@ -47,73 +60,35 @@ namespace FMSFrontend.ViewModels
             set => SetProperty(ref _currentWorkingZoneView, value);
         }
 
-
-         // 新增：Timer 欄位
-        private readonly DispatcherTimer _refreshTimer;
-        public ProductionLinesViewModel(IWindowService windowService, IHttpService httpService) // ← 變更簽章
+        public ProductionLinesViewModel(IWindowService windowService, IHttpService httpService,
+            IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService,
+            StorageStore storageStore, StorageLiveUpdater storageLiveUpdater) // ← 變更簽章
         {
             _windowService = windowService;
             _httpService = httpService;
-  
+            _probeService = probeService;
+
+            _ElectrodeService = electrodeService;
+            _WorkpieceService = workpieceService;
+            _storageStore = storageStore;
+            _storageUpdater = storageLiveUpdater;
+
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             bool b = ini.Read("Prarm", "IsStorageOverviewControl") == "True";
-            // 新增：建立並啟動每秒刷新 Timer
-            _refreshTimer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(100)
-            };
-            _refreshTimer.Tick += RefreshTimer_Tick;
-            _refreshTimer.Start();
             if (b)
                 ShowOverview();
             else
                 ShowDetail("0");
             ShowMachineOverview();
-            // 訂閱 MainWindowViewModel 的頁面刷新訊息：當切換到 RFIDBind 時重新抓取
-            WeakReferenceMessenger.Default.Register<ValueChangedMessage<string>>(this, (r, message) =>
-            {
-                if (string.Equals(message.Value, "ProductionLines", StringComparison.Ordinal))
-                {
-                    if (b)
-                        ShowOverview();
-                    else
-                        ShowDetail("0");
-                    ShowMachineOverview();
-                }
-            });
         }
-        // 新增：Timer Tick 處理器（輕量、fire-and-forget）
-        private void RefreshTimer_Tick(object? sender, EventArgs e)
+        public void OnPageActivated()
         {
-            try
-            {
-                // 如果 CurrentStorageView 為 FrameworkElement（你的 View），取其 DataContext
-                var storageDc = (CurrentStorageView as System.Windows.FrameworkElement)?.DataContext;
-                if (storageDc is Production.StorageOverviewViewModel sovm)
-                {
-                    _ = sovm.RefreshAsync();
-                }
-                else if (storageDc is Production.StorageDetailViewModel sdvm)
-                {
-                    _ = sdvm.RefreshAsync();
-                }
-
-                var workingDc = (CurrentWorkingZoneView as System.Windows.FrameworkElement)?.DataContext;
-                if (workingDc is Production.MachineDetailViewModel mdvm)
-                {
-                    _ = mdvm.RefreshAsync();
-                }
-                else if (workingDc is Production.MachineOverviewViewModel movm)
-                {
-                    _ = movm.UpdataAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"RefreshTimer_Tick error: {ex}");
-            }
+            _storageUpdater.Start();
         }
-
+        public void OnPageDeactivated()
+        {
+            _storageUpdater.Stop();
+        }
         public class RobotStatusViewModel
         {
             public MachineStatus Status { get; set; }
@@ -124,55 +99,42 @@ namespace FMSFrontend.ViewModels
             Running,
             Alarm
         }
-
-        // 你原本給 Overview 用的：
-        public void OpenMaterial(StorageSlotViewModel slot) => OpenMaterial((object)slot);
-
-        // ★ Detail 也能用：
-        public void OpenMaterial(SlotViewModel slot) => OpenMaterial((object)slot);
-
-        // ★ 統一處理（Empty 也能開）＋ 先打 API 取得最新資料
-        public async void OpenMaterial(object slot)
+        public async void OpenMaterial(Slot slot)
         {
-            // 取得 Material 與 SlotCode
-            MaterialRef? material = slot switch
-            {
-                SlotViewModel s => s.Material,
-                StorageSlotViewModel ss => ss.Material,
-                IHasMaterial ih => ih.Material,
-                _ => null
-            };
-
-            var slotCode =
-                    (slot as SlotViewModel)?.SlotCode ??
-                    (slot as StorageSlotViewModel)?.SlotCode;
-
-            if (material == null)
-            {
-                _windowService.ShowMaterialEmpty(_httpService);
-                return;
-            }
+            if (string.IsNullOrEmpty(slot.Serial)) return;
             //try
             //{
-            // 先依 TagSerial 呼叫對應 API，更新詳細資料與時間軸
-            // 1. 資料
-      
-            if (material.Kind == MaterialKind.Electrode)
+            switch (slot.Kind)
             {
-                // ElectrodeModel 使用 TagSerial
-                var tagSerial = material.Electrode?.TagSerial;
-                if (string.IsNullOrWhiteSpace(tagSerial))
-                {
-                    // 沒有 TagSerial 就 fallback
-                    ElectrodeModel elecFallback = material.Electrode ?? new ElectrodeModel();
-                    _windowService.ShowElectrode(elecFallback, material.Timeline ?? Array.Empty<TimelineItemModel>(),_httpService, slotCode);
-                    return;
-                }
+                case MaterialType.Electrode:
+                case MaterialType.Probe:
+                    List<ElectrodeDto> es = await _ElectrodeService.DB_GetElectrodesByTagSerialAsync(slot.Serial);
+                    if (es != null)
+                    {
+                        var e = es.FirstOrDefault();
+                        List<EleTimelineDto> eleTimelineDto = await _ElectrodeService.DB_GetElectrodeTimelineByIdAsync(e._id);
+                        var timelineModels = eleTimelineDto?.Select(MapElectrodeTimeline).ToList() ?? new List<TimelineItemModel>();
+                        _windowService.ShowElectrode(MapElectrode(e), timelineModels, _httpService, slot.SlotCode);
+                    }
+                    else
+                    {
+                        ProbeDto prrobe = await _probeService.DB_GetProbeByTagSerialAsync(slot.Serial);
+                        _windowService.ShowElectrode(MapProbe(prrobe), new List<TimelineItemModel>(), _httpService, slot.SlotCode);
+                    }
 
-                // 1. 資料
-                var elecList = await _httpService.GetJsonAsync<List<Electrode>>($"Electrode/DB_GetElectrodesByTagSerial/{tagSerial}");
+                    break;
+                case MaterialType.Workpiece:
+                    WorkpieceDto wp = await _WorkpieceService.GetWorkpieceByTagSerialAsync(slot.Serial);
+                    List<WpTimelineDto> wpTimelineDto = await _WorkpieceService.GetWorkpieceTimelineByWorkpieceIdAsync(wp._id);
+                    var wpTimelineModels = wpTimelineDto?.Select(MapWorkpieceTimeline).ToList() ?? new List<TimelineItemModel>();
+                    _windowService.ShowWorkpiece(MapWorkpiece(wp), wpTimelineModels, _httpService, slot.SlotCode);
+                    break;
+            }
+            /*
+            // 1. 資料
+            var elecList = await _httpService.GetJsonAsync<List<Electrode>>($"Electrode/DB_GetElectrodesByTagSerial/{tagSerial}");
                 var dbElec = elecList?.FirstOrDefault();
-                // 映射 DB → View Model（若 API 無部分欄位，用舊值補）
+                // 映射 DB → View Model（若 API 無部份欄位，用舊值補）
                 var elecVm = MapElectrode(dbElec, material.Electrode);
                 var id = elecVm.Id;
                 elecVm.StorageRestriction = material.Electrode?.StorageRestriction ?? false;
@@ -206,30 +168,15 @@ namespace FMSFrontend.ViewModels
                 var wpTimeline = await _httpService.GetJsonAsync<IEnumerable<TimelineItemModel>>($"Workpiece/DB_GetWorkpieceTimelineByWorkpieceId/{id}")
                                  ?? Array.Empty<TimelineItemModel>();
                 //3.顯示資料
-                _windowService.ShowWorkpiece(wpVm, wpTimeline, _httpService, slotCode);
-            }
-            /*
-            }
-            catch
-            {
-                // API 失敗 → 使用既有資料顯示，確保不影響操作
-                var tl = material.Timeline ?? Array.Empty<TimelineItemModel>();
-                if (material.Kind == MaterialKind.Electrode)
-                    _windowService.ShowElectrode(material.Electrode, tl, slotCode);
-                else
-                    _windowService.ShowWorkpiece(material.Workpiece, tl, slotCode);
+               
             }
             */
+
+            //}catch{}
         }
 
-        private static ElectrodeModel MapElectrode(Electrode? db, ElectrodeModel? fallback)
+        private static ElectrodeModel MapElectrode(ElectrodeDto db)
         {
-            if (db == null) return fallback ?? new ElectrodeModel
-            {
-                Name = "—",
-                Status = "—"
-            };
-
             return new ElectrodeModel
             {
                 // 以 API 為主，缺的用舊值補
@@ -245,18 +192,34 @@ namespace FMSFrontend.ViewModels
                 UsageRate = "",
                 Compensation = db.offset ?? "",
                 ProcessedCount = db.useTimes?.ToString() ?? "",
-                ElecRestriction = db.restriction 
+                ElecRestriction = db.restriction ?? false
+            };
+        }
+        private static ElectrodeModel MapProbe(ProbeDto db)
+        {
+            if (db == null)
+                throw new ArgumentNullException(nameof(db));
+            return new ElectrodeModel
+            {
+                // 以 API 為主，缺的用舊值補
+                Id = db._id,
+                JigSerial = "",
+                Name = db.probeName ?? "",
+                No = "", // DB 未提供 → 沿用舊值
+                Type = db.probeType ?? "",
+                Status = db.state ?? "",
+                HolderNo = "",
+                TagSerial = db.tagSerial ?? "",
+                MaxDischargeCount = "",
+                UsageRate = "",
+                Compensation = "",
+                ProcessedCount = "",
+                ElecRestriction = db.restriction ?? false
             };
         }
 
-        private static WorkpieceModel MapWorkpiece(Workpiece? db, WorkpieceModel? fallback)
+        private static WorkpieceModel MapWorkpiece(WorkpieceDto db)
         {
-            if (db == null) return fallback ?? new WorkpieceModel
-            {
-                Name = "—",
-                Status = "—"
-            };
-
             return new WorkpieceModel
             {
                 // 以 API 為主，缺的用舊值補
@@ -273,15 +236,47 @@ namespace FMSFrontend.ViewModels
                 PartName = "",
                 SerialCode = "",
                 RouteNo = "",
-                WorkRestriction = db.restriction ?? false
+                WorkRestriction = db?.restriction ?? false
             };
         }
+
+        private static TimelineItemModel MapElectrodeTimeline(EleTimelineDto dto)
+        {
+            // 請根據 TimelineItemModel 與 EleTimelineDto 的實際屬性做對應
+            return new TimelineItemModel
+            {
+                Time = dto?.timeStamp ?? DateTime.MinValue,
+                Status = "", //待定義
+                Text = "", //待定義
+            };
+        }
+        private static TimelineItemModel MapWorkpieceTimeline(WpTimelineDto dto)
+        {
+            // 請根據 TimelineItemModel 與 WpTimelineDto 的實際屬性做對應
+            return new TimelineItemModel
+            {
+                Time = dto?.timeStampe ?? DateTime.MinValue,
+                Status = "", //待定義
+                Text = "", //待定義
+            };
+        }
+        private static TimelineItemModel MapProbeTimeline(WpTimelineDto? dto)
+        {
+            // 請根據 TimelineItemModel 與 WpTimelineDto 的實際屬性做對應
+            return new TimelineItemModel
+            {
+                Time = dto?.timeStampe ?? DateTime.MinValue,
+                Status = "", //待定義
+                Text = "", //待定義
+            };
+        }
+
 
         [RelayCommand]
         public void ShowDetail(string storageId)
         {
             // TODO: 傳入 storageId 給 DetailControl，如果要的話
-            var overviewVM = new StorageDetailViewModel(this, _httpService); // 傳入自己當 parent
+            var overviewVM = new StorageDetailViewModel(this, _httpService, _storageStore, _storageUpdater); // 傳入自己當 parent
             var overviewView = new StorageDetailControl
             {
                 DataContext = overviewVM // 這一步非常重要！
@@ -291,7 +286,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         public void ShowOverview()
         {
-            var overviewVM = new StorageOverviewViewModel(this, _httpService); // ← 傳入 httpService
+            var overviewVM = new StorageOverviewViewModel(this, _httpService, _storageStore); // ← 傳入 httpService
             var overviewView = new StorageOverviewControl
             {
                 DataContext = overviewVM // 這一步非常重要！
@@ -303,8 +298,8 @@ namespace FMSFrontend.ViewModels
         public void ShowMachineDetail()
         {
             // TODO: 傳入 storageId 給 DetailControl，如果要的話
-          if(machineDetailViewModel == null) 
-                machineDetailViewModel = new MachineDetailViewModel(this, _httpService); // 傳入自己當 parent 與 httpService
+            //if(machineDetailViewModel == null) 
+            var machineDetailViewModel = new MachineDetailViewModel(this, _httpService); // 傳入自己當 parent 與 httpService
             var overviewView = new MachineDetailControl
             {
                 DataContext = machineDetailViewModel // 這一步非常重要！
@@ -314,8 +309,8 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         public void ShowMachineOverview()
         {
-            if (machineOverviewViewModel == null)
-                machineOverviewViewModel = new MachineOverviewViewModel(this, _httpService); // 傳入自己當 parent
+            //  if (machineOverviewViewModel == null)
+            var machineOverviewViewModel = new MachineOverviewViewModel(this, _httpService); // 傳入自己當 parent
             var overviewView = new MachineOverviewControl
             {
                 DataContext = machineOverviewViewModel // 這一步非常重要！
@@ -383,5 +378,8 @@ namespace FMSFrontend.ViewModels
             else if (m.Kind == MaterialKind.Workpiece && m.Workpiece != null)
                 _windowService.ShowMaterialInformation(m.Workpiece, tl, _httpService);
         }
+
+
     }
 }
+

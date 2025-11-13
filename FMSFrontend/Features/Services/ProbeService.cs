@@ -39,7 +39,10 @@ namespace FMSFrontend.Features.Services
 
         /// <summary>以 TagSerial 取得單筆探針</summary>
         public async Task<ProbeDto?> DB_GetProbeByTagSerialAsync(string tagSerial, CancellationToken ct = default)
-            => await _http.GetJsonAsync<ProbeDto>($"Probe/DB_GetProbeByTagSerial/{Enc(tagSerial)}", ct);
+        { 
+           var json =  await _http.GetJsonAsync<ProbeDto>($"Probe/DB_GetProbeByTagSerial/{Enc(tagSerial)}", ct);
+            return json;
+        }
 
         /// <summary>以 Id 取得單筆探針</summary>
         public async Task<ProbeDto?> DB_GetProbeByIdAsync(string id, CancellationToken ct = default)

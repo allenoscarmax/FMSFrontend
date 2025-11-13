@@ -17,6 +17,8 @@ namespace FMSFrontend.Views
         {
             InitializeComponent();
             this.DataContext = viewModel;
+            Loaded += (_, __) => ((ProductionLinesViewModel)DataContext).OnPageActivated();
+            Unloaded += (_, __) => ((ProductionLinesViewModel)DataContext).OnPageDeactivated();
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)

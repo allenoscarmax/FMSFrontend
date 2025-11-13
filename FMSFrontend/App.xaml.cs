@@ -64,19 +64,20 @@ namespace FMSFrontend
             services.AddSingleton<IMongoDBService, MongoDBService>();
             services.AddSingleton<IServerHealthService, ServerHealthService>();
             services.AddSingleton<IWorkerService, WorkerService>();
-
-
+           
             // === Singleton ===
             services.AddSingleton<PlcStore>();
             services.AddSingleton<RFIDBindStore>();
             services.AddSingleton<RobotStore>();
             services.AddSingleton<GlobalProperties>();
+            services.AddSingleton<StorageStore>();
 
             // ==LiveUpdater===
             services.AddSingleton<RobotLiveUpdater>();
             services.AddSingleton<PlcLiveUpdater>();          
             services.AddSingleton<RFIDBindLiveUpdater>();
             services.AddSingleton<ServerHealthLiveUpdater>();
+            services.AddSingleton<StorageLiveUpdater>();
 
             #endregion
 

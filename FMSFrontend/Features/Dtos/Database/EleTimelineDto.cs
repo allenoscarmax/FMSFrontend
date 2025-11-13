@@ -23,5 +23,9 @@ namespace FMSFrontend.Features.Dtos
         //未知
         public string workpieceId { get; set; } = "";// 相關工件 ID（對應 Workpiece._id）
 
+        public static implicit operator EleTimelineDto?(List<EleTimelineDto>? v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

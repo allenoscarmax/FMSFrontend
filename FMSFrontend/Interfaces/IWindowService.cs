@@ -1,4 +1,5 @@
-﻿using FMSFrontend.Services;
+﻿using FMSFrontend.Models;
+using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
 using FMSFrontend.ViewModels.Windows;
 using System;
@@ -36,7 +37,6 @@ namespace FMSFrontend.Interfaces
                            IEnumerable<TimelineItemModel> tl,
                            IHttpService httpService,
                            string? slotCode = null);
-
         void ShowMaterialEmpty(IHttpService httpService);
 
         // 新增：純資訊視窗（不顯示倉位/操作列）

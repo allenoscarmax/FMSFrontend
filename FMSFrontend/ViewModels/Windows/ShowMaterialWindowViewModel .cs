@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
@@ -22,6 +23,24 @@ namespace FMSFrontend.ViewModels.Windows
     {
        // private readonly IWindowService _windowService;
         private readonly IHttpService _httpService;
+        // === Services ===
+        private readonly IElectrodeService _ElectrodeService;
+        private readonly IWorkpieceService _WorkpieceService;
+        private readonly IProbeService _ProbeService;
+
+        // 空畫面
+        public ShowMaterialWindowViewModel(IHttpService httpService) 
+        //    IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService)
+        {
+            Kind = MaterialKind.None;
+
+          //  _ElectrodeService = electrodeService;
+          //  _WorkpieceService = workpieceService;
+          //  _ProbeService = probeService;
+
+            DetailViewModel = new EmptyMaterialDetailViewModel();
+            _httpService = httpService;
+        }
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(KindText))]
@@ -157,25 +176,19 @@ namespace FMSFrontend.ViewModels.Windows
             _ => "物料"
         };
 
-        // 空畫面
-        public ShowMaterialWindowViewModel(IHttpService httpService)
-        {
-            Kind = MaterialKind.None;
-            DetailViewModel = new EmptyMaterialDetailViewModel();
-            _httpService = httpService;
-        }
+
 
 
         // ★ 由點擊的格位載入資料
-        public void LoadFrom(SlotViewModel slot)
-        {
-            ApplyMaterial(slot.Material, slot.Kind, slot.SlotCode);
-        }
+        // public void LoadFrom(SlotViewModel slot) //Allen
+        // {
+        //     ApplyMaterial(slot.Material, slot.Kind, slot.SlotCode);
+        // }
 
-        public void LoadFrom(StorageSlotViewModel slot)
-        {
-            ApplyMaterial(slot.Material, slot.Material?.Kind ?? MaterialKind.None, slot.Material?.Electrode?.Name ?? slot.Material?.Workpiece?.Name ?? slot.Status);
-        }
+        //public void LoadFrom(StorageSlotViewModel slot) //Allen
+        // {
+        // ApplyMaterial(slot.Material, slot.Material?.Kind ?? MaterialKind.None, slot.Material?.Electrode?.Name ?? slot.Material?.Workpiece?.Name ?? slot.Status);
+        // }
 
         /// <summary>
         /// 把 MaterialRef 套用到視窗 VM

@@ -17,6 +17,9 @@ namespace FMSFrontend.Services
             PropertyNameCaseInsensitive = true
         };
 
+        private const string DefaultScheme = "http";
+        private const int DefaultPort = 5032;
+
         public HttpService()
         {
             _httpClient = new HttpClient();
@@ -26,25 +29,47 @@ namespace FMSFrontend.Services
             var ip = ini.Read("Prarm", "IP");
             if (!string.IsNullOrWhiteSpace(ip))
             {
+                // 僅設定 ServerIp，不修改 HttpClient 屬性，避免已發送請求後拋例外
                 UpdateServerIp(ip);
             }
         }
 
+        // 建立絕對 URL 字串（若 route 已是絕對 URL，則直接回傳）
+        private string BuildUrl(string route)
+        {
+            if (string.IsNullOrWhiteSpace(route))
+                throw new ArgumentException("route 不可為空白", nameof(route));
+
+            // 若 route 已是絕對 URL，直接使用
+            if (Uri.TryCreate(route, UriKind.Absolute, out var abs))
+                return abs.ToString();
+
+            if (string.IsNullOrWhiteSpace(ServerIp))
+                throw new InvalidOperationException("尚未設定伺服器 IP");
+
+            // 組合成絕對 URL
+            var trimmed = route.TrimStart('/');
+            return $"{DefaultScheme}://{ServerIp}:{DefaultPort}/{trimmed}";
+        }
+
         public async Task SendGetAsync(string route)
         {
-            await _httpClient.GetAsync(route).ConfigureAwait(false);
+            var url = BuildUrl(route);
+            await _httpClient.GetAsync(url).ConfigureAwait(false);
         }
 
         public async Task SendPostAsync<T>(string route, T payload)
         {
-            await _httpClient.PostAsJsonAsync(route, payload, _jsonOptions).ConfigureAwait(false);
+            var url = BuildUrl(route);
+            await _httpClient.PostAsJsonAsync(url, payload, _jsonOptions).ConfigureAwait(false);
         }
 
         public async Task<bool> SendPutAsync<T>(string route, T payload)
         {
             try
             {
-                using var resp = await _httpClient.PutAsJsonAsync(route, payload, _jsonOptions).ConfigureAwait(false);
+                var url = BuildUrl(route);
+                using var resp = await _httpClient.PutAsJsonAsync(url, payload, _jsonOptions).ConfigureAwait(false);
                 return resp.IsSuccessStatusCode;
             }
             catch
@@ -55,42 +80,44 @@ namespace FMSFrontend.Services
 
         public async Task SendDeleteAsync(string route)
         {
-            await _httpClient.DeleteAsync(route).ConfigureAwait(false);
+            var url = BuildUrl(route);
+            await _httpClient.DeleteAsync(url).ConfigureAwait(false);
         }
 
         // 改為有過濾的 GetJsonAsync：當回傳為 null / undefined / 空陣列 / 空字串 時回傳 null (default)
         public async Task<T?> GetJsonAsync<T>(string route, CancellationToken cancellationToken = default)
         {
-            try { 
-            using var response = await _httpClient.GetAsync(route, cancellationToken).ConfigureAwait(false);
+            try {
+                var url = BuildUrl(route);
+                using var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
 
-            // 無內容或 204
-            if (response.StatusCode == HttpStatusCode.NoContent || response.Content == null)
-                return default;
+                // 無內容或 204
+                if (response.StatusCode == HttpStatusCode.NoContent || response.Content == null)
+                    return default;
 
-            // 非成功狀態，不嘗試反序列化
-            if (!response.IsSuccessStatusCode)
-                return default;
+                // 非成功狀態，不嘗試反序列化
+                if (!response.IsSuccessStatusCode)
+                    return default;
 
-            // 讀取為字串以便做額外判斷
-            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (string.IsNullOrWhiteSpace(content))
-                return default;
+                // 讀取為字串以便做額外判斷
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                if (string.IsNullOrWhiteSpace(content))
+                    return default;
 
-            var result = JsonSerializer.Deserialize<T>(content, _jsonOptions);
-            return result;
+                var result = JsonSerializer.Deserialize<T>(content, _jsonOptions);
+                return result;
             }
             catch
             {
                 return default;
             }
-
         }
 
         // 取得原始字串（不反序列化）
         public async Task<string?> GetJsonAsyncNoDeserialize(string route, CancellationToken cancellationToken = default)
         {
-            using var response = await _httpClient.GetAsync(route, cancellationToken).ConfigureAwait(false);
+            var url = BuildUrl(route);
+            using var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
 
             // 無內容或 204
             if (response.StatusCode == HttpStatusCode.NoContent || response.Content == null)
@@ -103,12 +130,12 @@ namespace FMSFrontend.Services
             // 讀取為字串以便做額外判斷
             var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             return string.IsNullOrWhiteSpace(content) ? null : content;
-
         }
         // PutJsonAsync：加入回傳過濾（與 GetJsonAsync 相同策略）
         public async Task<TResult?> PutJsonAsync<TRequest, TResult>(string route, TRequest payload, CancellationToken cancellationToken = default)
         {
-            using var response = await _httpClient.PutAsJsonAsync(route, payload, _jsonOptions, cancellationToken).ConfigureAwait(false);
+            var url = BuildUrl(route);
+            using var response = await _httpClient.PutAsJsonAsync(url, payload, _jsonOptions, cancellationToken).ConfigureAwait(false);
 
             // 無內容或 204
             if (response.StatusCode == HttpStatusCode.NoContent || response.Content == null)
@@ -164,7 +191,8 @@ namespace FMSFrontend.Services
                 throw new ArgumentException("IP 不可為空白", nameof(ip));
             else if (!(IPAddress.TryParse(ip, out _) || ip == "localhost"))
                 throw new ArgumentException("IP 位址格式不正確", nameof(ip));
-            _httpClient.BaseAddress = new Uri($"http://{ip}:5032/");
+
+            // 不再修改 HttpClient.BaseAddress；僅更新 ServerIp
             ServerIp = ip;
         }
     }

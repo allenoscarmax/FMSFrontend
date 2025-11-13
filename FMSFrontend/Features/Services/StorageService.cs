@@ -75,5 +75,4 @@ namespace FMSFrontend.Features.Services
                 => await _http.SendPutAsync($"Storage/DB_SetRestrictionbyStorageLocation/{Uri.EscapeDataString(storageName)}/{Uri.EscapeDataString(storageNumber)}/{region}/{column}/{row}/{restriction}", new { });
         }
     }
-
 }

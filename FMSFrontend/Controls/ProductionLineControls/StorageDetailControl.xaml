@@ -95,8 +95,8 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- 膠囊樣式（左側貼齊，右側圓角） -->
-                        <Border d:Background="#2779A7" Background="{Binding StorageType, Converter={StaticResource StorageTypeToBrushConverter}}" Height="40" CornerRadius="0,20,20,0" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,0" Width="172">
-                            <TextBlock Text="{Binding StorageName}" d:Text="ES1" Foreground="White" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" />
+                        <Border d:Background="#2779A7" Background="{Binding SelectStorage.KindBrush}" Height="40" CornerRadius="0,20,20,0" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,0" Width="172">
+                            <TextBlock Text="{Binding SelectStorage.Title}" d:Text="ES1" Foreground="White" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" />
                         </Border>
 
                         <!-- 狀態列 -->
@@ -109,7 +109,7 @@
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="待加工" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding WaitingCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding SelectStorage.WaitingCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
@@ -119,7 +119,7 @@
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="加工中" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding ProcessingCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding SelectStorage.ProcessingCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
@@ -129,7 +129,7 @@
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="異常" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding ErrorCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding SelectStorage.ErrorCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
@@ -139,7 +139,7 @@
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="完成" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding CompletedCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding SelectStorage.CompletedCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
@@ -149,7 +149,7 @@
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="禁用" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding RestrictionCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding SelectStorage.RestrictionCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
@@ -159,14 +159,14 @@
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="預約" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center" />
                                             <Border Width="24" Height="24" Background="#D6D6D6" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding BookedCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding SelectStorage.BookedCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
                                 </StackPanel>
 
                                 <!-- 下排：灰底圖示狀態列 -->
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="-50,0,0,0" Visibility="{Binding IsElectrode, Converter={StaticResource BoolToVis}}">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="-50,0,0,0" Visibility="{Binding StorageGroup.IsElectrode, Converter={StaticResource BoolToVis}}">
                                     <!--
                                     <Border Style="{StaticResource GrayTagStatusStyle}">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -212,15 +212,16 @@
 
                     <!-- 2. 倉儲格子區 -->
                     <Border Grid.Row="1" Background="#F6F4F1" CornerRadius="12" BorderBrush="#DDD" BorderThickness="1" Margin="0,12">
-                        <ItemsControl ItemsSource="{Binding CurrentPage.Slots}" Margin="24">
+                        <ItemsControl ItemsSource="{Binding SelectStorage.Slots}" Margin="24">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <UniformGrid Rows="{Binding CurrentPage.Rows}" Columns="{Binding CurrentPage.Columns}" />
+                                    <UniformGrid Rows="{Binding SelectStorage.Rows}" Columns="{Binding SelectStorage.Columns}" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Button Width="72" Height="72" Margin="3" Background="{Binding Background}" Command="{Binding DataContext.SelectSlotCommand, ElementName=root}" CommandParameter="{Binding}">
+                                    <!-- Each item is a Slot -->
+                                    <Button Width="72" Height="72" Margin="3" Background="{Binding StatusBrush}" Command="{Binding DataContext.OpenMaterialCommand, ElementName=root}" CommandParameter="{Binding}">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderBrush="#DDD" BorderThickness="1">
@@ -230,32 +231,9 @@
                                                             <RowDefinition Height="*" />
                                                             <RowDefinition Height="22" />
                                                         </Grid.RowDefinitions>
-
-                                                        <!-- Row 0: 鎖 icon（禁用） -->
-                                                        <materialDesign:PackIcon Grid.Row="0" Kind="Lock" Width="16" Height="16" Foreground="Black" Visibility="{Binding IsLocked, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-
-
-                                                        <!-- Row 1: 工件名稱 -->
-                                                        <TextBlock Grid.Row="1" Text="{Binding Text}" FontSize="14" FontWeight="SemiBold" Foreground="{Binding TextColor, FallbackValue=White}" VerticalAlignment="Center" HorizontalAlignment="Center" />
-
-                                                        <!-- Row 2: 狀態 icon（左：檢查狀態，右：加工結果） -->
-
-                                                        <Grid Grid.Row="2" Margin="0">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*" />
-                                                                <ColumnDefinition Width="*" />
-                                                            </Grid.ColumnDefinitions>
-
-                                                            <!-- 左：檢查狀態 -->
-                                                            <!--
-                                                            <Path Grid.Column="0" Width="16" Height="16" Fill="#555" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding IsElectrode, Converter={StaticResource BoolToVisibilityConverter}}" Data="{Binding ResultStatus, Converter={StaticResource ResultStatusToGeometryConverter}}" />
-                                                            -->
-
-                                                            <!-- 右：加工結果狀態 -->
-                                                            <!--
-                                                            <Image Grid.Column="1" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding IsElectrode, Converter={StaticResource BoolToVisibilityConverter}}" Source="{Binding CheckStatus, Converter={StaticResource CheckStatusToImageConverter}}" />
-                                                            -->
-                                                        </Grid>
+                                                        <materialDesign:PackIcon Grid.Row="0" Kind="Lock" Width="16" Height="16" Foreground="Black" Visibility="{Binding MaterialRestriction, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        <TextBlock Grid.Row="1" Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" Foreground="Black" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                        <Grid Grid.Row="2" />
                                                     </Grid>
                                                 </Border>
                                             </ControlTemplate>
@@ -319,7 +297,6 @@
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
-
                             </Button.Template>
                             <materialDesign:PackIcon Kind="ArrowRight" Width="20" Height="20" />
                         </Button>
