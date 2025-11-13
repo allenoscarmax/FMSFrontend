@@ -23,6 +23,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
@@ -36,6 +37,8 @@ namespace FMSFrontend.ViewModels
         // === Services ===
         private readonly IElectrodeService _ElectrodeService;
         private readonly IWorkpieceService _WorkpieceService;
+        private readonly IProbeService _probeService;
+
         // === Singleton ===
         private readonly StorageStore _storageStore; 
         public StorageGroupModel StorageGroup => _storageStore.StorageGroup;
@@ -58,11 +61,12 @@ namespace FMSFrontend.ViewModels
         }
 
         public ProductionLinesViewModel(IWindowService windowService, IHttpService httpService,
-            IElectrodeService electrodeService, IWorkpieceService workpieceService,
+            IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService,
             StorageStore storageStore, StorageLiveUpdater storageLiveUpdater) // ← 變更簽章
         {
             _windowService = windowService;
             _httpService = httpService;
+            _probeService = probeService;   
 
             _ElectrodeService = electrodeService;
             _WorkpieceService = workpieceService;
@@ -103,23 +107,28 @@ namespace FMSFrontend.ViewModels
             switch (slot.Kind)
             {
                 case MaterialType.Electrode:
-                    ElectrodeDto e = await _ElectrodeService.GetElectrodeByTagSerialAsync(slot.Serial);
-                    ele
-                    EleTimelineDto etl = await _ElectrodeService.DB_GetElectrodeTimelineByIdAsync(e._id);
-                    _windowService.ShowElectrode(e, etl, _httpService, slotCode);
+                case MaterialType.Probe:
+                    List<ElectrodeDto> es = await _ElectrodeService.DB_GetElectrodesByTagSerialAsync(slot.Serial);
+                    if (es != null)
+                    {
+                        var e = es.FirstOrDefault();
+                        List<EleTimelineDto> eleTimelineDto = await _ElectrodeService.DB_GetElectrodeTimelineByIdAsync(e._id);
+                        _windowService.ShowElectrode(MapElectrode(e), eleTimelineDto, _httpService, slot.SlotCode);
+                    }
+                    else
+                    {
+                        ProbeDto prrobe = await _probeService.DB_GetProbeByTagSerialAsync(slot.Serial);
+                        _windowService.ShowElectrode(MapProbe(prrobe), null, _httpService, slot.SlotCode);
+                    }
+                    
                     break;
                 case MaterialType.Workpiece:
                     WorkpieceDto wp = await _WorkpieceService.GetWorkpieceByTagSerialAsync(slot.Serial);
-                    WpTimelineDto wptl  = await _WorkpieceService.GetWorkpieceTimelineByWorkpieceIdAsync(WorkpieceDto._id);
-                    _windowService.ShowElectrode(wp, wptl, _httpService, slotCode);
-                    break;
-                case MaterialType.Probe:
-                    ElectrodeDto = await _ElectrodeService.GetElectrodeByTagSerialAsync(slot.Serial);
-                    EleTimelineDto = await _ElectrodeService.DB_GetElectrodeTimelineByIdAsync(ElectrodeDto._id);
-                    _windowService.ShowElectrode(elecVm, elecTimeline, _httpService, slotCode);
+                    List<WpTimelineDto> wpTimelineDto = await _WorkpieceService.GetWorkpieceTimelineByWorkpieceIdAsync(wp._id);
+                    _windowService.ShowWorkpiece(MapWorkpiece(wp), wpTimelineDto, _httpService, slot.SlotCode);
                     break;
             }
-
+            /*
             // 1. 資料
             var elecList = await _httpService.GetJsonAsync<List<Electrode>>($"Electrode/DB_GetElectrodesByTagSerial/{tagSerial}");
                 var dbElec = elecList?.FirstOrDefault();
@@ -157,20 +166,15 @@ namespace FMSFrontend.ViewModels
                 var wpTimeline = await _httpService.GetJsonAsync<IEnumerable<TimelineItemModel>>($"Workpiece/DB_GetWorkpieceTimelineByWorkpieceId/{id}")
                                  ?? Array.Empty<TimelineItemModel>();
                 //3.顯示資料
-                _windowService.ShowWorkpiece(wpVm, wpTimeline, _httpService, slotCode);
+               
             }
-            //}catch{}
+            */
            
+            //}catch{}
         }
 
-        private static ElectrodeModel MapElectrode(Electrode? db, ElectrodeModel? fallback)
+        private static ElectrodeModel MapElectrode(ElectrodeDto db)
         {
-            if (db == null) return fallback ?? new ElectrodeModel
-            {
-                Name = "—",
-                Status = "—"
-            };
-
             return new ElectrodeModel
             {
                 // 以 API 為主，缺的用舊值補
@@ -186,18 +190,12 @@ namespace FMSFrontend.ViewModels
                 UsageRate = "",
                 Compensation = db.offset ?? "",
                 ProcessedCount = db.useTimes?.ToString() ?? "",
-                ElecRestriction = db.restriction 
+                ElecRestriction = db.restriction ?? false
             };
         }
 
-        private static WorkpieceModel MapWorkpiece(Workpiece? db, WorkpieceModel? fallback)
+        private static WorkpieceModel MapWorkpiece(WorkpieceDto db)
         {
-            if (db == null) return fallback ?? new WorkpieceModel
-            {
-                Name = "—",
-                Status = "—"
-            };
-
             return new WorkpieceModel
             {
                 // 以 API 為主，缺的用舊值補
@@ -214,10 +212,30 @@ namespace FMSFrontend.ViewModels
                 PartName = "",
                 SerialCode = "",
                 RouteNo = "",
-                WorkRestriction = db.restriction ?? false
+                WorkRestriction = db?.restriction ?? false
             };
         }
-
+        private static ElectrodeModel MapProbe(ProbeDto db)
+        {
+            return new ElectrodeModel
+            {
+                // 以 API 為主，缺的用舊值補
+                Id = db._id,
+                JigSerial = "",
+                Name = db.probeName ?? "",
+                No = "", // DB 未提供 → 沿用舊值
+                Type = db.probeType ?? "",
+                Status = db.state ?? "",
+                HolderNo = "",
+                TagSerial = db.tagSerial ?? "",
+                MaxDischargeCount = "",
+                UsageRate = "",
+                Compensation = "",
+                ProcessedCount = "",
+                ElecRestriction = db.restriction ?? false
+            };
+        }
+        
         [RelayCommand]
         public void ShowDetail(string storageId)
         {
@@ -326,3 +344,4 @@ namespace FMSFrontend.ViewModels
         }
     }
 }
+

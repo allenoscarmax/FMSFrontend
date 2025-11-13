@@ -74,7 +74,8 @@ namespace FMSFrontend.Features.Threading
                         slot.Kind = MaterialType.None;
                         slot.Serial = rec?.ondeskTagserial ?? "";
                         slot.StorageStatus = rec?.state ?? "";
-                        slot.StorageRestriction = rec?.restriction ?? false; 
+                        slot.StorageRestriction = rec?.restriction ?? false;
+                        slot.SlotCode = $"E:{}:{rec.row}:{rec.column}:1";
                         if (!string.IsNullOrWhiteSpace(slot.Serial))
                         {
                             if (Storage.Kind == MaterialType.Electrode) //檢查是否為電極
@@ -87,7 +88,6 @@ namespace FMSFrontend.Features.Threading
                                     slot.Name = eleDto?.electrodeName ?? "";
                                     slot.MaterialStatus = eleDto?.state ?? "";
                                     slot.MaterialRestriction = eleDto?.restriction ?? false;
-                                    slot.SlotCode = $"E:{rec.li}:{ rec.row}:{rec.cl}:1";
                                 }
                                 else //檢查是否為探針
                                 {

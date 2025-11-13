@@ -50,7 +50,6 @@ namespace FMSFrontend.ViewModels.Production
         .Select(s => s.Title).ToList() ?? new List<string>();
 
         public StorageDetailViewModel(ProductionLinesViewModel parent, IHttpService httpService,
-            IEle
             StorageStore storageStore, StorageLiveUpdater storageLiveUpdater)
         {
             _parent = parent;
@@ -137,7 +136,7 @@ namespace FMSFrontend.ViewModels.Production
         [RelayCommand]
         private void OpenMaterial(Slot slot)
         {
-            _parent.OpenMaterial(slot.Serial);
+            _parent.OpenMaterial(slot);
         }
     }
 }
