@@ -67,12 +67,15 @@ namespace FMSFrontend
             services.AddSingleton<IAppointmentMaintenanceService, AppointmentMaintenanceService>();
             services.AddSingleton<ICommandScheduleService, CommandScheduleService>();
 
+            services.AddSingleton<IMachinesService, MachinesService>();
+
             // === Singleton ===
             services.AddSingleton<PlcStore>();
             services.AddSingleton<RFIDBindStore>();
             services.AddSingleton<RobotStore>();
             services.AddSingleton<GlobalProperties>();
             services.AddSingleton<StorageStore>();
+            services.AddSingleton<MachineStore>();
 
             // ==LiveUpdater===
             services.AddSingleton<RobotLiveUpdater>();
@@ -80,7 +83,7 @@ namespace FMSFrontend
             services.AddSingleton<RFIDBindLiveUpdater>();
             services.AddSingleton<ServerHealthLiveUpdater>();
             services.AddSingleton<StorageLiveUpdater>();
-
+            services.AddSingleton<MachineLiveUpdater>();
             #endregion
 
 
@@ -156,9 +159,10 @@ namespace FMSFrontend
             services.AddTransient<StorageUnitControlPageViewModel>();
             services.AddTransient<MaterialPairViewModel>();
             services.AddTransient<ProbePairViewModel>();
+            services.AddTransient<ShowMaterialWindowViewModel>();
 
             //Windows
-          //  services.AddTransient<SelectSharedElectrodeViewModel>();
+            //  services.AddTransient<SelectSharedElectrodeViewModel>();
         }
         private void RegisterViews(IServiceCollection services)
         {
@@ -174,6 +178,7 @@ namespace FMSFrontend
             services.AddTransient<WorkOrder>();
             services.AddTransient<MaterialPairWindow>();
             services.AddTransient<ProbePairWindow>();
+            services.AddTransient<ShowMaterialWindow>();
         }
 
         private void RegisterWindows(IServiceCollection services)

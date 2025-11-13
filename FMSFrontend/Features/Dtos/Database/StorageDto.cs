@@ -18,7 +18,6 @@ namespace FMSFrontend.Features.Dtos
         public bool? restriction { get; set; } //現有：是否有限制  (true/false)
         public string note {  get; set; } = ""; //現有：說明
     }
-
     public enum StorageName
     {
         E = 1,

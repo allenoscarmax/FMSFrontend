@@ -22,7 +22,7 @@ namespace FMSFrontend.Features.Dtos
         public string setupUser { get; set; } = "";
     }
 
-    public enum robotstatus
+    public enum Robotstatus
     {
         [Description("離線中")]
         Disconnection = 0,

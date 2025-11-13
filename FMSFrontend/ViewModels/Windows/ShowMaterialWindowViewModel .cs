@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
@@ -13,6 +14,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
 
 namespace FMSFrontend.ViewModels.Windows
@@ -23,23 +25,28 @@ namespace FMSFrontend.ViewModels.Windows
     {
        // private readonly IWindowService _windowService;
         private readonly IHttpService _httpService;
+
         // === Services ===
+        private readonly IStorageService _StorageService;
         private readonly IElectrodeService _ElectrodeService;
         private readonly IWorkpieceService _WorkpieceService;
         private readonly IProbeService _ProbeService;
 
+
+
         // 空畫面
-        public ShowMaterialWindowViewModel(IHttpService httpService) 
-        //    IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService)
+        public ShowMaterialWindowViewModel(IHttpService httpService,
+              IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService)
         {
             Kind = MaterialKind.None;
 
-          //  _ElectrodeService = electrodeService;
-          //  _WorkpieceService = workpieceService;
-          //  _ProbeService = probeService;
-
             DetailViewModel = new EmptyMaterialDetailViewModel();
             _httpService = httpService;
+
+            _ElectrodeService = electrodeService;
+            _WorkpieceService = workpieceService;
+            _ProbeService = probeService;
+            _StorageService = storageService;
         }
 
         [ObservableProperty]
@@ -106,13 +113,14 @@ namespace FMSFrontend.ViewModels.Windows
         [RelayCommand]
         private async Task UpdataElectrode()  //電極鎖定
         {
-            if (DetailViewModel is ElectrodeDetailViewModel )
+            if (DetailViewModel is ElectrodeDetailViewModel)
             {
                 ElectrodeDetailViewModel e = (ElectrodeDetailViewModel)DetailViewModel;
-
-                // 使用匿名物件只傳需要的欄位，避免把整個 DB model 序列化
-                var path = $"DB_SetWorkpieceRestrictionbyTagSerial /{e.TagSerial}/{IsLocked}";
-                var ok = await _httpService.SendPutAsync(path, "");
+                try
+                {
+                    var ok = await _ElectrodeService.DB_SetElectrodeRestrictionByTagSerialAsync(e.TagSerial, IsLocked);
+                }
+                catch { }
             }
         }
 
@@ -122,41 +130,42 @@ namespace FMSFrontend.ViewModels.Windows
             if (DetailViewModel is WorkpieceDetailViewModel)
             {
                 WorkpieceDetailViewModel w = (WorkpieceDetailViewModel)DetailViewModel;
-
-                // 同樣只傳必要欄位
-                var payload = new { _id = w.Id, restriction = IsLocked };
-                var path = $"DB_SetWorkpieceRestrictionbyTagSerial /{w.SerialCode}/{IsLocked}";
-                var ok = await _httpService.SendPutAsync(path, "");
+                try
+                {
+                    var ok = await _WorkpieceService.SetWorkpieceRestrictionByTagSerialAsync(w.SerialCode, IsLocked);
+                }
+                catch { }
             }
         }
 
         [RelayCommand]
         private async Task UpdataStorage() //電極庫鎖定
         {
-            bool ok;
-            if (DetailViewModel is WorkpieceDetailViewModel)
+            if (SlotCode == null) return;
+            string[] code = SlotCode.Split(":");
+            if (code.Length >= 5)
             {
-                WorkpieceDetailViewModel w = (WorkpieceDetailViewModel)DetailViewModel;
-                var wpayload = new { _id = w.StorageId, restriction = IsDisabled };
-                ok = await _httpService.SendPutAsync("Storage/DB_UpdateStorageData", wpayload);
-                return;
-            }
-            else if (DetailViewModel is ElectrodeDetailViewModel)
-            {
-                ElectrodeDetailViewModel e = (ElectrodeDetailViewModel)DetailViewModel;
-                var epayload = new { _id = e.StorageId, restriction = IsDisabled };
-                ok = await _httpService.SendPutAsync("Storage/DB_UpdateStorageData", epayload);
-                return;
+                try
+                {
+                    string storageName = code[0];
+                    string storageNumber = code[1];
+                    int region = int.Parse(code[2]);
+                    int column = int.Parse(code[3]);
+                    int row = int.Parse(code[4]);
+                    var ok = await _StorageService.SetRestrictionByLocationAsync(storageName, storageNumber, region, column, row, IsDisabled);
+                }
+                catch { }
             }
         }
         [RelayCommand]
-        private async Task CancelBookStorage() //解除預約
+        private async Task CancelBookStorage() //解除預約 //20251113 GE: 延後施作
         {
+            /*
             bool ok;
             if (DetailViewModel is WorkpieceDetailViewModel)
             {
                 WorkpieceDetailViewModel w = (WorkpieceDetailViewModel)DetailViewModel;
-                var wpayload = new { _id = w.StorageId, state = "Vacant" };
+                var wpayload = new { _id = w.StorageId, state = "Booked" };
                 ok = await _httpService.SendPutAsync("Storage/DB_UpdateStorageData", wpayload);
                 return;
             }
@@ -167,6 +176,7 @@ namespace FMSFrontend.ViewModels.Windows
                 ok = await _httpService.SendPutAsync("Storage/DB_UpdateStorageData", epayload);
                 return;
             }
+            */
         }
 
         public string KindText => Kind switch

@@ -253,22 +253,26 @@ public partial class MaterialPairViewModel : ObservableObject
     [RelayCommand]
     private async Task SelectWorkpiece()
     {
-        // 1) 準備資料
-        // 若你有資料來源，可傳一個 loader 進去；沒有就直接 new
-        var items = new List<SelectItem>();
-        var Workpiece = await _WorkpieceService.GetAllWorkpieceAsync();
-        foreach (var wp in Workpiece)
+        if (SelectedWorksheetItem == null)
         {
-            if (SelectedWorksheetItem != null && SelectedWorksheetItem.WorkOrderNo == wp.worksheetNumber)
-            {
-                Brush statusBrush = StatusColor(wp.status);
-                // 使用 SelectItem 的建構子（SelectItem 擁有 read-only 屬性與 constructor）
-                items.Add(new SelectItem(wp.workpieceName ?? string.Empty, wp.status ?? string.Empty, statusBrush));
-            }
+            _windowService.ShowMessage("請選擇工單");
+            return;
+        }
+        // 1) 準備資料（此 API 回傳單筆 WorkpieceDto）
+        var items = new List<SelectItem>();
+        WorkpieceDto? wp = await _WorkpieceService.GetWorkpieceByWorksheetNumberAsync(SelectedWorksheetItem.WorkOrderNo);
+        if (wp != null)
+        {
+            Brush statusBrush = StatusColor(wp.status);
+            items.Add(new SelectItem(wp.workpieceName ?? string.Empty, wp.status ?? string.Empty, statusBrush));
+        }
+        else
+        {
+            _windowService.ShowMessage("API無資料");
+            return;
         }
 
         // 2) 建立視窗與 VM
-        // SelectItemWindow 的第二個參數是 loader：Func<SelectItemType, IEnumerable<SelectItem>>
         var dlg = new SelectItemWindow(SelectItemType.Workpiece, _ => items)
         {
             Owner = _window
@@ -280,14 +284,26 @@ public partial class MaterialPairViewModel : ObservableObject
             SelectedWorkpieceItem = dlg.Tag as SelectItem;
 
             var selectedName = SelectedWorkpieceItem?.MaterialName ?? string.Empty;
-            var wp = Workpiece.FirstOrDefault(w => string.Equals(w.workpieceName, selectedName, StringComparison.Ordinal));
-       
-            SelectStatus = wp?.status ?? string.Empty;
-            RfidBindmodel.TagSerial = wp?.tagSerial ?? string.Empty;
-            SelectName = wp?.workpieceName ?? string.Empty;
-            SelectPairEdm = wp?.pairedEDM ?? string.Empty;
-            SelectPgm = wp?.edmpgm ?? string.Empty;
-            workpiece = wp!;
+            if (wp != null)
+            {
+                if (string.Equals(wp.workpieceName, selectedName, StringComparison.Ordinal))
+                {
+                    SelectStatus = wp.status ?? string.Empty;
+                    RfidBindmodel.TagSerial = wp.tagSerial ?? string.Empty;
+                    SelectName = wp.workpieceName ?? string.Empty;
+                    SelectPairEdm = wp.pairedEDM ?? string.Empty;
+                    SelectPgm = wp.edmpgm ?? string.Empty;
+                    workpiece = wp;
+                }
+                else
+                {
+                    _windowService.ShowMessage("找不到工件");
+                }
+            }
+            else
+            {
+                _windowService.ShowMessage("無工件清單");
+            }
         }
     }
 
@@ -295,19 +311,20 @@ public partial class MaterialPairViewModel : ObservableObject
     private async Task SelectElectrode()
     {
 
-       // if(SelectedWorksheetItem)
+        if(SelectedWorksheetItem == null ) 
+        {
+            _windowService.ShowMessage("請選擇工單");
+            return; 
+        }
         // 1) 準備資料
         var items = new List<SelectItem>();
-        List<ElectrodeDto> Electrodes = await _ElectrodeService.DB_GetAllElectrodeAsync()?? new List<ElectrodeDto>();
-      
+        List<ElectrodeDto> Electrodes = await _ElectrodeService.GetElectrodeByWorksheetNumberAsync(SelectedWorksheetItem.WorkOrderNo) ?? new List<ElectrodeDto>();
+
         foreach (var e in Electrodes)
         {
-            if (SelectedWorksheetItem != null && SelectedWorksheetItem.WorkOrderNo == e.worksheetNumber) 
-            {
-                Brush statusBrush = StatusColor(e.state);
-                // 使用 SelectItem 的建構子（SelectItem 擁有 read-only 屬性與 constructor）
-                items.Add(new SelectItem(e.electrodeName ?? string.Empty, e.state ?? string.Empty, statusBrush));
-            }
+            Brush statusBrush = StatusColor(e.state);
+            // 使用 SelectItem 的建構子（SelectItem 擁有 read-only 屬性與 constructor）
+            items.Add(new SelectItem(e.electrodeName ?? string.Empty, e.state ?? string.Empty, statusBrush));
         }
 
         // 2) 建立視窗與 VM — 傳入 loader（否則視窗不會有資料）

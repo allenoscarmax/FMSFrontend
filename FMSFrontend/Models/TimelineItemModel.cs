@@ -12,7 +12,21 @@ namespace FMSFrontend.Models
 {
     public class TimelineItemModel
     {
-        public string Text { get; set; } = "";
+        public string WorkCommand = "";
+        public string Text => WorkCommand switch
+        {
+            "Setup" => "起單",
+            "Dispatched" => "已派工",
+            "Cleaning" => "被清洗機清洗中",
+            "MachinedbyEDM" => "被EDM加工",
+            "CleaningEnd" => "被清洗機清洗結束",
+            "CompletedByEDM" => "被EDM加工完成",
+            "Measuring" => "被CMM量測中",
+            "MeasurementEnd" => "被CMM量測完成",
+            "Paused" => "暫停",
+            "Failed" => "失敗",
+            _ => WorkCommand,
+        };
         public DateTime Time { get; set; }
         public string Status { get; set; } = "";
     }

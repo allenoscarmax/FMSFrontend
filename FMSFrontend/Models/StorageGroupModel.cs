@@ -8,6 +8,7 @@ using System.Linq; // ← for PageList
 using System.Windows.Media;
 using System.Windows.Shapes;
 using static System.Net.Mime.MediaTypeNames;
+using System.Text.RegularExpressions;
 namespace FMSFrontend.Models
 {
     public enum MaterialType { None, Electrode, Workpiece, Probe }
@@ -76,15 +77,15 @@ namespace FMSFrontend.Models
         [ObservableProperty] private MaterialType kind = MaterialType.None;
         [ObservableProperty] private string id = "";
         [ObservableProperty] private string serial = "";
-        [ObservableProperty] private string name = "";
+        public string Name = "";                                        // 名稱 (全名)
+        [ObservableProperty] private string shortName = "";             // 名稱 (顯示用)
         [ObservableProperty] private string materialStatus = "";        // 材料狀態
         [ObservableProperty] private bool materialRestriction = false;  // 材料是否有鎖定
         [ObservableProperty] private string storageStatus = "";         // 材料庫是否預約
         [ObservableProperty] private bool storageRestriction;           // 材料庫是否有鎖定
 
-        public Brush StatusBrush => Kind == MaterialType.Probe
-            ? Brushes.BlueViolet
-            : MaterialStatus switch
+         public Brush StatusBrush =>
+            MaterialStatus switch
             {
                 "Verified"  => new SolidColorBrush(Color.FromRgb(0xE6, 0xB9, 0x3E)),
                 "Working"   => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)),
@@ -94,8 +95,23 @@ namespace FMSFrontend.Models
                 "Empty"     => Brushes.White,
                 _           => Brushes.White
             };
+      
+        string Code => Kind switch
+        {
+            MaterialType.Electrode => "E",
+            MaterialType.Probe => "P",
+            MaterialType.Workpiece => "W",
+            _ => ""
+        };
+        /*
+        public string StorageName { get; set; } = "";  // 倉線/倉號
+        public int StorageNumber { get; set; }   // 倉線/倉號
+        public int Region { get; set; } //現有：區域
+        public int Row { get; set; }    // 行
+        public int Col { get; set; }    // 列
+        public string SlotCode => $"{StorageName}:{StorageNumber}:{Region}:{Row}:{Col}";
+        */
         public string SlotCode = "";
-              
         // 影響 StatusBrush 的來源變更時，主動通知
         partial void OnKindChanged(MaterialType value) => OnPropertyChanged(nameof(StatusBrush));
         partial void OnMaterialStatusChanged(string value) => OnPropertyChanged(nameof(StatusBrush));

@@ -1,4 +1,6 @@
-﻿using FMSFrontend.Models;
+﻿using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
+using FMSFrontend.Models;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
 using FMSFrontend.ViewModels.Windows;
@@ -22,26 +24,25 @@ namespace FMSFrontend.Interfaces
         bool ShowMaterialTypeSelectWindow(out MaterialKind kind);
         void ShowMaterialPairWindow(bool isElectrode);
 
-        void ShowMaterial(object detailViewModel,
-                     IEnumerable<TimelineItemViewModel> timeline,
-                     MaterialKind kind,
-                     IHttpService httpService,
-                     string? slotCode = null);
+        void ShowMaterial(object detailViewModel, IEnumerable<TimelineItemViewModel> timeline, MaterialKind kind, IHttpService httpService,
+           IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService,
+           string? slotCode = null);
+        void ShowWorkpiece(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
+              IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService,
+              string? slotCode = null);
 
-        void ShowElectrode(ElectrodeModel elec,
-                           IEnumerable<TimelineItemModel> tl,
-                           IHttpService httpService,
-                           string? slotCode = null);
-
-        void ShowWorkpiece(WorkpieceModel wp,
-                           IEnumerable<TimelineItemModel> tl,
-                           IHttpService httpService,
-                           string? slotCode = null);
-        void ShowMaterialEmpty(IHttpService httpService);
-
-        // 新增：純資訊視窗（不顯示倉位/操作列）
-        void ShowMaterialInformation(ElectrodeModel elec, IEnumerable<TimelineItemModel> tl, IHttpService httpService);
-        void ShowMaterialInformation(WorkpieceModel wp, IEnumerable<TimelineItemModel> tl, IHttpService httpService);
+        void ShowElectrode(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
+             IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService,
+             string? slotCode = null);
+        // 空材料視窗
+        void ShowMaterialEmpty(IHttpService httpService,
+             IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService);
+        // 電極資訊視窗
+        void ShowMaterialInformation(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
+               IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService);
+        // 工件資訊視窗
+        void ShowMaterialInformation(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
+            IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService);
 
 
         void ShowSelectSharedElectrodeWindow(string targetWorkpieceName);

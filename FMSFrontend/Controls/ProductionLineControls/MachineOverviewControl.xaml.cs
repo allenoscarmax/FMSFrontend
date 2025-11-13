@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FMSFrontend.ViewModels.Production;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,8 @@ namespace FMSFrontend.Controls
         public MachineOverviewControl()
         {
             InitializeComponent();
+            Loaded += (_, __) => ((MachineOverviewViewModel)DataContext).OnPageActivated();
+            Unloaded += (_, __) => ((MachineOverviewViewModel)DataContext).OnPageDeactivated();
         }
     }
 }

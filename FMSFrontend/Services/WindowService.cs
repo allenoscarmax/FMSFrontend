@@ -2,10 +2,14 @@
 using CommunityToolkit.Mvvm.Messaging.Messages; 
 using ControlzEx.Standard;
 using FMSFrontend.Extensions;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
+using FMSFrontend.Models;
 using FMSFrontend.ViewModels;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views.Windows;
+using OSCARMAXFMS_V3.DBmodels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +18,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
-using FMSFrontend.Models;
 namespace FMSFrontend.Services
 {
     public class WindowService : IWindowService
@@ -73,9 +76,11 @@ namespace FMSFrontend.Services
         //}
 
         // ★ 通用：detail VM + timeline + 類別
-        public void ShowMaterial(object detailViewModel, IEnumerable<TimelineItemViewModel> timeline, MaterialKind kind, IHttpService httpService, string? slotCode = null)
+        public void ShowMaterial(object detailViewModel, IEnumerable<TimelineItemViewModel> timeline, MaterialKind kind, IHttpService httpService,
+            IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService,
+            string? slotCode = null)
         {
-            EnsureMaterialWindow(httpService);
+            EnsureMaterialWindow(httpService, electrodeService, workpieceService, probeService, storageService);
             _vm!.Kind = kind;
             _vm.SlotCode = slotCode;
             _vm.DetailViewModel = detailViewModel;
@@ -90,31 +95,38 @@ namespace FMSFrontend.Services
             ShowOrActivate();
         }
 
-        public void ShowWorkpiece(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, IHttpService httpService, string? slotCode = null)
+        public void ShowWorkpiece(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
+             IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService,
+             string? slotCode = null)
         {
-            EnsureMaterialWindow(httpService);
+            EnsureMaterialWindow(httpService, electrodeService, workpieceService, probeService, storageService);
             _vm!.Kind = MaterialKind.Workpiece;
             _vm.SlotCode = slotCode ?? (!string.IsNullOrWhiteSpace(workpiece?.No) ? workpiece.No : workpiece?.Name);
             _vm.DetailViewModel = new WorkpieceDetailViewModel(workpiece ?? new WorkpieceModel());
-
+            _vm.IsLocked = workpiece?.WorkRestriction ?? false;
+            _vm.IsDisabled = workpiece?.StorageRestriction ?? false;
             FillTimeline(timeline);               // ← 把 timeline 塞回去
             ShowOrActivate();
         }
 
-        public void ShowElectrode(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, IHttpService httpService, string? slotCode = null)
+        public void ShowElectrode(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
+             IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService,
+             string? slotCode = null)
         {
-            EnsureMaterialWindow(httpService);
+            EnsureMaterialWindow(httpService, electrodeService, workpieceService, probeService, storageService);
             _vm!.Kind = MaterialKind.Electrode;
             _vm.SlotCode = slotCode ?? (!string.IsNullOrWhiteSpace(electrode?.No) ? electrode.No : electrode?.Name);
             _vm.DetailViewModel = new ElectrodeDetailViewModel(electrode?? new ElectrodeModel());
-
+            _vm.IsLocked = electrode?.ElecRestriction ?? false;
+            _vm.IsDisabled = electrode?.StorageRestriction ?? false;
             FillTimeline(timeline);               // ← 把 timeline 塞回去
             ShowOrActivate();
         }
 
-        public void ShowMaterialEmpty( IHttpService httpService)
+        public void ShowMaterialEmpty( IHttpService httpService,
+             IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService)
         {
-            EnsureMaterialWindow(httpService);
+            EnsureMaterialWindow(httpService, electrodeService, workpieceService, probeService, storageService);
             _vm!.Kind = MaterialKind.None;
             _vm.SlotCode = null;
             _vm.DetailViewModel = new EmptyMaterialDetailViewModel();
@@ -129,11 +141,12 @@ namespace FMSFrontend.Services
             window.ShowDialog();
         }
 
-        private void EnsureMaterialWindow(IHttpService httpService)
+        private void EnsureMaterialWindow(IHttpService httpService,
+              IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService)
         {
             if (_materialWindow == null)
             {
-                _vm = new ShowMaterialWindowViewModel(httpService);
+                _vm = new ShowMaterialWindowViewModel(httpService, electrodeService, workpieceService, probeService, storageService);
                 _materialWindow = new ShowMaterialWindow(_vm)   // ← 傳入 vm
                 {
                     Owner = Application.Current.MainWindow
@@ -182,9 +195,10 @@ namespace FMSFrontend.Services
         private ShowMaterialWindowViewModel? _infoVm;
 
         // ===== 你要的公開 API：Electrode =====
-        public void ShowMaterialInformation(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline,IHttpService httpService)
+        public void ShowMaterialInformation(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline,IHttpService httpService,
+             IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService)
         {
-            EnsureMaterialInformationWindow(httpService);
+            EnsureMaterialInformationWindow(httpService, electrodeService, workpieceService, probeService, storageService);
 
             _infoVm!.Kind = MaterialKind.Electrode;
             _infoVm.SlotCode = null; // 資訊視窗不顯示倉位/操作列
@@ -195,9 +209,10 @@ namespace FMSFrontend.Services
         }
 
         // ===== 你要的公開 API：Workpiece（補齊介面需求） =====
-        public void ShowMaterialInformation(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, IHttpService httpService)
+        public void ShowMaterialInformation(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
+             IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService)
         {
-            EnsureMaterialInformationWindow(httpService);
+            EnsureMaterialInformationWindow(httpService, electrodeService, workpieceService, probeService, storageService);
 
             _infoVm!.Kind = MaterialKind.Workpiece;
             _infoVm.SlotCode = null; // 資訊視窗不顯示倉位/操作列
@@ -208,11 +223,12 @@ namespace FMSFrontend.Services
         }
 
         // 建立 / 還原視窗
-        private void EnsureMaterialInformationWindow(IHttpService httpService)
+        private void EnsureMaterialInformationWindow(IHttpService httpService,
+             IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService)
         {
             if (_infoWindow is { IsLoaded: true }) return;
 
-            _infoVm = new ShowMaterialWindowViewModel(httpService);
+            _infoVm = new ShowMaterialWindowViewModel(httpService, electrodeService, workpieceService, probeService, storageService);
             _infoWindow = new ShowMaterialInformationWindow
             {
                 DataContext = _infoVm,
