@@ -2,6 +2,7 @@
 using FMSFrontend.Services;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace FMSFrontend.Features.Services
 {
@@ -14,11 +15,14 @@ namespace FMSFrontend.Features.Services
         Task<WorkpieceDto?> GetWorkpieceByIdAsync(string id, CancellationToken ct = default);
         Task<WorkpieceDto?> GetWorkpieceByTagSerialAsync(string tagSerial, CancellationToken ct = default);       // 單筆
         Task<List<WorkpieceDto>?> GetWorkpiecesByTagSerialAsync(string tagSerial, CancellationToken ct = default); // 多筆（另一支API）
+        Task<WorkpieceDto?> GetWorkpieceByWorksheetNumberAsync(string WorksheetNumber, CancellationToken ct = default);
 
         // Timeline
         Task<List<WpTimelineDto>?> GetWorkpieceTimelineByWorkpieceIdAsync(string workpieceId, CancellationToken ct = default); // GET
         Task<List<WpTimelineDto>?> GetWorkpieceTimelineByIdAsync(string id, CancellationToken ct = default);                    // PUT（空 body）
         Task<List<WpTimelineDto>?> GetWorkpieceTimelineByDateAsync(DateTime start, DateTime end, CancellationToken ct = default);
+
+       
 
         // ==== PUT ====
         Task<bool> InsertWorkpieceAsync(WorkpieceDto payload, CancellationToken ct = default);
@@ -60,6 +64,8 @@ namespace FMSFrontend.Features.Services
         // 多筆（另一支 API：DB_GetWorkpiecesbyTagSerial）
         public Task<List<WorkpieceDto>?> GetWorkpiecesByTagSerialAsync(string tagSerial, CancellationToken ct = default)
             => _http.GetJsonAsync<List<WorkpieceDto>>($"Workpiece/DB_GetWorkpiecesbyTagSerial/{Enc(tagSerial)}", ct);
+        public Task<WorkpieceDto?> GetWorkpieceByWorksheetNumberAsync(string WorksheetNumber, CancellationToken ct = default)
+            => _http.GetJsonAsync<WorkpieceDto>($"Workpiece/DB_GetWorkpieceByWorksheetNumber/{Enc(WorksheetNumber)}", ct);
 
         // Timeline（GET）
         public Task<List<WpTimelineDto>?> GetWorkpieceTimelineByWorkpieceIdAsync(string workpieceId, CancellationToken ct = default)
@@ -73,6 +79,9 @@ namespace FMSFrontend.Features.Services
 
         public Task<List<WpTimelineDto>?> GetWorkpieceTimelineByDateAsync(DateTime start, DateTime end, CancellationToken ct = default)
             => _http.GetJsonAsync<List<WpTimelineDto>>($"Workpiece/DB_GetWorkpieceTimelineByDateTime/{start:O}/{end:O}", ct);
+
+
+
 
         // ==== PUT ====
         public Task<bool> InsertWorkpieceAsync(WorkpieceDto payload, CancellationToken ct = default)

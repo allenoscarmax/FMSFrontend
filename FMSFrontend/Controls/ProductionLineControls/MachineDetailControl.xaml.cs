@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FMSFrontend.ViewModels;
+using FMSFrontend.ViewModels.Production;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,8 @@ namespace FMSFrontend.Controls
         public MachineDetailControl()
         {
             InitializeComponent();
+            Loaded += (_, __) => ((MachineDetailViewModel)DataContext).OnPageActivated();
+            Unloaded += (_, __) => ((MachineDetailViewModel)DataContext).OnPageDeactivated();
         }
     }
 }

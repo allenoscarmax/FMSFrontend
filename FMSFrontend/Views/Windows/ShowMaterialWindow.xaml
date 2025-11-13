@@ -52,10 +52,11 @@
 
                 <!-- 右：解除預約 / 禁用 -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,10,0">
-                    <Button  Name ="CancelBook" Command="{Binding UpdataStorageCommand}" Content="解除預約" Padding="16,8" Style="{StaticResource PrimaryButtonStyle}" Background="#E58C2C" Foreground="White" BorderBrush="#E58C2C" BorderThickness="1" FontWeight="Bold" Cursor="Hand" Margin="0,0,10,0" />
-
+                    <!--
+                    <Button  Name ="CancelBook" Command="{Binding CancelBookStorageCommand}" Content="解除預約" Padding="16,8" Style="{StaticResource PrimaryButtonStyle}" Background="#E58C2C" Foreground="White" BorderBrush="#E58C2C" BorderThickness="1" FontWeight="Bold" Cursor="Hand" Margin="0,0,10,0" />
+                    -->
                     <!-- 滑動開關版本：IsChecked=False=禁用(左)；IsChecked=True=啟用(右) -->
-                    <ToggleButton x:Name="DisableToggle" Cursor="Hand" HorizontalAlignment="Left" ToolTip="禁用 / 啟用" Command="{Binding CancelBookStorageCommand}" IsChecked="{Binding IsDisabled, Mode=TwoWay}">
+                    <ToggleButton x:Name="DisableToggle" Cursor="Hand" HorizontalAlignment="Left" ToolTip="禁用 / 啟用" Command="{Binding UpdataStorageCommand}" IsChecked="{Binding IsDisabled, Mode=TwoWay}">
                         <ToggleButton.Style>
                             <Style TargetType="ToggleButton">
                                 <!-- 尺寸統一交由模板控制 -->

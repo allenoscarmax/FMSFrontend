@@ -38,7 +38,7 @@
             <!-- 🔹 Row 1：機台卡片列表 -->
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="16,0,16,8" HorizontalAlignment="Center">
 
-                <ItemsControl ItemsSource="{Binding Machines}">
+                <ItemsControl ItemsSource="{Binding MachineCardVm}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Horizontal" />

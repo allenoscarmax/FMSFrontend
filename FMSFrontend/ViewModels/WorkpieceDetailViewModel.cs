@@ -40,6 +40,8 @@ namespace FMSFrontend.ViewModels
             PartName = model?.PartName ?? "";
             SerialCode = model?.SerialCode ?? "";
             RouteNo = model?.RouteNo ?? "";
+            Restriction = model?.WorkRestriction ?? false;
+            StorageRestriction = model?.StorageRestriction ?? false;
         }
     }
 }

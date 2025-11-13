@@ -103,16 +103,15 @@ namespace FMSFrontend.Models
             MaterialType.Workpiece => "W",
             _ => ""
         };
-        public int Line { get; set; }   // 倉線/倉號
+        /*
+        public string StorageName { get; set; } = "";  // 倉線/倉號
+        public int StorageNumber { get; set; }   // 倉線/倉號
+        public int Region { get; set; } //現有：區域
         public int Row { get; set; }    // 行
         public int Col { get; set; }    // 列
-        public int Layer { get; set; } = 1;
-        public string SlotCode =>
-            !string.IsNullOrWhiteSpace(Name)
-                ? Name
-                : $"{Code}:{Line}:{Row}:{Col}:{Layer}";
-
-
+        public string SlotCode => $"{StorageName}:{StorageNumber}:{Region}:{Row}:{Col}";
+        */
+        public string SlotCode = "";
         // 影響 StatusBrush 的來源變更時，主動通知
         partial void OnKindChanged(MaterialType value) => OnPropertyChanged(nameof(StatusBrush));
         partial void OnMaterialStatusChanged(string value) => OnPropertyChanged(nameof(StatusBrush));

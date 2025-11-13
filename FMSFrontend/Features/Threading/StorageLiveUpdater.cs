@@ -67,6 +67,7 @@ namespace FMSFrontend.Features.Threading
                 Storage.Rows = Math.Max(1, g.Max(x => x.row));          //最大行數
                 Storage.Columns = Math.Max(1, g.Max(x => x.column));    //最大列數
                 Storage.Slots = new();
+
                 for (int r = 1; r <= Storage.Rows; r++)
                 {
                     for (int c = 1; c <= Storage.Columns; c++)
@@ -77,7 +78,7 @@ namespace FMSFrontend.Features.Threading
                         slot.Serial = rec?.ondeskTagserial ?? "";
                         slot.StorageStatus = rec?.state ?? "";
                         slot.StorageRestriction = rec?.restriction ?? false;
-                       // slot.SlotCode = $"E:{}:{rec.row}:{rec.column}:1";
+                        slot.SlotCode = $"{rec?.storageName}:{rec?.storageNumber}:{rec?.region}:{rec?.column}:{rec?.row}";
                         if (!string.IsNullOrWhiteSpace(slot.Serial))
                         {
                             if (Storage.Kind == MaterialType.Electrode) //檢查是否為電極
@@ -91,6 +92,7 @@ namespace FMSFrontend.Features.Threading
                                     slot.ShortName = Regex.Match(slot.Name, @"_(\d+-[A-Za-z0-9]+)").Groups[1].Value;
                                     slot.MaterialStatus = eleDto?.state ?? "";
                                     slot.MaterialRestriction = eleDto?.restriction ?? false;
+
                                 }
                                 else //檢查是否為探針
                                 {
