@@ -64,7 +64,9 @@ namespace FMSFrontend
             services.AddSingleton<IMongoDBService, MongoDBService>();
             services.AddSingleton<IServerHealthService, ServerHealthService>();
             services.AddSingleton<IWorkerService, WorkerService>();
-           
+            services.AddSingleton<IAppointmentMaintenanceService, AppointmentMaintenanceService>();
+            services.AddSingleton<ICommandScheduleService, CommandScheduleService>();
+
             // === Singleton ===
             services.AddSingleton<PlcStore>();
             services.AddSingleton<RFIDBindStore>();

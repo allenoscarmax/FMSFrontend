@@ -1,5 +1,6 @@
 ﻿using FMSFrontend.Features.Dtos;
 using FMSFrontend.Services;
+using OSCARMAXFMS_V3.DBmodels;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,6 +15,8 @@ namespace FMSFrontend.Features.Services
         Task<WorkpieceDto?> GetWorkpieceByIdAsync(string id, CancellationToken ct = default);
         Task<WorkpieceDto?> GetWorkpieceByTagSerialAsync(string tagSerial, CancellationToken ct = default);       // 單筆
         Task<List<WorkpieceDto>?> GetWorkpiecesByTagSerialAsync(string tagSerial, CancellationToken ct = default); // 多筆（另一支API）
+
+        Task<WorkpieceDto> GetWorkpieceByWorksheetNumber(string WorksheetNumber, CancellationToken ct = default);
 
         // Timeline
         Task<List<WpTimelineDto>?> GetWorkpieceTimelineByWorkpieceIdAsync(string workpieceId, CancellationToken ct = default); // GET
@@ -60,6 +63,9 @@ namespace FMSFrontend.Features.Services
         // 多筆（另一支 API：DB_GetWorkpiecesbyTagSerial）
         public Task<List<WorkpieceDto>?> GetWorkpiecesByTagSerialAsync(string tagSerial, CancellationToken ct = default)
             => _http.GetJsonAsync<List<WorkpieceDto>>($"Workpiece/DB_GetWorkpiecesbyTagSerial/{Enc(tagSerial)}", ct);
+
+        public Task<WorkpieceDto?> GetWorkpieceByWorksheetNumber(string WorksheetNumber, CancellationToken ct = default)
+            => _http.GetJsonAsync<WorkpieceDto>($"Workpiece/DB_GetWorkpieceByWorksheetNumber/{Enc(WorksheetNumber)}", ct);
 
         // Timeline（GET）
         public Task<List<WpTimelineDto>?> GetWorkpieceTimelineByWorkpieceIdAsync(string workpieceId, CancellationToken ct = default)

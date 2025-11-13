@@ -20,6 +20,8 @@ namespace FMSFrontend.Features.Services
         Task<List<ElectrodeDto>?> DB_GetElectrodesByTagSerialAsync(string tagSerial, CancellationToken ct = default);
         Task<ElectrodeDto?> DB_GetElectrodeByIdAsync(string id, CancellationToken ct = default);
 
+        Task<List<ElectrodeDto>> GetElectrodeByWorksheetNumber(string WorksheetNumber, CancellationToken ct = default);
+
         Task<bool> DB_SetElectrodeStateByTagSerialAsync(string tagSerial, string state, CancellationToken ct = default);
         Task<bool> DB_SetElectrodeUseTimesByTagSerialAsync(string tagSerial, int useTimes, CancellationToken ct = default);
         Task<bool> DB_SetElectrodeRestrictionByTagSerialAsync(string tagSerial, bool restriction, CancellationToken ct = default);
@@ -70,6 +72,9 @@ namespace FMSFrontend.Features.Services
 
         public async Task<List<ElectrodeDto>?> DB_GetElectrodesByTagSerialAsync(string tagSerial, CancellationToken ct = default)
             => await _http.GetJsonAsync<List<ElectrodeDto>>($"Electrode/DB_GetElectrodesbyTagSerial/{Enc(tagSerial)}", ct);
+
+        public async Task<List<ElectrodeDto>?> GetElectrodeByWorksheetNumber(string WorksheetNumber, CancellationToken ct = default)
+            => await _http.GetJsonAsync<List<ElectrodeDto>>($"Electrode/DB_GetElectrodeByWorksheetNumber/{Enc(WorksheetNumber)}", ct);
 
         public async Task<ElectrodeDto?> DB_GetElectrodeByIdAsync(string id, CancellationToken ct = default)
             => await _http.GetJsonAsync<ElectrodeDto>($"Electrode/DB_GetElectrodeById/{Enc(id)}", ct);
