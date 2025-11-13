@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel;
 
 namespace OSCARMAXFMS_V3.DBmodels
 {
@@ -38,4 +39,6 @@ namespace OSCARMAXFMS_V3.DBmodels
 
         public string setupUser { get; set; } = "";// 建置/設定人員（帳號或姓名）
     }
+
+   
 }

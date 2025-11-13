@@ -10,14 +10,14 @@ namespace FMSFrontend.Features.Threading
     public sealed class ServerHealthLiveUpdater : IDisposable
     {
         private readonly IServerHealthService _svc;
-        private readonly GlobalProperties _globalProperties;
+        private readonly GlobalProperties _global;
         private readonly DispatcherTimer _timer;
 
         // 你可以把週期調整成 2~5 秒
         public ServerHealthLiveUpdater(IServerHealthService svc, GlobalProperties globalProperties)
         {
             _svc = svc;
-            _globalProperties = globalProperties;
+            _global = globalProperties;
 
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
             _timer.Tick += async (_, __) => await PollAsync();
@@ -25,26 +25,20 @@ namespace FMSFrontend.Features.Threading
 
         private async Task PollAsync()
         {
+            // 半開 or 關閉才探測；開路時先等冷卻別一直打
+            if (_global.IsOpen) return;
+
             var sw = Stopwatch.StartNew();
             bool ok = false;
+            try { ok = await _svc.CheckHealthAsync(); }
+            catch { ok = false; }
+            finally { sw.Stop(); }
 
-            try
-            {
-                ok = await _svc.CheckHealthAsync();
-            }
-            catch
-            {
-                ok = false;
-            }
-            finally
-            {
-                sw.Stop();
-            }
+            _global.LastLatencyMs = sw.ElapsedMilliseconds;
+            _global.LastCheckedAt = DateTime.Now;
 
-            // DispatcherTimer 已在 UI 執行緒，不需要再做 Dispatcher.Invoke
-            _globalProperties.IsServerAlive = ok;
-            _globalProperties.LastLatencyMs = sw.ElapsedMilliseconds;
-            _globalProperties.LastCheckedAt = DateTime.Now;
+            if (ok) _global.RecordSuccess();
+            else _global.RecordFailure(); // 內含 threshold/cooldown
         }
 
         public void Start() => _timer.Start();

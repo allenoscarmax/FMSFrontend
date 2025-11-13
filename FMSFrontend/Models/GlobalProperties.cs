@@ -16,5 +16,28 @@ namespace FMSFrontend.Models
         [ObservableProperty] private bool _isServerAlive;
         [ObservableProperty] private long _lastLatencyMs;     // 可選：顯示延遲
         [ObservableProperty] private DateTime _lastCheckedAt; // 可選：顯示最後檢查時間
+
+        // 斷路器參數（可視需求調整）
+        [ObservableProperty] private int _consecutiveFailures;    // 連續失敗數
+        [ObservableProperty] private DateTime _openUntil;         // 開路到何時（冷卻時間）
+
+        public bool IsOpen => DateTime.UtcNow < _openUntil;       // 斷路器是否開路（拒絕）
+        public bool IsHalfOpen => !IsOpen && !IsServerAlive;      // 半開：允許少量探測
+
+        public void RecordSuccess()
+        {
+            ConsecutiveFailures = 0;
+            IsServerAlive = true;
+            _openUntil = DateTime.MinValue;
+        }
+
+        public void RecordFailure(int threshold = 3, int coolDownSeconds = 15)
+        {
+            ConsecutiveFailures++;
+            IsServerAlive = false;
+
+            if (ConsecutiveFailures >= threshold)
+                _openUntil = DateTime.UtcNow.AddSeconds(coolDownSeconds); // 開路冷卻
+        }
     }
 }

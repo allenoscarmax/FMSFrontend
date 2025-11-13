@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.ComponentModel;
 
 namespace FMSFrontend.Features.Dtos
 {
@@ -28,4 +29,26 @@ namespace FMSFrontend.Features.Dtos
             throw new NotImplementedException();
         }
     }
+    public enum EletrodeTimelineWorkCommand
+    {
+        [Description("啟單")]
+        Setup,
+        [Description("已派工")]
+        Dispatched,
+        [Description("量測")]
+        Measure,
+        [Description("在EDM加工")]
+        MachiningonEDM,
+        [Description("在EDM加工完成")]
+        CompletedonEDM,
+        [Description("轉換電極F->R")]
+        Converted,
+        [Description("電極再使用")]
+        Reuse,
+        [Description("修改補償值")]
+        EditLengthComplement,
+        [Description("出倉")]
+        Offself,
+    }
+
 }

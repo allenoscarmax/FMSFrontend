@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.ComponentModel;
 
 namespace FMSFrontend.Features.Dtos
 {
@@ -19,5 +20,30 @@ namespace FMSFrontend.Features.Dtos
         public string electrodeId { get; set; } = ""; // 相關電極 ID（若事件涉及對應電極則填）
 
         public string eDMNumber { get; set; } = ""; // 相關 EDM 機台編號（事件發生或關聯之機台）
+    }
+    public enum WorkpieceHistoryState
+    {
+        [Description("燒錄")]
+        Setup,
+        [Description("加工完成")]
+        Finish,
+        [Description("重做")]
+        Rework,
+        [Description("上機台")]
+        Load,
+        [Description("已派工")]
+        Dispatched,
+        [Description("被加工")]
+        Machined,
+        [Description("翻面加工")]
+        TurnOver,
+        [Description("開始加工")]
+        Start,
+        [Description("上清洗機")]
+        Wash,
+        [Description("上CMM")]
+        Measure,
+        [Description("出倉")]
+        Offshlf,
     }
 }
