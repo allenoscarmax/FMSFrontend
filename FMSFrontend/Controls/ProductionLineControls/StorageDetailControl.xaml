@@ -96,7 +96,7 @@
 
                         <!-- 膠囊樣式（左側貼齊，右側圓角） -->
                         <Border d:Background="#2779A7" Background="{Binding StorageType, Converter={StaticResource StorageTypeToBrushConverter}}" Height="40" CornerRadius="0,20,20,0" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,0" Width="172">
-                            <TextBlock Text="{Binding StorageName}" d:Text="ES1" Foreground="White" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" />
+                            <TextBlock Text="{Binding SelectStorageTitle}" d:Text="ES1" Foreground="White" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" />
                         </Border>
 
                         <!-- 狀態列 -->
