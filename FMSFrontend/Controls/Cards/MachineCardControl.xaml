@@ -77,7 +77,7 @@
                     <!-- 右側文字 + 進度條 -->
                     <StackPanel Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,0,0,0">
                         <TextBlock Text="{Binding MachineName, FallbackValue=name}" FontWeight="Bold" FontSize="16" Foreground="#222" HorizontalAlignment="Center" Margin="0,2,0,4" />
-                        <Border Height="20" Width="120" CornerRadius="15" Background="{Binding Status, Converter={StaticResource StatusToBrushConverter}, FallbackValue=#FFFF}" />
+                        <Border Height="20" Width="120" CornerRadius="15" Background="{Binding StatusBrush}" />
                     </StackPanel>
                 </Grid>
 

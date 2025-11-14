@@ -25,7 +25,7 @@ namespace FMSFrontend.ViewModels.Production
 {
     public partial class MachineDetailViewModel : ObservableObject
     {
-        private readonly ProductionLinesViewModel _parent;
+        public ProductionLinesViewModel _parent;
         private readonly IHttpService _httpService;
 
         // === Services ===
@@ -34,6 +34,7 @@ namespace FMSFrontend.ViewModels.Production
         private readonly IWorkpieceService _WorkpieceService;
         private readonly IProbeService _ProbeService;
         private readonly IMachinesService _MachinesService;
+
         //== Store ==
         private readonly MachineStore _machineStore;
         public ObservableCollection<MachineModel> Machines => _machineStore.Machines;
@@ -41,9 +42,6 @@ namespace FMSFrontend.ViewModels.Production
         public MachineLiveUpdater _machineLiveUpdater;
         public ObservableCollection<MachineCardViewModel> MachineCardVm { get; } = new();
 
-        // Track current collection to manage event handlers
-        private ObservableCollection<MachineModel>? _machinesCollection;
-        
         // Make the collection settable so we can replace it in one UI operation to avoid per-item layout churn
         private ObservableCollection<MachineCardViewModel> _machineDetails = new();
         public ObservableCollection<MachineCardViewModel> MachineDetails
@@ -86,24 +84,26 @@ namespace FMSFrontend.ViewModels.Production
         {
             void build()
             {
-                if (Machines.Count == 0) return;
-                if (updateCnt > Machines.Count) updateCnt = 0;
-                if (_machineDetails.Count == updateCnt)
+                for (int i = 0; i < Machines.Count; i++)
                 {
-                    _machineDetails.Add(new MachineCardViewModel());
-                    _machineDetails[updateCnt].OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl,
-                    _httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
-                    _machineDetails[updateCnt].OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl,
-                        _httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
+                    updateCnt = i;
+                    if (_machineDetails.Count == updateCnt) //當沒有對應的 CardVm 時，新增一個
+                    {
+                        _machineDetails.Add(new MachineCardViewModel(_parent));
+                    }
+                    // 更新 CardVm 的內容
+                    _machineDetails[updateCnt].MachineName = Machines[updateCnt].MachineName;
+                    _machineDetails[updateCnt].Type = MapToMachineType(Machines[updateCnt].Type);
+                    _machineDetails[updateCnt].Status = Machines[updateCnt].Status;
+                    _machineDetails[updateCnt].Restriction = Machines[updateCnt].Restriction;
+                    _machineDetails[updateCnt].onDeckElectrodeSerial = Machines[updateCnt].onDeckElectrodeSerial;
+                    _machineDetails[updateCnt].onDeckWorkpieceSerial = Machines[updateCnt].onDeckWorkpieceSerial;
+                    _machineDetails[updateCnt].onDeckWorksheetSerial = Machines[updateCnt].onDeckWorksheetSerial;
                 }
-                _machineDetails[updateCnt].MachineName = Machines[updateCnt].MachineName;
-                _machineDetails[updateCnt].Type = MapToMachineType(Machines[updateCnt].Type);
-                _machineDetails[updateCnt].Status = Machines[updateCnt].Status;
-                while (_machineDetails.Count > Machines.Count)
+                while (_machineDetails.Count > Machines.Count) //刪除多餘的 CardVm
                 {
                     _machineDetails.RemoveAt(_machineDetails.Count - 1);
                 }
-                updateCnt = (updateCnt + 1) % Machines.Count;
             }
             var disp = Application.Current?.Dispatcher;
             if (disp != null && !disp.CheckAccess()) disp.Invoke(build);
@@ -143,13 +143,7 @@ namespace FMSFrontend.ViewModels.Production
         [RelayCommand]
         private void OpenMachineWindow(object? machine)   // machine 建議是 MachineCardViewModel
         {
-            var vm = new ShowMachineWindowViewModel(machine);
-            var win = new ShowMachineWindow { DataContext = vm };
-
-            var owner = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
-            if (owner != null) win.Owner = owner;
-
-            win.ShowDialog();
+            _parent.OpenMachineWindow(machine);
         }
     }
 }

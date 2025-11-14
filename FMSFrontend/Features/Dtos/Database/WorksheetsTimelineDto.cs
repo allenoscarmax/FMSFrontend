@@ -17,10 +17,10 @@ namespace FMSFrontend.Features.Dtos
         public string WorkSheetId { get; set; } = "";
 
         [JsonPropertyName("worksheetserial")]
-        public string WorkSheetSerial { get; set; } = "";
+        public string WorkSheetSerial { get; set; } = ""; //工單編號
 
         [JsonPropertyName("workcommand")]
-        public string WorkCommand { get; set; } = "";
+        public string WorkCommand { get; set; } = ""; //狀態
 
         [JsonPropertyName("timestampe")]
         public DateTime TimeStampe { get; set; } // 前端仍維持本地時間顯示
@@ -29,7 +29,7 @@ namespace FMSFrontend.Features.Dtos
         public string ElectrodeSerial { get; set; } = "";
 
         [JsonPropertyName("edmnumber")]
-        public string EDMnumber { get; set; } = "";
+        public string EDMnumber { get; set; } = ""; //機台名稱
     }
 
     public enum WorksheetTimelineWorkCommand

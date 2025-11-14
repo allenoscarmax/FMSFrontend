@@ -25,7 +25,7 @@
                 <TextBlock Grid.Column="1" Text="{Binding MachineName, FallbackValue=EDM2}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="#111" />
 
                 <!-- 狀態條 -->
-                <Border Grid.Row="1" Grid.Column="1" Height="14" CornerRadius="10" Margin="0,0,0,0" Background="{Binding Status, Converter={StaticResource StatusToBrushConverter}, FallbackValue=White}" />
+                <Border Grid.Row="1" Grid.Column="1" Height="14" CornerRadius="10" Margin="0,0,0,0" Background="{Binding BrushStatus}" />
             </Grid>
         </Border>
     </Grid>

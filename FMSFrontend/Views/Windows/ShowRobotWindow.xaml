@@ -88,27 +88,27 @@
 
                             <!-- 欄位：設備名稱 -->
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="設備名稱：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
-                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.EquipmentName}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SelectedRobot.Name}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
 
                             <!-- 欄位：設備類型 -->
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="設備類型：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
-                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.EquipmentType}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedRobot.EquipmentType}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
 
                             <!-- 欄位：設備型號 -->
                             <TextBlock Grid.Row="2" Grid.Column="0" Text="設備型號：" FontSize="22" Margin="0,8" FontFamily="微軘正黑體" />
-                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.EquipmentModel}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedRobot.EquipmentModel}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
 
                             <!-- 欄位：當前程式 -->
                             <TextBlock Grid.Row="3" Grid.Column="0" Text="當前程式：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
-                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.CurrentProgram}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SelectedRobot.CurrentProgram}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
 
                             <!-- 欄位：機台狀態 -->
                             <TextBlock Grid.Row="4" Grid.Column="0" Text="機台狀態：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
-                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding DisplayData.MachineState}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding SelectedRobot.Status}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
 
                             <!-- 欄位：目前物料 -->
                             <TextBlock Grid.Row="5" Grid.Column="0" Text="目前物料：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
-                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding DisplayData.CurrentMaterial}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding SelectedRobot.MaterialShortName}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
                         </Grid>
                     </Border>
                 </Grid>

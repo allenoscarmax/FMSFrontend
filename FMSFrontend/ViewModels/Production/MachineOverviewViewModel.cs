@@ -20,6 +20,7 @@ using System.Linq;
 using System.Reflection.PortableExecutable;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
@@ -78,40 +79,56 @@ namespace FMSFrontend.ViewModels.Production
         {
             void build()
             {
-                if (Machines.Count == 0) return; 
-                if (updateCnt > Machines.Count ) updateCnt = 0;
-                if (MachineCardVm.Count == updateCnt)
+                for (int i = 0; i < Machines.Count; i++)
                 {
-                    MachineCardVm.Add(new MachineCardViewModel());
-                    MachineCardVm[updateCnt].OpenWorkpieceInfo = (wp, tl) => _parent._windowService.ShowMaterialInformation(wp, tl,
-                    _httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
-                    MachineCardVm[updateCnt].OpenElectrodeInfo = (el, tl) => _parent._windowService.ShowMaterialInformation(el, tl,
-                        _httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
+                    updateCnt = i;
+                    if (MachineCardVm.Count == updateCnt)
+                    {
+                        // 使用帶 parent 的建構函式，確保指令可運作
+                        MachineCardVm.Add(new MachineCardViewModel(_parent));
+                    }
+                    MachineCardVm[updateCnt].MachineName = Machines[updateCnt].MachineName;
+                    MachineCardVm[updateCnt].Type = MapToMachineType(Machines[updateCnt].Type);
+                    MachineCardVm[updateCnt].Status = Machines[updateCnt].Status;
                 }
-                MachineCardVm[updateCnt].MachineName = Machines[updateCnt].MachineName;
-                MachineCardVm[updateCnt].Type = MapToMachineType(Machines[updateCnt].Type);
-                MachineCardVm[updateCnt].Status = Machines[updateCnt].Status;
-
                 while (MachineCardVm.Count > Machines.Count)
                 {
                     MachineCardVm.RemoveAt(MachineCardVm.Count - 1);
                 }
-                updateCnt = (updateCnt + 1) % Machines.Count;
+                /* // 測試用假資料
+                if (MachineCardVm.Count == 3)
+                {
+                    MachineCardVm[0].MachineName = "1";
+                    MachineCardVm[1].MachineName = "2";
+                    MachineCardVm[2].MachineName = "3";
+
+                    MachineCardVm[0].Status = "";
+                    MachineCardVm[1].Status = "Stopping";
+                    MachineCardVm[2].Status = "EmergencyStop";
+
+                    MachineCardVm[0].Restriction = false;
+                    MachineCardVm[1].Restriction = false;
+                    MachineCardVm[2].Restriction = false;
+                }
+                */
+
             }
             var disp = Application.Current?.Dispatcher;
             if (disp != null && !disp.CheckAccess()) disp.Invoke(build);
             else build();
         }
 
-        private static MachineCardViewModel MapMachinesDto(MachineModel m)
+        private static MachineCardViewModel MapMachinesDto(MachineModel m, ProductionLinesViewModel parent)
         {
-            return new MachineCardViewModel
+            // 使用帶 parent 的建構函式以保留功能
+            var vm = new MachineCardViewModel(parent)
             {
                 MachineName = m.MachineName,
                 Status = m.Status,
                 Type = MapToMachineType(m.Type),
                 Restriction = m.Restriction
             };
+            return vm;
         }
         private static MachineType MapToMachineType(string s)
         {
@@ -131,6 +148,8 @@ namespace FMSFrontend.ViewModels.Production
         [RelayCommand]
         private void OpenMachineWindow(object? machine)   // machine 建議是 MachineCardViewModel
         {
+            _parent.OpenMachineWindow(machine);
+            /* 
             var vm = new ShowMachineWindowViewModel(machine);
             var win = new ShowMachineWindow { DataContext = vm };
 
@@ -138,45 +157,51 @@ namespace FMSFrontend.ViewModels.Production
             if (owner != null) win.Owner = owner;
 
             win.ShowDialog();
+            */
         }
     }
 
     public partial class MachineCardViewModel : ObservableObject
     {
-        [ObservableProperty]
-        private string machineName = "EDM-XX";
+        private readonly ProductionLinesViewModel? _parent;
+        public MachineCardViewModel() { }
+        public MachineCardViewModel(ProductionLinesViewModel parent) { _parent = parent; }
 
-        [ObservableProperty]
-        private string status = "idle"; // 可為 idle / running / warning / error / disabled
+        [ObservableProperty] private string machineName = "";
+        [ObservableProperty] private string status = "";
+        [ObservableProperty] private MachineType type = MachineType.EDM;
+        [ObservableProperty] private bool restriction;
+        public string onDeckElectrodeSerial { get; set; } = "";// 夾持中電極標籤序號（RFID）
+        public string onDeckWorkpieceSerial { get; set; } = "";// 夾持中工件標籤序號（RFID）
+        public string onDeckWorksheetSerial { get; set; } = "";// 當前工單號/序號  
 
-        [ObservableProperty]
-        private MachineType type = MachineType.EDM;
-        [ObservableProperty]
-        private bool restriction;
-
-        // ✅ 圖片綁定使用的字串（自動從 enum 轉成檔名）
-        public string MachineTypeName => Type.ToString();
-
-        // 由外層注入：用 Model + Timeline 直接開視窗
-        public Action<WorkpieceModel, IEnumerable<TimelineItemModel>>? OpenWorkpieceInfo { get; set; }
-        public Action<ElectrodeModel, IEnumerable<TimelineItemModel>>? OpenElectrodeInfo { get; set; }
-
-
-        [RelayCommand]
-        private void ShowWorkpieceDetail()
+        //由Status決定顏色
+        public Brush StatusBrush => Status switch
         {
-            var wp = new WorkpieceModel { No = "W-TEST-001", Name = "示範工件" };
-            OpenWorkpieceInfo?.Invoke(wp, Array.Empty<TimelineItemModel>());
-        }
+            "Running" => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)), //綠色 1
+            "Stopping" => new SolidColorBrush(Color.FromRgb(0xE6, 0xB9, 0x3E)), //黃色 2
+            "EmergencyStop" => new SolidColorBrush(Color.FromRgb(0xC0, 0x39, 0x2B)), //紅色 3
+            _ => new SolidColorBrush(Color.FromRgb(0x55, 0x55, 0x55)), //灰色 
+        };
+
+        public string MachineTypeName => Type.ToString(); // ✅ 圖片綁定使用的字串（自動從 enum 轉成檔名）
+
 
         [RelayCommand]
         private void ShowElectrodeDetail()
         {
-            var elec = new ElectrodeModel { No = "E-TEST-001", Name = "示範電極" };
-            OpenElectrodeInfo?.Invoke(elec, Array.Empty<TimelineItemModel>());
+            //onDeckElectrodeSerial = "3"; // for test
+            if (_parent == null) return;
+            _parent.OpenMaterialbySerial(onDeckElectrodeSerial, MaterialType.Electrode);
         }
 
-
+        [RelayCommand]
+        private void ShowWorkpieceDetail()
+        {
+            // onDeckWorkpieceSerial = "31"; // for test
+            if (_parent == null) return;
+            _parent.OpenMaterialbySerial(onDeckWorkpieceSerial, MaterialType.Workpiece);
+        }
     }
     public enum MachineType
     {

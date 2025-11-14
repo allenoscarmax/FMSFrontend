@@ -157,28 +157,30 @@ namespace FMSFrontend.ViewModels.Windows
                 catch { }
             }
         }
+        /*
+        //解除預約 //20251113 GE: 延後施作目前只能用updataStorage解除鎖定
         [RelayCommand]
-        private async Task CancelBookStorage() //解除預約 //20251113 GE: 延後施作
+        private async Task CancelBookStorage() 
         {
-            /*
-            bool ok;
-            if (DetailViewModel is WorkpieceDetailViewModel)
-            {
-                WorkpieceDetailViewModel w = (WorkpieceDetailViewModel)DetailViewModel;
-                var wpayload = new { _id = w.StorageId, state = "Booked" };
-                ok = await _httpService.SendPutAsync("Storage/DB_UpdateStorageData", wpayload);
-                return;
-            }
-            else if (DetailViewModel is ElectrodeDetailViewModel)
-            {
-                ElectrodeDetailViewModel e = (ElectrodeDetailViewModel)DetailViewModel;
-                var epayload = new { _id = e.StorageId, state = "Vacant" };
-                ok = await _httpService.SendPutAsync("Storage/DB_UpdateStorageData", epayload);
-                return;
-            }
-            */
+
+        bool ok;
+        if (DetailViewModel is WorkpieceDetailViewModel)
+        {
+            WorkpieceDetailViewModel w = (WorkpieceDetailViewModel)DetailViewModel;
+            var wpayload = new { _id = w.StorageId, state = "Booked" };
+            ok = await _httpService.SendPutAsync("Storage/DB_UpdateStorageData", wpayload);
+            return;
+        }
+        else if (DetailViewModel is ElectrodeDetailViewModel)
+        {
+            ElectrodeDetailViewModel e = (ElectrodeDetailViewModel)DetailViewModel;
+            var epayload = new { _id = e.StorageId, state = "Vacant" };
+            ok = await _httpService.SendPutAsync("Storage/DB_UpdateStorageData", epayload);
+            return;
         }
 
+        }
+        */
         public string KindText => Kind switch
         {
             MaterialKind.Electrode => "電極",

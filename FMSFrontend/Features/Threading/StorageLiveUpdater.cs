@@ -1,4 +1,5 @@
-﻿using FMSFrontend.Features.Dtos;
+﻿using ControlzEx.Standard;
+using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
@@ -29,7 +30,7 @@ namespace FMSFrontend.Features.Threading
         private readonly DispatcherTimer _timer;
 
         public string SelectTitle = "";
-
+        public string RobotMaterialSerial = ""; //檢查手臂是甚麼
         public StorageLiveUpdater(IElectrodeService electrodeService, IStorageService storageService,
             IWorkpieceService workpieceService, IProbeService probeService, StorageStore store)
         {
@@ -90,9 +91,9 @@ namespace FMSFrontend.Features.Threading
                                     slot.Kind = MaterialType.Electrode;
                                     slot.Name = eleDto?.electrodeName ?? "";
                                     slot.ShortName = Regex.Match(slot.Name, @"_(\d+-[A-Za-z0-9]+)").Groups[1].Value;
+                                    if (slot.ShortName == "") slot.ShortName = slot.Name;
                                     slot.MaterialStatus = eleDto?.state ?? "";
                                     slot.MaterialRestriction = eleDto?.restriction ?? false;
-
                                 }
                                 else //檢查是否為探針
                                 {
@@ -114,7 +115,8 @@ namespace FMSFrontend.Features.Threading
                                 {
                                     slot.Kind = MaterialType.Workpiece;
                                     slot.Name = workpieceDto?.workpieceName ?? "";
-                                    slot.ShortName = Regex.Match(slot.Name, @"_(\d+-[A-Za-z0-9]+)").Groups[1].Value;
+                                    slot.ShortName = Regex.Match(slot.Name, @"-(\d+_\d+-[A-Za-z]+)$").Groups[1].Value;
+                                    if(slot.ShortName == "") slot.ShortName = slot.Name;
                                     slot.MaterialStatus = workpieceDto?.status ?? "";
                                     slot.MaterialRestriction = workpieceDto?.restriction ?? false;
                                 }
@@ -130,7 +132,7 @@ namespace FMSFrontend.Features.Threading
                 Storage.ErrorCount = Storage.Slots.Count(s => s.MaterialStatus == "Error");
                 Storage.CompletedCount = Storage.Slots.Count(s => s.MaterialStatus == "Completed");
                 Storage.RestrictionCount = Storage.Slots.Count(s => s.StorageRestriction == true);
-                Storage.BookedCount = Storage.Slots.Count(s => s.StorageStatus == "Book");
+                Storage.BookedCount = Storage.Slots.Count(s => s.StorageStatus == "Booked");
                 /*
                 Storage.WaitingCount = Cnt;
                 Storage.ProcessingCount = Cnt;

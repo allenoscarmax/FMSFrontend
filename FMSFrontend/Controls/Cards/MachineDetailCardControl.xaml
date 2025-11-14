@@ -63,7 +63,7 @@
                
 
                 <!-- 狀態條 -->
-                <Border Grid.Row="3" Grid.RowSpan="3" Height="20" Width="140" CornerRadius="12" HorizontalAlignment="Center" VerticalAlignment="Top" Background="{Binding Status, Converter={StaticResource StatusToBrushConverter}, FallbackValue=#EEE}" />
+                <Border Grid.Row="3" Grid.RowSpan="3" Height="20" Width="140" CornerRadius="12" HorizontalAlignment="Center" VerticalAlignment="Top" Background="{Binding StatusBrush}" />
 
                 <!-- 禁用角標 -->
                 <Canvas Grid.RowSpan="4" Width="88" Height="78" HorizontalAlignment="Right" VerticalAlignment="Bottom" Visibility="{Binding Restriction, Converter={StaticResource BoolToVisibilityConverter}}" IsHitTestVisible="False" Panel.ZIndex="99">
