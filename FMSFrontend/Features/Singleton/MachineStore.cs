@@ -29,30 +29,17 @@ namespace FMSFrontend.Features.Singleton
                 {
                     if (Machines.Count == i) Machines.Add(new MachineModel());
                     Machines[i].Type = data[i].machineCode;
-                    Machines[i].MachineName = data[i].machineName+ Cnt.ToString();
+                    Machines[i].MachineName = data[i].machineName;
                     Machines[i].Status = data[i].status;
                     Machines[i].Restriction = false;
+                    Machines[i].onDeckElectrodeSerial = data[i].onDeckElectrodeSerial;
+                    Machines[i].onDeckWorkpieceSerial = data[i].onDeckWorkpieceSerial;
+                    Machines[i].onDeckWorksheetSerial = data[i].onDeckWorksheetSerial;
                 }
                 while (Machines.Count > data.Count)
                 {
                     Machines.RemoveAt(Machines.Count - 1);
                 }
-                
-                // 直接整批替換
-                /*
-                Machines.Clear();
-                foreach (var dto in data)
-                {
-                    var model = new MachineModel
-                    { 
-                        Type = dto.machineCode,
-                       MachineName = dto.machineName,
-                        Status = dto.status,
-                       Restriction = false,
-                    };
-                    Machines.Add(model);
-                }
-                */
             }
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();

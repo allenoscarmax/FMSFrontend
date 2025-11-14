@@ -15,6 +15,7 @@ namespace FMSFrontend.ViewModels.Windows
         public ShowRobotViewModel()
         {
             // demo：初始化
+            /*
             displayData = new RobotDisplayData
             {
                 RobotName = "主線機器人",
@@ -25,6 +26,7 @@ namespace FMSFrontend.ViewModels.Windows
                 MachineState = "運轉中",
                 CurrentMaterial = "WRP20250512"
             };
+            */
         }
 
         [RelayCommand]

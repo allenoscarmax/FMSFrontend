@@ -17,7 +17,7 @@ namespace FMSFrontend.Features.Dtos
         public string port { get; set; } = ""; // 通訊埠（字串；若需比對/排序可考慮改為數值型別）
         public string remotePassword { get; set; } = "";// 遠端連線密碼（建議儲存雜湊，不存明文）
         public string remotePath { get; set; } = "";// 遠端路徑（如 NC 程式/共享路徑）
-        public string status { get; set; } = "";// 狀態（如 Idle/Running/Alarm/Offline）
+        public string status { get; set; } = "";// 狀態
         public string onDeckElectrodeSerial { get; set; } = "";// 夾持中電極標籤序號（RFID）
         public string onDeckWorkpieceSerial { get; set; } = "";// 夾持中工件標籤序號（RFID）
         public string onDeckWorksheetSerial { get; set; } = "";// 當前工單號/序號    

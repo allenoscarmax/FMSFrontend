@@ -23,15 +23,15 @@ namespace FMSFrontend.Features.Dtos
         public int CommandType { get; set; }
 
         [JsonPropertyName("startPoint")]
-        public string StartPoint { get; set; }
+        public string StartPoint { get; set; } = "";
 
         [JsonPropertyName("endPoint")]
-        public string EndPoint { get; set; }
+        public string EndPoint { get; set; } = "";
 
         [JsonPropertyName("tagSerial")]
-        public string TagSerial { get; set; }
+        public string TagSerial { get; set; } = "";
 
         [JsonPropertyName("insertTimeString")]
-        public string InsertTimeString { get; set; }
+        public string InsertTimeString { get; set; } = "";
     }
 }

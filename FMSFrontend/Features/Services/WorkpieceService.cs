@@ -18,8 +18,7 @@ namespace FMSFrontend.Features.Services
         Task<List<WorkpieceDto>?> GetWorkpiecesByTagSerialAsync(string tagSerial, CancellationToken ct = default); // 多筆（另一支API）
         Task<WorkpieceDto?> GetWorkpieceByWorksheetNumberAsync(string WorksheetNumber, CancellationToken ct = default);
 
-        Task<WorkpieceDto> GetWorkpieceByWorksheetNumber(string WorksheetNumber, CancellationToken ct = default);
-
+     
         // Timeline
         Task<List<WpTimelineDto>?> GetWorkpieceTimelineByWorkpieceIdAsync(string workpieceId, CancellationToken ct = default); // GET
         Task<List<WpTimelineDto>?> GetWorkpieceTimelineByIdAsync(string id, CancellationToken ct = default);                    // PUT（空 body）
@@ -102,7 +101,7 @@ namespace FMSFrontend.Features.Services
         public Task<bool> SetWorkpieceRestrictionByIdAsync(string id, bool restriction, CancellationToken ct = default)
             => _http.SendPutAsync($"Workpiece/DB_SetWorkpieceRestrictionbyId/{Enc(id)}/{restriction.ToString().ToLower()}", new { });
 
-        public Task<bool> SetWorkpieceStatusByIdAsync(string id, string status, CancellationToken ct = default)
+        public Task<bool> SetWorkpieceStatusByIdAsync(string id, string status, CancellationToken ct = default) 
             => _http.SendPutAsync($"Workpiece/DB_SetWorkpieceStatusbyId/{Enc(id)}/{Enc(status)}", new { });
 
         public Task<bool> SetWorkpieceCurrentLocationByIdAsync(string id, string currentLocation, CancellationToken ct = default)

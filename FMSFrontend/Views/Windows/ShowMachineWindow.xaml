@@ -8,6 +8,8 @@
     <Window.Resources>
         <!-- 陰影 -->
         <DropShadowEffect x:Key="ShadowEffect" BlurRadius="14" ShadowDepth="0" Opacity="0.28" />
+        <!-- Bool → Visibility -->
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
 
         <!-- DataGrid 欄頭藍底白字 -->
         <Style x:Key="BlueHeader" TargetType="DataGridColumnHeader">
@@ -173,19 +175,55 @@
                             </Border>
 
                             <!-- 篩選列 -->
-                            <Grid Grid.Row="1" Margin="16,10,16,8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="160" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
+                            <!-- 左側新增：日期篩選區域 -->
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="18,10,0,0" VerticalAlignment="Center">
+                                <DockPanel LastChildFill="True" Margin="0,0,0,0" VerticalAlignment="Center">
+                                    <ComboBox Width="120" Name="cbb_Day" Height="32" FontSize="16" Margin="0,0,20,0" Background="White" BorderBrush="#444" BorderThickness="1" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" SelectedIndex="{Binding SelectedFilterIndex, Mode=TwoWay}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{StaticResource PillComboBoxStyle}" />
+                                    <DatePicker Name ="DayPicker1" FontSize="16" SelectedDate="{Binding FromDate}" IsEnabled="{Binding IsCustomDateMode}" Width="180" Height="30" Style="{StaticResource CustomDatePickerStyle}" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVis}}">
+                                        <DatePicker.CalendarStyle>
+                                            <Style TargetType="Calendar">
+                                                <Setter Property="CalendarItemStyle">
+                                                    <Setter.Value>
+                                                        <Style TargetType="CalendarItem">
+                                                            <Setter Property="FontSize" Value="18" />
+                                                            <Setter Property="Padding" Value="10" />
 
-                                <RadioButton Grid.Column="0" Content="顯示所有項目" GroupName="show" IsChecked="{Binding ShowAllItems}" />
-                                <RadioButton Grid.Column="1" Content="顯示" Margin="20,0,6,0" GroupName="show" IsChecked="{Binding ShowByDate}" />
-                                <DatePicker Grid.Column="3" SelectedDate="{Binding SelectedDate}" IsEnabled="{Binding ShowByDate}" />
-                            </Grid>
+                                                        </Style>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DatePicker.CalendarStyle>
+
+                                    </DatePicker>
+                                    <TextBlock Name="ttb_DayPicker" Text="→" FontSize="16" VerticalAlignment="Center" Margin="12,0" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVis}}" />
+                                    <DatePicker Name="DayPicker2" SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" Width="180" Height="32" Style="{StaticResource CustomDatePickerStyle}" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVis}}">
+                                        <DatePicker.CalendarStyle>
+                                            <Style TargetType="Calendar">
+                                                <Setter Property="CalendarItemStyle">
+                                                    <Setter.Value>
+                                                        <Style TargetType="CalendarItem">
+                                                            <Setter Property="FontSize" Value="18" />
+                                                            <Setter Property="Padding" Value="10" />
+
+                                                        </Style>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DatePicker.CalendarStyle>
+
+                                        <DatePicker.Resources>
+                                            <!-- 日期文字置中 -->
+                                            <Style TargetType="DatePickerTextBox">
+                                                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                                <Setter Property="VerticalContentAlignment" Value="Center" />
+                                                <Setter Property="FontSize" Value="18" />
+                                            </Style>
+                                        </DatePicker.Resources>
+                                    </DatePicker>
+
+                                </DockPanel>
+
+                            </StackPanel>
 
                             <!-- DataGrid -->
                             <DataGrid Grid.Row="2" Margin="12" ItemsSource="{Binding WorkOrders}" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="False" RowHeaderWidth="0" AlternatingRowBackground="#F7FAFC">
@@ -193,10 +231,10 @@
                                     <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource BlueHeader}" />
                                 </DataGrid.Resources>
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="建立日期" Binding="{Binding CreatedAtText}" Width="200" />
-                                    <DataGridTextColumn Header="工單編號" Binding="{Binding WorkOrderNo}" Width="*" />
-                                    <DataGridTextColumn Header="工單狀態" Binding="{Binding Status}" Width="160" />
-                                    <DataGridTextColumn Header="工作編號" Binding="{Binding JobNo}" Width="*" />
+                                    <DataGridTextColumn Header="建立時間" Binding="{Binding CreatTime}" Width="100" />
+                                    <DataGridTextColumn Header="工單編號" Binding="{Binding WorksheetNumber}" Width="*" />
+                                    <DataGridTextColumn Header="工單狀態" Binding="{Binding WorkStatus}" Width="100" />
+                                    <DataGridTextColumn Header="工件名稱" Binding="{Binding WorkpieceName}" Width="*" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>

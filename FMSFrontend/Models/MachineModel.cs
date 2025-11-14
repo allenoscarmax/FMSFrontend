@@ -13,10 +13,14 @@ namespace FMSFrontend.Models
 {
     public partial class MachineModel : ObservableObject
     {
-        [ObservableProperty] private string machineName = "";
-        [ObservableProperty] private string status = "idle"; // 可為 idle / running / warning / error / disabled
-        [ObservableProperty] private string type = "";
-        [ObservableProperty] private bool restriction;
+        [ObservableProperty] private string machineName = ""; //機台名稱
+        [ObservableProperty] private string status = "";
+        [ObservableProperty] private string type = ""; //機台類型
+        [ObservableProperty] private bool restriction; //機台鎖定
+        public string onDeckElectrodeSerial { get; set; } = "";// 夾持中電極標籤序號（RFID）
+        public string onDeckWorkpieceSerial { get; set; } = "";// 夾持中工件標籤序號（RFID）
+        public string onDeckWorksheetSerial { get; set; } = "";// 當前工單號/序號  
+
     }
 }
 
