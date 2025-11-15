@@ -1,4 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Threading;
 using MahApps.Metro.Controls;
 using System.Collections.ObjectModel;
 
@@ -6,6 +10,20 @@ namespace FMSFrontend.ViewModels
 {
     public partial class MachineMainDetailViewModel : ObservableObject
     {
+        // === Services ===
+        private readonly IStorageService _StorageService;
+        private readonly IElectrodeService _ElectrodeService;
+        private readonly IWorkpieceService _WorkpieceService;
+        private readonly IProbeService _ProbeService;
+        private readonly IMachinesService _MachinesService;
+        public readonly IWorksheetsService _worksheetsService;
+
+        // === Singleton ===
+        private readonly MachineStore _machineStore;
+
+        // ==LiveUpdater===
+        public MachineLiveUpdater _machineLiveUpdater;
+
         [ObservableProperty]
         private ObservableCollection<TabItemModel> tabs;
         [ObservableProperty]

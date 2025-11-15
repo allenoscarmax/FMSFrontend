@@ -1,6 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Controls;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Threading;
+using FMSFrontend.Models;
 using FMSFrontend.ViewModels.Production;
 using System;
 using System.Collections.Generic;
@@ -13,6 +18,23 @@ namespace FMSFrontend.ViewModels
 {
     public partial class MachineOverviewMainViewModel : ObservableObject
     {
+        /*
+        // === Services ===
+        
+        private readonly IStorageService _StorageService;
+        private readonly IElectrodeService _ElectrodeService;
+        private readonly IWorkpieceService _WorkpieceService;
+        private readonly IProbeService _ProbeService;
+        private readonly IMachinesService _MachinesService;
+        public readonly IWorksheetsService _worksheetsService;
+
+        // === Singleton ===
+        private readonly MachineStore _machineStore;
+
+        // ==LiveUpdater===
+        public MachineLiveUpdater _machineLiveUpdater;
+        */
+        
         // 全部卡片來源（不變）
         private readonly ObservableCollection<MachineOverviewCard> _allMachines;
         [ObservableProperty]

@@ -96,9 +96,9 @@ namespace FMSFrontend.ViewModels.Production
                     _machineDetails[updateCnt].Type = MapToMachineType(Machines[updateCnt].Type);
                     _machineDetails[updateCnt].Status = Machines[updateCnt].Status;
                     _machineDetails[updateCnt].Restriction = Machines[updateCnt].Restriction;
-                    _machineDetails[updateCnt].onDeckElectrodeSerial = Machines[updateCnt].onDeckElectrodeSerial;
-                    _machineDetails[updateCnt].onDeckWorkpieceSerial = Machines[updateCnt].onDeckWorkpieceSerial;
-                    _machineDetails[updateCnt].onDeckWorksheetSerial = Machines[updateCnt].onDeckWorksheetSerial;
+                    _machineDetails[updateCnt].onDeckElectrodeSerial = Machines[updateCnt].OnDeckElectrodeSerial;
+                    _machineDetails[updateCnt].onDeckWorkpieceSerial = Machines[updateCnt].OnDeckWorkpieceSerial;
+                    _machineDetails[updateCnt].onDeckWorksheetSerial = Machines[updateCnt].OnDeckWorksheetSerial;
                 }
                 while (_machineDetails.Count > Machines.Count) //刪除多餘的 CardVm
                 {
