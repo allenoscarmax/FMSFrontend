@@ -26,13 +26,32 @@ namespace FMSFrontend.ViewModels
 {
     public partial class RFIDBindPageViewModel : ObservableObject
     {
-        //RFID
+        // === Services ===
         private readonly IRfidService _RfidService;
+        private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
+        // === Singleton ===
         public RFIDBindStore RfidBindStore { get; }
         public RFIDBindModel rFIDBindmodel  => RfidBindStore.RfidBind;
+        
+        // === LiveUpdater ===
         public RFIDBindLiveUpdater _rfidUpdater;
+        public RFIDBindPageViewModel(IWindowService windowService, IHttpService httpService,
+        IRfidService iRFIDMgmtModuleService, 
+        RFIDBindStore rfidBindStore, 
+        RFIDBindLiveUpdater rfidUpdater)
+        {
+            _windowService = windowService;
+            _httpService = httpService;
 
-        //public ObservableCollection<BurnRecord> BurnHistoryList { get; set; } = new (); //移至rFIDBindmodel 中更新 
+            _RfidService = iRFIDMgmtModuleService;
+            RfidBindStore = rfidBindStore;
+            _rfidUpdater = rfidUpdater;
+            _rfidUpdater.ReadTagFlag = true;
+
+            // 初始化 SelectedFilterIndex 根據 SelectedFilterOption
+            SelectedFilterIndex = DateFilterOptions.IndexOf(SelectedFilterOption);
+        }
+
         public List<string> DateFilterOptions { get; set; } = new() { "今天", "過去7天", "自訂" };
         
         private DateTime? lastValidFromDate = DateTime.Today;
@@ -40,9 +59,6 @@ namespace FMSFrontend.ViewModels
 
         private readonly IWindowService _windowService;
         private readonly IHttpService _httpService;
-
-        // 用於管理 Fetch 呼叫的 CancellationTokenSource，避免重複堆疊執行
-        private CancellationTokenSource? _fetchCts;
 
         public bool IsCustomDateMode => SelectedFilterOption == "自訂";
        
@@ -125,20 +141,7 @@ namespace FMSFrontend.ViewModels
             if (IsCustomDateMode) RefreshFetch();
         }
 
-        public RFIDBindPageViewModel(IWindowService windowService, IHttpService httpService,
-            IRfidService iRFIDMgmtModuleService, RFIDBindStore rfidBindStore, RFIDBindLiveUpdater rfidUpdater)
-        {
-            _windowService = windowService;
-            _httpService = httpService;
 
-            _RfidService = iRFIDMgmtModuleService;
-             RfidBindStore = rfidBindStore;
-            _rfidUpdater = rfidUpdater;
-            _rfidUpdater.ReadTagFlag = true;
-
-            // 初始化 SelectedFilterIndex 根據 SelectedFilterOption
-            SelectedFilterIndex = DateFilterOptions.IndexOf(SelectedFilterOption);
-        }
 
         [RelayCommand]
         private void OpenMaterialTypeSelect()
@@ -200,22 +203,22 @@ namespace FMSFrontend.ViewModels
 
         private void RefreshFetch()
         {
-            try
-            {
-                _fetchCts?.Cancel();
-                _fetchCts?.Dispose();
-            }   
-            catch { }
-            _fetchCts = new CancellationTokenSource();
-            _ = FetchAndBindByStatusAsync(_fetchCts.Token);
+            _ = RefreshFetchAsync();
         }
 
-        private async Task FetchAndBindByStatusAsync(CancellationToken ct)
+        private async Task RefreshFetchAsync()
         {
+            try
+            {
+                _currentUpdateCts?.Cancel();
+                _currentUpdateCts?.Dispose();
+            }
+            catch { }
+            _currentUpdateCts = new CancellationTokenSource();
             rFIDBindmodel.from = FromDate; // 更新模型的日期範圍
             rFIDBindmodel.to = ToDate; // 更新模型的日期範圍
             _rfidUpdater.ReadTagFlag = false;
-            _ = await _rfidUpdater.UpdateRFIDBindPageStatusAsync();
+            bool ok = await _rfidUpdater.UpdateStatusAsync();
         }
 
         private void ApplyDateFilter()

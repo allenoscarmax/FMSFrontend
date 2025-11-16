@@ -45,6 +45,7 @@ namespace FMSFrontend.ViewModels
         private readonly IMachinesService _MachinesService;
         public readonly IWorksheetsService _worksheetsService;
 
+        private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
 
         // === Singleton ===
         private readonly StorageStore _storageStore;
@@ -142,19 +143,26 @@ namespace FMSFrontend.ViewModels
         {
             if (string.IsNullOrEmpty(slot.Serial))
             {
-                _windowService.ShowMaterialEmpty(_httpService,_ElectrodeService,_WorkpieceService, _ProbeService, _StorageService);
+                _windowService.ShowMaterialEmpty(_httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
             }
             //try
             //{
-            if (slot.Kind  == MaterialType.Electrode || slot.Kind == MaterialType.Electrode || slot.Kind == MaterialType.None)
+            // 取消前一次仍在執行的更新,逾時設定1秒
+            _currentUpdateCts?.Cancel();
+            _currentUpdateCts?.Dispose();
+            _currentUpdateCts = new CancellationTokenSource();
+            _currentUpdateCts.CancelAfter(TimeSpan.FromMilliseconds(100));
+
+            var ct = _currentUpdateCts.Token;
+            if (slot.Kind == MaterialType.Electrode || slot.Kind == MaterialType.Electrode || slot.Kind == MaterialType.None)
             {
-                List<ElectrodeDto>? es = await _ElectrodeService.DB_GetElectrodesByTagSerialAsync(slot.Serial);
+                List<ElectrodeDto>? es = await _ElectrodeService.DB_GetElectrodesByTagSerialAsync(slot.Serial, ct);
                 if (es != null) //檢查是否為電極
                 {
                     var e = es.FirstOrDefault();
                     if (e != null)
                     {
-                        List<EleTimelineDto>? eleTimelineDto = await _ElectrodeService.DB_GetElectrodeTimelineByIdAsync(e._id);
+                        List<EleTimelineDto>? eleTimelineDto = await _ElectrodeService.DB_GetElectrodeTimelineByIdAsync(e._id, ct);
                         // eleTimelineDto = null;
                         var timelineModels = eleTimelineDto?.Select(MapElectrodeTimeline).ToList() ?? new List<TimelineItemModel>();
                         _windowService.ShowElectrode(MapElectrode(e, slot), timelineModels, _httpService,
@@ -167,7 +175,7 @@ namespace FMSFrontend.ViewModels
                 }
                 else //檢查是否為探針
                 {
-                    ProbeDto? prrobe = await _ProbeService.DB_GetProbeByTagSerialAsync(slot.Serial);
+                    ProbeDto? prrobe = await _ProbeService.DB_GetProbeByTagSerialAsync(slot.Serial, ct);
                     if (prrobe != null)
                         _windowService.ShowElectrode(MapProbe(prrobe, slot), new List<TimelineItemModel>(), _httpService,
                              _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService,
@@ -176,7 +184,6 @@ namespace FMSFrontend.ViewModels
                     {
                         _windowService.ShowMaterialEmpty(_httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
                     }
-                       
                 }
             }
             if (slot.Kind == MaterialType.None || slot.Kind == MaterialType.Workpiece)
@@ -184,7 +191,7 @@ namespace FMSFrontend.ViewModels
                 WorkpieceDto? wp = await _WorkpieceService.GetWorkpieceByTagSerialAsync(slot.Serial);
                 if (wp != null) //檢查是否為工件
                 {
-                    List<WpTimelineDto>? wpTimelineDto = await _WorkpieceService.GetWorkpieceTimelineByWorkpieceIdAsync(wp._id);
+                    List<WpTimelineDto>? wpTimelineDto = await _WorkpieceService.GetWorkpieceTimelineByWorkpieceIdAsync(wp._id, ct);
                     var wpTimelineModels = wpTimelineDto?.Select(MapWorkpieceTimeline).ToList() ?? new List<TimelineItemModel>();
                     _windowService.ShowWorkpiece(MapWorkpiece(wp, slot), wpTimelineModels, _httpService,
                          _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService, slot.SlotCode);

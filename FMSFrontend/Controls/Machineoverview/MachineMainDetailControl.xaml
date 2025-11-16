@@ -554,13 +554,13 @@
                                                                 </StackPanel>
 
                                                                 <!-- 🔹 表格列表區 -->
-                                                                <DataGrid Grid.Row="1" ItemsSource="{Binding WorkOrderList}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" FontSize="16" RowHeight="40" GridLinesVisibility="Horizontal" Margin="8" BorderThickness="1" BorderBrush="#DDD">
+                                                                <DataGrid Grid.Row="1" ItemsSource="{Binding WorkOrders}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" FontSize="16" RowHeight="40" GridLinesVisibility="Horizontal" Margin="8" BorderThickness="1" BorderBrush="#DDD">
 
                                                                     <DataGrid.Columns>
                                                                         <DataGridTextColumn Header="建立時間" Binding="{Binding CreatedTime}" Width="*" />
-                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding WorkOrderNumber}" Width="*" />
-                                                                        <DataGridTextColumn Header="工單狀態" Binding="{Binding WorkOrderStatus}" Width="*" />
-                                                                        <DataGridTextColumn Header="件號" Binding="{Binding WorkpieceID}" Width="*" />
+                                                                        <DataGridTextColumn Header="工單編號" Binding="{Binding WorksheetNumber}" Width="*" />
+                                                                        <DataGridTextColumn Header="工單狀態" Binding="{Binding WorkStatus}" Width="*" />
+                                                                        <DataGridTextColumn Header="工件名稱" Binding="{Binding WorkpieceName}" Width="*" />
                                                                     </DataGrid.Columns>
                                                                 </DataGrid>
                                                             </Grid>

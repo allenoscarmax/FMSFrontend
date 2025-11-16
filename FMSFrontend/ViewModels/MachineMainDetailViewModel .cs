@@ -1,11 +1,32 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Threading;
+using FMSFrontend.Models;
+using FMSFrontend.ViewModels.Windows;
+using FMSFrontend.Views;
 using MahApps.Metro.Controls;
 using System.Collections.ObjectModel;
+using System.Reflection.PortableExecutable;
+using System.Security.Policy;
+using System.Windows.Threading;
 
 namespace FMSFrontend.ViewModels
 {
     public partial class MachineMainDetailViewModel : ObservableObject
     {
+        // === Services ===
+        private readonly IWorksheetsService _WorksheetService;
+        // === Singleton ===
+        private readonly MachineStore _machineStore;
+        public ObservableCollection<MachineModel> MachinesT => _machineStore.Machines;
+
+       
+        DispatcherTimer _timer;
+        public ObservableCollection<WorkOrderRow> WorkOrders { get; } = new();
+
         [ObservableProperty]
         private ObservableCollection<TabItemModel> tabs;
         [ObservableProperty]
@@ -24,8 +45,8 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty]
         private int selectedTabIndexWorkOrder;
 
-        [ObservableProperty]
-        private MachineOverviewCard selectedMachine;
+        //[ObservableProperty] private MachineOverviewCard selectedMachine;
+
 
         public MachineOverviewCard Machine { get; }
 
@@ -37,7 +58,6 @@ namespace FMSFrontend.ViewModels
 
         [ObservableProperty]
         private MachineDisplayData displayData;
-
         public List<string> FilterOptions { get; } = new() { "今天", "過去3天", "本月", "自訂" };
 
         private string _selectedFilterOption = "今天";
@@ -84,16 +104,45 @@ namespace FMSFrontend.ViewModels
             }
 
             // 依照 fromDate 篩選資料
-           // FilterWorkOrderList(fromDate);
+            //FilterWorkOrderList(fromDate);
+        }
+        private async Task RefreshFetch()
+        {
+            //try { 
+            List<WorksheetsTimelineDto>? WorksheetsTimelineDtos =
+                await _WorksheetService.GetWorksheetTimelineByDateTimeAsync(DateTime.Today, _selectedDate);
+            if (WorksheetsTimelineDtos != null)
+            {
+                WorkOrders.Clear();
+                foreach (var w in WorksheetsTimelineDtos)
+                {
+                    if (w.EDMnumber == Machine.MachineName )
+                    {
+                        WorkOrders.Add(new WorkOrderRow
+                        {
+                            CreatTime = w.TimeStampe.ToLongDateString() ?? "",
+                            WorksheetNumber = w.WorkSheetSerial ?? "",
+                            WorkStatus = w.WorkCommand,
+                            WorkpieceName = "" // 代定義
+                        });
+                    }
+                }
+            }
+            //} Catch{}
         }
 
-
         // ✅ 實際使用的建構式
-        public MachineMainDetailViewModel(MachineOverviewCard machine)
+        public MachineMainDetailViewModel(MachineOverviewCard machine,
+            IWorksheetsService worksheetsService,
+            MachineStore machineStore)
         {
             Machine = machine;
+            //SelectedMachine = machine; //Allen 加入
+            _machineStore = machineStore;
 
-            SelectedMachine = machine; //Allen 加入
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+            _timer.Tick += (_, __) => RefreshFromStore();
+            _timer.Start();
 
             Tabs = new ObservableCollection<TabItemModel>
             {
@@ -116,65 +165,63 @@ namespace FMSFrontend.ViewModels
                 new TabItemModel { Header = "工單Timeline", TagColor = "#2779A7" }
             };
 
-            // 模擬資料（你也可以接實際資料）
-            DisplayData = new MachineDisplayData
-            {
-                MachineNumber = "1",
-                MachineStatus = "Disconnection",
-                UsingElectrode = "E-03",
-                MachiningCode = "EDM101",
-                MachiningWorkingTime = "02:35:20",
-                MachiningWorkingPercentage = "45%",
-                CurrentWorksheet = "WS20250717",
-                MachiningTool = "T-01",
+            DisplayData = new MachineDisplayData();
 
-                MachineTemperature = "38°C",
-                SpindleRPM = "1200 RPM",
-                OilLevelStatus = "正常",
-                CoolantLevel = "75%",
-
-                PositionID = "1",
-                ABS_X = "1886.6",
-                ABS_Y = "186.6",
-                ABS_Z = "176.6",
-                ABS_A = "183.0",
-
-                ABS_B = "18.69",
-                ABS_C = "186",
-                MCH_X = "6886",
-                MCH_Y = "1874.6",
-                MCH_Z = "1456.6",
-
-                Speed = "3000",
-                Servo = "5",
-                Gap = "0.25",
-                OB = "0.03",
-                E_SPD = "100",
-                Pol = "POS",
-                Pulse = "50",
-
-                E_Cod = "A2",
-                T_ON = "25ms",
-                T_OFF = "5ms",
-                LV = "120V",
-                HV = "210V",
-                JT = "12",
-                JD = "3"
-            };
-
-
-
-            selectedTabIndex = 0;  selectedTabIndexPosition = 0; selectedTabIndexParameter = 0; selectedTabIndexWorkOrder = 1;
+            selectedTabIndex = 0; selectedTabIndexPosition = 0; selectedTabIndexParameter = 0; selectedTabIndexWorkOrder = 1;
         }
 
-        // ✅ 設計模式用的無參數建構式
-        public MachineMainDetailViewModel() : this(new MachineOverviewCard
+        private void RefreshFromStore()
         {
-            MachineName = "設計模式 EDM-XX",
-            Status = "Running",
-            Type = MachineType.EDM
-        })
-        {
+            if (Machine == null || DisplayData == null) return;
+            // 從MachinesT取得對應Machine名稱一樣的的機台資料顯示在DisplayData上
+            var edm = MachinesT.FirstOrDefault(m => m.MachineName == Machine.MachineName);
+            if (edm == null || edm.OscarEdm == null) return;
+
+            // 機台資訊
+            DisplayData.MachineNumber = edm.OscarEdm.MachineNumber;
+            DisplayData.MachineStatus = edm.OscarEdm.MachineStatus;
+            DisplayData.UsingElectrode = edm.OscarEdm.UsingElectrode;
+            DisplayData.MachiningCode = edm.OscarEdm.MachiningCode;
+            DisplayData.MachiningWorkingTime = edm.OscarEdm.MachiningWorkingTime;
+            DisplayData.MachiningWorkingPercentage = edm.OscarEdm.MachiningWorkingPercentage;
+            DisplayData.CurrentWorksheet = edm.OscarEdm.CurrentWorksheet;
+            DisplayData.MachiningTool = edm.OscarEdm.MachiningTool;
+
+            // 機台狀態
+            DisplayData.MachineTemperature = edm.OscarEdm.MachineTemperature;
+            DisplayData.SpindleRPM = edm.OscarEdm.SpindleRPM;
+            DisplayData.OilLevelStatus = edm.OscarEdm.OilLevelStatus;
+            DisplayData.CoolantLevel = edm.OscarEdm.CoolantLevel;
+
+            // 座標
+            DisplayData.PositionID = edm.OscarEdm.PositionID;
+            DisplayData.ABS_X = edm.OscarEdm.ABS_X;
+            DisplayData.ABS_Y = edm.OscarEdm.ABS_Y;
+            DisplayData.ABS_Z = edm.OscarEdm.ABS_Z;
+            DisplayData.ABS_A = edm.OscarEdm.ABS_A;
+            DisplayData.ABS_B = edm.OscarEdm.ABS_B;
+            DisplayData.ABS_C = edm.OscarEdm.ABS_C;
+
+            DisplayData.MCH_X = edm.OscarEdm.MCH_X;
+            DisplayData.MCH_Y = edm.OscarEdm.MCH_Y;
+            DisplayData.MCH_Z = edm.OscarEdm.MCH_Z;
+
+            // 加工參數
+            DisplayData.Speed = edm.OscarEdm.Speed;
+            DisplayData.Servo = edm.OscarEdm.Servo;
+            DisplayData.Gap = edm.OscarEdm.Gap;
+            DisplayData.OB = edm.OscarEdm.OB;
+            DisplayData.E_SPD = edm.OscarEdm.E_SPD;
+            DisplayData.Pol = edm.OscarEdm.Pol;
+            DisplayData.Pulse = edm.OscarEdm.Pulse;
+
+            DisplayData.E_Cod = edm.OscarEdm.E_Code;
+            DisplayData.T_ON = edm.OscarEdm.T_ON;
+            DisplayData.T_OFF = edm.OscarEdm.T_OFF;
+            DisplayData.LV = edm.OscarEdm.LV;
+            DisplayData.HV = edm.OscarEdm.HV;
+            DisplayData.JT = edm.OscarEdm.JT;
+            DisplayData.JD = edm.OscarEdm.JD;
         }
 
         public class TabItemModel
@@ -232,6 +279,12 @@ namespace FMSFrontend.ViewModels
             [ObservableProperty] private string jD = "";
 
         }
-
+        public class WorkOrderRow
+        {
+            public string CreatTime { get; set; } = ""; //代定義
+            public string WorksheetNumber { get; set; } = "";
+            public string WorkStatus { get; set; } = "";
+            public string WorkpieceName { get; set; } = "";
+        }
     }
 }

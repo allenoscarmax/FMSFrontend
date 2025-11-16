@@ -11,7 +11,7 @@ namespace FMSFrontend.Features.Dtos
     public class OscarmaxMachineParaDto : MachineParaBase
     {
         [JsonPropertyName("dbmachinenumber")]
-        public string DBMachineNumber { get; set; }
+        public string DBMachineNumber { get; set; } = "";
 
         [JsonPropertyName("dispatcherunknownerror")]
         public bool DispatcherUnknownError { get; set; }
@@ -56,13 +56,13 @@ namespace FMSFrontend.Features.Dtos
         public bool ConnectionOnceTrigger { get; set; } = true;
 
         [JsonPropertyName("user")]
-        public string User { get; set; }
+        public string User { get; set; } = "";
 
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         [JsonPropertyName("type")]
-        public string Type { get; set; }
+        public string Type { get; set; } = "";
 
         /// <summary>0:紅 1:黃 2:綠 3:閒置（依你註解）</summary>
         [JsonPropertyName("light_state")]
@@ -84,13 +84,13 @@ namespace FMSFrontend.Features.Dtos
         public ushort Run_Work { get; set; }
 
         [JsonPropertyName("ai_mode")]
-        public string AI_Mode { get; set; }
+        public string AI_Mode { get; set; } = "";
 
         [JsonPropertyName("ai_edm_state")]
-        public string AI_EDM_State { get; set; }
+        public string AI_EDM_State { get; set; } = "";
 
         [JsonPropertyName("ai_mach_state")]
-        public string AI_Mach_State { get; set; }
+        public string AI_Mach_State { get; set; } = "";
 
         /// <summary>0: Alarm 1: Warning 2: Maintenance</summary>
         [JsonPropertyName("mach_message")]
@@ -141,93 +141,93 @@ namespace FMSFrontend.Features.Dtos
 
         // ****** Coordinate ****** //
         [JsonPropertyName("coordinate")]
-        public string Coordinate { get; set; }
+        public string Coordinate { get; set; } = "";
 
         // 絕對座標
         [JsonPropertyName("abs_x")]
-        public string ABS_X { get; set; }
+        public string ABS_X { get; set; } = "";
         [JsonPropertyName("abs_y")]
-        public string ABS_Y { get; set; }
+        public string ABS_Y { get; set; } = "";
         [JsonPropertyName("abs_z")]
-        public string ABS_Z { get; set; }
+        public string ABS_Z { get; set; } = "";
         [JsonPropertyName("abs_c")]
-        public string ABS_C { get; set; }
+        public string ABS_C { get; set; } = "";
         [JsonPropertyName("abs_a")]
-        public string ABS_A { get; set; }
+        public string ABS_A { get; set; } = "";
         [JsonPropertyName("abs_b")]
-        public string ABS_B { get; set; }
+        public string ABS_B { get; set; } = "";
 
         // 機械座標
         [JsonPropertyName("mac_x")]
-        public string Mac_X { get; set; }
+        public string Mac_X { get; set; } = "";
         [JsonPropertyName("mac_y")]
-        public string Mac_Y { get; set; }
+        public string Mac_Y { get; set; } = "";
         [JsonPropertyName("mac_z")]
-        public string Mac_Z { get; set; }
+        public string Mac_Z { get; set; } = "";
         [JsonPropertyName("mac_c")]
-        public string Mac_C { get; set; }
+        public string Mac_C { get; set; } = "";
         [JsonPropertyName("mac_a")]
-        public string Mac_A { get; set; }
+        public string Mac_A { get; set; } = "";
         [JsonPropertyName("mac_b")]
-        public string Mac_B { get; set; }
+        public string Mac_B { get; set; } = "";
 
         // ***** E_Code ***** //
         [JsonPropertyName("e_code")]
-        public string E_Code { get; set; }
+        public string E_Code { get; set; } = "";
         [JsonPropertyName("t_on")]
-        public string T_ON { get; set; }
+        public string T_ON { get; set; } = "";
         [JsonPropertyName("t_off")]
-        public string T_OFF { get; set; }
+        public string T_OFF { get; set; } = "";
         [JsonPropertyName("lv")]
-        public string LV { get; set; }
+        public string LV { get; set; } = "";
         [JsonPropertyName("hv")]
-        public string HV { get; set; }
+        public string HV { get; set; } = "";
         [JsonPropertyName("jt")]
-        public string JT { get; set; }
+        public string JT { get; set; } = "";
         [JsonPropertyName("jd")]
-        public string JD { get; set; }
+        public string JD { get; set; } = "";
         [JsonPropertyName("speed")]
-        public string Speed { get; set; }
+        public string Speed { get; set; } = "";
         [JsonPropertyName("servo")]
-        public string Servo { get; set; }
+        public string Servo { get; set; } = "";
         [JsonPropertyName("gap")]
-        public string Gap { get; set; }
+        public string Gap { get; set; } = "";
         [JsonPropertyName("ob")]
-        public string OB { get; set; }
+        public string OB { get; set; } = "";
         [JsonPropertyName("e_spd")]
-        public string E_SPD { get; set; }
+        public string E_SPD { get; set; } = "";
         [JsonPropertyName("pol")]
-        public string Pol { get; set; }
+        public string Pol { get; set; } = "";
         [JsonPropertyName("pulse")]
-        public string Pulse { get; set; }
+        public string Pulse { get; set; } = "";
         [JsonPropertyName("nw")]
-        public string NW { get; set; }
+        public string NW { get; set; } = "";
         [JsonPropertyName("hv2")]
-        public string HV2 { get; set; }
+        public string HV2 { get; set; } = "";
         [JsonPropertyName("slope")]
-        public string Slope { get; set; }
+        public string Slope { get; set; } = "";
         [JsonPropertyName("capic")]
-        public string Capic { get; set; }
+        public string Capic { get; set; } = "";
         [JsonPropertyName("arc")]
-        public string Arc { get; set; }
+        public string Arc { get; set; } = "";
         [JsonPropertyName("b_spd")]
-        public string B_SPD { get; set; }
+        public string B_SPD { get; set; } = "";
         [JsonPropertyName("b_dis")]
-        public string B_DIS { get; set; }
+        public string B_DIS { get; set; } = "";
         [JsonPropertyName("drill_slag")]
-        public string Drill_Slag { get; set; }
+        public string Drill_Slag { get; set; } = "";
         [JsonPropertyName("drill_mag")]
-        public string Drill_Mag { get; set; }
+        public string Drill_Mag { get; set; } = "";
         [JsonPropertyName("gain")]
-        public string Gain { get; set; }
+        public string Gain { get; set; } = "";
         [JsonPropertyName("turbo")]
-        public string Turbo { get; set; }
+        public string Turbo { get; set; } = "";
         [JsonPropertyName("res_2")]
-        public string Res_2 { get; set; }
+        public string Res_2 { get; set; } = "";
         [JsonPropertyName("res_3")]
-        public string Res_3 { get; set; }
+        public string Res_3 { get; set; } = "";
         [JsonPropertyName("res_4")]
-        public string Res_4 { get; set; }
+        public string Res_4 { get; set; } = "";
 
         [JsonPropertyName("remote_af")]
         public byte Remote_AF { get; set; }
@@ -284,16 +284,16 @@ namespace FMSFrontend.Features.Dtos
         public int WorkState { get; set; }
 
         [JsonPropertyName("errormes")]
-        public string ErrorMes { get; set; }
+        public string ErrorMes { get; set; } = "";
 
         [JsonPropertyName("mainprogramname")]
-        public string MainProgramName { get; set; }
+        public string MainProgramName { get; set; } = "";
 
         [JsonPropertyName("subprogramname")]
-        public string SubProgramName { get; set; }
+        public string SubProgramName { get; set; } = "";
 
         [JsonPropertyName("cycletime")]
-        public string CycleTime { get; set; }
+        public string CycleTime { get; set; } = "";
 
         /// <summary>決定機台可不可控制或派工</summary>
         [JsonPropertyName("cancontrol")]

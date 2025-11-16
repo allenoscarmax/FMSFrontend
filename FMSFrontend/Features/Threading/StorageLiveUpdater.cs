@@ -30,7 +30,10 @@ namespace FMSFrontend.Features.Threading
         private readonly DispatcherTimer _timer;
 
         public string SelectTitle = "";
-        public string RobotMaterialSerial = ""; //檢查手臂是甚麼
+
+        //private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
+        private bool _isUpdating; // 用於避免重入的旗標
+
         public StorageLiveUpdater(IElectrodeService electrodeService, IStorageService storageService,
             IWorkpieceService workpieceService, IProbeService probeService, StorageStore store)
         {
@@ -41,8 +44,68 @@ namespace FMSFrontend.Features.Threading
 
             _store = store;
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            _timer.Tick += async (_, __) => await UpdateProductionLinesPageStatusAsync();
+            _timer.Tick += async (_, __) =>
+            {
+                // 避免重入
+                if (_isUpdating) return;
+                _isUpdating = true;
+                try
+                {
+                    await UpdateStatusAsync();
+                }
+                finally
+                {
+                    _isUpdating = false;
+                }
+            };
         }
+        public async Task<bool> UpdateStatusAsync()
+        {
+            var storage = await _svc_Storage.GetAllStorageAsync();
+            if (storage == null) return false;
+            _store.ApplyStorageDto(storage);
+            for (int i = 0; i < _store.StorageGroup.Storage.Count; i++)
+            {
+                StorageModel s = _store.StorageGroup.Storage[i];
+                for (int j = 0; j < s.Slots.Count; j++)
+                {
+                    var slot = s.Slots[j];
+                    if (!string.IsNullOrWhiteSpace(slot.Serial))
+                    {
+                        if (s.Kind == MaterialType.Electrode) //檢查是否為電極
+                        {
+                            var eleDtos = await _svc_electrode.DB_GetElectrodesByTagSerialAsync(slot.Serial);
+                            if (eleDtos != null && eleDtos.Any())
+                            {
+                                var eleDto = eleDtos.FirstOrDefault();
+                                if (eleDto != null)
+                                    _store.ApplyElectrodeDto(eleDto, i, j); // 傳入 index
+                            }
+                            else //檢查是否為探針
+                            {
+                                var probeDto = await _svc_Probe.DB_GetProbeByTagSerialAsync(slot.Serial);
+                                if (probeDto != null)
+                                {
+                                    _store.ApplyProbeDto(probeDto, i, j); // 傳入 index
+                                }
+                            }
+                        }
+                        else if (s.Kind == MaterialType.Workpiece) //檢查是否為工件
+                        {
+                            var workpieceDto = await _svc_Workpiece.GetWorkpieceByTagSerialAsync(slot.Serial);
+                            if (workpieceDto != null)
+                            {
+                                _store.ApplyWorkpieceDto(workpieceDto, i, j); // 傳入 index
+                            }
+                        }
+                    }
+                }
+            }
+            _store.ApplyStatusCount();
+            _store.ApplySelectStorage(SelectTitle);
+            return true;
+        }
+        /*
         public async Task<bool> UpdateProductionLinesPageStatusAsync()
         {
             //try
@@ -133,14 +196,6 @@ namespace FMSFrontend.Features.Threading
                 Storage.CompletedCount = Storage.Slots.Count(s => s.MaterialStatus == "Completed");
                 Storage.RestrictionCount = Storage.Slots.Count(s => s.StorageRestriction == true);
                 Storage.BookedCount = Storage.Slots.Count(s => s.StorageStatus == "Booked");
-                /*
-                Storage.WaitingCount = Cnt;
-                Storage.ProcessingCount = Cnt;
-                Storage.ErrorCount = Cnt;
-                Storage.CompletedCount = Cnt;
-                Storage.RestrictionCount = Cnt;
-                Storage.BookedCount = Cnt;
-                */
                 // 加入庫列表
                 storageGroup.Storage.Add(Storage); 
             }
@@ -160,7 +215,6 @@ namespace FMSFrontend.Features.Threading
             storageGroup.RestrictionTotal = storageGroup.Storage.Sum(s => s.RestrictionCount);
             storageGroup.BookedTotal = storageGroup.Storage.Sum(s => s.BookedCount);
             //模擬測試
-            Cnt++;
              _store.ApplyStorageGroupDto(storageGroup);
             return true;
             //}
@@ -171,10 +225,12 @@ namespace FMSFrontend.Features.Threading
             //return false;
             //}
         }
+        */
         public int Cnt = 0;
         public void Start() => _timer.Start();
         public void Stop() => _timer.Stop();
         public void Dispose() => _timer.Stop();
     }
+        
 
 }

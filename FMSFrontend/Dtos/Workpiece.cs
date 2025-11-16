@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using FMSFrontend.Features.Dtos;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace OSCARMAXFMS_V3.DBmodels
@@ -23,5 +24,10 @@ namespace OSCARMAXFMS_V3.DBmodels
         public string? inspectStatus { get; set; } = ""; // 檢驗結果狀態（例如 PASS/FAIL/NG/待檢）
         public string inspectOffset { get; set; } = ""; // 檢驗偏移/量測值（文字表示，單位/格式依系統定義）
         public string setupUser { get; set; } = ""; // 建置/設定人員帳號或名稱
+
+        public static implicit operator Workpiece?(List<WorkpieceDto>? v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

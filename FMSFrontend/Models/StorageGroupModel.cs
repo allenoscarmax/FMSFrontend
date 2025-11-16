@@ -34,7 +34,7 @@ namespace FMSFrontend.Models
         // 讀取參數
         [ObservableProperty] private string name = string.Empty;
         [ObservableProperty] private string number = string.Empty;
-        [ObservableProperty] private string serial = string.Empty; // 材料庫序號
+       // [ObservableProperty] private string serial = string.Empty; // 材料庫序號
         // 尺寸
         [ObservableProperty] private int rows = 0;    // 最大列數
         [ObservableProperty] private int columns = 0; // 最大行數
@@ -49,6 +49,7 @@ namespace FMSFrontend.Models
         [ObservableProperty] private int bookedCount = 0;      // 預約總數
         // 自動計算屬性
         public string Title => Name + Number;                   // 材料庫顯示名稱
+
         public MaterialType Kind =>                             // 材料庫種類判斷
             (Name?.Contains("E") == true) ? MaterialType.Electrode :
             (Name?.Contains("W") == true) ? MaterialType.Workpiece :
@@ -60,17 +61,14 @@ namespace FMSFrontend.Models
             MaterialType.Probe => new SolidColorBrush(Color.FromRgb(0xE0, 0x8E, 0x45)),     // 探針(藍) 歸類在電極庫中
             _ => new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF)) // 其他(白色)
         };
-        // 當影響衍生屬性的來源變更時，主動通知 UI 更新
+
         partial void OnNameChanged(string value)
         {
             OnPropertyChanged(nameof(Title));
             OnPropertyChanged(nameof(Kind));
             OnPropertyChanged(nameof(KindBrush));
         }
-        partial void OnNumberChanged(string value)
-        {
-            OnPropertyChanged(nameof(Title));
-        }
+        partial void OnNumberChanged(string value) => OnPropertyChanged(nameof(Title));
     }
     public partial class Slot : ObservableObject
     {
@@ -80,20 +78,22 @@ namespace FMSFrontend.Models
         public string Name = "";                                        // 名稱 (全名)
         [ObservableProperty] private string shortName = "";             // 名稱 (顯示用)
         [ObservableProperty] private string materialStatus = "";        // 材料狀態
-        [ObservableProperty] private bool materialRestriction ;  // 材料是否有鎖定
+        [ObservableProperty] private bool materialRestriction;  // 材料是否有鎖定
         [ObservableProperty] private string storageStatus = "";         // 材料庫是否預約
         [ObservableProperty] private bool storageRestriction;           // 材料庫是否有鎖定
 
-         public Brush StatusBrush => StorageRestriction ? new SolidColorBrush(Color.FromRgb(0xE0, 0xE0, 0xE0)):
-            MaterialStatus switch
-            {
-                "Verified"  => new SolidColorBrush(Color.FromRgb(0xE6, 0xB9, 0x3E)), //黃色
-                "Working"   => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)), //綠色
-                "Error"     => new SolidColorBrush(Color.FromRgb(0xC0, 0x39, 0x2B)), //紅色
-                "Completed" => new SolidColorBrush(Color.FromRgb(0x2F, 0x64, 0xCF)), //藍色
-                _           => Brushes.White
-            };
-      
+        public Brush StatusBrush => StorageRestriction ? new SolidColorBrush(Color.FromRgb(0xE0, 0xE0, 0xE0)) :
+           MaterialStatus switch
+           {
+               "Verified" => new SolidColorBrush(Color.FromRgb(0xE6, 0xB9, 0x3E)), //黃色
+               "Working" => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)), //綠色
+               "Error" => new SolidColorBrush(Color.FromRgb(0xC0, 0x39, 0x2B)), //紅色
+               "Completed" => new SolidColorBrush(Color.FromRgb(0x2F, 0x64, 0xCF)), //藍色
+               _ => Brushes.White
+           };
+        partial void OnStorageRestrictionChanged(bool value) => OnPropertyChanged(nameof(StatusBrush));
+        partial void OnMaterialStatusChanged(string value) => OnPropertyChanged(nameof(StatusBrush));
+
         string Code => Kind switch
         {
             MaterialType.Electrode => "E",
@@ -101,6 +101,7 @@ namespace FMSFrontend.Models
             MaterialType.Workpiece => "W",
             _ => ""
         };
+        partial void OnKindChanged(MaterialType value) => OnPropertyChanged(nameof(Code));
         /*
         public string StorageName { get; set; } = "";  // 倉線/倉號
         public int StorageNumber { get; set; }   // 倉線/倉號
@@ -111,8 +112,9 @@ namespace FMSFrontend.Models
         */
         public string SlotCode = "";
         // 影響 StatusBrush 的來源變更時，主動通知
-        partial void OnKindChanged(MaterialType value) => OnPropertyChanged(nameof(StatusBrush));
-        partial void OnMaterialStatusChanged(string value) => OnPropertyChanged(nameof(StatusBrush));
+
+
+
     }
 }
 

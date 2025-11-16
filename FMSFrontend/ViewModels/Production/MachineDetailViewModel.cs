@@ -67,9 +67,10 @@ namespace FMSFrontend.ViewModels.Production
             _machineLiveUpdater = machineLiveUpdater;
             _machineStore = machineStore;
 
-            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1000) };
             _timer.Tick += (_, __) => BuildCardsFromMachines();
             _timer.Start();
+
         }
         public void OnPageActivated()
         {
@@ -96,9 +97,11 @@ namespace FMSFrontend.ViewModels.Production
                     _machineDetails[updateCnt].Type = MapToMachineType(Machines[updateCnt].Type);
                     _machineDetails[updateCnt].Status = Machines[updateCnt].Status;
                     _machineDetails[updateCnt].Restriction = Machines[updateCnt].Restriction;
-                    _machineDetails[updateCnt].onDeckElectrodeSerial = Machines[updateCnt].onDeckElectrodeSerial;
-                    _machineDetails[updateCnt].onDeckWorkpieceSerial = Machines[updateCnt].onDeckWorkpieceSerial;
-                    _machineDetails[updateCnt].onDeckWorksheetSerial = Machines[updateCnt].onDeckWorksheetSerial;
+                    _machineDetails[updateCnt].onDeckElectrodeSerial = Machines[updateCnt].OnDeckElectrodeSerial;
+                    _machineDetails[updateCnt].onDeckWorkpieceSerial = Machines[updateCnt].OnDeckWorkpieceSerial;
+                    _machineDetails[updateCnt].onDeckWorksheetSerial = Machines[updateCnt].OnDeckWorksheetSerial;
+                    _machineDetails[updateCnt].ElectrodeName = Machines[updateCnt].ElectrodeShortName;
+                    _machineDetails[updateCnt].WorkpieceName = Machines[updateCnt].WorkpieceShortName;
                 }
                 while (_machineDetails.Count > Machines.Count) //刪除多餘的 CardVm
                 {

@@ -90,7 +90,12 @@ namespace FMSFrontend.ViewModels.Production
                     MachineCardVm[updateCnt].MachineName = Machines[updateCnt].MachineName;
                     MachineCardVm[updateCnt].Type = MapToMachineType(Machines[updateCnt].Type);
                     MachineCardVm[updateCnt].Status = Machines[updateCnt].Status;
-                }
+                    MachineCardVm[updateCnt].onDeckElectrodeSerial = Machines[updateCnt].OnDeckElectrodeSerial;
+                    MachineCardVm[updateCnt].onDeckWorkpieceSerial = Machines[updateCnt].OnDeckWorkpieceSerial;
+                    MachineCardVm[updateCnt].onDeckWorksheetSerial = Machines[updateCnt].OnDeckWorksheetSerial;
+                    MachineCardVm[updateCnt].ElectrodeName = Machines[updateCnt].ElectrodeShortName;
+                    MachineCardVm[updateCnt].WorkpieceName = Machines[updateCnt].WorkpieceShortName;
+                }                
                 while (MachineCardVm.Count > Machines.Count)
                 {
                     MachineCardVm.RemoveAt(MachineCardVm.Count - 1);
@@ -175,6 +180,9 @@ namespace FMSFrontend.ViewModels.Production
         public string onDeckWorkpieceSerial { get; set; } = "";// 夾持中工件標籤序號（RFID）
         public string onDeckWorksheetSerial { get; set; } = "";// 當前工單號/序號  
 
+        [ObservableProperty] private string electrodeName = "";
+        [ObservableProperty] private string workpieceName = "";
+
         //由Status決定顏色
         public Brush StatusBrush => Status switch
         {
@@ -183,7 +191,7 @@ namespace FMSFrontend.ViewModels.Production
             "EmergencyStop" => new SolidColorBrush(Color.FromRgb(0xC0, 0x39, 0x2B)), //紅色 3
             _ => new SolidColorBrush(Color.FromRgb(0x55, 0x55, 0x55)), //灰色 
         };
-
+        partial void OnStatusChanged(string value) => OnPropertyChanged(nameof(StatusBrush));
         public string MachineTypeName => Type.ToString(); // ✅ 圖片綁定使用的字串（自動從 enum 轉成檔名）
 
 

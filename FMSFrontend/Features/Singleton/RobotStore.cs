@@ -1,8 +1,10 @@
-﻿using System.Windows;                              
-using CommunityToolkit.Mvvm.ComponentModel;         // ✅ ObservableObject / ObservableProperty
-using FMSFrontend.Features.Mappings;                 // ✅ ApplyTo 擴充方法
-using FMSFrontend.Features.Dtos;                      // ✅ AsrsParameterDto
-using FMSFrontend.Models;                               // ✅ Robot
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Mappings;
+using FMSFrontend.Models;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace FMSFrontend.Features.Singleton
 {

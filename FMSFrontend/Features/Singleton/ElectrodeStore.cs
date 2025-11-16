@@ -8,15 +8,17 @@ using System.Windows;
 
 namespace FMSFrontend.Features.Singleton
 {
-    public partial class PlcStore : ObservableObject
+    public partial class ElectrodeStore : ObservableObject
     {
-        [ObservableProperty] private MagazinePara magazinePara = new();
+        [ObservableProperty] public ElectrodeModel electrode = new();
 
-        public void ApplyMagazineParaDto(MagazineParaDto dto)
+        public void ApplyElectrodeDto(ElectrodeDto dto)
         {
             var disp = Application.Current?.Dispatcher;
-            void apply() => dto.ApplyMagazineParaDto(MagazinePara);
-
+            void apply()
+            {
+                dto.ApplyElectrodeDto(Electrode);
+            }
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();
         }
