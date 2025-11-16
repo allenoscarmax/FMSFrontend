@@ -13,47 +13,51 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace FMSFrontend.ViewModels
 {
     public partial class MachineOverviewMainViewModel : ObservableObject
     {
-        /*
         // === Services ===
-        
-        private readonly IStorageService _StorageService;
-        private readonly IElectrodeService _ElectrodeService;
-        private readonly IWorkpieceService _WorkpieceService;
-        private readonly IProbeService _ProbeService;
         private readonly IMachinesService _MachinesService;
-        public readonly IWorksheetsService _worksheetsService;
+        public readonly IWorksheetsService _WorksheetsService;
 
         // === Singleton ===
         private readonly MachineStore _machineStore;
-
+        public ObservableCollection<MachineModel> Machines => _machineStore.Machines;
+        
         // ==LiveUpdater===
         public MachineLiveUpdater _machineLiveUpdater;
-        */
+        DispatcherTimer _timer;
         
         // 全部卡片來源（不變）
-        private readonly ObservableCollection<MachineOverviewCard> _allMachines;
-        [ObservableProperty]
-        private MachineOverviewCard? selectedMachine;
-
+        private readonly ObservableCollection<MachineOverviewCard> _allMachines = new();
+        [ObservableProperty] private MachineOverviewCard? selectedMachine;
+        
         // UI 綁定的卡片清單（會變）
-        public ObservableCollection<MachineOverviewCard> FilteredMachines { get; } = new();
+        public ObservableCollection<MachineOverviewCard> FilteredMachines { get; } = new();// UI 綁定的卡片清單（會變）
 
-        [ObservableProperty]
-        private int selectedTabIndex;
-        [ObservableProperty]
-        private double cardOpacity = 1.0;
+        [ObservableProperty] private int selectedTabIndex = 0; // 預設選 EDM
+
+        [ObservableProperty] private double cardOpacity = 1.0; // 卡片透明度（用於淡入效果）
 
         // 讓 Content 能通知 UI 更新
-        [ObservableProperty]
-        private object currentMachineDetailContent;
-
-        public MachineOverviewMainViewModel()
+        [ObservableProperty] private MachineMainDetailControl? currentMachineDetailContent;
+        
+        public MachineOverviewMainViewModel(
+            IMachinesService machinesService,
+            IWorksheetsService worksheetsService,
+            MachineStore machineStore,
+            MachineLiveUpdater machineLiveUpdater
+            )
         {
+            _MachinesService = machinesService;
+            _WorksheetsService = worksheetsService;
+            _machineStore = machineStore;
+            _machineLiveUpdater = machineLiveUpdater;
+            /*
             _allMachines = new ObservableCollection<MachineOverviewCard>
         {
             new() { MachineName = "EDM-01", Status = "Stay", Type = MachineType.EDM },
@@ -62,43 +66,104 @@ namespace FMSFrontend.ViewModels
         };
             SelectedMachine = _allMachines.First(); // 預設第一台
             // 預設先顯示 MachineMainDetailControl
-            CurrentMachineDetailContent = new MachineMainDetailControl(SelectedMachine);
-        
-
-            SelectedTabIndex = 0;
-
-
+            
             // 預設先選 EDM
             SelectedTabIndex = 0;
-            ApplyFilterByTab();
+            */
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+            _timer.Tick += (_, __) => RefreshFromStore();
+            _timer.Start();
+            _ = _machineLiveUpdater.UpdateStatusAsync();
+            RefreshFromStore();
+           // ApplyFilterByTab();
+        }
+                        public void OnPageActivated()
+        {
+            _machineLiveUpdater.Start();
+        }
+        public void OnPageDeactivated()
+        {
+            _machineLiveUpdater.Stop();
+            _timer.Stop();
+            _timer = null!;
+        }
+        void RefreshFromStore()
+        {
+            if (Machines != null)
+            {
+                for (int i = 0; i < Machines.Count; i++)
+                {
+                    if (_allMachines.Count == i) _allMachines.Add(new MachineOverviewCard());
+                    _allMachines[i].MachineName = Machines[i].MachineName;
+                    _allMachines[i].Type = MapToMachineType(Machines[i].Type);
+                    _allMachines[i].Status = Machines[i].Status;
+                }
+                while (_allMachines.Count > Machines.Count)
+                {
+                    _allMachines.RemoveAt(_allMachines.Count - 1);
+                }
+            }
+            if (SelectedMachine == null && _allMachines.Count > 0)
+            {
+                SelectedTabIndex = 0;
+                SelectedMachine = _allMachines[0];
+                _machineLiveUpdater.SelectName = SelectedMachine.MachineName;
+            }
+            if (CurrentMachineDetailContent == null && SelectedMachine != null)
+            {
+                CurrentMachineDetailContent =
+                    new MachineMainDetailControl(SelectedMachine, _WorksheetsService, _machineStore);
+            }
+            int j = 0;
+            for (int i = 0; i < _allMachines.Count; i++)
+            {
+                if (SelectedTabIndex == 0 ||
+                   (SelectedTabIndex == 1 && _allMachines[i].Type == MachineType.EDM))
+                {
+                    if (FilteredMachines.Count == j)
+                        FilteredMachines.Add(new MachineOverviewCard());
+                    FilteredMachines[j].MachineName = _allMachines[i].MachineName;
+                    FilteredMachines[j].Status = _allMachines[i].Status;
+                    FilteredMachines[j].Type = _allMachines[i].Type;
+                    j++;
+                }
+            }
+            while (FilteredMachines.Count > j)
+            {
+                FilteredMachines.RemoveAt(FilteredMachines.Count - 1);
+            }
+        }
+        private static MachineType MapToMachineType(string s)
+        {
+            return s switch
+            {
+                "EDM" => MachineType.EDM,
+                "CNC" => MachineType.CNC,
+                _ => MachineType.EDM,
+            };
         }
 
         [RelayCommand]
         private void SelectMachine(MachineOverviewCard? card)
         {
-            if (card is null) return;
-
-            SelectedMachine = card;
             // 重新建立右側詳情區，ViewModel 會依此卡片更新顯示資料
-            CurrentMachineDetailContent = new MachineMainDetailControl(card);
+            if (card is null) return;
+            SelectedMachine = card;
+            _machineLiveUpdater.SelectName = SelectedMachine.MachineName;
+            CurrentMachineDetailContent = new MachineMainDetailControl(card, _WorksheetsService, _machineStore);
         }
 
         partial void OnSelectedTabIndexChanged(int value)
         {
-            ApplyFilterByTab();
+            RefreshFromStore();
+            //ApplyFilterByTab();
         }
 
         private async void ApplyFilterByTab()
         {
-            // 淡出
-            CardOpacity = 0;
-
-            // 等動畫時間
-            await Task.Delay(100);
-            
-
+            CardOpacity = 0;    // 淡出
+            await Task.Delay(100); // 等動畫時間
             FilteredMachines.Clear();
-
             MachineType? targetType = SelectedTabIndex switch
             {
                 0 => null,
@@ -132,7 +197,14 @@ namespace FMSFrontend.ViewModels
 
         [ObservableProperty]
         private string status = "idle"; // idle / running / warning / error / disabled
-
+        public Brush StatusBrush => Status switch
+        {
+            "Running" => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)), //綠色 1
+            "Stopping" => new SolidColorBrush(Color.FromRgb(0xE6, 0xB9, 0x3E)), //黃色 2
+            "EmergencyStop" => new SolidColorBrush(Color.FromRgb(0xC0, 0x39, 0x2B)), //紅色 3
+            _ => new SolidColorBrush(Color.FromRgb(0x55, 0x55, 0x55)), //灰色 
+        };
+        partial void OnStatusChanged(string value) => OnPropertyChanged(nameof(StatusBrush));
         [ObservableProperty]
         private MachineType type = MachineType.EDM;
 

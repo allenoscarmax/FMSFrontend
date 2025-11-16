@@ -63,6 +63,7 @@ namespace FMSFrontend.ViewModels.Production
 
             // 當 Store 的 StorageGroup 內容變更時，轉發必要的通知以更新畫面
             _storageStore.StorageGroup.PropertyChanged += OnStorageGroupPropertyChanged;
+            RefreshFromStore();
         }
 
         private void OnStorageGroupPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -106,7 +107,7 @@ namespace FMSFrontend.ViewModels.Production
             if (PageList.Count > 0)
                 SelectStorageTitle = PageList[CurrentPageIndex];
             _storageUpdater.SelectTitle = SelectStorageTitle;
-            _ = _storageUpdater.UpdateProductionLinesPageStatusAsync();
+            _ = _storageUpdater.UpdateStatusAsync();
         }
 
         [RelayCommand]
@@ -119,7 +120,7 @@ namespace FMSFrontend.ViewModels.Production
             if (PageList.Count > 0)
                 SelectStorageTitle = PageList[CurrentPageIndex];
             _storageUpdater.SelectTitle = SelectStorageTitle;
-            _ = _storageUpdater.UpdateProductionLinesPageStatusAsync();
+            _ = _storageUpdater.UpdateStatusAsync();
         }
 
         partial void OnSelectedTabIndexChanged(int value)      // 當 Tab 切換時重置頁索引並更新電極狀態與 PageList
@@ -130,7 +131,7 @@ namespace FMSFrontend.ViewModels.Production
             if (PageList.Count > 0)
                 SelectStorageTitle = PageList[CurrentPageIndex];
             _storageUpdater.SelectTitle = SelectStorageTitle;
-            _ = _storageUpdater.UpdateProductionLinesPageStatusAsync();
+            _ = _storageUpdater.UpdateStatusAsync();
         }
 
         [RelayCommand]

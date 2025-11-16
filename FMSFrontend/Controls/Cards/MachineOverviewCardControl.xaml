@@ -22,10 +22,10 @@
                 <Image Grid.RowSpan="2" Grid.Column="0" Width="48" Height="48" Margin="0,0,12,0" Source="{Binding MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" Stretch="Uniform" VerticalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />
 
                 <!-- 機台名稱 -->
-                <TextBlock Grid.Column="1" Text="{Binding MachineName, FallbackValue=EDM2}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="#111" />
+                <TextBlock Grid.Column="1" Text="{Binding MachineName, FallbackValue=EDM}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="#111" />
 
                 <!-- 狀態條 -->
-                <Border Grid.Row="1" Grid.Column="1" Height="14" CornerRadius="10" Margin="0,0,0,0" Background="{Binding BrushStatus}" />
+                <Border Grid.Row="1" Grid.Column="1" Height="14" CornerRadius="10" Margin="0,0,0,0" Background="{Binding StatusBrush}" />
             </Grid>
         </Border>
     </Grid>

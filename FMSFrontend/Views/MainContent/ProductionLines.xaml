@@ -82,19 +82,16 @@
                                 Margin="0,3,0,0" />
                         </StackPanel>
 
-                        <!-- 右側：顯示文字 -->
-                        <!--<Border Grid.Column="1" CornerRadius="5" BorderBrush="#DDDDDD" Background="#FFFFFF" BorderThickness="1" VerticalAlignment="Center" Padding="12,6" Height="40" Width="176">
-                            <TextBlock Text="工件/電極" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#555" />
-                        </Border>-->
                         <!-- 右側：顯示文字（可點擊開資訊視窗） -->
-                        <Button Name="BtnMMaterial" Grid.Column="1" Height="40" Width="176" Padding="12,6" Command="{Binding ShowCurrentMaterialInfoCommand}" Cursor="Hand" Background="#FFFFFF" BorderBrush="#DDDDDD" BorderThickness="1" Foreground="#555" FontSize="16" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                Content="{Binding DataContext.Robot.MaterialShortName, RelativeSource={RelativeSource AncestorType=Window}, TargetNullValue=—, FallbackValue=—}">
+                        <Button Name="BtnMMaterial" Grid.Column="1" Height="40" Width="176" Padding="12,6" Command="{Binding ShowCurrentMaterialInfoCommand}" Cursor="Hand" Background="#FFFFFF" BorderBrush="#DDDDDD" BorderThickness="1" Foreground="#555" FontSize="16" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                             <Button.Resources>
                                 <!-- 讓 Button 的外框也吃圓角 -->
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="5" />
                                 </Style>
                             </Button.Resources>
+                            <!-- 使用 TextBlock 顯示文字，避免 AccessText 吃掉底線 -->
+                            <TextBlock Text="{Binding DataContext.Robot.MaterialShortName, RelativeSource={RelativeSource AncestorType=Window}, TargetNullValue=—, FallbackValue=—}"/>
                         </Button>
 
                     </Grid>
@@ -103,4 +100,3 @@
         </Grid>
     </Border>
 </UserControl>
-    

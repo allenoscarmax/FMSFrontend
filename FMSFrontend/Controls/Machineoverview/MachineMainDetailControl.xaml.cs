@@ -1,4 +1,6 @@
-﻿using FMSFrontend.ViewModels;
+﻿using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,10 +23,11 @@ namespace FMSFrontend.Controls
     /// </summary>
     public partial class MachineMainDetailControl : UserControl
     {
-        public MachineMainDetailControl(MachineOverviewCard selectedMachine)
+        public MachineMainDetailControl(MachineOverviewCard selectedMachine, IWorksheetsService worksheetsService, MachineStore machineStore)
         {
             InitializeComponent();
-            this.DataContext = new MachineMainDetailViewModel(selectedMachine);
+
+            this.DataContext = new MachineMainDetailViewModel(selectedMachine, worksheetsService, machineStore);
         }
         private void TabItem_MouseEnter(object sender, MouseEventArgs e)
         {

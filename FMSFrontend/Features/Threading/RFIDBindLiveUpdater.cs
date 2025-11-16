@@ -16,14 +16,31 @@ namespace FMSFrontend.Features.Threading
         private readonly RFIDBindStore _store;
         private readonly DispatcherTimer _timer;
         public bool ReadTagFlag { get; set; } = false;
+
+        //private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
+        private bool _isUpdating; // 用於避免重入的旗標
+
         public RFIDBindLiveUpdater(IRfidService svc, RFIDBindStore store)
         {
             _svc = svc;
             _store = store;
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            _timer.Tick += async (_, __) => await UpdateRFIDBindPageStatusAsync();
+            _timer.Tick += async (_, __) =>
+            {
+                // 避免重入
+                if (_isUpdating) return;
+                _isUpdating = true;
+                try
+                {
+                    await UpdateStatusAsync();
+                }
+                finally
+                {
+                    _isUpdating = false;
+                }
+            };
         }
-        public async Task<bool> UpdateRFIDBindPageStatusAsync()
+        public async Task<bool> UpdateStatusAsync()
         {
             //try
             //{

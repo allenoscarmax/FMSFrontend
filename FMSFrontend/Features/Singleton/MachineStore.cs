@@ -1,25 +1,17 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;         // ✅ ObservableObject / ObservableProperty
-using FMSFrontend.Features.Dtos;                      // ✅ AsrsParameterDto
-using FMSFrontend.Features.Mappings;                 // ✅ ApplyTo 擴充方法
-using FMSFrontend.Features.Services; // needed for FirstOrDefault
+﻿using CommunityToolkit.Mvvm.ComponentModel;         
+using FMSFrontend.Features.Dtos;                      
+using FMSFrontend.Features.Mappings;              
 using FMSFrontend.Models;
-using FMSFrontend.ViewModels.Factory;
-using OSCARMAXFMS_V3.DBmodels;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;                               // ✅ ProductionLinesPage
 using System.Windows;                              
-using System.Windows.Threading;
 
 namespace FMSFrontend.Features.Singleton
 {
     public partial class MachineStore : ObservableObject
     {
         [ObservableProperty] public ObservableCollection<MachineModel> machines = new();
-        int Cnt = 0;
+
         public void ApplyMachinesDto(List<MachinesDto> dtos)
         {
             var disp = Application.Current?.Dispatcher;

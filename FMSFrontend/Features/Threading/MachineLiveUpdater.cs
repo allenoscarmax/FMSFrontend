@@ -29,7 +29,10 @@ namespace FMSFrontend.Features.Threading
         private readonly MachineStore _store;
         private readonly DispatcherTimer _timer;
 
-        public string SelectTitle = "";
+        public string SelectName =""; // 選擇的機台編號
+
+        //private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
+        private bool _isUpdating; // 用於避免重入的旗標
 
         public MachineLiveUpdater(IMachinesService machinesService,
             IElectrodeService electrodeService,
@@ -44,24 +47,38 @@ namespace FMSFrontend.Features.Threading
 
             _store = store;
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            _timer.Tick += async (_, __) => await UpdateMachinesStatusAsync();
+            _timer.Tick += async (_, __) =>
+            {
+                // 避免重入
+                if (_isUpdating) return;
+                _isUpdating = true;
+                try
+                {
+                    await UpdateStatusAsync();
+                }
+                finally
+                {
+                    _isUpdating = false;
+                }
+            };
         }
-        public async Task<bool> UpdateMachinesStatusAsync()
+        int Cnt = 0;
+        public async Task<bool> UpdateStatusAsync()
         {
             //try
             //{
             //取得所有機器基本資料
             List<MachineModel> machines = new List<MachineModel>();
             List<MachinesDto>? mDtos = await _svc_Machines.GetAllMachinesAsync();
-            if (mDtos != null && mDtos.Count>0)
+            if (mDtos != null && mDtos.Count > 0)
             {
                 _store.ApplyMachinesDto(mDtos);
                 for (int i = 0; i < mDtos.Count; i++)
                 {
                     //如果有電極序號 讀取電極資訊
-                    if (string.IsNullOrEmpty(mDtos[i].onDeckWorksheetSerial))
+                    if (!string.IsNullOrEmpty(mDtos[i].onDeckElectrodeSerial))
                     {
-                        string serial = mDtos[i].onDeckWorksheetSerial;
+                        string serial = mDtos[i].onDeckElectrodeSerial;
                         List<ElectrodeDto>? eDtos = await _svc_electrode.DB_GetElectrodesByTagSerialAsync(serial);
                         if (eDtos != null && eDtos.Count > 0)
                         {
@@ -71,23 +88,27 @@ namespace FMSFrontend.Features.Threading
                         }
                     }
                     //如果有工件序號讀取,工件資訊
-                    if (string.IsNullOrEmpty(mDtos[i].onDeckWorksheetSerial))
+                    if (!string.IsNullOrEmpty(mDtos[i].onDeckWorkpieceSerial))
                     {
-                        string serial = mDtos[i].onDeckWorksheetSerial;
+                        string serial = mDtos[i].onDeckWorkpieceSerial;
                         var wDto = await _svc_Workpiece.GetWorkpieceByTagSerialAsync(serial);
                         if (wDto != null)
                         {
                             _store.ApplyWorkpieceDto(wDto, i);
                         }
                     }
+                    Cnt = (Cnt + 1) % 100;
                     //取得機台資訊
-                    if (mDtos[i].machineCode == "EDM")
+                    if (mDtos[i].machineCode.Contains("EDM") && mDtos[i].machineName == SelectName)
                     {
+                        /*
                         var oscarDto = await _svc_Machines.GetMachineDataAsync(mDtos[i].machineNumber);
                         if (oscarDto != null)
                         {
                             _store.ApplyOscarmaxMachineParaDto(oscarDto, i);
                         }
+                        */
+
                     }
                 }
             }

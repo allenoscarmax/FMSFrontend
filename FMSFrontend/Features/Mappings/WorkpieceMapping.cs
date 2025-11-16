@@ -7,7 +7,7 @@ namespace FMSFrontend.Features.Mappings
 {
     public static class WorkpieceModelMapping
     {
-        public static void AppyWorkpieceDto(this WorkpieceDto dto, WorkpieceModel model)
+        public static void ApplyWorkpieceDto(this WorkpieceDto dto, WorkpieceModel model)
         {
             if (dto == null || model == null) return;
             model.Id = dto._id;
@@ -23,8 +23,8 @@ namespace FMSFrontend.Features.Mappings
             model.PartName = "";                                //未定義
             model.SerialCode = "";                              //未定義
             model.RouteNo = "";                                 //未定義
-        }        
-        public static void MappingFromStorageDto(this StorageDto dto, WorkpieceModel model)
+        }
+        public static void ApplyStorageDto(this StorageDto dto, WorkpieceModel model)
         {
             if (dto == null || model == null) return;
             model.StoragStatus = dto.state; // 倉儲狀態

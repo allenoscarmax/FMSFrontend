@@ -15,12 +15,28 @@ namespace FMSFrontend.Features.Threading
         private readonly PlcStore _store;
         private readonly DispatcherTimer _timer;
 
+        //private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
+        private bool _isUpdating; // 用於避免重入的旗標
+
         public PlcLiveUpdater(IPlcService svc, PlcStore store)
         {
             _svc = svc;
             _store = store;
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            _timer.Tick += async (_, __) => await UpdatePlcStatusAsync();
+            _timer.Tick += async (_, __) =>
+            {
+                // 避免重入
+                if (_isUpdating) return;
+                _isUpdating = true;
+                try
+                {
+                    await UpdatePlcStatusAsync();
+                }
+                finally
+                {
+                    _isUpdating = false;
+                }
+            };
         }
         private async Task UpdatePlcStatusAsync()
         {

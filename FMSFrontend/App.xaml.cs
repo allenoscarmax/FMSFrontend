@@ -1,4 +1,5 @@
-﻿using FMSFrontend.Extensions;
+﻿using FMSFrontend.Controls;
+using FMSFrontend.Extensions;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
@@ -150,7 +151,6 @@ namespace FMSFrontend
             services.AddTransient<RFIDBindPageViewModel>();
             services.AddTransient<SettingsPageViewModel>();
             services.AddTransient<WorkOrderPageViewModel>();
-
             // 細節頁或子頁面
             services.AddTransient<ElectrodeDetailViewModel>();
             services.AddTransient<WorkpieceDetailViewModel>();
@@ -179,6 +179,7 @@ namespace FMSFrontend
             services.AddTransient<MaterialPairWindow>();
             services.AddTransient<ProbePairWindow>();
             services.AddTransient<ShowMaterialWindow>();
+            services.AddTransient<MachineMainDetailControl>();
         }
 
         private void RegisterWindows(IServiceCollection services)

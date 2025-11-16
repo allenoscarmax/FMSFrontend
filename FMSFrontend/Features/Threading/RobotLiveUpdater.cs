@@ -56,11 +56,10 @@ namespace FMSFrontend.Features.Threading
                     if (string.IsNullOrEmpty(_store.Robot.OnDeckObjSerial))
                     {
                         _store.Robot.MaterialName = "";
-                        _store.Robot.MaterialShortName = "—";
+                        _store.Robot.MaterialShortName = "— : —";
                         _store.Robot.MaterialKind = "None";
-                        MaterialSerial = _store.Robot.OnDeckObjSerial;
                     }
-                    else if (MaterialSerial != _store.Robot.OnDeckObjSerial)
+                    else 
                     {
                         var e = await _svc_electrode.DB_GetElectrodesByTagSerialAsync(_store.Robot.OnDeckObjSerial);
                         if (e != null && e.FirstOrDefault() != null) //為電極
@@ -69,38 +68,32 @@ namespace FMSFrontend.Features.Threading
                             _store.Robot.MaterialShortName ="電極 : "+
                                 Regex.Match(_store.Robot.MaterialName, @"_(\d+-[A-Za-z0-9]+)").Groups[1].Value;
                             _store.Robot.MaterialKind = "Electrode";
-                            MaterialSerial = _store.Robot.OnDeckObjSerial;
                             return;
                         }
                         var w = await _svc_Workpiece.GetWorkpieceByTagSerialAsync(_store.Robot.OnDeckObjSerial);
                         if (w != null) //為工件
                         {
                             _store.Robot.MaterialName = ((WorkpieceDto)w).workpieceName;
-                            _store.Robot.MaterialKind = "Workpiece";
                             _store.Robot.MaterialShortName = "工件 : " +
                               Regex.Match(_store.Robot.MaterialName, @"-(\d+_\d+-[A-Za-z]+)$").Groups[1].Value;
-                            MaterialSerial = _store.Robot.OnDeckObjSerial;
+                            _store.Robot.MaterialKind = "Workpiece";
                             return;
                         }
                         var p = await _svc_Probe.DB_GetProbeByTagSerialAsync(_store.Robot.OnDeckObjSerial);
                         if (p != null) //為探針
                         {
                             _store.Robot.MaterialName = ((ProbeDto)p).probeName;
-                            _store.Robot.MaterialShortName = _store.Robot.MaterialName;
-                            
-                               
+                            _store.Robot.MaterialShortName = "探針 : " + _store.Robot.MaterialName;
                             _store.Robot.MaterialKind = "Probe";
-                            MaterialSerial = _store.Robot.OnDeckObjSerial;
                             return;
                         }
                         // 若皆無符合，則設為空
                         _store.Robot.MaterialName = "";
-                        _store.Robot.MaterialShortName = "—";
+                        _store.Robot.MaterialShortName = "— : —";
                         _store.Robot.MaterialKind = "None";
                         MaterialSerial = _store.Robot.OnDeckObjSerial;
                     }
                 }
-
             }
             catch //(Exception ex)
             {
