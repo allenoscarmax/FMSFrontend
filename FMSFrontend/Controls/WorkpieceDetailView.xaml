@@ -81,66 +81,42 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-
+                    
                     <!-- 1 -->
-                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="治具序號" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="工作名稱" />
                     <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding JigSerial}" />
+                    <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding WorkName}" />
 
                     <!-- 2 -->
-                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text="工作名稱" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text="工作編號" />
                     <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding WorkName}" />
+                    <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding WorkNo}" />
 
                     <!-- 3 -->
-                    <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="工作編號" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="工作類型" />
                     <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding WorkNo}" />
+                    <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding WorkType}" />
 
                     <!-- 4 -->
-                    <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="工作類型" />
+                    <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="零件件號" />
                     <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding WorkType}" />
+                    <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding PartNo}" />
 
                     <!-- 5 -->
-                    <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="零件件號" />
+                    <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="工單序號" />
                     <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="4" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding PartNo}" />
+                    <TextBlock Grid.Row="4" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding OrderNo}" />
 
                     <!-- 6 -->
-                    <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource LabelText}" Text="工單序號" />
+                    <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource LabelText}" Text="狀態" />
                     <TextBlock Grid.Row="5" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="5" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding OrderNo}" />
+                    <TextBlock Grid.Row="5" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding Status}" />
 
                     <!-- 7 -->
-                    <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource LabelText}" Text="夾釘器編號" />
+                    <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource LabelText}" Text="批號" />
                     <TextBlock Grid.Row="6" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="6" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding ClampNo}" />
+                    <TextBlock Grid.Row="6" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding BatchNo}" />
 
-                    <!-- 8 -->
-                    <TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource LabelText}" Text="狀態" />
-                    <TextBlock Grid.Row="7" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="7" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding Status}" />
-
-                    <!-- 9 -->
-                    <TextBlock Grid.Row="8" Grid.Column="0" Style="{StaticResource LabelText}" Text="批號" />
-                    <TextBlock Grid.Row="8" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="8" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding BatchNo}" />
-
-                    <!-- 10 -->
-                    <TextBlock Grid.Row="9" Grid.Column="0" Style="{StaticResource LabelText}" Text="零件名稱" />
-                    <TextBlock Grid.Row="9" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="9" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding PartName}" />
-
-                    <!-- 11 -->
-                    <TextBlock Grid.Row="10" Grid.Column="0" Style="{StaticResource LabelText}" Text="序號順序碼" />
-                    <TextBlock Grid.Row="10" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="10" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding SerialCode}" />
-
-                    <!-- 12 -->
-                    <TextBlock Grid.Row="11" Grid.Column="0" Style="{StaticResource LabelText}" Text="途程號碼" />
-                    <TextBlock Grid.Row="11" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="11" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding RouteNo}" />
                 </Grid>
             </ScrollViewer>
         </Grid>

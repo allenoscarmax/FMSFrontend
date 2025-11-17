@@ -180,6 +180,7 @@ namespace FMSFrontend
             services.AddTransient<ProbePairWindow>();
             services.AddTransient<ShowMaterialWindow>();
             services.AddTransient<MachineMainDetailControl>();
+
         }
 
         private void RegisterWindows(IServiceCollection services)

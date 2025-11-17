@@ -62,7 +62,7 @@ namespace FMSFrontend.Features.Dtos
         public string Name { get; set; } = "";
 
         [JsonPropertyName("type")]
-        public string Type { get; set; } = "";
+        public string Type { get; set; } = ""; //設備類型
 
         /// <summary>0:紅 1:黃 2:綠 3:閒置（依你註解）</summary>
         [JsonPropertyName("light_state")]
@@ -287,13 +287,13 @@ namespace FMSFrontend.Features.Dtos
         public string ErrorMes { get; set; } = "";
 
         [JsonPropertyName("mainprogramname")]
-        public string MainProgramName { get; set; } = "";
+        public string MainProgramName { get; set; } = ""; //當前城市
 
         [JsonPropertyName("subprogramname")]
         public string SubProgramName { get; set; } = "";
 
         [JsonPropertyName("cycletime")]
-        public string CycleTime { get; set; } = "";
+        public string CycleTime { get; set; } = ""; //持續時間
 
         /// <summary>決定機台可不可控制或派工</summary>
         [JsonPropertyName("cancontrol")]

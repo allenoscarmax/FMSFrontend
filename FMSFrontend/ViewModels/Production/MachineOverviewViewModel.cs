@@ -95,7 +95,10 @@ namespace FMSFrontend.ViewModels.Production
                     MachineCardVm[updateCnt].onDeckWorksheetSerial = Machines[updateCnt].OnDeckWorksheetSerial;
                     MachineCardVm[updateCnt].ElectrodeName = Machines[updateCnt].ElectrodeShortName;
                     MachineCardVm[updateCnt].WorkpieceName = Machines[updateCnt].WorkpieceShortName;
-                }                
+                    MachineCardVm[updateCnt].MainProgramName = Machines[updateCnt].OscarEdm.MainProgramName;
+                    MachineCardVm[updateCnt].CycleTime = Machines[updateCnt].OscarEdm.CycleTime;
+
+                }
                 while (MachineCardVm.Count > Machines.Count)
                 {
                     MachineCardVm.RemoveAt(MachineCardVm.Count - 1);
@@ -172,10 +175,14 @@ namespace FMSFrontend.ViewModels.Production
         public MachineCardViewModel() { }
         public MachineCardViewModel(ProductionLinesViewModel parent) { _parent = parent; }
 
-        [ObservableProperty] private string machineName = "";
-        [ObservableProperty] private string status = "";
-        [ObservableProperty] private MachineType type = MachineType.EDM;
-        [ObservableProperty] private bool restriction;
+        [ObservableProperty] private string machineName = ""; //設備名稱
+        [ObservableProperty] private string status = "";  
+        [ObservableProperty] private MachineType type = MachineType.EDM; //設備類型
+        [ObservableProperty] private bool restriction;  //設備鎖定 保留
+        //設備資訊
+        [ObservableProperty] private string mainProgramName = "";
+        [ObservableProperty] private string cycleTime = "";
+
         public string onDeckElectrodeSerial { get; set; } = "";// 夾持中電極標籤序號（RFID）
         public string onDeckWorkpieceSerial { get; set; } = "";// 夾持中工件標籤序號（RFID）
         public string onDeckWorksheetSerial { get; set; } = "";// 當前工單號/序號  

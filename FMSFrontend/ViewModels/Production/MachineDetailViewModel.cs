@@ -102,6 +102,8 @@ namespace FMSFrontend.ViewModels.Production
                     _machineDetails[updateCnt].onDeckWorksheetSerial = Machines[updateCnt].OnDeckWorksheetSerial;
                     _machineDetails[updateCnt].ElectrodeName = Machines[updateCnt].ElectrodeShortName;
                     _machineDetails[updateCnt].WorkpieceName = Machines[updateCnt].WorkpieceShortName;
+                    _machineDetails[updateCnt].MainProgramName = Machines[updateCnt].OscarEdm.MainProgramName;
+                    _machineDetails[updateCnt].CycleTime = Machines[updateCnt].OscarEdm.CycleTime;
                 }
                 while (_machineDetails.Count > Machines.Count) //刪除多餘的 CardVm
                 {

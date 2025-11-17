@@ -4,6 +4,7 @@ using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
+using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
@@ -12,133 +13,173 @@ using System.Collections.ObjectModel;
 using System.Reflection.PortableExecutable;
 using System.Security.Policy;
 using System.Windows.Threading;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FMSFrontend.ViewModels
 {
     public partial class MachineMainDetailViewModel : ObservableObject
     {
+        //private readonly MachineOverviewMainViewModel _parent;
         // === Services ===
-        private readonly IWorksheetsService _WorksheetService;
+        private readonly IWindowService _windowService;
+        private readonly IWorksheetsService _worksheetService;
         // === Singleton ===
         private readonly MachineStore _machineStore;
         public ObservableCollection<MachineModel> MachinesT => _machineStore.Machines;
-
-       
         DispatcherTimer _timer;
-        public ObservableCollection<WorkOrderRow> WorkOrders { get; } = new();
 
-        [ObservableProperty]
-        private ObservableCollection<TabItemModel> tabs;
-        [ObservableProperty]
-        private ObservableCollection<TabItemModel> tabsPosition;
-        [ObservableProperty]
-        private ObservableCollection<TabItemModel> tabsParameter;
-        [ObservableProperty]
-        private ObservableCollection<TabItemModel> tabsWorkOrder;
-
-        [ObservableProperty]
-        private int selectedTabIndex;
-        [ObservableProperty]
-        private int selectedTabIndexPosition;
-        [ObservableProperty]
-        private int selectedTabIndexParameter;
-        [ObservableProperty]
-        private int selectedTabIndexWorkOrder;
+        //機台資訊
+        [ObservableProperty] private ObservableCollection<TabItemModel> tabs;           // 機台資訊Tab
+        [ObservableProperty] private ObservableCollection<TabItemModel> tabsPosition;   // 工作座標Tab
+        [ObservableProperty] private ObservableCollection<TabItemModel> tabsParameter;  // 加工參數Tab
+        [ObservableProperty] private ObservableCollection<TabItemModel> tabsWorkOrder;  // 工單資訊Tab
+        [ObservableProperty] private int selectedTabIndex;                              // 機台資訊 Tab選擇
+        [ObservableProperty] private int selectedTabIndexPosition;                      // 工作座標 Tab選擇
+        [ObservableProperty] private int selectedTabIndexParameter;                     // 加工參數 Tab選擇
+        [ObservableProperty] private int selectedTabIndexWorkOrder;                     // 工單資訊 Tab選擇
+        [ObservableProperty] private MachineDisplayData displayData; //顯示機台詳細資訊
 
         //[ObservableProperty] private MachineOverviewCard selectedMachine;
+        [ObservableProperty] private int machineInfoTabControlSelectedIndex; //機台資訊TabControl選擇索引 
+        public MachineOverviewCard Machine { get; } //由machineoverview傳入選中的卡片
+        public string MachineImagePath => Machine.MachineImagePath; //機台圖片路徑
+        public string MachineName => Machine.MachineName; //機台名稱
+       
+        
+        
+        //工單資訊
+        public ObservableCollection<WorkOrderRow> WorkOrders { get; } = new();
+        public List<string> DateFilterOptions { get; set; } = new() { "今天", "前7天", "自訂" };
+        public bool IsCustomDateMode => SelectedFilterOption == "自訂";
+        [ObservableProperty] private string selectedFilterOption = "今天";
+        [ObservableProperty] private int selectedFilterIndex = 0;
 
+        [ObservableProperty] private DateTime? fromDate = DateTime.Today;
+        [ObservableProperty] private DateTime? toDate = DateTime.Today;
 
-        public MachineOverviewCard Machine { get; }
-
-        public string MachineImagePath => Machine.MachineImagePath;
-
-        public string MachineName => Machine.MachineName;
-        [ObservableProperty]
-        private int machineInfoTabControlSelectedIndex;
-
-        [ObservableProperty]
-        private MachineDisplayData displayData;
-        public List<string> FilterOptions { get; } = new() { "今天", "過去3天", "本月", "自訂" };
-
-        private string _selectedFilterOption = "今天";
-        public string SelectedFilterOption
+        private DateTime? lastValidFromDate = DateTime.Today;
+        private DateTime? lastValidToDate = DateTime.Today;
+        partial void OnSelectedFilterOptionChanged(string value)
         {
-            get => _selectedFilterOption;
-            set
+            OnPropertyChanged(nameof(IsCustomDateMode));
+            ApplyDateFilter();
+            _ = RefreshFetch();
+        }
+        partial void OnSelectedFilterIndexChanged(int value)
+        {
+            // 當以 index 選擇時，轉成對應的選項文字，讓現有的文字處理流程負責套用與抓取
+            if (value >= 0 && value < DateFilterOptions.Count)
             {
-                SetProperty(ref _selectedFilterOption, value);
-                ApplyDateFilter();
+                SelectedFilterOption = DateFilterOptions[value];
             }
         }
-
-        private DateTime _selectedDate = DateTime.Today;
-        public DateTime SelectedDate
+        partial void OnFromDateChanged(DateTime? value)
         {
-            get => _selectedDate;
-            set
+            if (value == null || ToDate == null)
             {
-                SetProperty(ref _selectedDate, value);
-                if (SelectedFilterOption == "自訂")
-                    ApplyDateFilter();
+                lastValidFromDate = value;
+                return;
             }
+            if (value > ToDate)
+            {
+                _windowService.ShowMessage("開始日期不能大於結束日期");
+                FromDate = lastValidFromDate;
+                return;
+            }
+            if ((ToDate - value)?.TotalDays > 31)
+            {
+                _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                FromDate = lastValidFromDate;
+                return;
+            }
+            lastValidFromDate = value;
+            if (IsCustomDateMode) _ = RefreshFetch(); // 若為自訂模式且日期變更，重新抓取
+        }
+        partial void OnToDateChanged(DateTime? value)
+        {
+            if (value == null || FromDate == null)
+            {
+                lastValidToDate = value;
+                return;
+            }
+
+            if (value < FromDate)
+            {
+                _windowService.ShowMessage("結束日期不能小於開始日期");
+                ToDate = lastValidToDate;
+                return;
+            }
+
+            if ((value - FromDate)?.TotalDays > 31)
+            {
+                _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                ToDate = lastValidToDate;
+                return;
+            }
+
+            lastValidToDate = value;
+            // 若為自訂模式且日期變更，重新抓取
+            if (IsCustomDateMode) _ = RefreshFetch();
         }
 
         private void ApplyDateFilter()
         {
-            DateTime fromDate = DateTime.Today;
-
             switch (SelectedFilterOption)
             {
                 case "今天":
-                    fromDate = DateTime.Today;
+                    ToDate = DateTime.Today;
+                    FromDate = DateTime.Today;
                     break;
-                case "過去3天":
-                    fromDate = DateTime.Today.AddDays(-2);
-                    break;
-                case "本月":
-                    fromDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+                case "前7天":
+                    ToDate = DateTime.Today;
+                    FromDate = DateTime.Today.AddDays(-6); // 包含今天一共7天
                     break;
                 case "自訂":
-                    fromDate = SelectedDate;
+                default:
                     break;
             }
-
-            // 依照 fromDate 篩選資料
-            //FilterWorkOrderList(fromDate);
         }
+        //設定日期End
         private async Task RefreshFetch()
         {
             //try { 
-            List<WorksheetsTimelineDto>? WorksheetsTimelineDtos =
-                await _WorksheetService.GetWorksheetTimelineByDateTimeAsync(DateTime.Today, _selectedDate);
-            if (WorksheetsTimelineDtos != null)
+            if (FromDate != null && ToDate != null)
             {
+                List<WorksheetsTimelineDto>? WorksheetsTimelineDtos =
+                    await _worksheetService.GetWorksheetTimelineByDateTimeAsync(FromDate.Value, ToDate.Value);
                 WorkOrders.Clear();
-                foreach (var w in WorksheetsTimelineDtos)
+                if (WorksheetsTimelineDtos != null)
                 {
-                    if (w.EDMnumber == Machine.MachineName )
+                    foreach (var w in WorksheetsTimelineDtos)
                     {
-                        WorkOrders.Add(new WorkOrderRow
+                        if (w.EDMnumber == Machine.MachineName)
                         {
-                            CreatTime = w.TimeStampe.ToLongDateString() ?? "",
-                            WorksheetNumber = w.WorkSheetSerial ?? "",
-                            WorkStatus = w.WorkCommand,
-                            WorkpieceName = "" // 代定義
-                        });
+                            WorkOrders.Add(new WorkOrderRow
+                            {
+                                CreatTime = w.TimeStampe.ToString("yyyy/MM/dd") ?? "",
+                                WorksheetNumber = w.WorkSheetSerial ?? "",
+                                WorkStatus = w.WorkCommand,
+                                WorkpieceName = "" // 代定義
+                            });
+                        }
                     }
                 }
+            }
+            else
+            {
+                _windowService.ShowMessage("日期格式錯誤");
             }
             //} Catch{}
         }
 
         // ✅ 實際使用的建構式
-        public MachineMainDetailViewModel(MachineOverviewCard machine,
-            IWorksheetsService worksheetsService,
-            MachineStore machineStore)
+        public MachineMainDetailViewModel(MachineOverviewCard machine, MachineOverviewMainViewModel parent)
         {
             Machine = machine;
-            //SelectedMachine = machine; //Allen 加入
-            _machineStore = machineStore;
+            _windowService = parent._WindowService;
+            _machineStore = parent._machineStore;
+            _worksheetService = parent._WorksheetsService;
+            _machineStore = parent._machineStore;
 
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
             _timer.Tick += (_, __) => RefreshFromStore();
@@ -182,7 +223,7 @@ namespace FMSFrontend.ViewModels
             DisplayData.MachineStatus = edm.OscarEdm.MachineStatus;
             DisplayData.UsingElectrode = edm.OscarEdm.UsingElectrode;
             DisplayData.MachiningCode = edm.OscarEdm.MachiningCode;
-            DisplayData.MachiningWorkingTime = edm.OscarEdm.MachiningWorkingTime;
+            DisplayData.MachiningWorkingTime = edm.OscarEdm.CycleTime;
             DisplayData.MachiningWorkingPercentage = edm.OscarEdm.MachiningWorkingPercentage;
             DisplayData.CurrentWorksheet = edm.OscarEdm.CurrentWorksheet;
             DisplayData.MachiningTool = edm.OscarEdm.MachiningTool;

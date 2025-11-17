@@ -131,28 +131,30 @@
                                 <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Info.ModelNo}" FontSize="20" Margin="0,6" />
 
                                 <TextBlock Grid.Row="3" Grid.Column="0" Text="當前程式：" FontSize="20" Margin="0,6" />
-                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Info.CurrentProgram}" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Info.MainProgramName}" FontSize="20" Margin="0,6" />
 
                                 <TextBlock Grid.Row="4" Grid.Column="0" Text="機台狀態：" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Info.MachineState}" FontSize="20" Margin="0,6" />
 
                                 <TextBlock Grid.Row="5" Grid.Column="0" Text="狀態持續時間：" FontSize="20" Margin="0,6" />
-                                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Info.StateDuration}" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Info.CycleTime}" FontSize="20" Margin="0,6" />
 
-                                <TextBlock Grid.Row="6" Grid.Column="0" Text="目前電極編號：" FontSize="20" Margin="0,6" />
-                                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding Info.CurrentElectrode}" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="6" Grid.Column="0" Text="電極名稱：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding Info.ElectrodeName}" FontSize="20" Margin="0,6" />
 
-                                <TextBlock Grid.Row="7" Grid.Column="0" Text="目前工作編號：" FontSize="20" Margin="0,6" />
-                                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding Info.CurrentWork}" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="7" Grid.Column="0" Text="工單名稱：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding Info.WorkSheetName}" FontSize="20" Margin="0,6" />
 
-                                <TextBlock Grid.Row="8" Grid.Column="0" Text="等待加工數：" FontSize="20" Margin="0,6" />
-                                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding Info.WaitingCount}" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="8" Grid.Column="0" Text="工件名稱：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding Info.WorkPieceName}" FontSize="20" Margin="0,6" />
 
+                              <!--  
                                 <TextBlock Grid.Row="9" Grid.Column="0" Text="本日完工數：" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding Info.FinishedToday}" FontSize="20" Margin="0,6" />
 
                                 <TextBlock Grid.Row="10" Grid.Column="0" Text="財產編號：" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding Info.AssetNo}" FontSize="20" Margin="0,6" />
+                                -->
                             </Grid>
                         </Grid>
                     </Border>

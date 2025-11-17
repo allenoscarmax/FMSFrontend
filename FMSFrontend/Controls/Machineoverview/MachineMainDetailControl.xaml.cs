@@ -23,11 +23,10 @@ namespace FMSFrontend.Controls
     /// </summary>
     public partial class MachineMainDetailControl : UserControl
     {
-        public MachineMainDetailControl(MachineOverviewCard selectedMachine, IWorksheetsService worksheetsService, MachineStore machineStore)
+        public MachineMainDetailControl(MachineOverviewCard selectedMachine, MachineOverviewMainViewModel machineOverviewMainViewModel)
         {
             InitializeComponent();
-
-            this.DataContext = new MachineMainDetailViewModel(selectedMachine, worksheetsService, machineStore);
+            this.DataContext = new MachineMainDetailViewModel(selectedMachine, machineOverviewMainViewModel);
         }
         private void TabItem_MouseEnter(object sender, MouseEventArgs e)
         {

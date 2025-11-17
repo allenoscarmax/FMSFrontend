@@ -38,21 +38,17 @@ namespace FMSFrontend.ViewModels.Windows
             if (machineCard is MachineCardViewModel m)
             {
                 DeviceName = m.MachineName ?? "設備名稱";
-
                 Info.MachineTypeName = m.MachineTypeName;       // 給 Converter 用（EDM/CNC/ZNC…）
-                Info.EquipmentName = m.MachineName ?? "";           // 左卡「設備名稱」
-                Info.EquipmentType = m.Type.ToString();       // 左卡「設備類型」
-                Info.MachineState = MapStatus(m.Status);     // 左卡「機台狀態」
 
-                // 其它目前 MachineCard 沒提供的欄位先給預設 / 空值
-                Info.ModelNo = string.Empty;
-                Info.CurrentProgram = string.Empty;
-                Info.StateDuration = string.Empty;
-                Info.CurrentElectrode = string.Empty;
-                Info.CurrentWork = string.Empty;
-                Info.WaitingCount = 0;
-                Info.FinishedToday = 0;
-                Info.AssetNo = string.Empty;
+                Info.EquipmentName = m.MachineName ?? "";       // 0.設備名稱
+                Info.EquipmentType = m.Type.ToString();         // 1.設備類型
+                Info.ModelNo = m.MachineName ?? "";             // 2.設備型號
+                Info.MainProgramName = m.MainProgramName;       // 3.當前程式
+                Info.MachineState = m.Status;                   // 4.機台狀態
+                Info.CycleTime = m.CycleTime;                   // 5.狀態持續時間
+                Info.ElectrodeName = m.ElectrodeName;           // 6.電極名稱
+                Info.WorkSheetName = m.onDeckWorksheetSerial;   // 7.工單名稱
+                Info.WorkPieceName = m.WorkpieceName;           // 8.電極名稱
             }
             else
             {
@@ -61,18 +57,8 @@ namespace FMSFrontend.ViewModels.Windows
             }
 
         }
-
-        private static string MapStatus(string? s) => (s ?? "").ToLowerInvariant() switch
-        {
-            "idle" => "待機",
-            "running" => "運轉中",
-            "warning" => "警告",
-            "error" => "異常",
-            "disabled" => "禁用",
-            _ => s ?? ""
-        };
         // 日期篩選選項
-        public List<string> DateFilterOptions { get; set; } = new() { "今天", "過去7天", "自訂" };
+        public List<string> DateFilterOptions { get; set; } = new() { "今天", "前7天", "自訂" };
         public bool IsCustomDateMode => SelectedFilterOption == "自訂";
         [ObservableProperty] private string selectedFilterOption = "今天";
         [ObservableProperty] private int selectedFilterIndex = 0;
@@ -153,7 +139,7 @@ namespace FMSFrontend.ViewModels.Windows
                     ToDate = DateTime.Today;
                     FromDate = DateTime.Today;
                     break;
-                case "過去7天":
+                case "前7天":
                     ToDate = DateTime.Today;
                     FromDate = DateTime.Today.AddDays(-6); // 包含今天一共7天
                     break;
@@ -176,7 +162,7 @@ namespace FMSFrontend.ViewModels.Windows
                     {
                         WorkOrders.Add(new WorkOrderRow
                         {
-                            CreatTime = w.TimeStampe.ToLongDateString() ?? "",
+                            CreatTime = w.TimeStampe.ToString("yyyy/MM/dd") ?? "",
                             WorksheetNumber = w.WorkSheetSerial ?? "",
                             WorkStatus = w.WorkCommand,
                             WorkpieceName = "" // 代定義
@@ -198,14 +184,12 @@ namespace FMSFrontend.ViewModels.Windows
         [ObservableProperty] private string equipmentName = "";
         [ObservableProperty] private string equipmentType = "";
         [ObservableProperty] private string modelNo = "";
-        [ObservableProperty] private string currentProgram = "";
+        [ObservableProperty] private string mainProgramName = "";
         [ObservableProperty] private string machineState = "";
-        [ObservableProperty] private string stateDuration = "";
-        [ObservableProperty] private string currentElectrode = "";
-        [ObservableProperty] private string currentWork = "";
-        [ObservableProperty] private int waitingCount;
-        [ObservableProperty] private int finishedToday;
-        [ObservableProperty] private string assetNo = "";
+        [ObservableProperty] private string cycleTime = "";
+        [ObservableProperty] private string electrodeName = "";
+        [ObservableProperty] private string workSheetName = "";
+        [ObservableProperty] private string workPieceName;
     }
 
     public class WorkOrderRow

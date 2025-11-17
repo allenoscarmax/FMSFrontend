@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FMSFrontend.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,10 +20,10 @@ namespace FMSFrontend.Views.Windows
     /// </summary>
     public partial class ShowRobotWindow : Window
     {
-        public ShowRobotWindow()
+        public ShowRobotWindow(Robot robot)
         {
             InitializeComponent();
-            this.DataContext = new ViewModels.Windows.ShowRobotViewModel();
+            this.DataContext = new ViewModels.Windows.ShowRobotViewModel(robot);
         }
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
