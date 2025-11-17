@@ -1,7 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using　CommunityToolkit.Mvvm.Messaging.Messages;
 using CommunityToolkit.Mvvm.Messaging; 
+using　CommunityToolkit.Mvvm.Messaging.Messages;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.Views;
@@ -18,31 +22,34 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using FMSFrontend.Models;
+using FMSFrontend.Features.Dtos;
 
 namespace FMSFrontend.ViewModels
 {
     public partial class WorkOrderPageViewModel : ObservableObject
     {
+        private readonly IWindowService _WindowService;
+        private readonly IWorkpieceService _WorkpieceService;
+        private readonly IProbeService _ProbeService;
+        private readonly IElectrodeService _ElectrodeService;
+        private readonly IWorksheetsService _WorksheetsService;
+
+        private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
 
         [ObservableProperty]
         private int selectedTabIndexParameter;
         partial void OnSelectedTabIndexParameterChanged(int value)
         {
-            _paramTabCts?.Cancel();
-            _paramTabCts = new CancellationTokenSource();
-
-            _ = FetchAndBindByStatusAsync( _paramTabCts.Token);
+            _ = FetchAndBindByStatusAsync();
         }
 
-        [ObservableProperty]
-        private int eDMSelectedTab; // 決定 EDM 子頁籤
+        [ObservableProperty] private int eDMSelectedTab; // 決定 EDM 子頁籤
+
         partial void OnEDMSelectedTabChanged(int value)
         {
-            _edmTabCts?.Cancel();
-            _edmTabCts = new CancellationTokenSource();
-
-            var status = MapWorkStatusForEdmTab(value);
-            _ = FetchAndBindByStatusAsync(_edmTabCts.Token);
+           
+            _ = FetchAndBindByStatusAsync();
         }
         public List<string> DateFilterOptions { get; set; } = new() { "今天", "過去7天", "自訂" };
         [ObservableProperty]
@@ -50,13 +57,6 @@ namespace FMSFrontend.ViewModels
 
         private DateTime? lastValidFromDate = DateTime.Today;
         private DateTime? lastValidToDate = DateTime.Today;
-
-        private readonly IWindowService _windowService;
-        private readonly IHttpService _httpService; // ← 新增：呼叫 API
-
-        // ← 新增：切換標籤時取消前一個請求
-        private CancellationTokenSource? _paramTabCts;
-        private CancellationTokenSource? _edmTabCts;
 
         partial void OnSelectedFilterOptionChanged(string value)
         {
@@ -76,14 +76,14 @@ namespace FMSFrontend.ViewModels
 
             if (value > ToDate)
             {
-                _windowService.ShowMessage("開始日期不能大於結束日期");
+                _WindowService.ShowMessage("開始日期不能大於結束日期");
                 FromDate = lastValidFromDate;
                 return;
             }
 
             if ((ToDate - value)?.TotalDays > 31)
             {
-                _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                _WindowService.ShowMessage("選擇的日期範圍不能超過一個月");
                 FromDate = lastValidFromDate;
                 return;
             }
@@ -95,13 +95,9 @@ namespace FMSFrontend.ViewModels
         private DateTime? toDate = DateTime.Today;
         public void OnPageActivated()
         {
-            _paramTabCts?.Cancel();
-            _paramTabCts = new CancellationTokenSource();
-
             var status = MapWorkStatusForParameterTab(SelectedTabIndexParameter);
 
-            // fire-and-forget 更新資料（內部支援 CancellationToken）
-            _ = FetchAndBindByStatusAsync( _paramTabCts.Token);
+            _ = FetchAndBindByStatusAsync();
         }
         partial void OnToDateChanged(DateTime? value)
         {
@@ -141,7 +137,7 @@ namespace FMSFrontend.ViewModels
                 case "過去7天":
                     ToDate = DateTime.Today;
                     FromDate = DateTime.Today.AddDays(-6); // 包含今天一共7天
-                   
+
                     break;
                 case "自訂":
                 default:
@@ -150,30 +146,31 @@ namespace FMSFrontend.ViewModels
         }
         public ICommand DeleteCommand { get; }
 
-        public WorkOrderPageViewModel(IWindowService windowService, IHttpService httpService) // ← 調整建構子
+        public WorkOrderPageViewModel(IWindowService windowService,
+            IElectrodeService electrodeService,
+            IWorkpieceService workpieceService,
+            IProbeService probeService,
+            IStorageService storageService,
+            IMachinesService machinesService,
+            IWorksheetsService worksheetsService,
+            RobotStore robotStore,
+            MachineLiveUpdater machineLiveUpdater)
         {
-            _windowService = windowService;
-            _httpService = httpService;
+            _WindowService = windowService;
+            _WorkpieceService = workpieceService;
+            _ProbeService = probeService;
+            _ElectrodeService = electrodeService;
+            _WorksheetsService = worksheetsService;
+
             // 使用非同步方法刪除：保留 RelayCommand，但在內部啟動 async Task
             DeleteCommand = new RelayCommand<WorkOrderData>(item =>
-            {
-                if (item != null)
                 {
-                    _ = DeleteWorkOrderAsync(item);
-                }
-            });
-
-            // 新增：訂閱 UploadsheetsWindow 關閉後的廣播，收到後重新抓取資料
-            WeakReferenceMessenger.Default.Register<UploadSheetsClosedMessage>(this, (r, msg) =>
-            {
-                if (msg.Value) ScheduleFetchForWorkOrder();
-            });
-
-            WeakReferenceMessenger.Default.Register<ValueChangedMessage<string>>(this, (r, message) =>
-            {
-                if (string.Equals(message.Value, "WorkOrder", StringComparison.Ordinal))
-                    ScheduleFetchForWorkOrder();
-            });
+                    if (item != null)
+                    {
+                        _ = DeleteWorkOrderAsync(item);
+                    }
+                });
+            _ = FetchAndBindByStatusAsync();
         }
 
         private void ShowWarning(string message)
@@ -184,44 +181,59 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void OpenUploadSheet()
         {
-            _windowService.ShowUploadSheetWindow();
+            _WindowService.ShowUploadSheetWindow();
         }
         // 最小改動：呼叫後端 API 並綁定到對應的 UI 集合（使用 CancellationToken）
-        private async Task FetchAndBindByStatusAsync(CancellationToken ct)
+        private async Task FetchAndBindByStatusAsync()
         {
             // try
             // {
             // 支援取消
-            JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Worksheet/DB_GetAllWorkSheet", ct);
-            ct.ThrowIfCancellationRequested();
-            List<Worksheets> worksheets = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined)
-                ? JsonSerializer.Deserialize<List<Worksheets>>(json.Value.GetRawText()) ?? new List<Worksheets>()
-                : new List<Worksheets>();
-
-
-            // 只更新目前畫面所綁定的集合（避免不必要變動）
-            Application.Current.Dispatcher.Invoke(() =>
+            _currentUpdateCts?.Cancel();
+            _currentUpdateCts?.Dispose();
+            _currentUpdateCts = new CancellationTokenSource();
+            _currentUpdateCts.CancelAfter(TimeSpan.FromMilliseconds(1000));
+            var ct = _currentUpdateCts.Token;
+            var status = "";
+            if (SelectedTabIndexParameter == 0) status = "New";
+            else if (SelectedTabIndexParameter == 1) status = MapWorkStatusForEdmTab(EDMSelectedTab);
+            else if (SelectedTabIndexParameter == 2) status = "Failure";
+            else return;
+            List<WorksheetsDto> ws = await _WorksheetsService.GetWorkSheetByWorkStatusAsync(status, ct) ?? new List<WorksheetsDto>();
+             WorkOrderList.Clear();
+            FilteredEDMList.Clear();
+            FailureWorkOrders.Clear();
+            foreach (var w in ws)
             {
-                if (SelectedTabIndexParameter == 0)
+                var workOrder = MapToWorkOrderData(w); // 建立工單資料
+                var es = await _ElectrodeService.GetElectrodeByWorksheetNumberAsync(w.worksheetNumber ?? string.Empty, ct) // 取得該工單的電極清單
+                         ?? new List<ElectrodeDto>();
+                foreach (var e in es)
                 {
-                    WorkOrderList.Clear();
-                    foreach (var w in worksheets)
-                        WorkOrderList.Add(MapToWorkOrderData(w));
+                    // DTO 裡 edM_offsetPGM 為字串，需轉成整數
+                    int offsetVal = 0;
+                    if (!string.IsNullOrWhiteSpace(e.edM_offsetPGM))
+                        int.TryParse(e.edM_offsetPGM, out offsetVal);
+
+                    // NeedEDM 判斷：有程式且尚未完成/驗證
+                    bool needEDM = !string.IsNullOrWhiteSpace(e.edmpgm) &&
+                                   !string.Equals(e.state, "Completed", StringComparison.OrdinalIgnoreCase) &&
+                                   !string.Equals(e.state, "Verified", StringComparison.OrdinalIgnoreCase);
+
+                    workOrder.EDMDetails.Add(new EDMDetail
+                    {
+                        ElectrodeName = e.electrodeName ?? "",
+                        LabelSerial = e.tagSerial ?? "",
+                        Status = e.state ?? "",
+                        NeedEDM = true, //代定義
+                        EDMProgram = e.edmpgm ?? "",
+                        Offset = e.offsetStatus ?? 0 
+                    });
                 }
-                else if (SelectedTabIndexParameter == 1)
-                {
-                    // EDM 子頁簽
-                    FilteredEDMList.Clear();
-                    foreach (var w in worksheets)
-                        FilteredEDMList.Add(MapToWorkOrderData(w));
-                }
-                else
-                {
-                    FailureWorkOrders.Clear();
-                    foreach (var w in worksheets)
-                        FailureWorkOrders.Add(MapToWorkOrderData(w));
-                }
-            });
+                if (SelectedTabIndexParameter == 0) WorkOrderList.Add(workOrder);
+                else if (SelectedTabIndexParameter == 1) FilteredEDMList.Add(workOrder);
+                else if (SelectedTabIndexParameter == 2) FailureWorkOrders.Add(workOrder);
+            }
             return;
             //  }
             //  catch { }
@@ -233,26 +245,23 @@ namespace FMSFrontend.ViewModels
             try
             {
                 // 要求使用者確認
-                bool yes = _windowService.ShowYesNoDialog($"確定要刪除工單 {item.WorksheetNumber} 嗎？");
+                bool yes = _WindowService.ShowYesNoDialog($"確定要刪除工單 {item.WorksheetNumber} 嗎？");
                 if (!yes) return;
-
                 if (string.IsNullOrWhiteSpace(item.Id))
                 {
-                    _windowService.ShowMessage("找不到工單 ID，無法刪除。");
+                    _WindowService.ShowMessage("找不到工單 ID，無法刪除。");
                     return;
                 }
-
-                string route = $"Worksheet/DB_DeleteWorkSheetDataById/{item.Id}";
-                await _httpService.SendPutAsync(route,"");
-
-                // 若 API 呼叫成功，從 UI 清單移除
-                WorkOrderList.Remove(item);
-                _windowService.ShowMessage("已成功刪除工單。");
+                bool ok = await _WorksheetsService.DeleteWorkSheetDataByIdAsync(item.Id);
+                if (ok)
+                {
+                    WorkOrderList.Remove(item);
+                    _WindowService.ShowMessage("已成功刪除工單。");   // 若 API 呼叫成功，從 UI 清單移除
+                }
             }
             catch (Exception ex)
             {
-                // 顯示錯誤資訊但不要讓應用程式崩潰
-                _windowService.ShowMessage($"刪除工單失敗：{ex.Message}");
+                _WindowService.ShowMessage($"刪除工單失敗：{ex.Message}"); // 顯示錯誤資訊但不要讓應用程式崩潰
             }
         }
 
@@ -267,27 +276,28 @@ namespace FMSFrontend.ViewModels
 
         private static string MapWorkStatusForEdmTab(int index) => index switch
         {
-            0 => "Reserved",
-            1 => "Working",
-            2 => "Error",
-            _ => "Working"
+            0 => "Waiting",
+            1 => "Queue",
+            2 => "Processing",
+            3 => "Completed",
+            _ => ""
         };
 
         // ← 新增：將 Workpiece 轉為畫面使用的 WorkOrderData
-        private static WorkOrderData MapToWorkOrderData(Worksheets ws)
+        private static WorkOrderData MapToWorkOrderData(WorksheetsDto ws)
         {
             return new WorkOrderData
             {
                 Id = ws._id ?? string.Empty,
-                WorksheetNumber = ws.WorksheetNumber ?? string.Empty,
-                WorkpieceName = ws.WorkpieceName ?? string.Empty,
-                Status = ws.WorkStatus ?? string.Empty,
-                StatusColor = ToStatusBrush(ws.WorkStatus),
-                TargetEDM = ws.TargetEDM ?? string.Empty,
-                Coordinate = ws.Coordinate ?? string.Empty,
-                SetupUser = ws.SetupUser ?? string.Empty,
-                ProcessStep = ws.ProcessStep ?? 0,
-                TotalProcessStep = ws.TotalProcessStep ?? 0,
+                WorksheetNumber = ws.worksheetNumber ?? string.Empty,
+                WorkpieceName = ws.workpieceName ?? string.Empty,
+                Status = ws.workStatus ?? string.Empty,
+                StatusColor = ToStatusBrush(ws.workStatus),
+                TargetEDM = ws.targetEDM ?? string.Empty,
+                Coordinate = ws.coordinate ?? string.Empty,
+                SetupUser = ws.setupUser ?? string.Empty,
+                ProcessStep = ws.processStep ?? 0,
+                TotalProcessStep = ws.totalProcessStep ?? 0,
                 EDMDetails = new ObservableCollection<EDMDetail>() // Worksheets 不含電極明細，先回傳空集合
             };
         }
@@ -296,12 +306,10 @@ namespace FMSFrontend.ViewModels
         {
             return status switch
             {
-                "Working" => Brushes.Orange,
-                "Verified" => Brushes.MediumPurple,
-                "Completed" => Brushes.DeepSkyBlue,
-                "Reserved" => Brushes.SteelBlue,
-                "Error" => Brushes.IndianRed,
-                "Empty" => Brushes.Gray,
+                "Queue" => new SolidColorBrush(Color.FromRgb(0xE6, 0xB9, 0x3E)), //黃色
+                "Processing" => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)), //綠色
+                "Failure" => new SolidColorBrush(Color.FromRgb(0xC0, 0x39, 0x2B)), //紅色
+                "Completed" => new SolidColorBrush(Color.FromRgb(0x2F, 0x64, 0xCF)), //藍色
                 _ => Brushes.Gray
             };
         }
@@ -309,9 +317,7 @@ namespace FMSFrontend.ViewModels
         // 新增於類別內（private helper）
         private void ScheduleFetchForWorkOrder()
         {
-            _paramTabCts?.Cancel();
-            _paramTabCts = new CancellationTokenSource();
-            _ = FetchAndBindByStatusAsync(_paramTabCts.Token);
+            _ = FetchAndBindByStatusAsync();
         }
     }
 

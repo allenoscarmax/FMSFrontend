@@ -75,11 +75,10 @@ namespace FMSFrontend.Features.Threading
                         if (s.Kind == MaterialType.Electrode) //檢查是否為電極
                         {
                             var eleDtos = await _svc_electrode.DB_GetElectrodesByTagSerialAsync(slot.Serial);
-                            if (eleDtos != null && eleDtos.Any())
+                            if (eleDtos != null)
                             {
-                                var eleDto = eleDtos.FirstOrDefault();
-                                if (eleDto != null)
-                                    _store.ApplyElectrodeDto(eleDto, i, j); // 傳入 index
+                                var eleDto = eleDtos.FirstOrDefault() ?? new ElectrodeDto();
+                                _store.ApplyElectrodeDto(eleDto, i, j); // 傳入 index
                             }
                             else //檢查是否為探針
                             {
@@ -87,6 +86,10 @@ namespace FMSFrontend.Features.Threading
                                 if (probeDto != null)
                                 {
                                     _store.ApplyProbeDto(probeDto, i, j); // 傳入 index
+                                }
+                                else
+                                {
+                                    _store.ApplyNullDto(i, j); // 傳入 index
                                 }
                             }
                         }
@@ -97,7 +100,19 @@ namespace FMSFrontend.Features.Threading
                             {
                                 _store.ApplyWorkpieceDto(workpieceDto, i, j); // 傳入 index
                             }
+                            else
+                            {
+                                _store.ApplyNullDto(i, j); // 傳入 index
+                            }
                         }
+                        else 
+                        {
+                            _store.ApplyNullDto(i, j); // 傳入 index
+                        }
+                    }
+                    else 
+                    {
+                        _store.ApplyNullDto(i, j); // 傳入 index
                     }
                 }
             }

@@ -24,6 +24,21 @@ namespace FMSFrontend.Features.Singleton
             } 
             else apply();
         }
+        public void ApplyNullDto(int storageIndex, int slotIindex)
+        {
+            var disp = Application.Current?.Dispatcher;
+            void apply()
+            {
+                if (StorageGroup.Storage[storageIndex].Slots[slotIindex] == null) return;
+                StorageGroup.Storage[storageIndex].Slots[slotIindex].Name = "";
+                StorageGroup.Storage[storageIndex].Slots[slotIindex].ShortName = "";
+                StorageGroup.Storage[storageIndex].Slots[slotIindex].MaterialStatus = "";
+                StorageGroup.Storage[storageIndex].Slots[slotIindex].MaterialRestriction = false;
+            }
+            if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
+            else apply();
+            
+        }
         public void ApplyElectrodeDto(ElectrodeDto dto, int storageIndex ,int slotIindex)
         {
             var disp = Application.Current?.Dispatcher;
@@ -31,6 +46,7 @@ namespace FMSFrontend.Features.Singleton
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();
         }
+
         public void ApplyWorkpieceDto(WorkpieceDto dto, int storageIndex, int slotIindex)
         {
             var disp = Application.Current?.Dispatcher;

@@ -86,7 +86,9 @@ namespace FMSFrontend.Features.Threading
                             if (eDto != null)
                                 _store.ApplyElectrodeDto(eDto, i);
                         }
+                        else _store.ApplyNull(i,true);
                     }
+                    else _store.ApplyNull(i,true);
                     //如果有工件序號讀取,工件資訊
                     if (!string.IsNullOrEmpty(mDtos[i].onDeckWorkpieceSerial))
                     {
@@ -96,12 +98,13 @@ namespace FMSFrontend.Features.Threading
                         {
                             _store.ApplyWorkpieceDto(wDto, i);
                         }
+                        else _store.ApplyNull(i,false);
                     }
-                    Cnt = (Cnt + 1) % 100;
+                    else _store.ApplyNull(i,false);
                     //取得機台資訊
-                    if (mDtos[i].machineCode.Contains("EDM") )
+                    if (mDtos[i].machineCode.Contains("EDM"))
                     {
-                        var oscarDto = await _svc_Machines.GetMachineDataAsync(mDtos[i].machineNumber-1);
+                        var oscarDto = await _svc_Machines.GetMachineDataAsync(mDtos[i].machineNumber - 1);
                         if (oscarDto != null)
                         {
                             _store.ApplyOscarmaxMachineParaDto(oscarDto, i);

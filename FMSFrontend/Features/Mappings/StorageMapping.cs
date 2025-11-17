@@ -8,6 +8,7 @@ namespace FMSFrontend.Features.Mappings
 {
     public static class StorageMapping
     {
+       
         public static void ApplyStorageDto(this List<StorageDto> dtos, ObservableCollection<StorageModel>  models)
         {
             if (dtos == null || models == null) return;
@@ -51,6 +52,7 @@ namespace FMSFrontend.Features.Mappings
                 models.RemoveAt(models.Count - 1);
             }
         }
+
         public static void ApplyElectrodeDto(this ElectrodeDto dto, Slot model)
         {
             if (dto == null || model == null) return;
@@ -62,6 +64,7 @@ namespace FMSFrontend.Features.Mappings
             model.MaterialStatus = dto?.state ?? "";
             model.MaterialRestriction = dto?.restriction ?? false;
         }
+        
         public static void ApplyWorkpieceDto(this WorkpieceDto dto, Slot model)
         {
             if (dto == null || model == null) return;

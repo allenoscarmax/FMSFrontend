@@ -13,7 +13,7 @@ namespace FMSFrontend.Features.Dtos
         public Guid Id { get; set; }
 
         [JsonPropertyName("hasDone")]
-        public bool HasDone { get; set; }
+        public bool HasDone { get; set; } //
 
         [JsonPropertyName("priority")]
         public int Priority { get; set; }
