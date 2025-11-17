@@ -38,5 +38,6 @@ namespace FMSFrontend.Features.Dtos
 
         [JsonPropertyName("note")]
         public string Note { get; set; } = "";         // 備註說明
+
     }
 }
