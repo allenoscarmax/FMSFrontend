@@ -30,6 +30,25 @@ namespace FMSFrontend.Features.Singleton
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();
         }
+        public void ApplyNull(int inedx,bool isElectrode)
+        {
+            var disp = Application.Current?.Dispatcher;
+            void apply()
+            {
+                if (isElectrode)
+                {
+                    Machines[inedx].ElectrodeName = "";
+                    Machines[inedx].ElectrodeShortName = "";
+                }
+                else
+                {
+                    Machines[inedx].WorkpieceName = "";
+                    Machines[inedx].WorkpieceShortName = "";
+                }
+            }
+            if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
+            else apply();
+        }
         public void ApplyElectrodeDto(ElectrodeDto dto,int inedx)
         {
             var disp = Application.Current?.Dispatcher;
@@ -40,7 +59,7 @@ namespace FMSFrontend.Features.Singleton
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();
         }
-        public void ApplyWorkpieceDto(WorkpieceDto dto, int inedx)
+        public void ApplyWorkpieceDto(WorkpieceDto? dto, int inedx)
         {
             var disp = Application.Current?.Dispatcher;
             void apply()

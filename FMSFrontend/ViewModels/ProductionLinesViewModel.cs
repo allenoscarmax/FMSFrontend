@@ -73,11 +73,19 @@ namespace FMSFrontend.ViewModels
             get => _currentWorkingZoneView;
             set => SetProperty(ref _currentWorkingZoneView, value);
         }
-        public ProductionLinesViewModel(IWindowService windowService, IHttpService httpService,
-            IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService,
-            IMachinesService machinesService, IWorksheetsService worksheetsService,
-            StorageStore storageStore, MachineStore machineStore, RobotStore robotStore,
-            StorageLiveUpdater storageLiveUpdater, MachineLiveUpdater machineLiveUpdater) 
+        public ProductionLinesViewModel(IWindowService windowService, 
+            IHttpService httpService,
+            IElectrodeService electrodeService, 
+            IWorkpieceService workpieceService,
+            IProbeService probeService, 
+            IStorageService storageService,
+            IMachinesService machinesService, 
+            IWorksheetsService worksheetsService,
+            StorageStore storageStore, 
+            MachineStore machineStore, 
+            RobotStore robotStore,
+            StorageLiveUpdater storageLiveUpdater, 
+            MachineLiveUpdater machineLiveUpdater) 
         {
             _windowService = windowService;
             _httpService = httpService;
@@ -144,6 +152,7 @@ namespace FMSFrontend.ViewModels
             if (string.IsNullOrEmpty(slot.Serial))
             {
                 _windowService.ShowMaterialEmpty(_httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
+                return;
             }
             //try
             //{

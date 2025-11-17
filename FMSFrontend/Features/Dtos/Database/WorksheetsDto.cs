@@ -25,19 +25,19 @@ namespace FMSFrontend.Features.Dtos
     public enum WorksheetStatus
     {
         [Description("新加入工單")]
-        NewJoinSheet,
+        New, //灰
         [Description("等待工件可派工(組裝量測OK)")]
         Waiting,
         [Description("待派工")]
-        Queue,
+        Queue, //黃
         [Description("加工中")]
-        Processing,
+        Processing, //綠
         [Description("加工完成")]
-        Completed,
+        Completed, //藍色
         [Description("已暫停")]
-        Paused,
+        Paused,  //
         [Description("失敗")]
-        Failure,
+        Failure, //紅色
     }
     public enum WorkCommand
     {
