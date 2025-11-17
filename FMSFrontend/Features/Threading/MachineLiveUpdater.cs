@@ -99,16 +99,13 @@ namespace FMSFrontend.Features.Threading
                     }
                     Cnt = (Cnt + 1) % 100;
                     //取得機台資訊
-                    if (mDtos[i].machineCode.Contains("EDM") && mDtos[i].machineName == SelectName)
+                    if (mDtos[i].machineCode.Contains("EDM") )
                     {
-                        /*
-                        var oscarDto = await _svc_Machines.GetMachineDataAsync(mDtos[i].machineNumber);
+                        var oscarDto = await _svc_Machines.GetMachineDataAsync(mDtos[i].machineNumber-1);
                         if (oscarDto != null)
                         {
                             _store.ApplyOscarmaxMachineParaDto(oscarDto, i);
                         }
-                        */
-
                     }
                 }
             }

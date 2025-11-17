@@ -13,7 +13,7 @@ namespace FMSFrontend.Features.Dtos
         public string worksheetDone { get; set; } = "";
         public string tagSerial { get; set; } = "";
         public string electrodeName { get; set; } = "";
-        public string electrodeType { get; set; } = "";
+        public string electrodeType { get; set; } = ""; //
         public string currentLocation { get; set; } = "";
         public string state { get; set; } = "";
         public string pairedEDM { get; set; } = "";

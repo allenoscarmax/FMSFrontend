@@ -85,60 +85,50 @@
                         <!-- 被加工次數 -->
                     </Grid.RowDefinitions>
 
-                    <!-- 1 治具序號 -->
-                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="治具序號" />
+                    <!-- 1 電極名稱 -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="電極名稱" />
                     <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding JigSerial}" />
+                    <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding ElectrodeName}" />
 
-                    <!-- 2 電極名稱 -->
-                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text="電極名稱" />
+                    <!-- 2 電極編號 -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text="電極編號" />
                     <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding ElectrodeName}" />
+                    <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding ElectrodeNo}" />
 
-                    <!-- 3 電極編號 -->
-                    <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="電極編號" />
+                    <!-- 3 電極類型 -->
+                    <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="電極類型" />
                     <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding ElectrodeNo}" />
+                    <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding ElectrodeType}" />
 
-                    <!-- 4 電極類型 -->
-                    <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="電極類型" />
+                    <!-- 4 狀態 -->
+                    <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="狀態" />
                     <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding ElectrodeType}" />
+                    <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding Status}" />
 
-                    <!-- 5 狀態 -->
-                    <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="狀態" />
+                    <!-- 5 Tag序號 -->
+                    <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="Tag序號" />
                     <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="4" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding Status}" />
+                    <TextBlock Grid.Row="4" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding TagSerial}" />
 
-                    <!-- 6 電極夾定器標號 -->
-                    <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource LabelText}" Text="電極夾定器標號" />
+                    <!-- 6 放電上限次數 -->
+                    <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource LabelText}" Text="放電上限次數" />
                     <TextBlock Grid.Row="5" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="5" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding HolderNo}" />
+                    <TextBlock Grid.Row="5" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding MaxDischargeCount}" />
 
-                    <!-- 7 Tag序號 -->
-                    <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource LabelText}" Text="Tag序號" />
+                    <!-- 7 電極使用率 -->
+                    <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource LabelText}" Text="電極使用率" />
                     <TextBlock Grid.Row="6" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="6" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding TagSerial}" />
+                    <TextBlock Grid.Row="6" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding UsageRate}" />
 
-                    <!-- 8 放電上限次數 -->
-                    <TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource LabelText}" Text="放電上限次數" />
+                    <!-- 8 電極補償值 -->
+                    <TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource LabelText}" Text="電極補償值" />
                     <TextBlock Grid.Row="7" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="7" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding MaxDischargeCount}" />
+                    <TextBlock Grid.Row="7" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding Compensation}" />
 
-                    <!-- 9 電極使用率 -->
-                    <TextBlock Grid.Row="8" Grid.Column="0" Style="{StaticResource LabelText}" Text="電極使用率" />
+                    <!-- 9 被加工次數 -->
+                    <TextBlock Grid.Row="8" Grid.Column="0" Style="{StaticResource LabelText}" Text="被加工次數" />
                     <TextBlock Grid.Row="8" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="8" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding UsageRate}" />
-
-                    <!-- 10 電極補償值 -->
-                    <TextBlock Grid.Row="9" Grid.Column="0" Style="{StaticResource LabelText}" Text="電極補償值" />
-                    <TextBlock Grid.Row="9" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="9" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding Compensation}" />
-
-                    <!-- 11 被加工次數 -->
-                    <TextBlock Grid.Row="10" Grid.Column="0" Style="{StaticResource LabelText}" Text="被加工次數" />
-                    <TextBlock Grid.Row="10" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="10" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding ProcessedCount}" />
+                    <TextBlock Grid.Row="8" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding ProcessedCount}" />
                 </Grid>
             </ScrollViewer>
 

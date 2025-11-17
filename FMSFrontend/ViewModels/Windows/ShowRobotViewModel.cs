@@ -5,28 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-
+using FMSFrontend.Models;
 namespace FMSFrontend.ViewModels.Windows
 {
     public partial class ShowRobotViewModel : ObservableObject
     {
         [ObservableProperty] private RobotDisplayData displayData = new();
 
-        public ShowRobotViewModel()
+        public ShowRobotViewModel(Robot robot)
         {
-            // demo：初始化
-            /*
-            displayData = new RobotDisplayData
-            {
-                RobotName = "主線機器人",
-                EquipmentName = "Fanuc Robot",
-                EquipmentType = "Robot",
-                EquipmentModel = "M-20iD/25",
-                CurrentProgram = "MAIN.PROG",
-                MachineState = "運轉中",
-                CurrentMaterial = "WRP20250512"
-            };
-            */
+            DisplayData.RobotName = robot.Name;
+            DisplayData.EquipmentType = robot.EquipmentType;
+            DisplayData.EquipmentModel = robot.EquipmentModel;
+            DisplayData.CurrentProgram = robot.CurrentProgram;
+            DisplayData.MachineState = robot.Status;
+            DisplayData.CurrentMaterial = robot.MaterialShortName;
         }
 
         [RelayCommand]
@@ -45,11 +38,11 @@ namespace FMSFrontend.ViewModels.Windows
     public class RobotDisplayData
     {
         public string RobotName { get; set; } = "";
-        public string EquipmentName { get; set; } = "";
+        public string EquipmentName { get; set; } = "";//no
         public string EquipmentType { get; set; } = "";
         public string EquipmentModel { get; set; } = "";
         public string CurrentProgram { get; set; } = "";
         public string MachineState { get; set; } = "";
-        public string CurrentMaterial { get; set; } = "";
+        public string CurrentMaterial { get; set; } = "";//No
     }
 }

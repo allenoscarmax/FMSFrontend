@@ -5,6 +5,7 @@ using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
+using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.ViewModels.Production;
 using System;
@@ -21,13 +22,14 @@ namespace FMSFrontend.ViewModels
     public partial class MachineOverviewMainViewModel : ObservableObject
     {
         // === Services ===
-        private readonly IMachinesService _MachinesService;
+        public readonly IWindowService _WindowService;
+        public readonly IMachinesService _MachinesService;
         public readonly IWorksheetsService _WorksheetsService;
 
         // === Singleton ===
-        private readonly MachineStore _machineStore;
+        public readonly MachineStore _machineStore;
         public ObservableCollection<MachineModel> Machines => _machineStore.Machines;
-        
+
         // ==LiveUpdater===
         public MachineLiveUpdater _machineLiveUpdater;
         DispatcherTimer _timer;
@@ -47,12 +49,14 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private MachineMainDetailControl? currentMachineDetailContent;
         
         public MachineOverviewMainViewModel(
+            IWindowService windowService,
             IMachinesService machinesService,
             IWorksheetsService worksheetsService,
             MachineStore machineStore,
             MachineLiveUpdater machineLiveUpdater
             )
         {
+            _WindowService = windowService;
             _MachinesService = machinesService;
             _WorksheetsService = worksheetsService;
             _machineStore = machineStore;
@@ -77,7 +81,7 @@ namespace FMSFrontend.ViewModels
             RefreshFromStore();
            // ApplyFilterByTab();
         }
-                        public void OnPageActivated()
+        public void OnPageActivated()
         {
             _machineLiveUpdater.Start();
         }
@@ -112,7 +116,7 @@ namespace FMSFrontend.ViewModels
             if (CurrentMachineDetailContent == null && SelectedMachine != null)
             {
                 CurrentMachineDetailContent =
-                    new MachineMainDetailControl(SelectedMachine, _WorksheetsService, _machineStore);
+                    new MachineMainDetailControl(SelectedMachine,this);
             }
             int j = 0;
             for (int i = 0; i < _allMachines.Count; i++)
@@ -150,7 +154,7 @@ namespace FMSFrontend.ViewModels
             if (card is null) return;
             SelectedMachine = card;
             _machineLiveUpdater.SelectName = SelectedMachine.MachineName;
-            CurrentMachineDetailContent = new MachineMainDetailControl(card, _WorksheetsService, _machineStore);
+            CurrentMachineDetailContent = new MachineMainDetailControl(card, this);
         }
 
         partial void OnSelectedTabIndexChanged(int value)

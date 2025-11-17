@@ -12,11 +12,11 @@ namespace FMSFrontend.Features.Dtos
         public string _id { get; set; } = "";
         public string robotCode { get; set; } = "";
         public int productionLine { get; set; } 
-        public string robotNumber { get; set; } = "";
-        public string robotName { get; set; } = "";
-        public string robotType { get; set; } = "";
+        public string robotNumber { get; set; } = ""; //
+        public string robotName { get; set; } = "";  //設備名稱
+        public string robotType { get; set; } = ""; //設備類型
         public string robot_IP { get; set; } = "";
-        public string status { get; set; } = "";
+        public string status { get; set; } = "";  //機台狀態
         public string image { get; set; } = "";
         public string onDeckObjSerial { get; set; } = "";
         public string setupUser { get; set; } = "";

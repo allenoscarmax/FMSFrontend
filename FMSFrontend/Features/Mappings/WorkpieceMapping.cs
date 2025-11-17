@@ -11,18 +11,18 @@ namespace FMSFrontend.Features.Mappings
         {
             if (dto == null || model == null) return;
             model.Id = dto._id;
-            model.JigSerial = "";                               //未定義
+            model.JigSerial = "";                               //未定義 刪除
             model.Name = dto.workpieceName;//工件名稱
-            model.No = "";                                      //未定義
-            model.WorkType = "";                                //未定義
-            model.PartNo = "";                                  //未定義
+            model.No = "";                                      //未定義 名稱
+            model.WorkType = "";                                //未定義 保留
+            model.PartNo = "";                                  //未定義 名稱取-前
             model.OrderNo = dto.worksheetNumber;                
-            model.ClampNo = "";                                 //未定義
+            model.ClampNo = "";                                 //未定義 刪除
             model.Status = dto.status;
-            model.BatchNo = "";                                 //未定義
-            model.PartName = "";                                //未定義
-            model.SerialCode = "";                              //未定義
-            model.RouteNo = "";                                 //未定義
+            model.BatchNo = "";                                 //未定義 保留 
+            model.PartName = "";                                //未定義 刪掉
+            model.SerialCode = "";                              //未定義 刪掉
+            model.RouteNo = "";                                 //未定義 刪掉
         }
         public static void ApplyStorageDto(this StorageDto dto, WorkpieceModel model)
         {

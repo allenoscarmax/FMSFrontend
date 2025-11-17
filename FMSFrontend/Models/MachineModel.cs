@@ -3,6 +3,12 @@ using System.Collections.ObjectModel;
 
 namespace FMSFrontend.Models
 {
+    public partial class MachineGroupModel : ObservableObject
+    {
+        [ObservableProperty] private ObservableCollection<MachineModel> machines = new();
+        [ObservableProperty] private string selectName = "";
+        [ObservableProperty] private OscarEdmModel selectMachine = new();
+    }
     public partial class MachineModel : ObservableObject
     {
         // 機台基本資訊
@@ -17,27 +23,32 @@ namespace FMSFrontend.Models
         [ObservableProperty] private string onDeckWorksheetSerial = ""; //當前工單號/序號
 
         // 相關模型
-        [ObservableProperty] private string workpieceShortName = ""; //夾持中工件標籤序號（RFID）
-        [ObservableProperty] private string electrodeShortName = ""; //當前工單號/序號
+        [ObservableProperty] private string workpieceName = "";         //工件名稱
+        [ObservableProperty] private string workpieceShortName = "";    //工件短名稱
+        [ObservableProperty] private string electrodeName = "";         //電極名稱
+        [ObservableProperty] private string electrodeShortName = "";    //電極短名稱
 
         [ObservableProperty] private OscarEdmModel oscarEdm = new(); //機台類型 詳細資訊
     }
 
     public partial class OscarEdmModel : ObservableObject
     {
-        [ObservableProperty] private string machineNumber = "1";
-        [ObservableProperty] private string machineStatus = "Disconnection";
-        [ObservableProperty] private string usingElectrode = "E-03";
-        [ObservableProperty] private string machiningCode = "EDM101";
-        [ObservableProperty] private string machiningWorkingTime = "02:35:20";
-        [ObservableProperty] private string machiningWorkingPercentage = "45%";
-        [ObservableProperty] private string currentWorksheet = "WS20250717";
-        [ObservableProperty] private string machiningTool = "T-01";
+        [ObservableProperty] private string mainProgramName = "1"; //MachineModel  machineNumber
 
-        [ObservableProperty] private string machineTemperature = "38°C";
-        [ObservableProperty] private string spindleRPM = "1200 RPM";
-        [ObservableProperty] private string oilLevelStatus = "正常";
-        [ObservableProperty] private string coolantLevel = "75%";
+
+        [ObservableProperty] private string machineNumber = "1"; //MachineModel  machineNumber
+        [ObservableProperty] private string machineStatus = ""; //MachineModel Status
+        [ObservableProperty] private string usingElectrode = ""; //MachineModel electrodeShortName
+        [ObservableProperty] private string machiningCode = ""; //MachineModel  type
+        [ObservableProperty] private string cycleTime = ""; // Cycle Time 
+        [ObservableProperty] private string machiningWorkingPercentage = ""; //45%
+        [ObservableProperty] private string currentWorksheet = "";//WS20250717
+        [ObservableProperty] private string machiningTool = ""; //T-01
+
+        [ObservableProperty] private string machineTemperature = ""; //38°C
+        [ObservableProperty] private string spindleRPM = "";  //1200 RPM
+        [ObservableProperty] private string oilLevelStatus = ""; //正常
+        [ObservableProperty] private string coolantLevel = "";//75%
 
         [ObservableProperty] private string positionID = "1";
         [ObservableProperty] private string aBS_X = "1886.6";

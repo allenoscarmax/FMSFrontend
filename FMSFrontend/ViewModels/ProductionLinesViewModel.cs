@@ -371,12 +371,11 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void OpenRobotWindow() //開啟機器人視窗
         {
-            var win = new ShowRobotWindow();
+            var win = new ShowRobotWindow(RobotModel);
             var owner = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
             if (owner != null) win.Owner = owner;
 
             // 需要傳當前選擇的機器人資料時：
-            // win.DataContext = new ShowRobotViewModel { DisplayData = SelectedRobotDisplayData };
             win.ShowDialog();           
         }
 
