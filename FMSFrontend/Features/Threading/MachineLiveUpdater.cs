@@ -62,7 +62,6 @@ namespace FMSFrontend.Features.Threading
                 }
             };
         }
-        int Cnt = 0;
         public async Task<bool> UpdateStatusAsync()
         {
             //try
@@ -119,7 +118,11 @@ namespace FMSFrontend.Features.Threading
             //    return false;
             //}
         }
-        public void Start() => _timer.Start();
+        public void Start()
+        {
+            _ = UpdateStatusAsync();
+            _timer.Start();
+        }
         public void Stop() => _timer.Stop();
         public void Dispose() => _timer.Stop();
     }

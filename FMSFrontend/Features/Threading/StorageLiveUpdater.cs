@@ -242,7 +242,11 @@ namespace FMSFrontend.Features.Threading
         }
         */
         public int Cnt = 0;
-        public void Start() => _timer.Start();
+        public void Start()
+        {
+            _ = UpdateStatusAsync();
+            _timer.Start();
+        }
         public void Stop() => _timer.Stop();
         public void Dispose() => _timer.Stop();
     }

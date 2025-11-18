@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
@@ -12,6 +13,8 @@ using MahApps.Metro.Controls;
 using System.Collections.ObjectModel;
 using System.Reflection.PortableExecutable;
 using System.Security.Policy;
+using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Threading;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -23,9 +26,11 @@ namespace FMSFrontend.ViewModels
         // === Services ===
         private readonly IWindowService _windowService;
         private readonly IWorksheetsService _worksheetService;
+        private readonly IMachinesService _machinesService;
+
         // === Singleton ===
         private readonly MachineStore _machineStore;
-        public ObservableCollection<MachineModel> MachinesT => _machineStore.Machines;
+        public ObservableCollection<MachineModel> AllMachines => _machineStore.Machines;
         DispatcherTimer _timer;
 
         //機台資訊
@@ -38,7 +43,27 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private int selectedTabIndexParameter;                     // 加工參數 Tab選擇
         [ObservableProperty] private int selectedTabIndexWorkOrder;                     // 工單資訊 Tab選擇
         [ObservableProperty] private MachineDisplayData displayData; //顯示機台詳細資訊
-
+        [ObservableProperty] private bool isRestriction = false; //機台禁用
+        public int MachineNumber = 0;
+        [RelayCommand]
+        private async Task RestrictionClick() //禁用事件
+        {
+            try
+            {
+                await _machinesService.SetMachineCanControlAsync(MachineNumber, !IsRestriction);
+            }
+            catch { }
+        }
+        [RelayCommand]
+        private async Task ResetClick() //重置事件
+        {
+            try
+            {
+                await _machinesService.ResetDispatchErrorMessageAsync();
+            }
+            catch { }
+                
+        }
         //[ObservableProperty] private MachineOverviewCard selectedMachine;
         [ObservableProperty] private int machineInfoTabControlSelectedIndex; //機台資訊TabControl選擇索引 
         public MachineOverviewCard Machine { get; } //由machineoverview傳入選中的卡片
@@ -161,6 +186,7 @@ namespace FMSFrontend.ViewModels
                                 WorkStatus = w.WorkCommand,
                                 WorkpieceName = "" // 代定義
                             });
+                           
                         }
                     }
                 }
@@ -179,7 +205,10 @@ namespace FMSFrontend.ViewModels
             _windowService = parent._WindowService;
             _machineStore = parent._machineStore;
             _worksheetService = parent._WorksheetsService;
+            _machinesService = parent._MachinesService;
+
             _machineStore = parent._machineStore;
+
 
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
             _timer.Tick += (_, __) => RefreshFromStore();
@@ -215,9 +244,9 @@ namespace FMSFrontend.ViewModels
         {
             if (Machine == null || DisplayData == null) return;
             // 從MachinesT取得對應Machine名稱一樣的的機台資料顯示在DisplayData上
-            var edm = MachinesT.FirstOrDefault(m => m.MachineName == Machine.MachineName);
+            var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
             if (edm == null || edm.OscarEdm == null) return;
-
+            MachineNumber = int.TryParse(edm.OscarEdm.MachineNumber, out var num) ? num : -1;
             // 機台資訊
             DisplayData.MachineNumber = edm.OscarEdm.MachineNumber;
             DisplayData.MachineStatus = edm.OscarEdm.MachineStatus;

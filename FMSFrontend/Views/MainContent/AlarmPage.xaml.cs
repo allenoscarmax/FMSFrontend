@@ -1,4 +1,6 @@
-﻿using FMSFrontend.Services;
+﻿using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -24,7 +26,7 @@ namespace FMSFrontend.Views
     /// </summary>
     public partial class AlarmPage : UserControl
     {
-        public AlarmPage(AlarmPageViewModel viewModel)
+        public AlarmPage(AlarmPageViewModel viewModel, IAlarmService alarmService, AlarmStore alarmStore )
         {
             InitializeComponent();
             // 建立服務實例
@@ -43,8 +45,10 @@ namespace FMSFrontend.Views
             else
             {
                 // 設計時：給一個乾淨 VM 或 stub，避免設計器爆紅
-                DataContext = new AlarmPageViewModel(windowService);
+                DataContext = new AlarmPageViewModel(windowService, alarmService, alarmStore);
             }
+            Loaded += (_, __) => ((AlarmPageViewModel)DataContext).OnPageActivated();
+            Unloaded += (_, __) => ((AlarmPageViewModel)DataContext).OnPageDeactivated();
         }
     }
 }

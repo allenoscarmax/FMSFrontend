@@ -34,9 +34,9 @@ namespace FMSFrontend.Features.Threading
 
             _store = store;
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
-            _timer.Tick += async (_, __) => await UpdateRobotStatusAsync();
+            _timer.Tick += async (_, __) => await UpdateStatusAsync();
         }
-        private async Task UpdateRobotStatusAsync()
+        private async Task UpdateStatusAsync()
         {
             try
             {
@@ -101,8 +101,11 @@ namespace FMSFrontend.Features.Threading
                 // ex.Message 或紀錄至 LogService
             }
         }
-
-        public void Start() => _timer.Start();
+        public void Start()
+        {
+            _ = UpdateStatusAsync();
+            _timer.Start();
+        }
         public void Stop() => _timer.Stop();
         public void Dispose() => _timer.Stop();
     }

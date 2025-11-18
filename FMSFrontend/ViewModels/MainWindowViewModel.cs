@@ -12,6 +12,7 @@ using IniFile;
 using Microsoft.Extensions.DependencyInjection;
 using OSCARMAXFMS_V3.Models;
 using System.Collections.ObjectModel;
+using System.Security.Claims;
 using System.Text.Json; // ← 新增：JsonElement
 using System.Windows;
 using System.Windows.Controls; // 放在你的 ViewModel 上方
@@ -23,6 +24,7 @@ namespace FMSFrontend.ViewModels
     public partial class MainWindowViewModel : ObservableObject
     {
         // 建議做成 static readonly，避免每次輪詢都 new
+      
         private static readonly SolidColorBrush Dark = new(Color.FromRgb(0x00, 0x4E, 0x79));
         private static readonly SolidColorBrush Light = new(Color.FromRgb(0xFF, 0xFF, 0xFF));
         // 開啟頁面視窗（改為延遲建立：避免啟動時一次建立大量 UI）
@@ -31,21 +33,27 @@ namespace FMSFrontend.ViewModels
         private readonly IHttpService _httpService;
         private readonly IRobotService _robotService;
 
+
+
         public GlobalProperties _globalProperties { get; }
         public AlarmPageViewModel AlarmVM { get; }
+        //警報
+        private readonly IAlarmService _alarmService;
+        public AlarmStore AlarmStore { get; }
+        public AlarmGroupModel AlarmGroup => AlarmStore.AlarmGroup;
+
         [ObservableProperty] private bool _isMenuVisible;
         [ObservableProperty] private string currentDateTime = "";  //存現在的時間
         [ObservableProperty] private string _loggedInUser = string.Empty; //登入的名稱
         [ObservableProperty] private UserControl? _currentPageView;
         [ObservableProperty] private string currentPageKey = "";  // 存目前的頁面
         [ObservableProperty] private UserControl? storageControlPage ;
-       
-
 
         [ObservableProperty] private bool _isIdle;
         [ObservableProperty] private bool _isHint = true;
         [ObservableProperty] private bool _isAlarm = false;
-        [ObservableProperty] private string _summaryMessage = "系統正常運作";
+        [ObservableProperty] private Brush summaryMessageBrush = new SolidColorBrush(Colors.Black);
+        [ObservableProperty] private string summaryMessage = "系統正常運作";
         public bool IsLoggedIn => !string.IsNullOrEmpty(LoggedInUser);
         [ObservableProperty] private bool isDispatch;
 
@@ -55,6 +63,8 @@ namespace FMSFrontend.ViewModels
         private List<string> RobotNames = new List<string>() ;
         //[ObservableProperty] private Robot _robot = new Robot();
         public Robot Robot => RobotStore.Robot;
+
+
         //開始
         [ObservableProperty] private bool startStatus;
         [ObservableProperty] private Brush startBackground = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
@@ -97,22 +107,47 @@ namespace FMSFrontend.ViewModels
         }
 
       
-        public MainWindowViewModel(IHttpService httpService, IRobotService robotService,IPlcService plcService ,
-            AlarmPageViewModel alarmVM, RobotStore store, PlcStore plcStore, GlobalProperties globalProperties)
+        public MainWindowViewModel(IHttpService httpService, 
+            IRobotService robotService,
+            IPlcService plcService , 
+            IAlarmService alarmService,
+            AlarmPageViewModel alarmVM, 
+            RobotStore store, 
+            PlcStore plcStore,
+            AlarmStore alarmStore,
+            GlobalProperties globalProperties)
         {
             _httpService = httpService;
-            
-            RobotStore = store;
             _robotService = robotService;
-            
+            _alarmService = alarmService;
             _PlcService = plcService;
-            PlcStore = plcStore;
 
+            RobotStore = store;
+            PlcStore = plcStore;
+            AlarmStore = alarmStore;
             _globalProperties = globalProperties;
 
             // 使用 DispatcherTimer 在 UI Thread 週期性更新時間（比起背景執行緒直接更新屬性更安全且不會產生跨執行緒問題）
             var timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Normal, (s, e) =>
             {
+                if (AlarmGroup.IsAlarm)
+                {
+                    IsAlarm = true;
+                    IsHint = false;
+                    IsIdle = false;
+                    SummaryMessageBrush = new SolidColorBrush(Colors.Red);
+
+                    SummaryMessage = "系統有警報";
+                }
+                else 
+                {
+                    IsAlarm = false;
+                    IsHint = true;
+                    IsIdle = true;
+                    SummaryMessageBrush = new SolidColorBrush(Colors.Black);
+                    SummaryMessage = "系統正常運作";
+                }
+
                 CurrentDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
             }, Application.Current.Dispatcher);
             timer.Start();

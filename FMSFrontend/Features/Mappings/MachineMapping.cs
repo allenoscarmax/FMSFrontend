@@ -42,6 +42,7 @@ namespace FMSFrontend.Features.Mappings
             if (dto == null || model == null || model.OscarEdm == null) return;
             //設備資訊
             model.OscarEdm.MainProgramName = dto.MainProgramName ?? "";     //主程式名稱
+           // model.OscarEdm.CanControl = model.
 
             model.OscarEdm.MachineNumber = model.MachineName ?? "";         //機台名稱
             model.OscarEdm.MachineStatus = model.Status ?? "";              //機台狀態

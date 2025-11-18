@@ -30,7 +30,7 @@ namespace FMSFrontend.Features.Threading
                 _isUpdating = true;
                 try
                 {
-                    await UpdatePlcStatusAsync();
+                    await UpdateStatusAsync();
                 }
                 finally
                 {
@@ -38,7 +38,7 @@ namespace FMSFrontend.Features.Threading
                 }
             };
         }
-        private async Task UpdatePlcStatusAsync()
+        private async Task UpdateStatusAsync()
         {
             try
             {
@@ -54,7 +54,11 @@ namespace FMSFrontend.Features.Threading
             }
         }
 
-        public void Start() => _timer.Start();
+        public void Start()
+        {
+            _ = UpdateStatusAsync();
+            _timer.Start();
+        }
         public void Stop() => _timer.Stop();
         public void Dispose() => _timer.Stop();
     }

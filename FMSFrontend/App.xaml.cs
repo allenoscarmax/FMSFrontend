@@ -1,4 +1,5 @@
 ﻿using FMSFrontend.Controls;
+using FMSFrontend.Controls.FactoryOverview;
 using FMSFrontend.Extensions;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
@@ -9,6 +10,7 @@ using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
+using FMSFrontend.ViewModels.Factory;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
 using FMSFrontend.Views.Windows;
@@ -67,20 +69,23 @@ namespace FMSFrontend
             services.AddSingleton<IWorkerService, WorkerService>();
             services.AddSingleton<IAppointmentMaintenanceService, AppointmentMaintenanceService>();
             services.AddSingleton<ICommandScheduleService, CommandScheduleService>();
-
             services.AddSingleton<IMachinesService, MachinesService>();
-
             services.AddSingleton<IAlarmService, AlarmService>();
 
             // === Singleton ===
+            services.AddSingleton<AlarmStore>();
+            services.AddSingleton<CommandScheduleStore>();
             services.AddSingleton<PlcStore>();
             services.AddSingleton<RFIDBindStore>();
             services.AddSingleton<RobotStore>();
             services.AddSingleton<GlobalProperties>();
             services.AddSingleton<StorageStore>();
             services.AddSingleton<MachineStore>();
+      
 
             // ==LiveUpdater===
+            services.AddSingleton<AlarmLiveUpdater>();
+            services.AddSingleton<CommandScheduleLiveUpdater>();
             services.AddSingleton<RobotLiveUpdater>();
             services.AddSingleton<PlcLiveUpdater>();          
             services.AddSingleton<RFIDBindLiveUpdater>();
@@ -109,7 +114,7 @@ namespace FMSFrontend
             ServiceProvider.GetRequiredService<RobotLiveUpdater>().Start();
             ServiceProvider.GetRequiredService<PlcLiveUpdater>().Start();
             ServiceProvider.GetRequiredService<ServerHealthLiveUpdater>().Start();
-
+            ServiceProvider.GetRequiredService<AlarmLiveUpdater>().Start();
             // 啟動主視窗
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
@@ -163,6 +168,10 @@ namespace FMSFrontend
             services.AddTransient<ProbePairViewModel>();
             services.AddTransient<ShowMaterialWindowViewModel>();
 
+            services.AddTransient<TaskListViewModel>();
+            services.AddTransient<FactoryLayoutViewModel>();
+            services.AddTransient<FactoryOverviewPageViewModel>();
+
             //Windows
             //  services.AddTransient<SelectSharedElectrodeViewModel>();
         }
@@ -183,6 +192,8 @@ namespace FMSFrontend
             services.AddTransient<ShowMaterialWindow>();
             services.AddTransient<MachineMainDetailControl>();
 
+            services.AddTransient<TaskListControl>();
+            services.AddTransient<FactoryOverviewPage>();
         }
 
         private void RegisterWindows(IServiceCollection services)

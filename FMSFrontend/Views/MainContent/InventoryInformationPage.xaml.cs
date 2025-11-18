@@ -25,6 +25,8 @@ namespace FMSFrontend.Views
         {
             InitializeComponent();
             DataContext = viewModel; // ← 綁 VM
+            Loaded += (_, __) => ((InventoryInformationViewModel)DataContext).OnPageActivated();
+            Loaded += (_, __) => ((InventoryInformationViewModel)DataContext).OnPageDeactivated();
         }
     }
 }

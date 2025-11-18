@@ -70,7 +70,11 @@ namespace FMSFrontend.Features.Threading
             //}
         }
 
-        public void Start() => _timer.Start();
+        public void Start()
+        {
+            _ = UpdateStatusAsync();
+            _timer.Start();
+        }
         public void Stop() => _timer.Stop();
         public void Dispose() => _timer.Stop();
     }

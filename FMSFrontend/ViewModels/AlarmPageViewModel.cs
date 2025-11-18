@@ -1,11 +1,20 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Features.Dtos.Database;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
+using FMSFrontend.Models;
+using FMSFrontend.Services;
+using OSCARMAXFMS_V3.DBmodels;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.Claims;
 using System.Windows.Data;
+using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 
 namespace FMSFrontend.ViewModels
 {
@@ -13,9 +22,9 @@ namespace FMSFrontend.ViewModels
     public partial class AlarmPageViewModel : ObservableObject
     {
         private readonly IWindowService _windowService;
-
-        
-
+        private readonly IAlarmService _alarmService;
+        public AlarmStore AlarmStore { get; }
+        public AlarmGroupModel AlarmGroup => AlarmStore.AlarmGroup;
 
         // —— 新增：MainWindow 要綁的三個摘要屬性 ——
         [ObservableProperty] private AlarmSeverity summarySeverity = AlarmSeverity.None;
@@ -29,7 +38,7 @@ namespace FMSFrontend.ViewModels
 
         // ===== 日期篩選 =====
         public ObservableCollection<string> DateFilterOptions { get; } =
-            new() { "今天", "昨天", "最近7天", "最近30天", "本月", "自訂" };
+            new() { "今天", "前7天", "自訂" };
 
         [ObservableProperty] private string? selectedFilterOption = "今天";
         [ObservableProperty] private DateTime? fromDate = DateTime.Today;  // DatePicker 友善
@@ -72,64 +81,21 @@ namespace FMSFrontend.ViewModels
 
         // ===================== End Pagination =====================
 
-        public AlarmPageViewModel(IWindowService windowService)
+        public AlarmPageViewModel(IWindowService windowService, IAlarmService alarmService, AlarmStore alarmStore)
         {
             _windowService = windowService;
+            _alarmService = alarmService;
+            AlarmStore = alarmStore;
+
+
+            AlarmStore.AlarmGroup.PropertyChanged += (_, __) => RefreshFromStore();
+
             selectedFilterOption = DateFilterOptions.FirstOrDefault(); // 預設第一個
 
             // ---- Demo：目前警報 ----
-            CurrentAlarms.Add(new AlarmItem
-            {
-                Time = DateTime.Parse("2025/06/23 16:19:19"),
-                Code = "ALARM_003",
-                Message = "Robot Losts Connection.",
-                Level = "ALARM",
-                Source = "EDM02S"
-            });
-            CurrentAlarms.Add(new AlarmItem
-            {
-                Time = DateTime.Parse("2025/06/23 16:19:19"),
-                Code = "HINT_007",
-                Message = "Please execute PNS0001 to the robot safety position!",
-                Level = "HINT",
-                Source = "EDM02S"
-            });
-
+            //CurrentAlarms.Add(new AlarmItem { Time = DateTime.Parse("2025/06/23 16:19:19"), Code = "HINT_007", Message = "!", Level = "HINT", Source = "EDM02S" });
             // ---- Demo：歷史警報 ----
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddHours(-5), Code = "ALARM_003", Level = "ALARM", Message = "Robot Losts Connection.", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-1), Code = "HINT_007", Level = "HINT", Message = "Please execute PNS0001...", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-6), Code = "INFO_001", Level = "INFO", Message = "Heartbeat restored.", Source = "EDM01S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddHours(-5), Code = "ALARM_003", Level = "ALARM", Message = "Robot Losts Connection.", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-1), Code = "HINT_007", Level = "HINT", Message = "Please execute PNS0001...", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-6), Code = "INFO_001", Level = "INFO", Message = "Heartbeat restored." , Source = "EDM01S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddHours(-5), Code = "ALARM_003", Level = "ALARM", Message = "Robot Losts Connection.", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-1), Code = "HINT_007", Level = "HINT", Message = "Please execute PNS0001...", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-6), Code = "INFO_001", Level = "INFO", Message = "Heartbeat restored.", Source = "EDM01S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddHours(-5), Code = "ALARM_003", Level = "ALARM", Message = "Robot Losts Connection.", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-1), Code = "HINT_007", Level = "HINT", Message = "Please execute PNS0001...", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-6), Code = "INFO_001", Level = "INFO", Message = "Heartbeat restored.", Source = "EDM01S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddHours(-5), Code = "ALARM_003", Level = "ALARM", Message = "Robot Losts Connection.", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-1), Code = "HINT_007", Level = "HINT", Message = "Please execute PNS0001...", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-6), Code = "INFO_001", Level = "INFO", Message = "Heartbeat restored.", Source = "EDM01S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddHours(-5), Code = "ALARM_003", Level = "ALARM", Message = "Robot Losts Connection.", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-1), Code = "HINT_007", Level = "HINT", Message = "Please execute PNS0001...", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-6), Code = "INFO_001", Level = "INFO", Message = "Heartbeat restored.", Source = "EDM01S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddHours(-5), Code = "ALARM_003", Level = "ALARM", Message = "Robot Losts Connection.", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-1), Code = "HINT_007", Level = "HINT", Message = "Please execute PNS0001...", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-6), Code = "INFO_001", Level = "INFO", Message = "Heartbeat restored.", Source = "EDM01S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddHours(-5), Code = "ALARM_003", Level = "ALARM", Message = "Robot Losts Connection.", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-1), Code = "HINT_007", Level = "HINT", Message = "Please execute PNS0001...", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-6), Code = "INFO_001", Level = "INFO", Message = "Heartbeat restored.", Source = "EDM01S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddHours(-5), Code = "ALARM_003", Level = "ALARM", Message = "Robot Losts Connection.", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-1), Code = "HINT_007", Level = "HINT", Message = "Please execute PNS0001...", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-6), Code = "INFO_001", Level = "INFO", Message = "Heartbeat restored.", Source = "EDM01S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddHours(-5), Code = "ALARM_003", Level = "ALARM", Message = "Robot Losts Connection.", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-1), Code = "HINT_007", Level = "HINT", Message = "Please execute PNS0001...", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-6), Code = "INFO_001", Level = "INFO", Message = "Heartbeat restored.", Source = "EDM01S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddHours(-5), Code = "ALARM_003", Level = "ALARM", Message = "Robot Losts Connection.",  Source ="EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-1), Code = "HINT_007", Level = "HINT", Message = "Please execute PNS0001...", Source = "EDM02S" });
-            HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddDays(-6), Code = "INFO_001", Level = "INFO", Message = "Heartbeat restored.",  Source = "EDM01S" });
-
+            //HistoryAlarms.Add(new AlarmItem { Time = DateTime.Today.AddHours(-5), Code = "ALARM_003", Level = "ALARM", Message = "Robot Losts Connection.", Source = "EDM02S" });
 
             // ICollectionView：配合同步的日期過濾
             _historyView = CollectionViewSource.GetDefaultView(HistoryAlarms);
@@ -146,6 +112,68 @@ namespace FMSFrontend.ViewModels
             // Summary 來源：以「目前警報」(CurrentAlarms) 為準
             CurrentAlarms.CollectionChanged += (_, __) => RecomputeSummary();
             RecomputeSummary(); // 初次算一次
+
+        }
+        public void OnPageActivated() // 開啟警報視窗
+        {
+            AlarmGroup.IsAlarmWindowsOpen = true;
+        }
+        public void OnPageDeactivated() // 關閉警報視窗
+        {
+            AlarmGroup.IsAlarmWindowsOpen = false;
+        }
+        void RefreshFromStore() // 從 AlarmStore 更新目前警報
+        {
+            
+            if (SelectedTabIndexParameter == 0)
+            {
+                for (int i = 0; i < AlarmGroup.AlarmModels.Count; i++)
+                {
+                    if (CurrentAlarms.Count == i) CurrentAlarms.Add(new AlarmItem());
+                    CurrentAlarms[i].Time = AlarmGroup.AlarmModels[i].TimeStamp;
+                    CurrentAlarms[i].Code = AlarmGroup.AlarmModels[i].ErrorCode;
+                    CurrentAlarms[i].Message = AlarmGroup.AlarmModels[i].MessageCn;
+                    CurrentAlarms[i].Level = GetLevel(AlarmGroup.AlarmModels[i].ErrorCode);
+                    CurrentAlarms[i].Source = "";
+                }
+                while (CurrentAlarms.Count > AlarmGroup.AlarmModels.Count)
+                {
+                    CurrentAlarms.RemoveAt(CurrentAlarms.Count - 1);
+                }
+            }
+        }
+        string GetLevel(string ErrorCode) // 取得警報等級
+        {
+            if (ErrorCode.IndexOf("ALARM") != 0)
+                return "ALARM";
+            else if (ErrorCode.IndexOf("HINT") != 0)
+                return "HINT";
+            else
+                return "INFO";
+        }
+        public async Task RefreshFromDate() // 從日期篩選更新歷史警報
+        {
+            try
+            {
+                if (FromDate == null || ToDate == null) return;
+                
+              List<ErrorMessageLogDto> dtos = await _alarmService.GetErrorMessageLogByDateTimeAsync(FromDate.Value, ToDate.Value.AddDays(1))
+                 ?? new List<ErrorMessageLogDto>();
+              HistoryAlarms.Clear();
+              foreach (var dto in dtos)
+              {
+                  HistoryAlarms.Add(new AlarmItem
+                  {
+                      Time = dto.TimeStamp,
+                      Code = dto.ErrorCode,
+                      Message = dto.MessageCn,
+                      Level = GetLevel(dto.ErrorCode),
+                      Source = ""
+                  });
+              }
+              
+            }
+            catch { }
         }
 
         // ====== 事件：選單/日期變更 ======
@@ -154,6 +182,7 @@ namespace FMSFrontend.ViewModels
             IsCustomDateMode = value == "自訂";
             ApplyDatePreset();
             ApplyFilter();
+            _ = RefreshFromDate();
         }
 
         partial void OnFromDateChanged(DateTime? value)
@@ -175,6 +204,7 @@ namespace FMSFrontend.ViewModels
 
             _lastValidFromDate = value;
             ApplyFilter();
+           _ = RefreshFromDate();
         }
 
         partial void OnToDateChanged(DateTime? value)
@@ -196,6 +226,7 @@ namespace FMSFrontend.ViewModels
 
             _lastValidToDate = value;
             ApplyFilter();
+            _ = RefreshFromDate();
         }
 
         // ====== Commands（仍可用） ======
@@ -227,17 +258,8 @@ namespace FMSFrontend.ViewModels
             {
                 case "今天":
                     FromDate = DateTime.Today; ToDate = DateTime.Today; break;
-                case "昨天":
-                    FromDate = DateTime.Today.AddDays(-1); ToDate = DateTime.Today.AddDays(-1); break;
-                case "最近7天":
+                case "前7天":
                     FromDate = DateTime.Today.AddDays(-6); ToDate = DateTime.Today; break;
-                case "最近30天":
-                    FromDate = DateTime.Today.AddDays(-29); ToDate = DateTime.Today; break;
-                case "本月":
-                    var now = DateTime.Today;
-                    FromDate = new DateTime(now.Year, now.Month, 1);
-                    ToDate = FromDate.Value.AddMonths(1).AddDays(-1);
-                    break;
                 case "自訂":
                 default: break; // 保留使用者輸入
             }
@@ -277,6 +299,7 @@ namespace FMSFrontend.ViewModels
 
             OnPropertyChanged(nameof(CanGoPrev));
             OnPropertyChanged(nameof(CanGoNext));
+
         }
 
         private void LoadPage(int page)

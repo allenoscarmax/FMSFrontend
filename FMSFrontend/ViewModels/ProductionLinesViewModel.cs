@@ -111,6 +111,7 @@ namespace FMSFrontend.ViewModels
             else
                 ShowDetail("0");
             ShowMachineOverview();
+
         }
         public void OnPageActivated()
         {
