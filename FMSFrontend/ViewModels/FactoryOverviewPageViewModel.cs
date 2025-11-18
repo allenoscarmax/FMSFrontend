@@ -24,7 +24,7 @@ namespace FMSFrontend.ViewModels
             {
                 DataContext = new TaskListViewModel()
             };
-            FactoryLayoutContent = layout;
+            FactoryLayoutContent = layout; //加入畫面
             TaskListContent = Task; 
         }
     }

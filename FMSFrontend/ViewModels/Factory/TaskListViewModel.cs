@@ -76,10 +76,10 @@ namespace FMSFrontend.ViewModels.Factory
 
     public partial class TaskItem : ObservableObject
     {
-        [ObservableProperty] public int priority;            // 數字越小越前面
+        [ObservableProperty] public int priority;            // 數字越小越前面 0-100
         [ObservableProperty] public string machineName = ""; // EDM1、WEDM2...
         [ObservableProperty] public double progressPercent;  // 0–100
-        [ObservableProperty] public string summary = "";     // 任務簡述
+        [ObservableProperty] public string summary = "";     // 任務簡述 //CommandType
         [ObservableProperty] public string workOrderId = ""; // WO-XXXX
         [ObservableProperty] public string materialText = ""; // 工件/電極 顯示文字
 
