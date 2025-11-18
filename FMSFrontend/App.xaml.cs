@@ -70,6 +70,8 @@ namespace FMSFrontend
 
             services.AddSingleton<IMachinesService, MachinesService>();
 
+            services.AddSingleton<IAlarmService, AlarmService>();
+
             // === Singleton ===
             services.AddSingleton<PlcStore>();
             services.AddSingleton<RFIDBindStore>();
