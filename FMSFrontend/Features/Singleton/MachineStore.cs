@@ -59,7 +59,7 @@ namespace FMSFrontend.Features.Singleton
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();
         }
-        public void ApplyWorkpieceDto(WorkpieceDto? dto, int inedx)
+        public void ApplyWorkpieceDto(WorkpieceDto dto, int inedx)
         {
             var disp = Application.Current?.Dispatcher;
             void apply()

@@ -372,11 +372,14 @@ public partial class MaterialPairViewModel : ObservableObject
         List<WorksheetsDto> worksheets = await _WorksheetService.GetAllWorkSheetAsync()?? new List<WorksheetsDto>();
         foreach (var ws in worksheets)
         {
-            items.Add(new WorksheetItem
+            if (ws.workStatus != "Completed" && ws.workStatus != "Failure")
             {
-                PartName = ws.workpieceName ?? string.Empty,
-                WorkOrderNo = ws.worksheetNumber ?? string.Empty
-            });
+                items.Add(new WorksheetItem
+                {
+                    PartName = ws.workpieceName ?? string.Empty,
+                    WorkOrderNo = ws.worksheetNumber ?? string.Empty
+                });
+            }
         }
         if (items.Count != 0)
         {

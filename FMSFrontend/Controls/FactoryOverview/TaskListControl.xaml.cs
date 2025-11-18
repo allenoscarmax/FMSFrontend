@@ -1,4 +1,8 @@
-﻿using FMSFrontend.ViewModels.Factory;
+﻿using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Threading;
+using FMSFrontend.ViewModels;
+using FMSFrontend.ViewModels.Factory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,10 +25,17 @@ namespace FMSFrontend.Controls.FactoryOverview
     /// </summary>
     public partial class TaskListControl : UserControl
     {
-        public TaskListControl()
+        public TaskListControl(ICommandScheduleService commandScheduleService,
+            CommandScheduleStore commandScheduleStore,
+            CommandScheduleLiveUpdater commandScheduleLiveUpdater) 
         {
             InitializeComponent();
-            DataContext = new TaskListViewModel();
+            // 假設有方法可以取得這三個必要參數，請根據實際情況替換
+
+            DataContext = new TaskListViewModel(commandScheduleService, commandScheduleStore, commandScheduleLiveUpdater);
+            Loaded += (_, __) => ((TaskListViewModel)DataContext).OnPageActivated();
+            Unloaded += (_, __) => ((TaskListViewModel)DataContext).OnPageDeactivated();
         }
+
     }
 }

@@ -83,17 +83,17 @@
                     </Grid.RowDefinitions>
                     
                     <!-- 1 -->
-                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="工作名稱" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="工件名稱" />
                     <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource ColonText}" />
                     <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding WorkName}" />
 
                     <!-- 2 -->
-                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text="工作編號" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text="工件編號" />
                     <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource ColonText}" />
                     <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding WorkNo}" />
 
                     <!-- 3 -->
-                    <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="工作類型" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="工件類型" />
                     <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource ColonText}" />
                     <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding WorkType}" />
 

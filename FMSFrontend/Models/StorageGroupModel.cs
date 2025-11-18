@@ -102,19 +102,18 @@ namespace FMSFrontend.Models
             _ => ""
         };
         partial void OnKindChanged(MaterialType value) => OnPropertyChanged(nameof(Code));
-        /*
+
         public string StorageName { get; set; } = "";  // 倉線/倉號
         public int StorageNumber { get; set; }   // 倉線/倉號
         public int Region { get; set; } //現有：區域
         public int Row { get; set; }    // 行
         public int Col { get; set; }    // 列
-        public string SlotCode => $"{StorageName}:{StorageNumber}:{Region}:{Row}:{Col}";
-        */
+
         public string SlotCode = "";
+        public string worksheetNumber = "";
+        public string EDMProgram = ""; // 使用程式名稱
+
         // 影響 StatusBrush 的來源變更時，主動通知
-
-
-
     }
 }
 

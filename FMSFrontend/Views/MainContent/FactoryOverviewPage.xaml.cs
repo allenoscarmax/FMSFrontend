@@ -25,6 +25,7 @@ namespace FMSFrontend.Views
         {
             InitializeComponent();
             this.DataContext = viewModel; // ← 關鍵
+
         }
     }
 }

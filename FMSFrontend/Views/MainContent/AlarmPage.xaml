@@ -12,14 +12,15 @@
             <Setter Property="Padding" Value="6,2" />
             <Setter Property="Background" Value="#F1F1F1" />
         </Style>
+
+        <!-- 新增：Bool -> Visibility 轉換 -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
 
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
-            <!-- 主標題 -->
             <RowDefinition Height="*" />
-            <!-- 主內容 -->
         </Grid.RowDefinitions>
 
         <!-- 🔠 主標題 -->
@@ -67,22 +68,48 @@
                                                         <DataGrid.Style>
                                                             <Style TargetType="DataGrid" BasedOn="{StaticResource ModernFlatDataGridStyle}" />
                                                         </DataGrid.Style>
-                                                        <!-- ✨ 移除每個儲存格的內建邊框，避免縫隙 -->
+
+                                                        <!-- 覆寫選取與文字顏色，避免藍色高亮 -->
+                                                        <DataGrid.Resources>
+                                                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FFF0F0F0" />
+                                                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#FF111111" />
+                                                        </DataGrid.Resources>
+
+                                                        <!-- ✨ 移除每個儲存格的內建邊框，避免縫隙，並自訂選取與滑入色 -->
                                                         <DataGrid.CellStyle>
                                                             <Style TargetType="DataGridCell">
                                                                 <Setter Property="BorderThickness" Value="0" />
                                                                 <Setter Property="Padding" Value="6,0,6,0" />
+                                                                <Setter Property="Background" Value="Transparent" />
                                                                 <!-- 若不想看到虛線焦點框，也可關掉 -->
                                                                 <!--<Setter Property="FocusVisualStyle" Value="{x:Null}"/>-->
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="Background" Value="#FFF7F7F7" />
+                                                                    </Trigger>
+                                                                    <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                                                        <Setter Property="Background" Value="#FFF0F0F0" />
+                                                                        <Setter Property="Foreground" Value="#FF111111" />
+                                                                    </Trigger>
+                                                                </Style.Triggers>
                                                             </Style>
                                                         </DataGrid.CellStyle>
 
-                                                        <!-- ✨ 列本身也確保沒有額外邊框/間距 -->
+                                                        <!-- ✨ 列本身也確保沒有額外邊框/間距，並自訂選取與滑入色 -->
                                                         <DataGrid.RowStyle>
                                                             <Style TargetType="DataGridRow">
                                                                 <Setter Property="Margin" Value="0" />
                                                                 <Setter Property="BorderThickness" Value="0" />
                                                                 <Setter Property="SnapsToDevicePixels" Value="True" />
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="Background" Value="#FFF7F7F7" />
+                                                                    </Trigger>
+                                                                    <Trigger Property="IsSelected" Value="True">
+                                                                        <Setter Property="Background" Value="#FFF0F0F0" />
+                                                                        <Setter Property="Foreground" Value="#FF111111" />
+                                                                    </Trigger>
+                                                                </Style.Triggers>
                                                             </Style>
                                                         </DataGrid.RowStyle>
 
@@ -105,7 +132,7 @@
 
                                                                 <DataGridTemplateColumn.CellTemplate>
                                                                     <DataTemplate>
-                                                                        <Border x:Name="Chip" CornerRadius="10" Padding="8,4" Background="#F1F1F1">
+                                                                        <Border x:Name="Chip" CornerRadius="10" Margin="3,3,3,3" Padding="8,4" Background="#F1F1F1">
                                                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                                                 <materialDesign:PackIcon x:Name="ChipIcon" Kind="AlertOutline" Width="16" Height="16" Margin="0,0,6,0" />
                                                                                 <TextBlock Text="{Binding Code}" />
@@ -180,16 +207,20 @@
                                                             <!-- 左：日期篩選 -->
                                                             <StackPanel Orientation="Horizontal">
                                                                 <ComboBox Width="120" Height="32" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
-                                                               
-                                                                <DatePicker Width="180" Height="32" Margin="8,0,0,0" SelectedDate="{Binding FromDate}" IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}">
-                                                                   
-                                                                </DatePicker>
-                                                                
-                                                                <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
 
-                                                                <DatePicker Width="180" Height="32" SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}">
-                                                                   
-                                                                </DatePicker>
+                                                                <!-- 僅在 IsCustomDateMode = true 時顯示 -->
+                                                                <StackPanel Orientation="Horizontal"
+                                                                            Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                                    <DatePicker Width="180" Height="32" Margin="8,0,0,0"
+                                                                                SelectedDate="{Binding FromDate}"
+                                                                                IsEnabled="{Binding IsCustomDateMode}"
+                                                                                Style="{StaticResource CustomDatePickerStyle}" />
+                                                                    <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
+                                                                    <DatePicker Width="180" Height="32"
+                                                                                SelectedDate="{Binding ToDate}"
+                                                                                IsEnabled="{Binding IsCustomDateMode}"
+                                                                                Style="{StaticResource CustomDatePickerStyle}" />
+                                                                </StackPanel>
                                                             </StackPanel>
 
                                                             <!-- 右：Export / Remove -->
@@ -216,10 +247,26 @@
                                                                 <Style TargetType="DataGrid" BasedOn="{StaticResource ModernFlatDataGridStyle}" />
                                                             </DataGrid.Style>
 
+                                                            <!-- 覆寫選取與文字顏色，避免藍色高亮 -->
+                                                            <DataGrid.Resources>
+                                                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FFF0F0F0" />
+                                                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#FF111111" />
+                                                            </DataGrid.Resources>
+
                                                             <DataGrid.CellStyle>
                                                                 <Style TargetType="DataGridCell">
                                                                     <Setter Property="BorderThickness" Value="0" />
                                                                     <Setter Property="Padding" Value="6,0,6,0" />
+                                                                    <Setter Property="Background" Value="Transparent" />
+                                                                    <Style.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Background" Value="#FFF7F7F7" />
+                                                                        </Trigger>
+                                                                        <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                                                            <Setter Property="Background" Value="#FFF0F0F0" />
+                                                                            <Setter Property="Foreground" Value="#FF111111" />
+                                                                        </Trigger>
+                                                                    </Style.Triggers>
                                                                 </Style>
                                                             </DataGrid.CellStyle>
                                                             <DataGrid.RowStyle>
@@ -227,6 +274,15 @@
                                                                     <Setter Property="Margin" Value="0" />
                                                                     <Setter Property="BorderThickness" Value="0" />
                                                                     <Setter Property="SnapsToDevicePixels" Value="True" />
+                                                                    <Style.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Background" Value="#FFF7F7F7" />
+                                                                        </Trigger>
+                                                                        <Trigger Property="IsSelected" Value="True">
+                                                                            <Setter Property="Background" Value="#FFF0F0F0" />
+                                                                            <Setter Property="Foreground" Value="#FF111111" />
+                                                                        </Trigger>
+                                                                    </Style.Triggers>
                                                                 </Style>
                                                             </DataGrid.RowStyle>
 
@@ -247,7 +303,7 @@
 
                                                                     <DataGridTemplateColumn.CellTemplate>
                                                                         <DataTemplate>
-                                                                            <Border x:Name="Chip" CornerRadius="10" Padding="8,4" Background="#F1F1F1">
+                                                                            <Border x:Name="Chip" CornerRadius="10" Margin="3,3,3,3" Padding="8,4" Background="#F1F1F1">
                                                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                                                     <materialDesign:PackIcon x:Name="ChipIcon" Kind="AlertOutline" Width="16" Height="16" Margin="0,0,6,0" />
                                                                                     <TextBlock Text="{Binding Code}" />
@@ -334,7 +390,6 @@
                                 </DataTrigger>
 
                             </Style.Triggers>
-                            
                         </Style>
                     </ContentControl.Style>
                 </ContentControl>

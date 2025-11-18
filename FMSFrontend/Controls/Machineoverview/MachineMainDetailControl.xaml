@@ -7,7 +7,7 @@
 
             <!-- 🧩 頂層切 2 Row：標題 + 內容 -->
             <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
+                <RowDefinition Height="50" />
                 <!-- 標題列 -->
                 <RowDefinition Height="*" />
                 <!-- 內容列 -->
@@ -15,11 +15,148 @@
 
             <!-- 🔹 標題區塊 -->
             <Border Grid.Row="0" Background="#CCCCCC" BorderThickness="1" BorderBrush="#000000">
-                <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
-                    <materialDesign:PackIcon Kind="MonitorDashboard" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
-                    <TextBlock Text="{Binding MachineName}" d:Text="EDM1" TextDecorations="Underline" FontSize="20" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
-                    <TextBlock Text=" 機台資訊" FontSize="20" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
-                </StackPanel>
+                <!-- 修正：使用 Grid 分三欄，避免在無 Grid 的 Border 內使用 Grid.Column -->
+                <Grid Margin="12,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 左側原資訊 -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <materialDesign:PackIcon Kind="MonitorDashboard" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
+                        <TextBlock Text="{Binding MachineName}" d:Text="EDM1" TextDecorations="Underline" FontSize="20" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                        <TextBlock Text=" 機台資訊" FontSize="20" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                    </StackPanel>
+
+                    <!-- 右側按鈕：刷新 + 自動更新 -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Command="{Binding ResetClickCommand}" Grid.Row="0" HorizontalAlignment="Left" Margin="10,5,10,5" Background="#0070E0" Foreground="White" FontWeight="Bold" Cursor="Hand" BorderThickness="0" Style="{StaticResource  PrimaryButtonStyle}" Width="100" Height="37">
+                            <Border CornerRadius="8" Background="Transparent">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="重置" FontSize="18" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                        </Button>
+                        <!-- 滑動開關版本：IsChecked=False=禁用(左)；IsChecked=True=啟用(右) -->
+                        <ToggleButton x:Name="DisableToggle" Cursor="Hand" HorizontalAlignment="Left" ToolTip="禁用 / 啟用" Command="{Binding RestrictionClickCommand}" IsChecked="{Binding IsRestriction, Mode=TwoWay}">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton">
+                                    <!-- 尺寸統一交由模板控制 -->
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Grid Width="150" Height="40">
+                                                    <!-- 背景軌道 -->
+                                                    <Border x:Name="Track" CornerRadius="22" BorderBrush="#333" BorderThickness="0">
+                                                        <Border.Background>
+                                                            <SolidColorBrush x:Name="TrackBrush" Color="#D9D9D9" />
+                                                        </Border.Background>
+                                                    </Border>
+
+                                                    <!-- 追隨陰影：模擬滑塊後方的陰影拖曳 -->
+                                                    <Border x:Name="ShadowTrail" Margin="0" CornerRadius="22" Opacity="0.0" IsHitTestVisible="False">
+                                                        <Border.Background>
+                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                                <GradientStop Color="#55000000" Offset="0.0" />
+                                                                <GradientStop Color="#00000000" Offset="1.0" />
+                                                            </LinearGradientBrush>
+                                                        </Border.Background>
+                                                    </Border>
+
+                                                    <!-- 滑塊 -->
+                                                    <Border x:Name="Knob" Width="75" Height="40" Margin="1" CornerRadius="18" Background="White" VerticalAlignment="Center" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5">
+                                                        <Border.Effect>
+                                                            <DropShadowEffect Color="#000000" BlurRadius="10" ShadowDepth="1" Opacity="0.25" />
+                                                        </Border.Effect>
+                                                        <Border.RenderTransform>
+                                                            <TranslateTransform x:Name="KnobTransform" />
+                                                        </Border.RenderTransform>
+
+                                                        <!-- 滑塊內容：圖示 + 文字 -->
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="6,1" >
+                                                            <TextBlock x:Name="IconText" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Text="🚫" Foreground="Black" />
+                                                            <TextBlock x:Name="LabelText" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" Text="禁用" Foreground="Black" />
+                                                        </StackPanel>
+                                                    </Border>
+
+                                                    <!-- 視覺狀態與動畫 -->
+                                                    <VisualStateManager.VisualStateGroups>
+                                                        <VisualStateGroup x:Name="CheckStates">
+                                                            <!-- 未勾選：禁用（滑塊在左） -->
+                                                            <VisualState x:Name="Unchecked">
+                                                                <Storyboard>
+                                                                    <!-- 滑塊位移 -->
+                                                                    <DoubleAnimation Storyboard.TargetName="KnobTransform" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.20">
+                                                                        <DoubleAnimation.EasingFunction>
+                                                                            <CubicEase EasingMode="EaseOut" />
+                                                                        </DoubleAnimation.EasingFunction>
+                                                                    </DoubleAnimation>
+
+                                                                    <!-- 軌道顏色 -->
+                                                                    <ColorAnimation Storyboard.TargetName="TrackBrush" Storyboard.TargetProperty="Color" To="#D9D9D9" Duration="0:0:0.20" />
+
+                                                                    <!-- 陰影拖曳淡出 -->
+                                                                    <DoubleAnimation Storyboard.TargetName="ShadowTrail" Storyboard.TargetProperty="Opacity" To="0.0" Duration="0:0:0.15" />
+                                                                </Storyboard>
+                                                            </VisualState>
+
+                                                            <!-- 勾選：啟用（滑塊在右） -->
+                                                            <VisualState x:Name="Checked">
+                                                                <Storyboard>
+                                                                    <!-- 180(總寬)-2*2(邊距)-92(滑塊寬)=82；略加手感微調 -> 84 -->
+                                                                    <DoubleAnimation Storyboard.TargetName="KnobTransform" Storyboard.TargetProperty="X" To="71" Duration="0:0:0.20">
+                                                                        <DoubleAnimation.EasingFunction>
+                                                                            <CubicEase EasingMode="EaseOut" />
+                                                                        </DoubleAnimation.EasingFunction>
+                                                                    </DoubleAnimation>
+
+                                                                    <!-- 軌道顏色 -->
+                                                                    <ColorAnimation Storyboard.TargetName="TrackBrush" Storyboard.TargetProperty="Color" To="#CCCCCC" Duration="0:0:0.20" />
+
+                                                                    <!-- 陰影拖曳淡入（在滑到右側時，左側留一點陰影） -->
+                                                                    <DoubleAnimation Storyboard.TargetName="ShadowTrail" Storyboard.TargetProperty="Opacity" To="1.0" Duration="0:0:0.12" />
+                                                                </Storyboard>
+                                                            </VisualState>
+                                                        </VisualStateGroup>
+                                                    </VisualStateManager.VisualStateGroups>
+                                                </Grid>
+
+                                                <!-- 狀態切換（圖示/文字/前景） -->
+                                                <ControlTemplate.Triggers>
+                                                    <!-- 禁用（IsChecked=False） -->
+                                                    <Trigger Property="IsChecked" Value="False">
+                                                        <Setter TargetName="Knob" Property="Background" Value="White" />
+                                                        <Setter TargetName="IconText" Property="Text" Value="🚫" />
+                                                        <Setter TargetName="IconText" Property="Foreground" Value="#555555" />
+                                                        <Setter TargetName="LabelText" Property="Text" Value="禁用" />
+                                                        <Setter TargetName="LabelText" Property="Foreground" Value="#555555" />
+                                                        <!-- 陰影方向（靠滑塊右側） -->
+                                                        <Setter TargetName="ShadowTrail" Property="HorizontalAlignment" Value="Right" />
+                                                        <Setter TargetName="ShadowTrail" Property="Width" Value="90" />
+                                                    </Trigger>
+
+                                                    <!-- 啟用（IsChecked=True） -->
+                                                    <Trigger Property="IsChecked" Value="True">
+                                                        <Setter TargetName="Knob" Property="Background" Value="#555555" />
+                                                        <Setter TargetName="IconText" Property="Text" Value="✓ " />
+                                                        <Setter TargetName="IconText" Property="Foreground" Value="White" />
+                                                        <Setter TargetName="LabelText" Property="Text" Value="啟用" />
+                                                        <Setter TargetName="LabelText" Property="Foreground" Value="White" />
+                                                        <!-- 陰影方向（靠滑塊左側） -->
+                                                        <Setter TargetName="ShadowTrail" Property="HorizontalAlignment" Value="Left" />
+                                                        <Setter TargetName="ShadowTrail" Property="Width" Value="90" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+                    </StackPanel>
+                </Grid>
             </Border>
 
             <!-- 🔸 下方內容區 -->
@@ -439,18 +576,15 @@
                                                                     <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.OB}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
                                                                     <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.JT}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
 
-                                                                    <!-- 右欄標題 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="" />
-                                                                    <!-- 可預留欄位 -->
-                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="" />
-
-                                                                    <!-- 右欄資料 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="" />
+                                                                    <!-- 右欄標題/資料預留 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="2" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="2" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="2" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="2" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="3" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="3" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="3" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="3" />
                                                                 </Grid>
                                                             </DataTemplate>
                                                         </Setter.Value>
@@ -509,8 +643,6 @@
                                                     <Setter.Value>
                                                         <DataTemplate>
                                                             <!-- 頁籤1內容，尚未實作 -->
-                                                            
-
                                                         </DataTemplate>
                                                     </Setter.Value>
                                                 </Setter>
@@ -533,7 +665,7 @@
                                                                 <!-- 🔹 篩選區塊 -->
                                                                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5,10,0,0" VerticalAlignment="Center">
                                                                     <DockPanel LastChildFill="True" Margin="0,0,0,0" VerticalAlignment="Center">
-                                                                        <ComboBox   FontSize="16" Width="100" Name="cbb_Day" Height="32" Margin="0,0,20,0" Background="White" BorderBrush="#444" BorderThickness="1" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" SelectedIndex="{Binding SelectedFilterIndex, Mode=TwoWay}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{StaticResource PillComboBoxStyle}" />
+                                                                        <ComboBox FontSize="16" Width="100" Name="cbb_Day" Height="32" Margin="0,0,20,0" Background="White" BorderBrush="#444" BorderThickness="1" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" SelectedIndex="{Binding SelectedFilterIndex, Mode=TwoWay}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{StaticResource PillComboBoxStyle}" />
                                                                         <DatePicker Name ="DayPicker1" FontSize="16" SelectedDate="{Binding FromDate}" IsEnabled="{Binding IsCustomDateMode}" Width="180" Height="30" Style="{StaticResource CustomDatePickerStyle}" Visibility="{Binding IsCustomDateMode}">
                                                                             <DatePicker.CalendarStyle>
                                                                                 <Style TargetType="Calendar">

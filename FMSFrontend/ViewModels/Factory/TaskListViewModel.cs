@@ -1,5 +1,8 @@
 ﻿// ViewModels/TaskListViewModel.cs
 using CommunityToolkit.Mvvm.ComponentModel;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Threading;
 using FMSFrontend.Models;
 using FMSFrontend.Views;
 using System.Collections.ObjectModel;
@@ -10,14 +13,61 @@ namespace FMSFrontend.ViewModels.Factory
 {
     public partial class TaskListViewModel : ObservableObject
     {
+        private readonly ICommandScheduleService _commandScheduleService;
+        // === Singleton ===
+        private readonly CommandScheduleStore _commandSchedulesStore;
+        public ObservableCollection<CommandScheduleModel> commandSchedules
+            => _commandSchedulesStore.CommandSchedules.CommandSchedules;
+        // ==LiveUpdater===
+        private readonly CommandScheduleLiveUpdater _commandScheduleLiveUpdater;
+
         public ObservableCollection<TaskItem> TaskItems { get; } = new();
+        
 
-        // 給 XAML 綁 ItemsSource
-        public ICollectionView TasksView { get; }
-
-        public TaskListViewModel()
+        public TaskListViewModel(ICommandScheduleService commandScheduleService,
+            CommandScheduleStore commandScheduleStore,
+            CommandScheduleLiveUpdater commandScheduleLiveUpdater)
         {
+            _commandScheduleService = commandScheduleService;
+            _commandSchedulesStore = commandScheduleStore;
+            _commandScheduleLiveUpdater = commandScheduleLiveUpdater;
+            _commandSchedulesStore.CommandSchedules.PropertyChanged += (_, __) => RefreshFromStore();
             // 假資料
+            
+        }
+        public void OnPageActivated()
+        {
+            _commandScheduleLiveUpdater.Start();
+        }
+        public void OnPageDeactivated()
+        {
+            _commandScheduleLiveUpdater.Stop();
+        }
+        void RefreshFromStore()
+        {
+            var sorted = commandSchedules.OrderBy(x => x.Priority).ToList();
+            for (int i = 0; i < sorted.Count; i++)
+            {
+                if (TaskItems.Count == i) TaskItems.Add(new TaskItem());
+                TaskItems[i].Priority        = sorted[i].Priority;
+                TaskItems[i].MachineName     = sorted[i].TaskSource;
+                TaskItems[i].ProgressPercent = sorted[i].ProgressPercent;
+                TaskItems[i].Summary         = sorted[i].CommandString;
+                TaskItems[i].InsertTimeString= sorted[i].InsertTimeString;
+                TaskItems[i].StartPoint      = sorted[i].StartPoint;
+                TaskItems[i].EndPoint        = sorted[i].EndPoint;
+            }
+            while (TaskItems.Count>sorted.Count)
+            {
+                TaskItems.RemoveAt(TaskItems.Count - 1);
+            }
+        }
+
+        //以下假資料
+        //public ICollectionView TasksView { get; }  // 給 XAML 綁 ItemsSource
+        void TestData()
+        {
+            /*
             TaskItems.Add(new TaskItem
             {
                 Priority = 1,
@@ -55,7 +105,7 @@ namespace FMSFrontend.ViewModels.Factory
                 WorkOrderId = "WO-2025-0002",
                 MaterialText = "電極 E-014"
             });
-
+            /*
             // 建立 View 並依 Priority 由小到大排序
             TasksView = CollectionViewSource.GetDefaultView(TaskItems);
             TasksView.SortDescriptions.Clear();
@@ -68,6 +118,7 @@ namespace FMSFrontend.ViewModels.Factory
                 live.IsLiveSorting = true;
                 live.LiveSortingProperties.Add(nameof(TaskItem.Priority));
             }
+            */
         }
 
         // 之後你要插入新任務 → 直接 Add；View 會依 Priority 自動重排
@@ -76,15 +127,17 @@ namespace FMSFrontend.ViewModels.Factory
 
     public partial class TaskItem : ObservableObject
     {
-        [ObservableProperty] public int priority;            // 數字越小越前面
+        [ObservableProperty] public int priority;            // 數字越小越前面 0-100
         [ObservableProperty] public string machineName = ""; // EDM1、WEDM2...
         [ObservableProperty] public double progressPercent;  // 0–100
-        [ObservableProperty] public string summary = "";     // 任務簡述
-        [ObservableProperty] public string workOrderId = ""; // WO-XXXX
-        [ObservableProperty] public string materialText = ""; // 工件/電極 顯示文字
+        [ObservableProperty] public string summary = "";     // 任務簡述 //CommandType
+        [ObservableProperty] public string insertTimeString = ""; // WO-XXXX
+        [ObservableProperty] public string startPoint = ""; // 工件/電極 顯示文字
+        [ObservableProperty] public string endPoint = ""; // 工件/電極 顯示文字
+
 
         // 方便直接綁定顯示
-        public string WorkOrderDisplay => $"工單編號：{WorkOrderId}";
-        public string MaterialDisplay => $"工件/電極：{MaterialText}";
+        //public string WorkOrderDisplay => $"工單編號：{WorkOrderId}";
+        //public string MaterialDisplay => $"工件/電極：{MaterialText}";
     }
 }

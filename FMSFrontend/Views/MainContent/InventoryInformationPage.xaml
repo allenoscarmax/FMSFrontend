@@ -51,10 +51,10 @@
 
                 <!-- TabControl：沿用 FlatTabControlStyle + TabItemColorSelector 的設計方法 -->
                 <TabControl Grid.Row="0" SelectedIndex="{Binding SelectedTabIndex}" Style="{StaticResource FlatTabControlStyle}" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}" Height="40" Padding="0" Margin="0,8,0,0" Background="Transparent">
-                    <TabItem Header="架上工作" Tag="#777777" />
-                    <TabItem Header="架上電極" Tag="#555555" />
-                    <TabItem Header="已下架工件" Tag="#555555" />
-                    <TabItem Header="已下架電極" Tag="#4CAF50" />
+                    <TabItem Header="架上工件" Tag="#2779A7" />
+                    <TabItem Header="架上電極" Tag="#2779A7" />
+                    <TabItem Header="已下架工件" Tag="#2779A7" />
+                    <TabItem Header="已下架電極" Tag="#2779A7" />
                 </TabControl>
 
                 <!-- 工具列（可選）：搜索 + 重新整理；若不需要可整段刪除 -->
@@ -112,15 +112,15 @@
                         <!-- 依畫面欄位命名替換你的 Binding -->
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="燒錄序號" Binding="{Binding BurnSerial}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="Tag序號" Binding="{Binding TagSerial}" Width="180" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="綁定" Binding="{Binding BindState}" Width="60" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="135" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="電極序號" Binding="{Binding TagSerial}" Width="180" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="綁定??" Binding="{Binding BindState}" Width="60" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="狀態狀態" Binding="{Binding Status}" Width="135" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                             <DataGridTextColumn Header="目前位置" Binding="{Binding Location}" Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                             <DataGridTextColumn Header="儲存區域" Binding="{Binding StorageArea}" Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                             <DataGridTextColumn Header="工單號碼" Binding="{Binding WorkOrder}" Width="150" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                             <DataGridTextColumn Header="加工製程" Binding="{Binding Process}" Width="150" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                             <DataGridTextColumn Header="指定機台" Binding="{Binding Machine}" Width="90" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="零件件號" Binding="{Binding PartNo}" Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="工件編號" Binding="{Binding PartNo}" Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>

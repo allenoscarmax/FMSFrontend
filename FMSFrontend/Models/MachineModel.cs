@@ -34,7 +34,7 @@ namespace FMSFrontend.Models
     public partial class OscarEdmModel : ObservableObject
     {
         [ObservableProperty] private string mainProgramName = "1"; //MachineModel  machineNumber
-
+        [ObservableProperty] private bool canControl = false; //MachineModel  machineNumber
 
         [ObservableProperty] private string machineNumber = "1"; //MachineModel  machineNumber
         [ObservableProperty] private string machineStatus = ""; //MachineModel Status

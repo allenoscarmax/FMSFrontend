@@ -398,20 +398,20 @@
                                 </materialDesign:PackIcon.Style>
                             </materialDesign:PackIcon>
 
-                            <Button Command="{Binding OpenAlarmCommand}" Height="24" Width="200" VerticalAlignment="Center" Background="White" Foreground="Black" BorderThickness="0" Padding="0" Cursor="Hand" Focusable="False">
+                            <Button Command="{Binding OpenAlarmCommand}" Height="24" Width="400" VerticalAlignment="Center" Background="White" Foreground="Black" BorderThickness="0" Padding="0" Cursor="Hand" Focusable="False">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <Border x:Name="bd" CornerRadius="4" Background="{TemplateBinding Background}">
-                                            <TextBlock x:Name="lbl" Text="{Binding SummaryMessage, FallbackValue='提示訊息'}" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" Foreground="{TemplateBinding Foreground}" />
+                                            <TextBlock x:Name="lbl" Text="{Binding SummaryMessage, FallbackValue='提示訊息'}" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" Foreground="{Binding SummaryMessageBrush}" />
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
                                                 <Setter TargetName="bd" Property="Background" Value="#F0F0F0" />
-                                                <Setter TargetName="lbl" Property="Foreground" Value="Black" />
+                                                <Setter TargetName="lbl" Property="Foreground" Value="{Binding SummaryMessageBrush}" />
                                             </Trigger>
                                             <Trigger Property="IsPressed" Value="True">
                                                 <Setter TargetName="bd" Property="Background" Value="#E5E5E5" />
-                                                <Setter TargetName="lbl" Property="Foreground" Value="Black" />
+                                                <Setter TargetName="lbl" Property="Foreground" Value="{Binding SummaryMessageBrush}" />
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
