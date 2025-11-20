@@ -6,7 +6,6 @@ using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Models;
 using FMSFrontend.Views.Windows;
-using OSCARMAXFMS_V3.DBmodels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -56,18 +55,18 @@ namespace FMSFrontend.Features.Threading
         }
         public async Task<bool> UpdateStatusAsync()
         {
-            //Try
-            //{
-            //取得所有機器基本資料
-            List<ErrorMessageLogDto>? dtos = await _svc_Alarms.GetCurrentErrorMessageLogAsync();
+            try
+            {
+                //取得所有機器基本資料
+                List<ErrorMessageLogDto>? dtos = await _svc_Alarms.GetCurrentErrorMessageLogAsync();
 
-            _store.ApplyErrorMessageLogDto(dtos);
-            return true;
-            //}
-            //catch //(Exception ex)
-            //{
-            //    return false;
-            //}
+                _store.ApplyErrorMessageLogDto(dtos);
+                return true;
+            }
+            catch //(Exception ex)
+            {
+                return false;
+            }
         }
         public void Start()
         {

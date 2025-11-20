@@ -6,7 +6,6 @@ using FMSFrontend.Models;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using MahApps.Metro.Controls;
-using OSCARMAXFMS_V3.DBmodels;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

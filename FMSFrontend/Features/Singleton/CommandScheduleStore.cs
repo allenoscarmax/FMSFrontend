@@ -27,6 +27,8 @@ namespace FMSFrontend.Features.Singleton
                     dto.ApplyCommandScheduleDto(model);
                     models.Add(model);
                 }
+                /* 
+                 // 假資料測試用
                 for (int i =0;i<5;i++)
                 {
                     var model = new CommandScheduleModel()
@@ -42,6 +44,7 @@ namespace FMSFrontend.Features.Singleton
                     };
                     models.Add(model);
                 }
+                */
                 CommandSchedules.CommandSchedules = models;
             }
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);

@@ -5,24 +5,35 @@ using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
-using OSCARMAXFMS_V3.DBmodels;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Dtos;
 
 namespace FMSFrontend.ViewModels.Windows
 {
     public partial class UploadSheetViewModel : ObservableObject
     {
-        private readonly IHttpService _httpService;
         private readonly IWindowService _windowService;
 
-        public UploadSheetViewModel(IHttpService httpService, IWindowService windowService)
+        private readonly IElectrodeService  _electrodeService;
+        private readonly IWorkpieceService  _workpieceService;
+        private readonly IWorksheetsService _worksheetsService;
+
+        public UploadSheetViewModel(
+            IWindowService windowService,
+            IElectrodeService electrodeService,
+            IWorkpieceService workpieceService,
+            IWorksheetsService worksheetsService)
         {
-            _httpService = httpService; _windowService = windowService;
+            _windowService = windowService;
+            _worksheetsService = worksheetsService;
+            _electrodeService = electrodeService;
+            _workpieceService = workpieceService;
         }
 
         [ObservableProperty]
@@ -436,32 +447,37 @@ namespace FMSFrontend.ViewModels.Windows
             int totalProcessStep = selectedWorks.Count + selectedEles.Count + extraOffset;
 
             // 1) 先上傳工單
-            Worksheets worksheetPayload;
-            worksheetPayload = new Worksheets
+
+            WorksheetsDto wsDto = new WorksheetsDto
             {
-                WorksheetNumber = worksheetNumber,
-                WorkpieceName = selectedWorks.FirstOrDefault()?.WorkpieceName ?? "",
-                WorkPriority = 0,
-                WorkEnabled = true,
-                WorkStatus = "New",
-                WorkPercentage = "0",
-                TargetEDM = targetEDM,
-                ProcessStep = 0,
-                TotalProcessStep = totalProcessStep,
-                Coordinate = coordinate,
-                SetupUser = "admin"
+                worksheetNumber = worksheetNumber,
+                workpieceName = selectedWorks.FirstOrDefault()?.WorkpieceName ?? "",
+                workPriority = 0,
+                workEnabled = true,
+                workStatus = "New",
+                workPercentage = "0",
+                targetEDM = targetEDM,
+                processStep = 0,
+                totalProcessStep = totalProcessStep,
+                coordinate = coordinate,
+                setupUser = "admin"
             };
-            ok = await _httpService.SendPutAsync("Worksheet/DB_InsertNewWorkSheetData", worksheetPayload);
-            if (!ok)
+            try
             {
-                new DialogMessageWindow("工單上傳失敗").ShowDialog();
-                return;
+                ok = await _worksheetsService.InsertNewWorkSheetDataAsync(wsDto);
+                if (!ok)
+                {
+                    new DialogMessageWindow("工單上傳失敗").ShowDialog();
+                    return;
+                }
             }
+            catch { }
+            
 
             // 2) 依照工件數量上傳
             foreach (var w in selectedWorks)
             {
-                var workPayload = new Workpiece
+                WorkpieceDto wpDto = new WorkpieceDto
                 {
                     tagSerial = "",
                     worksheetNumber = worksheetNumber,
@@ -477,14 +493,17 @@ namespace FMSFrontend.ViewModels.Windows
                     inspected = false,
                     inspectStatus = "",
                     inspectOffset = "",
-                    setupUser = "admin"
                 };
-                ok = await _httpService.SendPutAsync("Workpiece/DB_InsertWorkpiece", workPayload);
-                if (!ok)
+                try
                 {
-                    new DialogMessageWindow("工件上傳失敗: " + w.WorkpieceName.ToString()).ShowDialog();
-                    return;
+                    ok = await _workpieceService.InsertWorkpieceAsync(wpDto);
+                    if (!ok)
+                    {
+                        new DialogMessageWindow("工件上傳失敗: " + w.WorkpieceName.ToString()).ShowDialog();
+                        return;
+                    }
                 }
+                catch { }
             }
 
             // 3) 依照電極數量上傳
@@ -492,7 +511,7 @@ namespace FMSFrontend.ViewModels.Windows
 
             foreach (var e in selectedEles)
             {
-                var electrodePayload = new Electrode
+                ElectrodeDto elDto = new ElectrodeDto
                 {
                     tagSerial = "",
                     worksheetNumber = worksheetNumber,
@@ -516,16 +535,18 @@ namespace FMSFrontend.ViewModels.Windows
                     worksheetDone = "",
                     setupUser = "admin"
                 };
-
-                await _httpService.SendPutAsync("Electrode/DB_InsertElectrode", electrodePayload);
-                if (!ok)
+                try
                 {
-                    new DialogMessageWindow("工件上傳失敗: " + electrodePayload).ShowDialog();
-                    return;
+                    ok = await _electrodeService.DB_InsertElectrodeAsync(elDto);
+                    if (!ok)
+                    {
+                        new DialogMessageWindow("電極資料上傳失敗").ShowDialog();
+                        return;
+                    }
                 }
+                catch { }
             }
             new DialogMessageWindow("上傳完成").ShowDialog();
-
         }
 
         private static bool IsOffsetOneOrTwo(int? n)

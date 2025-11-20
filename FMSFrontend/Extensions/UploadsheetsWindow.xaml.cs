@@ -1,4 +1,5 @@
-﻿using FMSFrontend.Services;
+﻿using FMSFrontend.Features.Services;
+using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using System;
 using System.Collections.Generic;
@@ -24,8 +25,13 @@ namespace FMSFrontend.Extensions
         public UploadsheetsWindow()
         {
             var windowService = new WindowService();
-            var httpService = new HttpService();
-            this.DataContext = new UploadSheetViewModel(httpService, windowService);
+            var electrodeService = new ElectrodeService(new HttpService());
+            var workpieceService = new WorkpieceService(new HttpService());
+            var worksheetsService = new WorksheetsService(new HttpService());
+            this.DataContext = new UploadSheetViewModel(windowService,
+                electrodeService,
+                workpieceService,
+                worksheetsService);
             InitializeComponent();
         }
         private void Close_Click(object sender, RoutedEventArgs e)

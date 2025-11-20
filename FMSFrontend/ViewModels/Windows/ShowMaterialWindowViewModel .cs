@@ -6,7 +6,6 @@ using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
 using FMSFrontend.ViewModels.Production;
-using OSCARMAXFMS_V3.DBmodels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

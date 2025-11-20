@@ -40,7 +40,7 @@
                             </Border>
                         </Button>
                         <!-- 滑動開關版本：IsChecked=False=禁用(左)；IsChecked=True=啟用(右) -->
-                        <ToggleButton x:Name="DisableToggle" Cursor="Hand" HorizontalAlignment="Left" ToolTip="禁用 / 啟用" Command="{Binding RestrictionClickCommand}" IsChecked="{Binding IsRestriction, Mode=TwoWay}">
+                        <ToggleButton ClickMode="Press" x:Name="DisableToggle" Cursor="Hand" HorizontalAlignment="Left" ToolTip="禁用 / 啟用" Command="{Binding RestrictionClickCommand}" IsChecked="{Binding DisplayData.CanControl, Mode=TwoWay}">
                             <ToggleButton.Style>
                                 <Style TargetType="ToggleButton">
                                     <!-- 尺寸統一交由模板控制 -->

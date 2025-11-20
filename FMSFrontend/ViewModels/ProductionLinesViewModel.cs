@@ -16,7 +16,7 @@ using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
 using FMSFrontend.Views.Windows;
 using IniFile;
-using OSCARMAXFMS_V3.DBmodels; // ← 反序列化 Electrode.cs / Workpiece.cs
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -73,14 +73,9 @@ namespace FMSFrontend.ViewModels
             get => _currentWorkingZoneView;
             set => SetProperty(ref _currentWorkingZoneView, value);
         }
+        
         public ProductionLinesViewModel(IWindowService windowService, 
-            IHttpService httpService,
-            IElectrodeService electrodeService, 
-            IWorkpieceService workpieceService,
-            IProbeService probeService, 
-            IStorageService storageService,
-            IMachinesService machinesService, 
-            IWorksheetsService worksheetsService,
+           // IHttpService httpService,
             StorageStore storageStore, 
             MachineStore machineStore, 
             RobotStore robotStore,
@@ -88,14 +83,13 @@ namespace FMSFrontend.ViewModels
             MachineLiveUpdater machineLiveUpdater) 
         {
             _windowService = windowService;
-            _httpService = httpService;
-
-            _StorageService = storageService;
-            _ElectrodeService = electrodeService;
-            _WorkpieceService = workpieceService;
-            _ProbeService = probeService;
-            _MachinesService = machinesService;
-            _worksheetsService = worksheetsService;
+            _httpService = new HttpService();
+            _StorageService = new StorageService(_httpService);
+            _ElectrodeService = new ElectrodeService(_httpService);
+            _WorkpieceService = new WorkpieceService(_httpService);
+            _MachinesService = new MachinesService(_httpService);
+            _worksheetsService = new WorksheetsService(_httpService);
+            _ProbeService = new ProbeService(_httpService);
 
             _storageStore = storageStore;
             _machineStore = machineStore;
@@ -155,63 +149,64 @@ namespace FMSFrontend.ViewModels
                 _windowService.ShowMaterialEmpty(_httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
                 return;
             }
-            //try
-            //{
-            // 取消前一次仍在執行的更新,逾時設定1秒
-            _currentUpdateCts?.Cancel();
-            _currentUpdateCts?.Dispose();
-            _currentUpdateCts = new CancellationTokenSource();
-            _currentUpdateCts.CancelAfter(TimeSpan.FromMilliseconds(100));
-
-            var ct = _currentUpdateCts.Token;
-            if (slot.Kind == MaterialType.Electrode || slot.Kind == MaterialType.Electrode || slot.Kind == MaterialType.None)
+            try
             {
-                List<ElectrodeDto>? es = await _ElectrodeService.DB_GetElectrodesByTagSerialAsync(slot.Serial, ct);
-                if (es != null) //檢查是否為電極
+                // 取消前一次仍在執行的更新,逾時設定1秒
+                _currentUpdateCts?.Cancel();
+                _currentUpdateCts?.Dispose();
+                _currentUpdateCts = new CancellationTokenSource();
+                _currentUpdateCts.CancelAfter(TimeSpan.FromMilliseconds(100));
+
+                var ct = _currentUpdateCts.Token;
+                if (slot.Kind == MaterialType.Electrode || slot.Kind == MaterialType.Electrode || slot.Kind == MaterialType.None)
                 {
-                    var e = es.FirstOrDefault();
-                    if (e != null)
+                    List<ElectrodeDto>? es = await _ElectrodeService.DB_GetElectrodesByTagSerialAsync(slot.Serial, ct);
+                    if (es != null) //檢查是否為電極
                     {
-                        List<EleTimelineDto>? eleTimelineDto = await _ElectrodeService.DB_GetElectrodeTimelineByIdAsync(e._id, ct);
-                        // eleTimelineDto = null;
-                        var timelineModels = eleTimelineDto?.Select(MapElectrodeTimeline).ToList() ?? new List<TimelineItemModel>();
-                        _windowService.ShowElectrode(MapElectrode(e, slot), timelineModels, _httpService,
-                            _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService, slot.SlotCode);
+                        var e = es.FirstOrDefault();
+                        if (e != null)
+                        {
+                            List<EleTimelineDto>? eleTimelineDto = await _ElectrodeService.DB_GetElectrodeTimelineByIdAsync(e._id, ct);
+                            // eleTimelineDto = null;
+                            var timelineModels = eleTimelineDto?.Select(MapElectrodeTimeline).ToList() ?? new List<TimelineItemModel>();
+                            _windowService.ShowElectrode(MapElectrode(e, slot), timelineModels, _httpService,
+                                _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService, slot.SlotCode);
+                        }
+                        else
+                        {
+                            _windowService.ShowMaterialEmpty(_httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
+                        }
                     }
-                    else
+                    else //檢查是否為探針
                     {
-                        _windowService.ShowMaterialEmpty(_httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
+                        ProbeDto? prrobe = await _ProbeService.DB_GetProbeByTagSerialAsync(slot.Serial, ct);
+                        if (prrobe != null)
+                            _windowService.ShowElectrode(MapProbe(prrobe, slot), new List<TimelineItemModel>(), _httpService,
+                                 _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService,
+                                 slot.SlotCode);
+                        else // 皆非 則顯示空資料
+                        {
+                            _windowService.ShowMaterialEmpty(_httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
+                        }
                     }
                 }
-                else //檢查是否為探針
+                if (slot.Kind == MaterialType.None || slot.Kind == MaterialType.Workpiece)
                 {
-                    ProbeDto? prrobe = await _ProbeService.DB_GetProbeByTagSerialAsync(slot.Serial, ct);
-                    if (prrobe != null)
-                        _windowService.ShowElectrode(MapProbe(prrobe, slot), new List<TimelineItemModel>(), _httpService,
-                             _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService,
-                             slot.SlotCode);
+                    WorkpieceDto? wp = await _WorkpieceService.GetWorkpieceByTagSerialAsync(slot.Serial);
+                    if (wp != null) //檢查是否為工件
+                    {
+                        List<WpTimelineDto>? wpTimelineDto = await _WorkpieceService.GetWorkpieceTimelineByWorkpieceIdAsync(wp._id, ct);
+                        var wpTimelineModels = wpTimelineDto?.Select(MapWorkpieceTimeline).ToList() ?? new List<TimelineItemModel>();
+                        _windowService.ShowWorkpiece(MapWorkpiece(wp, slot), wpTimelineModels, _httpService,
+                             _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService, slot.SlotCode);
+                    }
                     else // 皆非 則顯示空資料
                     {
                         _windowService.ShowMaterialEmpty(_httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
                     }
                 }
             }
-            if (slot.Kind == MaterialType.None || slot.Kind == MaterialType.Workpiece)
-            {
-                WorkpieceDto? wp = await _WorkpieceService.GetWorkpieceByTagSerialAsync(slot.Serial);
-                if (wp != null) //檢查是否為工件
-                {
-                    List<WpTimelineDto>? wpTimelineDto = await _WorkpieceService.GetWorkpieceTimelineByWorkpieceIdAsync(wp._id, ct);
-                    var wpTimelineModels = wpTimelineDto?.Select(MapWorkpieceTimeline).ToList() ?? new List<TimelineItemModel>();
-                    _windowService.ShowWorkpiece(MapWorkpiece(wp, slot), wpTimelineModels, _httpService,
-                         _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService, slot.SlotCode);
-                }
-                else // 皆非 則顯示空資料
-                {
-                    _windowService.ShowMaterialEmpty(_httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
-                }
-            }
-            //}catch{}
+            catch { }
         }
         private static ElectrodeModel MapElectrode(ElectrodeDto db, Slot slot)
         {
@@ -219,15 +214,12 @@ namespace FMSFrontend.ViewModels
             {
                 // 以 API 為主，缺的用舊值補
                 Id = db._id,
-                JigSerial = "",
                 Name = db.electrodeName ?? "",
                 No = "", // DB 未提供 → 沿用舊值
                 Type = db.electrodeType ?? "",
                 Status = db.state ?? "",
-                HolderNo = "",
                 TagSerial = db.tagSerial ?? "",
                 MaxDischargeCount = db.lifeTimes.ToString() ?? "",
-                UsageRate = "",
                 Compensation = db.offset ?? "",
                 ProcessedCount = db.useTimes?.ToString() ?? "",
                 ElecRestriction = db.restriction ?? false,
@@ -242,15 +234,12 @@ namespace FMSFrontend.ViewModels
             {
                 // 以 API 為主，缺的用舊值補
                 Id = db._id,
-                JigSerial = "",
                 Name = db.probeName ?? "",
                 No = "", // DB 未提供 → 沿用舊值
                 Type = db.probeType ?? "",
                 Status = db.state ?? "",
-                HolderNo = "",
                 TagSerial = db.tagSerial ?? "",
                 MaxDischargeCount = "",
-                UsageRate = "",
                 Compensation = "",
                 ProcessedCount = "",
                 ElecRestriction = db.restriction ?? false,
@@ -317,18 +306,12 @@ namespace FMSFrontend.ViewModels
             if (machine is MachineCardViewModel)
             {
                 MachineCardViewModel m = (MachineCardViewModel)machine;
-
                 var vm = new ShowMachineWindowViewModel(machine, this);
                 var win = new ShowMachineWindow { DataContext = vm };
                 var owner = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
                 if (owner != null) win.Owner = owner;
                 win.ShowDialog();
             }
-            /*
-            var owner = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive); // 找到目前活躍的視窗當作 owner
-            if (owner != null) win.Owner = owner;
-            win.ShowDialog();
-            */
         }
 
         [RelayCommand]

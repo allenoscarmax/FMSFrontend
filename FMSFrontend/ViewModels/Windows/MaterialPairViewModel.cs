@@ -159,12 +159,16 @@ public partial class MaterialPairViewModel : ObservableObject
                 electrode.state = SelectStatus;
                 electrode.worksheetNumber = SelectedWorksheetItem?.WorkOrderNo ?? string.Empty;
                 electrode.tagSerial = RfidBindmodel.TagSerial ?? "";
-                ok = await _ElectrodeService.DB_UpdateElectrodeDataAsync(electrode);
-                if (!ok)
+                try
                 {
-                    _windowService.ShowMessage("電極上傳失敗");
-                    return;
+                    ok = await _ElectrodeService.DB_UpdateElectrodeDataAsync(electrode);
+                    if (!ok)
+                    {
+                        _windowService.ShowMessage("電極上傳失敗");
+                        return;
+                    }
                 }
+                catch { }
             }
             else // Workpiece section
             {
@@ -253,57 +257,63 @@ public partial class MaterialPairViewModel : ObservableObject
     [RelayCommand]
     private async Task SelectWorkpiece()
     {
-        if (SelectedWorksheetItem == null)
+        try
         {
-            _windowService.ShowMessage("請選擇工單");
-            return;
-        }
-        // 1) 準備資料（此 API 回傳單筆 WorkpieceDto）
-        var items = new List<SelectItem>();
-        WorkpieceDto? wp = await _WorkpieceService.GetWorkpieceByWorksheetNumberAsync(SelectedWorksheetItem.WorkOrderNo);
-        if (wp != null)
-        {
-            Brush statusBrush = StatusColor(wp.status);
-            items.Add(new SelectItem(wp.workpieceName ?? string.Empty, wp.status ?? string.Empty, statusBrush));
-        }
-        else
-        {
-            _windowService.ShowMessage("API無資料");
-            return;
-        }
-
-        // 2) 建立視窗與 VM
-        var dlg = new SelectItemWindow(SelectItemType.Workpiece, _ => items)
-        {
-            Owner = _window
-        };
-
-        // 3) 顯示並取回選擇結果
-        if (dlg.ShowDialog() == true)
-        {
-            SelectedWorkpieceItem = dlg.Tag as SelectItem;
-
-            var selectedName = SelectedWorkpieceItem?.MaterialName ?? string.Empty;
+            if (SelectedWorksheetItem == null)
+            {
+                _windowService.ShowMessage("請選擇工單");
+                return;
+            }
+            // 1) 準備資料（此 API 回傳單筆 WorkpieceDto）
+            var items = new List<SelectItem>();
+            WorkpieceDto? wp = await _WorkpieceService.GetWorkpieceByWorksheetNumberAsync(SelectedWorksheetItem.WorkOrderNo);
             if (wp != null)
             {
-                if (string.Equals(wp.workpieceName, selectedName, StringComparison.Ordinal))
-                {
-                    SelectStatus = wp.status ?? string.Empty;
-                    RfidBindmodel.TagSerial = wp.tagSerial ?? string.Empty;
-                    SelectName = wp.workpieceName ?? string.Empty;
-                    SelectPairEdm = wp.pairedEDM ?? string.Empty;
-                    SelectPgm = wp.edmpgm ?? string.Empty;
-                    workpiece = wp;
-                }
-                else
-                {
-                    _windowService.ShowMessage("找不到工件");
-                }
+                Brush statusBrush = StatusColor(wp.status);
+                items.Add(new SelectItem(wp.workpieceName ?? string.Empty, wp.status ?? string.Empty, statusBrush));
             }
             else
             {
-                _windowService.ShowMessage("無工件清單");
+                _windowService.ShowMessage("API無資料");
+                return;
             }
+
+            // 2) 建立視窗與 VM
+            var dlg = new SelectItemWindow(SelectItemType.Workpiece, _ => items)
+            {
+                Owner = _window
+            };
+
+            // 3) 顯示並取回選擇結果
+            if (dlg.ShowDialog() == true)
+            {
+                SelectedWorkpieceItem = dlg.Tag as SelectItem;
+
+                var selectedName = SelectedWorkpieceItem?.MaterialName ?? string.Empty;
+                if (wp != null)
+                {
+                    if (string.Equals(wp.workpieceName, selectedName, StringComparison.Ordinal))
+                    {
+                        SelectStatus = wp.status ?? string.Empty;
+                        RfidBindmodel.TagSerial = wp.tagSerial ?? string.Empty;
+                        SelectName = wp.workpieceName ?? string.Empty;
+                        SelectPairEdm = wp.pairedEDM ?? string.Empty;
+                        SelectPgm = wp.edmpgm ?? string.Empty;
+                        workpiece = wp;
+                    }
+                    else
+                    {
+                        _windowService.ShowMessage("找不到工件");
+                    }
+                }
+                else
+                {
+                    _windowService.ShowMessage("無工件清單");
+                }
+            }
+        }
+        catch {
+            _windowService.ShowMessage("工件失敗"); 
         }
     }
 
@@ -311,43 +321,52 @@ public partial class MaterialPairViewModel : ObservableObject
     private async Task SelectElectrode()
     {
 
-        if(SelectedWorksheetItem == null ) 
+        if (SelectedWorksheetItem == null)
         {
             _windowService.ShowMessage("請選擇工單");
-            return; 
+            return;
         }
         // 1) 準備資料
+
         var items = new List<SelectItem>();
-        List<ElectrodeDto> Electrodes = await _ElectrodeService.GetElectrodeByWorksheetNumberAsync(SelectedWorksheetItem.WorkOrderNo) ?? new List<ElectrodeDto>();
-
-        foreach (var e in Electrodes)
+        try
         {
-            Brush statusBrush = StatusColor(e.state);
-            // 使用 SelectItem 的建構子（SelectItem 擁有 read-only 屬性與 constructor）
-            items.Add(new SelectItem(e.electrodeName ?? string.Empty, e.state ?? string.Empty, statusBrush));
+            List<ElectrodeDto> Electrodes = await _ElectrodeService.GetElectrodeByWorksheetNumberAsync(SelectedWorksheetItem.WorkOrderNo) ?? new List<ElectrodeDto>();
+
+            foreach (var e in Electrodes)
+            {
+                Brush statusBrush = StatusColor(e.state);
+                // 使用 SelectItem 的建構子（SelectItem 擁有 read-only 屬性與 constructor）
+                items.Add(new SelectItem(e.electrodeName ?? string.Empty, e.state ?? string.Empty, statusBrush));
+            }
+
+
+            // 2) 建立視窗與 VM — 傳入 loader（否則視窗不會有資料）
+            var dlg = new SelectItemWindow(SelectItemType.Electrode, _ => items)
+            {
+                Owner = _window
+            };
+
+            // 3) 顯示並取回選擇結果（加上 null 檢查避免 NRE）
+            if (dlg.ShowDialog() == true)
+            {
+                SelectedElectrodeItem = dlg.Tag as SelectItem;
+
+                var selectedName = SelectedElectrodeItem?.MaterialName ?? string.Empty;
+                var e = Electrodes.FirstOrDefault(x => string.Equals(x.electrodeName, selectedName, StringComparison.Ordinal));
+
+                Lifetime = e?.lifeTimes?.ToString() ?? string.Empty;
+                SelectStatus = e?.state ?? string.Empty;
+                RfidBindmodel.TagSerial = e?.tagSerial ?? string.Empty;
+                SelectName = e?.electrodeName ?? string.Empty;
+                SelectPairEdm = e?.pairedEDM ?? string.Empty;
+                SelectPgm = e?.edmpgm ?? string.Empty;
+                electrode = e!;
+            }
         }
-
-        // 2) 建立視窗與 VM — 傳入 loader（否則視窗不會有資料）
-        var dlg = new SelectItemWindow(SelectItemType.Electrode, _ => items)
+        catch 
         {
-            Owner = _window
-        };
-
-        // 3) 顯示並取回選擇結果（加上 null 檢查避免 NRE）
-        if (dlg.ShowDialog() == true)
-        {
-            SelectedElectrodeItem = dlg.Tag as SelectItem;
-
-            var selectedName = SelectedElectrodeItem?.MaterialName ?? string.Empty;
-            var e = Electrodes.FirstOrDefault(x => string.Equals(x.electrodeName, selectedName, StringComparison.Ordinal));
-
-            Lifetime = e?.lifeTimes?.ToString() ?? string.Empty;
-            SelectStatus = e?.state ?? string.Empty;
-            RfidBindmodel.TagSerial = e?.tagSerial ?? string.Empty;
-            SelectName = e?.electrodeName ?? string.Empty;
-            SelectPairEdm = e?.pairedEDM ?? string.Empty;
-            SelectPgm = e?.edmpgm ?? string.Empty;
-            electrode = e!;
+            _windowService.ShowMessage("選擇電極失敗");
         }
     }
     // 取得尾碼：預設回傳 "02"（不帶連字號）；若你想帶 "-02" 改 return parts[^1] 前面加 "-"
@@ -367,35 +386,42 @@ public partial class MaterialPairViewModel : ObservableObject
     [RelayCommand]
     private async Task SelectWorkOrder()
     {
-        // 1) 準備資料
-        var items = new List<WorksheetItem>();
-        List<WorksheetsDto> worksheets = await _WorksheetService.GetAllWorkSheetAsync()?? new List<WorksheetsDto>();
-        foreach (var ws in worksheets)
+        try
         {
-            if (ws.workStatus != "Completed" && ws.workStatus != "Failure")
+            // 1) 準備資料
+            var items = new List<WorksheetItem>();
+            List<WorksheetsDto> worksheets = await _WorksheetService.GetAllWorkSheetAsync() ?? new List<WorksheetsDto>();
+            foreach (var ws in worksheets)
             {
-                items.Add(new WorksheetItem
+                if (ws.workStatus != "Completed" && ws.workStatus != "Failure")
                 {
-                    PartName = ws.workpieceName ?? string.Empty,
-                    WorkOrderNo = ws.worksheetNumber ?? string.Empty
-                });
+                    items.Add(new WorksheetItem
+                    {
+                        PartName = ws.workpieceName ?? string.Empty,
+                        WorkOrderNo = ws.worksheetNumber ?? string.Empty
+                    });
+                }
+            }
+            if (items.Count != 0)
+            {
+                // 2) 建立視窗與 VM
+                var vm = new SelectWorksheetWindowViewModel(items);
+                var dlg = new SelectWorksheetWindow
+                {
+                    Owner = _window,
+                    DataContext = vm
+                };
+
+                // 3) 顯示並取回選擇結果
+                if (dlg.ShowDialog() == true)
+                {
+                    SelectedWorksheetItem = dlg.Tag as WorksheetItem;
+                }
             }
         }
-        if (items.Count != 0)
+        catch 
         {
-            // 2) 建立視窗與 VM
-            var vm = new SelectWorksheetWindowViewModel(items);
-            var dlg = new SelectWorksheetWindow
-            {
-                Owner = _window,
-                DataContext = vm
-            };
-
-            // 3) 顯示並取回選擇結果
-            if (dlg.ShowDialog() == true)
-            {
-                SelectedWorksheetItem = dlg.Tag as WorksheetItem;
-            }
+            _windowService.ShowMessage("選擇工單失敗");
         }
     }
     /*

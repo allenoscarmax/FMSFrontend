@@ -81,7 +81,6 @@ namespace FMSFrontend.Models
         [ObservableProperty] private bool materialRestriction;  // 材料是否有鎖定
         [ObservableProperty] private string storageStatus = "";         // 材料庫是否預約
         [ObservableProperty] private bool storageRestriction;           // 材料庫是否有鎖定
-
         public Brush StatusBrush => StorageRestriction ? new SolidColorBrush(Color.FromRgb(0xE0, 0xE0, 0xE0)) :
            MaterialStatus switch
            {
@@ -110,8 +109,9 @@ namespace FMSFrontend.Models
         public int Col { get; set; }    // 列
 
         public string SlotCode = "";
-        public string worksheetNumber = "";
-        public string EDMProgram = ""; // 使用程式名稱
+        public string Worksheet = "";
+        public string Program = "" ; // 使用程式名稱
+        public string Location = "";
 
         // 影響 StatusBrush 的來源變更時，主動通知
     }

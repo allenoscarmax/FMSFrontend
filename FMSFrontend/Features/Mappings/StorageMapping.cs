@@ -1,6 +1,5 @@
 ﻿using FMSFrontend.Features.Dtos;
 using FMSFrontend.Models;
-using OSCARMAXFMS_V3.DBmodels;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 
@@ -63,8 +62,14 @@ namespace FMSFrontend.Features.Mappings
             if (model.ShortName == "") model.ShortName = model.Name;
             model.MaterialStatus = dto?.state ?? "";
             model.MaterialRestriction = dto?.restriction ?? false;
+            //庫存資訊
+            model.Location = dto?.currentLocation ?? "";
+            model.Worksheet = dto?.worksheetNumber ?? "";
+            model.Program = dto?.edmpgm ?? "";
+
+
         }
-        
+
         public static void ApplyWorkpieceDto(this WorkpieceDto dto, Slot model)
         {
             if (dto == null || model == null) return;
@@ -74,6 +79,10 @@ namespace FMSFrontend.Features.Mappings
             if (model.ShortName == "") model.ShortName = model.Name;
             model.MaterialStatus = dto?.status ?? "";
             model.MaterialRestriction = dto?.restriction ?? false;
+            //庫存資訊
+            model.Location = dto?.currentLocation ?? "";
+            model.Worksheet = dto?.worksheetNumber ?? "";
+            model.Program = dto?.edmpgm ?? "";
         }
         public static void ApplyProbeDto(this ProbeDto dto, Slot model)
         {
@@ -83,6 +92,10 @@ namespace FMSFrontend.Features.Mappings
             model.ShortName = model.Name;
             model.MaterialStatus = dto.state ?? "";
             model.MaterialRestriction = dto.restriction ?? false;
+            //庫存資訊
+            model.Location = dto?.currentLocation ?? "";
+            model.Worksheet = "";
+            model.Program = "";
         }
 
     }

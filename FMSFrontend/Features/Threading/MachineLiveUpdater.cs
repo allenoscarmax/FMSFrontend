@@ -4,7 +4,6 @@ using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Models;
 using FMSFrontend.Views.Windows;
-using OSCARMAXFMS_V3.DBmodels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -64,59 +63,59 @@ namespace FMSFrontend.Features.Threading
         }
         public async Task<bool> UpdateStatusAsync()
         {
-            //try
-            //{
-            //取得所有機器基本資料
-            List<MachineModel> machines = new List<MachineModel>();
-            List<MachinesDto>? mDtos = await _svc_Machines.GetAllMachinesAsync();
-            if (mDtos != null && mDtos.Count > 0)
+            try
             {
-                _store.ApplyMachinesDto(mDtos);
-                for (int i = 0; i < mDtos.Count; i++)
+                //取得所有機器基本資料
+                List<MachineModel> machines = new List<MachineModel>();
+                List<MachinesDto>? mDtos = await _svc_Machines.GetAllMachinesAsync();
+                if (mDtos != null && mDtos.Count > 0)
                 {
-                    //如果有電極序號 讀取電極資訊
-                    if (!string.IsNullOrEmpty(mDtos[i].onDeckElectrodeSerial))
+                    _store.ApplyMachinesDto(mDtos);
+                    for (int i = 0; i < mDtos.Count; i++)
                     {
-                        string serial = mDtos[i].onDeckElectrodeSerial;
-                        List<ElectrodeDto>? eDtos = await _svc_electrode.DB_GetElectrodesByTagSerialAsync(serial);
-                        if (eDtos != null && eDtos.Count > 0)
+                        //如果有電極序號 讀取電極資訊
+                        if (!string.IsNullOrEmpty(mDtos[i].onDeckElectrodeSerial))
                         {
-                            var eDto = eDtos.FirstOrDefault();
-                            if (eDto != null)
-                                _store.ApplyElectrodeDto(eDto, i);
+                            string serial = mDtos[i].onDeckElectrodeSerial;
+                            List<ElectrodeDto>? eDtos = await _svc_electrode.DB_GetElectrodesByTagSerialAsync(serial);
+                            if (eDtos != null && eDtos.Count > 0)
+                            {
+                                var eDto = eDtos.FirstOrDefault();
+                                if (eDto != null)
+                                    _store.ApplyElectrodeDto(eDto, i);
+                            }
+                            else _store.ApplyNull(i, true);
                         }
-                        else _store.ApplyNull(i,true);
-                    }
-                    else _store.ApplyNull(i,true);
-                    //如果有工件序號讀取,工件資訊
-                    if (!string.IsNullOrEmpty(mDtos[i].onDeckWorkpieceSerial))
-                    {
-                        string serial = mDtos[i].onDeckWorkpieceSerial;
-                        var wDto = await _svc_Workpiece.GetWorkpieceByTagSerialAsync(serial);
-                        if (wDto != null)
+                        else _store.ApplyNull(i, true);
+                        //如果有工件序號讀取,工件資訊
+                        if (!string.IsNullOrEmpty(mDtos[i].onDeckWorkpieceSerial))
                         {
-                            _store.ApplyWorkpieceDto(wDto, i);
+                            string serial = mDtos[i].onDeckWorkpieceSerial;
+                            var wDto = await _svc_Workpiece.GetWorkpieceByTagSerialAsync(serial);
+                            if (wDto != null)
+                            {
+                                _store.ApplyWorkpieceDto(wDto, i);
+                            }
+                            else _store.ApplyNull(i, false);
                         }
-                        else _store.ApplyNull(i,false);
-                    }
-                    else _store.ApplyNull(i,false);
-                    //取得機台資訊
-                    if (mDtos[i].machineCode.Contains("EDM"))
-                    {
-                        var oscarDto = await _svc_Machines.GetMachineDataAsync(mDtos[i].machineNumber - 1);
-                        if (oscarDto != null)
+                        else _store.ApplyNull(i, false);
+                        //取得機台資訊
+                        if (mDtos[i].machineCode.Contains("EDM"))
                         {
-                            _store.ApplyOscarmaxMachineParaDto(oscarDto, i);
+                            var oscarDto = await _svc_Machines.GetMachineDataAsync(mDtos[i].machineNumber - 1);
+                            if (oscarDto != null)
+                            {
+                                _store.ApplyOscarmaxMachineParaDto(oscarDto, i);
+                            }
                         }
                     }
                 }
+                return true;
             }
-            return true;
-            //}
-            //catch //(Exception ex)
-            //{
-            //    return false;
-            //}
+            catch //(Exception ex)
+            {
+                return false;
+            }
         }
         public void Start()
         {

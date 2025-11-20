@@ -36,19 +36,18 @@ namespace FMSFrontend.Features.Mappings
             model.WorkpieceShortName =
                 Regex.Match(dto.workpieceName, @"-(\d+_\d+-[A-Za-z]+)$").Groups[1].Value;
         }
-        
         public static void ApplyOscarmaxMachineParaDto(this OscarmaxMachineParaDto dto, MachineModel model)
         {
             if (dto == null || model == null || model.OscarEdm == null) return;
             //設備資訊
             model.OscarEdm.MainProgramName = dto.MainProgramName ?? "";     //主程式名稱
-           // model.OscarEdm.CanControl = model.
+            model.OscarEdm.CanControl = model.OscarEdm.CanControl;                     //是否可控
 
-            model.OscarEdm.MachineNumber = model.MachineName ?? "";         //機台名稱
-            model.OscarEdm.MachineStatus = model.Status ?? "";              //機台狀態
-            model.OscarEdm.UsingElectrode = model.ElectrodeShortName ?? ""; //電極名稱
-            model.OscarEdm.MachiningCode = model.Type ?? ""; //機台型號
-            model.OscarEdm.CycleTime = dto.CycleTime ?? ""; //加工持續時間
+            model.OscarEdm.MachineNumber = model.MachineName ?? "";                     //機台名稱
+            model.OscarEdm.MachineStatus = model.Status ?? "";                          //機台狀態
+            model.OscarEdm.UsingElectrode = model.ElectrodeShortName ?? "";             //電極名稱
+            model.OscarEdm.MachiningCode = model.Type ?? "";                            //機台型號
+            model.OscarEdm.CycleTime = dto.CycleTime ?? "";                             //加工持續時間
             model.OscarEdm.MachiningWorkingPercentage = $"{dto.ProgressBar}%" ?? ""; //加工進度
             model.OscarEdm.CurrentWorksheet = dto.WorkNumber_now.ToString() ?? ""; //?? 目前工單
             model.OscarEdm.MachiningTool = $"T-{dto.Run_Tool:00}" ?? ""; // 使用刀具 ?? 感覺是電極

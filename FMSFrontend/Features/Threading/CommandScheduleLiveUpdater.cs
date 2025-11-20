@@ -4,7 +4,6 @@ using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Models;
 using FMSFrontend.Views.Windows;
-using OSCARMAXFMS_V3.DBmodels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -26,7 +25,7 @@ namespace FMSFrontend.Features.Threading
         private readonly CommandScheduleStore _store;
         private readonly DispatcherTimer _timer;
 
-        public string SelectName =""; // 選擇的機台編號
+        public string SelectName = ""; // 選擇的機台編號
 
         //private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
         private bool _isUpdating; // 用於避免重入的旗標

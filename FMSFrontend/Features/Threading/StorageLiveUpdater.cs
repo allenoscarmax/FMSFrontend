@@ -5,12 +5,12 @@ using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Models;
 using FMSFrontend.Views.Windows;
-using OSCARMAXFMS_V3.DBmodels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -61,64 +61,71 @@ namespace FMSFrontend.Features.Threading
         }
         public async Task<bool> UpdateStatusAsync()
         {
-            var storage = await _svc_Storage.GetAllStorageAsync();
-            if (storage == null) return false;
-            _store.ApplyStorageDto(storage);
-            for (int i = 0; i < _store.StorageGroup.Storage.Count; i++)
+            try
             {
-                StorageModel s = _store.StorageGroup.Storage[i];
-                for (int j = 0; j < s.Slots.Count; j++)
+                var storage = await _svc_Storage.GetAllStorageAsync();
+                if (storage == null) return false;
+                _store.ApplyStorageDto(storage);
+                for (int i = 0; i < _store.StorageGroup.Storage.Count; i++)
                 {
-                    var slot = s.Slots[j];
-                    if (!string.IsNullOrWhiteSpace(slot.Serial))
+                    StorageModel s = _store.StorageGroup.Storage[i];
+                    for (int j = 0; j < s.Slots.Count; j++)
                     {
-                        if (s.Kind == MaterialType.Electrode) //檢查是否為電極
+                        var slot = s.Slots[j];
+                        if (!string.IsNullOrWhiteSpace(slot.Serial))
                         {
-                            var eleDtos = await _svc_electrode.DB_GetElectrodesByTagSerialAsync(slot.Serial);
-                            if (eleDtos != null)
+                            if (s.Kind == MaterialType.Electrode) //檢查是否為電極
                             {
-                                var eleDto = eleDtos.FirstOrDefault() ?? new ElectrodeDto();
-                                _store.ApplyElectrodeDto(eleDto, i, j); // 傳入 index
-                            }
-                            else //檢查是否為探針
-                            {
-                                var probeDto = await _svc_Probe.DB_GetProbeByTagSerialAsync(slot.Serial);
-                                if (probeDto != null)
+                                var eleDtos = await _svc_electrode.DB_GetElectrodesByTagSerialAsync(slot.Serial);
+                                if (eleDtos != null)
                                 {
-                                    _store.ApplyProbeDto(probeDto, i, j); // 傳入 index
+                                    var eleDto = eleDtos.FirstOrDefault() ?? new ElectrodeDto();
+                                    _store.ApplyElectrodeDto(eleDto, i, j); // 傳入 index
+                                }
+                                else //檢查是否為探針
+                                {
+                                    var probeDto = await _svc_Probe.DB_GetProbeByTagSerialAsync(slot.Serial);
+                                    if (probeDto != null)
+                                    {
+                                        _store.ApplyProbeDto(probeDto, i, j); // 傳入 index
+                                    }
+                                    else
+                                    {
+                                        _store.ApplyNullDto(i, j); // 傳入 index
+                                    }
+                                }
+                            }
+                            else if (s.Kind == MaterialType.Workpiece) //檢查是否為工件
+                            {
+                                var workpieceDto = await _svc_Workpiece.GetWorkpieceByTagSerialAsync(slot.Serial);
+                                if (workpieceDto != null)
+                                {
+                                    _store.ApplyWorkpieceDto(workpieceDto, i, j); // 傳入 index
                                 }
                                 else
                                 {
                                     _store.ApplyNullDto(i, j); // 傳入 index
                                 }
                             }
-                        }
-                        else if (s.Kind == MaterialType.Workpiece) //檢查是否為工件
-                        {
-                            var workpieceDto = await _svc_Workpiece.GetWorkpieceByTagSerialAsync(slot.Serial);
-                            if (workpieceDto != null)
-                            {
-                                _store.ApplyWorkpieceDto(workpieceDto, i, j); // 傳入 index
-                            }
                             else
                             {
                                 _store.ApplyNullDto(i, j); // 傳入 index
                             }
                         }
-                        else 
+                        else
                         {
                             _store.ApplyNullDto(i, j); // 傳入 index
                         }
                     }
-                    else 
-                    {
-                        _store.ApplyNullDto(i, j); // 傳入 index
-                    }
                 }
+                _store.ApplyStatusCount();
+                _store.ApplySelectStorage(SelectTitle);
+                return true;
             }
-            _store.ApplyStatusCount();
-            _store.ApplySelectStorage(SelectTitle);
-            return true;
+            catch 
+            {
+                return false;
+            }
         }
         /*
         public async Task<bool> UpdateProductionLinesPageStatusAsync()

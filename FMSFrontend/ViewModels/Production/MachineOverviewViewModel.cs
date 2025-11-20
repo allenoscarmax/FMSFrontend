@@ -12,7 +12,6 @@ using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Factory;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views.Windows;
-using OSCARMAXFMS_V3.DBmodels;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
