@@ -11,18 +11,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Dtos\**" />
     <Compile Remove="Image\工具機-icon\**" />
     <Compile Remove="Image\控制單元\**" />
+    <EmbeddedResource Remove="Dtos\**" />
     <EmbeddedResource Remove="Image\工具機-icon\**" />
     <EmbeddedResource Remove="Image\控制單元\**" />
+    <None Remove="Dtos\**" />
     <None Remove="Image\工具機-icon\**" />
     <None Remove="Image\控制單元\**" />
+    <Page Remove="Dtos\**" />
     <Page Remove="Image\工具機-icon\**" />
     <Page Remove="Image\控制單元\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Dtos\MagazinePara.cs" />
   </ItemGroup>
 
   <ItemGroup>

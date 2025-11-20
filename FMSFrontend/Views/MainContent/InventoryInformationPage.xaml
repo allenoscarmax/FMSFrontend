@@ -92,7 +92,7 @@
 
                 <!-- 主內容：表格（完全依你提供的樣式與寫法） -->
                 <Border Grid.Row="2" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,0">
-                    <DataGrid ItemsSource="{Binding InventoryList}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="15" Style="{StaticResource ModernFlatDataGridStyle}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
+                    <DataGrid  ColumnWidth="SizeToCells" ItemsSource="{Binding InventoryList}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="15" Style="{StaticResource ModernFlatDataGridStyle}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
 
                         <!-- Cell / Row Style：移除邊框與多餘間距 -->
                         <DataGrid.CellStyle>
@@ -111,16 +111,13 @@
 
                         <!-- 依畫面欄位命名替換你的 Binding -->
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="燒錄序號" Binding="{Binding BurnSerial}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="電極序號" Binding="{Binding TagSerial}" Width="180" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="綁定??" Binding="{Binding BindState}" Width="60" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="狀態狀態" Binding="{Binding Status}" Width="135" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="目前位置" Binding="{Binding Location}" Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="儲存區域" Binding="{Binding StorageArea}" Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="工單號碼" Binding="{Binding WorkOrder}" Width="150" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="加工製程" Binding="{Binding Process}" Width="150" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="指定機台" Binding="{Binding Machine}" Width="90" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="工件編號" Binding="{Binding PartNo}" Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="名稱" Binding="{Binding Name}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="序號" Binding="{Binding TagSerial}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="目前位置" Binding="{Binding Location}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="儲存區域" Binding="{Binding SlotCode}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="工單編號" Binding="{Binding Worksheet}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="程式名稱" Binding="{Binding Program}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>

@@ -27,7 +27,7 @@ namespace FMSFrontend.Models
         [ObservableProperty] private string workpieceShortName = "";    //工件短名稱
         [ObservableProperty] private string electrodeName = "";         //電極名稱
         [ObservableProperty] private string electrodeShortName = "";    //電極短名稱
-
+        
         [ObservableProperty] private OscarEdmModel oscarEdm = new(); //機台類型 詳細資訊
     }
 

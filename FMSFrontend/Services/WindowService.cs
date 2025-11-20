@@ -9,7 +9,6 @@ using FMSFrontend.Models;
 using FMSFrontend.ViewModels;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views.Windows;
-using OSCARMAXFMS_V3.DBmodels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

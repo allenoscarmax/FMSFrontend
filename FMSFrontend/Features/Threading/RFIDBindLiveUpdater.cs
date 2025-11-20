@@ -42,8 +42,8 @@ namespace FMSFrontend.Features.Threading
         }
         public async Task<bool> UpdateStatusAsync()
         {
-            //try
-            //{
+            try
+            {
                 if (ReadTagFlag)
                 {
                     var ParasDto = await _svc.GetRFIDParasAsync();
@@ -54,21 +54,22 @@ namespace FMSFrontend.Features.Threading
                     if (TagDto != null)
                         _store.ApplyTagDto(TagDto);
                 }
-                else 
+                else
                 {
                     var LogDto = await _svc.GetAllRFIDWriteLogAsync();
                     if (LogDto != null)
                         _store.ApplyRFIDBindPageDto(LogDto);
                 }
                 return true;
-            //}
-            //catch //(Exception ex)
-            //{
+            }
+            catch //(Exception ex)
+            {
+                return false;
                 // TODO: 可加 log
                 // ex.Message 或紀錄至 LogService
                 //return false;
-            //}
-        }
+            }
+        } 
 
         public void Start()
         {

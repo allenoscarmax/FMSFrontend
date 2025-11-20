@@ -57,62 +57,69 @@ namespace FMSFrontend.ViewModels
             RefreshCommand = new RelayCommand(() =>
             {
                 _ = RefreshFromSelectedTabIndex();
-                //InventoryList.Refresh();
+                InventoryList.Refresh();
             });
 
             // 由 Enter 觸發（XAML 的 KeyDownEnterOnlyConverter 會限制只在 Enter 執行）
             SearchCommand = new RelayCommand<object>(param =>
             {
                 if (param is TextBox tb) SearchText = tb.Text;
-               // InventoryList.Refresh();
+                InventoryList.Refresh();
             });
 
-            // 切換分頁時自動刷新
-            PropertyChanged += (_, e) =>
-            {
-                if (e.PropertyName == nameof(SelectedTabIndex))
-                {
-                    _ = RefreshFromSelectedTabIndex();
-                    //InventoryList.Refresh();
-                }
-            };
+            // 初始化資料
             _ = RefreshFromSelectedTabIndex();
+            InventoryList.Refresh();
         }
+
+        // 在 SelectedTabIndex 變更時刷新資料與過濾
+        partial void OnSelectedTabIndexChanged(int value)
+        {
+            _ = RefreshFromSelectedTabIndex();
+            InventoryList?.Refresh();
+        }
+
+        // 在 SearchText 變更時刷新過濾
+        partial void OnSearchTextChanged(string value)
+        {
+            InventoryList?.Refresh();
+        }
+
         private async Task RefreshFromSelectedTabIndex()
         {
-            //try
-            //{
-               await _storageLiveUpdater.UpdateStatusAsync();
-                AllItems.Clear();
-            foreach (var storage in Storages)
+            try
             {
-                if (SelectedTabIndex == 0 && storage.Name.IndexOf("W") == -1) continue;
-                else if (SelectedTabIndex == 1 && storage.Name.IndexOf("E") == -1) continue;
-                else if (SelectedTabIndex == 2 && storage.Name.IndexOf("W") == -1) continue;
-                else if (SelectedTabIndex == 3 && storage.Name.IndexOf("E") == -1) continue;
-                foreach (var slot in storage.Slots)
+                await _storageLiveUpdater.UpdateStatusAsync();
+                AllItems.Clear();
+                foreach (var storage in Storages)
                 {
-                    AllItems.Add(new InventoryItem
+                    foreach (var slot in storage.Slots)
                     {
-                        Kind = (InventoryKind)slot.Kind,        //類型??
-                        BurnSerial = slot.Serial,               //序號??
-                        TagSerial = "",                         //序號??
-                        BindState = slot.StorageStatus,         //綁定狀態??
-                        Status = slot.MaterialStatus,           //狀態
-                        Location = slot.SlotCode,               //位置編碼
-                        StorageArea = "",//slot.Region,              //區域??
-                        WorkOrder ="", //slot.WorksheetNumber,       //工單
-                        Process ="",// slot.,                        //執行程式
-                        Machine ="", //slot,                         //配對機台
-                        PartNo ="", //slot.StorageNumber.,           //工件編號
-                        PartName ="", //slot.PartName,               //工件名稱
-                        LotNo = ""                              //Storages[i].LotNo //??
-                    });
-                }
-            }
+                        InventoryKind kind = InventoryKind.unKnow;
+                        bool IsOffShelf = slot.MaterialStatus.Equals("OffShelf", StringComparison.OrdinalIgnoreCase);
+                        if (!IsOffShelf && storage.Name.IndexOf("W") == -1) kind = InventoryKind.OnShelfElectrode;
+                        else if (!IsOffShelf && storage.Name.IndexOf("E") == -1) kind = InventoryKind.OnShelfWork;
+                        else if (IsOffShelf && storage.Name.IndexOf("W") == -1) kind = InventoryKind.OffShelfElectrode;
+                        else if (IsOffShelf && storage.Name.IndexOf("E") == -1) kind = InventoryKind.OffShelfWork;
 
-            //}
-            //catch { }
+                        AllItems.Add(new InventoryItem
+                        {
+                            Kind = kind,
+                            Name = slot.Name,
+                            TagSerial = slot.Serial,
+                            Status = slot.MaterialStatus,
+                            Location = slot.Location,
+                            SlotCode = slot.SlotCode,
+                            Worksheet = slot.Worksheet,
+                            Program = slot.Program,
+                        });
+                    }
+                }
+
+            }
+            catch 
+            {
+            }
         }
         public void OnPageActivated() // 開啟警報視窗
         {
@@ -134,12 +141,14 @@ namespace FMSFrontend.ViewModels
             var q = (SearchText ?? string.Empty).Trim();
             if (q.Length == 0) return true;
 
-            return Contains(r.BurnSerial, q) || Contains(r.TagSerial, q) ||
-                   Contains(r.BindState, q) || Contains(r.Status, q) ||
-                   Contains(r.Location, q) || Contains(r.StorageArea, q) ||
-                   Contains(r.WorkOrder, q) || Contains(r.Process, q) ||
-                   Contains(r.Machine, q) || Contains(r.PartNo, q) ||
-                   Contains(r.PartName, q) || Contains(r.LotNo, q);
+            return
+                Contains(r.Name, q) ||
+                Contains(r.TagSerial, q) ||
+                Contains(r.Status, q) ||
+                Contains(r.Location, q) ||
+                Contains(r.SlotCode, q) ||
+                Contains(r.Worksheet, q) ||
+                Contains(r.Program, q);
         }
 
         private static bool Contains(string? src, string q) =>
@@ -149,146 +158,107 @@ namespace FMSFrontend.ViewModels
             // 架上工件
             AllItems.Add(new InventoryItem
             {
-                Kind = InventoryKind.OnShelfWork,
-                BurnSerial = "WRP20240604111825",
-                TagSerial = "TG2022100666541",
-                BindState = "",
-                Status = "Booked",
-                Location = "inStore",
-                StorageArea = "W:1:1:3:1",
-                WorkOrder = "123",
-                Process = "OP310 OP320",
-                Machine = "EDM3",
-                PartNo = "2748M04G01",
-                PartName = "整流罩",
-                LotNo = "NA"
+                Kind = InventoryKind.OffShelfElectrode,
+                Name = "ELD20240702081533",
+                TagSerial = "TG202301019999",
+                Status = "InUse",
+                Location = "onEDM4",
+                SlotCode = "-",
+                Worksheet = "EDM",
+                Program = "EDM4",
             });
             AllItems.Add(new InventoryItem
             {
-                Kind = InventoryKind.OnShelfWork,
-                BurnSerial = "WRP20240530164555",
-                TagSerial = "TG2022111441128",
-                BindState = "",
-                Status = "Completed",
-                Location = "inStore",
-                StorageArea = "W:1:4:1",
-                WorkOrder = "CG4T014805",
-                Process = "A07-2",
-                Machine = "EDM4",
-                PartNo = "2748M04G01",
-                PartName = "整流罩",
-                LotNo = "NA"
+                Kind = InventoryKind.OffShelfElectrode,
+                Name = "ELD20240702081533",
+                TagSerial = "TG202301019999",
+                Status = "InUse",
+                Location = "onEDM4",
+                SlotCode = "-",
+                Worksheet = "EDM",
+                Program = "EDM4",
             });
             AllItems.Add(new InventoryItem
             {
-                Kind = InventoryKind.OnShelfWork,
-                BurnSerial = "WRP20240601150419",
-                TagSerial = "TG2024024288513",
-                BindState = "",
-                Status = "Completed",
-                Location = "inStore",
-                StorageArea = "W:2:1:4:1",
-                WorkOrder = "CG4T015199",
-                Process = "OP310 OP320",
-                Machine = "EDM4",
-                PartNo = "2748M04G01",
-                PartName = "整流罩",
-                LotNo = "NA"        //
+                Kind = InventoryKind.OffShelfElectrode,
+                Name = "ELD20240702081533",
+                TagSerial = "TG202301019999",
+                Status = "InUse",
+                Location = "onEDM4",
+                SlotCode = "-",
+                Worksheet = "EDM",
+                Program = "EDM4",
             });
 
             // 架上電極
             AllItems.Add(new InventoryItem
             {
-                Kind = InventoryKind.OnShelfElectrode,
-                BurnSerial = "ELD20240603090837",
-                TagSerial = "TG2020700415758",
-                BindState = "Y",
-                Status = "Idle",
-                Location = "Rack-E1",
-                StorageArea = "E:1:2:1",
-                WorkOrder = "-",
-                Process = "—",
-                Machine = "—",
-                PartNo = "EL-6R-Ø4",
-                PartName = "電極-Ø4R6",
-                LotNo = "NA"
+                Kind = InventoryKind.OffShelfElectrode,
+                Name = "ELD20240702081533",
+                TagSerial = "TG202301019999",
+                Status = "InUse",
+                Location = "onEDM4",
+                SlotCode = "-",
+                Worksheet = "EDM",
+                Program = "EDM4",
             });
             AllItems.Add(new InventoryItem
             {
-                Kind = InventoryKind.OnShelfElectrode,
-                BurnSerial = "ELD20240603210204",
-                TagSerial = "TG2021060285013",
-                BindState = "Y",
-                Status = "Reserved",
-                Location = "Rack-E3",
-                StorageArea = "E:1:3:1",
-                WorkOrder = "WO-7788",
-                Process = "EDM",
-                Machine = "EDM5",
-                PartNo = "EL-Flat-Ø6",
-                PartName = "電極-Ø6平頭",
-                LotNo = "NA"
+                Kind = InventoryKind.OffShelfElectrode,
+                Name = "ELD20240702081533",
+                TagSerial = "TG202301019999",
+                Status = "InUse",
+                Location = "onEDM4",
+                SlotCode = "-",
+                Worksheet = "EDM",
+                Program = "EDM4",
             });
 
             // 已下架工件
             AllItems.Add(new InventoryItem
             {
-                Kind = InventoryKind.OffShelfWork,
-                BurnSerial = "WRP20240701094522",
-                TagSerial = "TG202301010001",
-                BindState = "N",
-                Status = "Processing",
-                Location = "onEDM5",
-                StorageArea = "-",
-                WorkOrder = "CG4T015199",
-                Process = "OP310 OP320",
-                Machine = "EDM5",
-                PartNo = "2748M04G01",
-                PartName = "整流罩",
-                LotNo = "B-202407"
+                Kind = InventoryKind.OffShelfElectrode,
+                Name = "ELD20240702081533",
+                TagSerial = "TG202301019999",
+                Status = "InUse",
+                Location = "onEDM4",
+                SlotCode = "-",
+                Worksheet = "EDM",
+                Program = "EDM4",
             });
 
             // 已下架電極
             AllItems.Add(new InventoryItem
             {
                 Kind = InventoryKind.OffShelfElectrode,
-                BurnSerial = "ELD20240702081533",
+                Name = "ELD20240702081533",
                 TagSerial = "TG202301019999",
-                BindState = "Y",
                 Status = "InUse",
                 Location = "onEDM4",
-                StorageArea = "-",
-                WorkOrder = "WO-8899",
-                Process = "EDM",
-                Machine = "EDM4",
-                PartNo = "EL-Point-Ø1",
-                PartName = "電極-尖頭Ø1",
-                LotNo = "NA"
+                SlotCode = "-",
+                Worksheet = "EDM",
+                Program = "EDM4",
             });
         }
         public class InventoryItem
         {
             public InventoryKind Kind { get; set; }
+            public string Name { get; set; } = ""; //名稱
+            public string TagSerial { get; set; } = ""; //標籤序號
+            public string Status { get; set; } = ""; //狀態
+            public string Location { get; set; } = ""; //位置編碼
+            public string SlotCode { get; set; } = ""; //位置編碼
+            public string Worksheet { get; set; } = ""; //工單
+            public string Program { get; set; } = ""; //加工程式
 
-            public string BurnSerial { get; set; } = "";
-            public string TagSerial { get; set; } = "";
-            public string BindState { get; set; } = "";
-            public string Status { get; set; } = "";
-            public string Location { get; set; } = "";
-            public string StorageArea { get; set; } = "";
-            public string WorkOrder { get; set; } = "";
-            public string Process { get; set; } = "";
-            public string Machine { get; set; } = "";
-            public string PartNo { get; set; } = "";
-            public string PartName { get; set; } = "";
-            public string LotNo { get; set; } = "";
         }
         public enum InventoryKind
         {
             OnShelfWork = 0,       // 架上工件
             OnShelfElectrode = 1,  // 架上電極
             OffShelfWork = 2,      // 已下架工件
-            OffShelfElectrode = 3  // 已下架電極
+            OffShelfElectrode = 3,  // 已下架電極
+            unKnow = 4  // 未知電極
         }
     }
 }

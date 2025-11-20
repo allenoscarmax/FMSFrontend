@@ -111,23 +111,6 @@ namespace FMSFrontend.ViewModels.Factory
 
         public FactoryLayoutViewModel()
         {
-            // Demo 初始配置
-            Machines.Add(new MachineNode { Id = "CNC", DisplayName = "CNC", X = 60, Y = 60, Width = 130, Height = 130, IconPath = Pack("Image/MachineIcons/CNC.png") });
-            Machines.Add(new MachineNode { Id = "EDM1", DisplayName = "EDM1", X = 300, Y = 60, IconPath = Pack("Image/MachineIcons/EDM.png") });
-            Machines.Add(new MachineNode { Id = "EDM2", DisplayName = "EDM2", X = 520, Y = 60, IconPath = Pack("Image/MachineIcons/EDM.png") });
-            Machines.Add(new MachineNode { Id = "ICG", DisplayName = "ICG-2Z-NC", X = 740, Y = 60, IconPath = Pack("Image/MachineIcons/ICG-2Z-NC.png") });
-
-            Machines.Add(new MachineNode { Id = "ROBOT", DisplayName = "Robot", X = 80, Y = 250, Width = 130, Height = 130, IconPath = Pack("Image/MachineIcons/Robot.png") });
-
-            Machines.Add(new MachineNode { Id = "Track", DisplayName = "", X = 80, Y = 400, Width = 850, Height = 80, IconPath = Pack("Image/MachineIcons/long-track.png") });
-
-            Machines.Add(new MachineNode { Id = "ES1", DisplayName = "ES1", X = 60, Y = 500, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/Magzine.png") });
-            Machines.Add(new MachineNode { Id = "ES2", DisplayName = "ES2", X = 300, Y = 500, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/Magzine.png") });
-            Machines.Add(new MachineNode { Id = "ES3", DisplayName = "ES3", X = 520, Y = 500, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/Magzine.png") });
-
-
-
-
             UpdateHighlight(); // 初始化一次
         }
 
@@ -140,13 +123,27 @@ namespace FMSFrontend.ViewModels.Factory
         private static readonly Random _rnd = new Random();
         public async Task LoadLayoutAsync(string path)
         {
+            
             if (!File.Exists(path)) return;
             var json = await File.ReadAllTextAsync(path);
             var nodes = JsonSerializer.Deserialize<ObservableCollection<MachineNode>>(json);
             if (nodes == null) return;
-
             Machines.Clear();
             foreach (var n in nodes) Machines.Add(n);
+            
+            /*
+            //測試
+            Machines.Clear();
+            Machines.Add(new MachineNode { Id = "EDM1", DisplayName = "EDM1", X = 80, Y = 60, IconPath = Pack("Image/MachineIcons/EDM.png") });
+            Machines.Add(new MachineNode { Id = "EDM2", DisplayName = "EDM2", X = 300, Y = 60, IconPath = Pack("Image/MachineIcons/EDM.png") });
+            Machines.Add(new MachineNode { Id = "EDM3", DisplayName = "EDM3", X = 520, Y = 60, IconPath = Pack("Image/MachineIcons/EDM.png") });
+         
+            Machines.Add(new MachineNode { Id = "ROBOT", DisplayName = "Robot", X = 80, Y = 250, Width = 130, Height = 130, IconPath = Pack("Image/MachineIcons/Robot.png") });
+
+            Machines.Add(new MachineNode { Id = "Track", DisplayName = "", X = 80, Y = 400, Width = 850, Height = 80, IconPath = Pack("Image/MachineIcons/long-track.png") });
+            Machines.Add(new MachineNode { Id = "FMS", DisplayName = "FMS", X = 80, Y = 500, IconPath = Pack("Image/MachineIcons/FMS.png") });
+            Machines.Add(new MachineNode { Id = "ES1", DisplayName = "ES1", X = 300, Y = 500, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/Magzine.png") });
+            */
 
 
         }

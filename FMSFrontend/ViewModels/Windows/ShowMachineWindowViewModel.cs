@@ -150,27 +150,28 @@ namespace FMSFrontend.ViewModels.Windows
         }
         private async Task RefreshFetch()
         {
-            //try { 
-            List<WorksheetsTimelineDto>? WorksheetsTimelineDtos =
-                await _worksheetsService.GetWorksheetTimelineByDateTimeAsync(DateTime.Today, DateTime.Today);
-            if (WorksheetsTimelineDtos != null)
-            {
-                WorkOrders.Clear();
-                foreach (var w in WorksheetsTimelineDtos)
+            try {
+                List<WorksheetsTimelineDto>? WorksheetsTimelineDtos =
+                    await _worksheetsService.GetWorksheetTimelineByDateTimeAsync(DateTime.Today, DateTime.Today);
+                if (WorksheetsTimelineDtos != null)
                 {
-                    if (w.EDMnumber == DeviceName)
+                    WorkOrders.Clear();
+                    foreach (var w in WorksheetsTimelineDtos)
                     {
-                        WorkOrders.Add(new WorkOrderRow
+                        if (w.EDMnumber == DeviceName)
                         {
-                            CreatTime = w.TimeStampe.ToString("yyyy/MM/dd") ?? "",
-                            WorksheetNumber = w.WorkSheetSerial ?? "",
-                            WorkStatus = w.WorkCommand,
-                            WorkpieceName = "" // 代定義
-                        });
+                            WorkOrders.Add(new WorkOrderRow
+                            {
+                                CreatTime = w.TimeStampe.ToString("yyyy/MM/dd") ?? "",
+                                WorksheetNumber = w.WorkSheetSerial ?? "",
+                                WorkStatus = w.WorkCommand,
+                                WorkpieceName = "" // 代定義
+                            });
+                        }
                     }
                 }
             }
-            //} Catch{}
+            catch{ }
         }
         //設定日期End
         [RelayCommand] private void ForceElectrodeOut() { /* TODO */ }
@@ -189,7 +190,7 @@ namespace FMSFrontend.ViewModels.Windows
         [ObservableProperty] private string cycleTime = "";
         [ObservableProperty] private string electrodeName = "";
         [ObservableProperty] private string workSheetName = "";
-        [ObservableProperty] private string workPieceName;
+        [ObservableProperty] private string workPieceName = "";
     }
 
     public class WorkOrderRow

@@ -1,8 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Extensions;   // ← PeriodWindow / PeriodWindowArgs / PeriodSelectionResult / ScheduleMode
+using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
+using FMSFrontend.ViewModels.Windows;
 using IniFile;
 using System;
 using System.Collections.ObjectModel;
@@ -12,12 +16,12 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using FMSFrontend.ViewModels.Windows;
 
 namespace FMSFrontend.ViewModels
 {
     public partial class SettingsPageViewModel : ObservableObject
     {
+
         // ===== 顯示用（你的 XAML 綁在這個上面）=====
         [ObservableProperty] private string periodDisplay = "不設定";
 
@@ -38,10 +42,21 @@ namespace FMSFrontend.ViewModels
         private readonly IWindowService _windowService;
         private readonly IHttpService _httpService;
 
+        private readonly IMachinesService _machinesService;
+        private readonly IRobotService _robotService;
+        private readonly IDevicesService _devicesService;
+        private readonly IAppointmentMaintenanceService _appointmentMaintenanceService;
+
         public SettingsPageViewModel(IWindowService windowService, IHttpService httpService)
         {
             _windowService = windowService;
             _httpService = httpService;
+
+            _machinesService = new MachinesService(_httpService);
+            _robotService = new RobotService(_httpService);
+            _devicesService = new DevicesService(_httpService);
+            _appointmentMaintenanceService = new AppointmentMaintenanceService(_httpService);
+
 
             OpenSetPeriodDialogCommand = new RelayCommand(OpenPeriodDialog);
 
@@ -62,7 +77,7 @@ namespace FMSFrontend.ViewModels
             AvailablePermissions = new ObservableCollection<string> { "工作人員", "專家" };
             SelectedPermission = AvailablePermissions[0];
 
-
+            /*
             MachineList = new ObservableCollection<MachineInfo>{
                 new MachineInfo { MachineId="EDM1", MachineName="EDM1", MachineType="EDM1", IpAddress="192.168.21.232", Port=13101, AssetNo="-", Owner="OscarMax" },
                 new MachineInfo { MachineId="EDM2", MachineName="EDM2", MachineType="EDM2", IpAddress="192.168.21.233", Port=13102, AssetNo="-", Owner="OscarMax" },
@@ -70,15 +85,17 @@ namespace FMSFrontend.ViewModels
                 new MachineInfo { MachineId="EDM4", MachineName="EDM4", MachineType="EDM4", IpAddress="192.168.21.235", Port=13104, AssetNo="-", Owner="OscarMax" },
                 new MachineInfo { MachineId="EDM5", MachineName="EDM5", MachineType="EDM5", IpAddress="192.168.21.236", Port=13105, AssetNo="-", Owner="OscarMax" },
             };
+            */
             _machinesView = CollectionViewSource.GetDefaultView(MachineList);
             _machinesView.Filter = FilterMachine;        // 設定一次即可
-
+            /*
             RobotList = new ObservableCollection<RobotInfo>{
     new RobotInfo { RobotId="Robot1", RobotName="Robot1", RobotType="Fanuc", IpAddress="192.168.21.6", Owner="OscarMax" },
 };
+            */
             _robotsView = CollectionViewSource.GetDefaultView(RobotList);
             _robotsView.Filter = FilterRobot;        // 設定一次即可
-
+            /*
             // Device 假資料（依你的截圖）
             DeviceList = new ObservableCollection<DeviceInfo>
             {
@@ -86,16 +103,129 @@ namespace FMSFrontend.ViewModels
                 new() { DeviceId="Balluff_RFID",  DeviceName="Balluff_RFID",  IpAddress="192.168.21.236", Port=10001, AssetNo="-", Owner="OscarMax" },
                 new() { DeviceId="ESL",           DeviceName="ESL",           IpAddress="192.168.21.238", Port=10001, AssetNo="-", Owner="OscarMax" },
             };
-
+            */
             // 建立 View + Filter
             _devicesView = CollectionViewSource.GetDefaultView(DeviceList);
             _devicesView.Filter = FilterDevice;
         }
         // 這就是缺少的屬性，用來綁定 Tab 切換
-        [ObservableProperty]
-        private int selectedTabIndexParameter;
-        [ObservableProperty]
-        private int selectedSubTabIndexParameter;
+        [ObservableProperty] private int selectedTabIndexParameter;
+
+        [ObservableProperty] private int selectedSubTabIndexParameter;
+
+        partial void OnSelectedTabIndexParameterChanged(int value )
+        {
+            switch (value)
+            {
+                case 0: //設定ip
+                break;
+                case 1: //系統還原
+                    break;
+                case 2: //設備資訊
+                 //   selectedSubTabIndexParameter = 0;
+                 //   OnSeelectedSubTabIndexParameterChanged(0);
+                    break;
+                case 3:
+                    break;
+                case 4: //保養 
+                   // _appointmentMaintenanceService.GetAllAppointmentMaintenanceAsync()
+                    break;
+            }
+        }
+        partial void OnSelectedSubTabIndexParameterChanged(int value) //設備資訊子頁籤切換
+        {
+            switch (value)
+            {
+                case 0:
+                    _ = MachinesRefresh();
+                    break;
+                case 1:
+                    _ = RobotRefresh();
+                    break;
+                case 2:
+                  _ = DeviceRefresh(); 
+                    break;
+            }
+        }
+
+        private async Task MachinesRefresh()
+        {
+            try
+            {
+                List<MachinesDto> dtos = await _machinesService.GetAllMachinesAsync() ?? new List<MachinesDto>();
+                MachineList.Clear();
+                foreach (var dto in dtos)
+                {
+                    MachineList.Add(
+                    new MachineInfo
+                    {
+                        MachineId = dto._id,
+                        MachineName = dto.machineName,
+                        MachineType = dto.machineCode,
+                        IpAddress = dto._id,
+                        Port = dto.port,
+                        AssetNo = dto.machineNumber.ToString(),
+                        Owner = dto.setupUser
+                    });
+                }
+            }
+            catch
+            {
+            }
+        }
+        private async Task RobotRefresh() //更新Robot資訊
+        {
+            try
+            {
+                List<RobotDto> Dtos = await _robotService.DB_GetAllRobotsAsync() ?? new List<RobotDto>();
+                RobotList.Clear();
+                foreach (var dto in Dtos)
+                {
+                    RobotList.Add(
+                    new RobotInfo
+                    {
+                        RobotId = dto._id,
+                        RobotName = dto.robotName,
+                        RobotType = dto.robotCode,
+                        IpAddress = dto.robot_IP,
+                        Owner = dto.setupUser
+                    });
+                }
+            }
+            catch { }
+        }
+        private async Task DeviceRefresh()
+        {
+            try
+            {
+                List<DevicesDto> dtos = await _devicesService.GetAllDevicesAsync() ?? new List<DevicesDto>();
+                DeviceList.Clear();
+                foreach (var dto in dtos)
+                {
+                    DeviceList.Add(
+                    new DeviceInfo
+                    {
+                        DeviceId = dto.Id,
+                        DeviceName = dto.DeviceName,
+                        IpAddress = dto.DeviceIP,
+                        Port = dto.DevicePort,
+                        AssetNo = dto.DeviceNumber.ToString(),
+                        Owner = dto.SetupUser
+                    });
+                }
+            }
+            catch { }
+        }
+        /*
+        private async Task AppointmentMaintenanceRefresh()
+        {
+            
+            List<AppointmentMaintenanceDto> dtos = await _appointmentMaintenanceService.GetAllAppointmentMaintenanceAsync() ?? new List<AppointmentMaintenanceDto>();
+            //AppointmentMaintenanceList.Clear();
+            PeriodDisplay = dtos[0];
+        }
+        */
+
         // === 設定屬性 ===
         [ObservableProperty]
         private ObservableCollection<string> availableLanguages;
@@ -125,7 +255,7 @@ namespace FMSFrontend.ViewModels
         private string selectedPermission = "";
 
         //MachineList
-        public ObservableCollection<MachineInfo> MachineList { get; set; }
+        public ObservableCollection<MachineInfo> MachineList { get; set; } = new();
         private readonly ICollectionView _machinesView;
         private string _searchText = "";
         public string SearchText
@@ -141,7 +271,7 @@ namespace FMSFrontend.ViewModels
             }
         }
         //RobotList
-        public ObservableCollection<RobotInfo> RobotList { get; set; }
+        public ObservableCollection<RobotInfo> RobotList { get; set; } = new();
         private readonly ICollectionView _robotsView;
         private string _robotSearchText = "";
         public string RobotSearchText
@@ -158,7 +288,7 @@ namespace FMSFrontend.ViewModels
         }// ====== Device 區 ======
 
         // 1) 清單 + 視圖
-        public ObservableCollection<DeviceInfo> DeviceList { get; set; } 
+        public ObservableCollection<DeviceInfo> DeviceList { get; set; } = new();
         private readonly ICollectionView _devicesView;
 
         // 2) 選取項目（可選）
@@ -180,8 +310,6 @@ namespace FMSFrontend.ViewModels
                     _devicesView?.Refresh();
             }
         }
-
-
         private void OpenPeriodDialog()
         {
             var win = new PeriodWindow
@@ -373,7 +501,7 @@ namespace FMSFrontend.ViewModels
             public string MachineName { get; set; } = "";
             public string MachineType { get; set; } = "";
             public string IpAddress { get; set; } = "";
-            public int Port { get; set; }
+            public string Port { get; set; } = "";
             public string AssetNo { get; set; } = "";
             public string Owner { get; set; } = "";
         }
@@ -390,7 +518,7 @@ namespace FMSFrontend.ViewModels
             public string DeviceId { get; set; } = "";
             public string DeviceName { get; set; } = "";
             public string IpAddress { get; set; } = "";
-            public int Port { get; set; }
+            public string Port { get; set; } = "";
             public string AssetNo { get; set; } = "";
             public string Owner { get; set; } = "";
         }

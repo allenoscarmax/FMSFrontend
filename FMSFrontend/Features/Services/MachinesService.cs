@@ -28,7 +28,7 @@ namespace FMSFrontend.Features.Services
             Task<bool> SetMachineCanControlAsync(int no, bool canControl, CancellationToken ct = default);
             Task<OscarmaxMachineParaDto?> GetMachineDataAsync(int no, CancellationToken ct = default);
             Task<int> GetMachineCountAsync(CancellationToken ct = default);
-            Task<bool> ResetDispatchErrorMessageAsync(CancellationToken ct = default);
+            Task<bool> ResetDispatchErrorMessageAsync(int no, CancellationToken ct = default);
         }
 
         public class MachinesService : IMachinesService
@@ -82,8 +82,8 @@ namespace FMSFrontend.Features.Services
             public async Task<int> GetMachineCountAsync(CancellationToken ct = default)
                 => await _http.GetJsonAsync<int>("Machine/GetMachineCount", ct);
 
-            public async Task<bool> ResetDispatchErrorMessageAsync(CancellationToken ct = default)
-                => await _http.SendPutAsync("Machine/ResetDispathErrorMes", new { });
+            public async Task<bool> ResetDispatchErrorMessageAsync(int no, CancellationToken ct = default)
+                => await _http.SendPutAsync("Machine/ResetDispathErrorMes/{no}", new { });
         }
     }
 

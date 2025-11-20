@@ -55,33 +55,37 @@ namespace FMSFrontend.ViewModels.Windows
         [RelayCommand]
         private async Task SelectWorkOrderAsync()
         {
-            _cachedWorksheets = await _worksheetService.DB_GetWorkSheetsbyContainWorkpieceName(_targetWorkpieceName) ?? new List<WorksheetsDto>();
-            var items = _cachedWorksheets
-                .Select(ws => new WorksheetItem
+            try
+            {
+                _cachedWorksheets = await _worksheetService.DB_GetWorkSheetsbyContainWorkpieceName(_targetWorkpieceName) ?? new List<WorksheetsDto>();
+                var items = _cachedWorksheets
+                    .Select(ws => new WorksheetItem
+                    {
+                        PartName = ws.workpieceName ?? string.Empty,
+                        WorkOrderNo = ws.worksheetNumber ?? string.Empty
+                    })
+                    .ToList();
+
+                if (items.Count == 0)
+                    return;
+
+                var vm = new SelectWorksheetWindowViewModel(items);
+                var dlg = new SelectWorksheetWindow
                 {
-                    PartName = ws.workpieceName ?? string.Empty,
-                    WorkOrderNo = ws.worksheetNumber ?? string.Empty
-                })
-                .ToList();
+                    Owner = _owner,
+                    DataContext = vm
+                };
 
-            if (items.Count == 0)
-                return;
-
-            var vm = new SelectWorksheetWindowViewModel(items);
-            var dlg = new SelectWorksheetWindow
-            {
-                Owner = _owner,
-                DataContext = vm
-            };
-
-            if (dlg.ShowDialog() == true)
-            {
-                SelectedWorksheetItem = dlg.Tag as WorksheetItem;
-                SelectedWorkOrderName = SelectedWorksheetItem?.WorkOrderNo ?? "請選擇工單";
-                // 清空電極
-                SelectedElectrodeItem = null;
-                SelectedElectrodeNameDisplay = "請選擇電極";
+                if (dlg.ShowDialog() == true)
+                {
+                    SelectedWorksheetItem = dlg.Tag as WorksheetItem;
+                    SelectedWorkOrderName = SelectedWorksheetItem?.WorkOrderNo ?? "請選擇工單";
+                    // 清空電極
+                    SelectedElectrodeItem = null;
+                    SelectedElectrodeNameDisplay = "請選擇電極";
+                }
             }
+            catch { }
         }
 
         // ------------------------------------------------------------
@@ -90,44 +94,48 @@ namespace FMSFrontend.ViewModels.Windows
         [RelayCommand]
         private async Task SelectElectrodeAsync()
         {
-            if (SelectedWorksheetItem == null)
-                return;
-
-            _cachedElectrodes = await _electrodeService.DB_GetAllElectrodeAsync() ?? new List<ElectrodeDto>();
-
-            var items = new List<SelectItem>();
-
-            foreach (var e in _cachedElectrodes)
+            try
             {
-                // 同工單
-                if (!string.Equals(e.worksheetNumber, SelectedWorksheetItem.WorkOrderNo, StringComparison.Ordinal))
-                    continue;
+                if (SelectedWorksheetItem == null)
+                    return;
 
-                // 只挑尾碼為 -02
-                if (string.IsNullOrWhiteSpace(e.electrodeName) ||
-                    !e.electrodeName.EndsWith("-02", StringComparison.OrdinalIgnoreCase))
-                    continue;
+                _cachedElectrodes = await _electrodeService.DB_GetAllElectrodeAsync() ?? new List<ElectrodeDto>();
 
-                // lifeTimes > useTimes
-                int life = e.lifeTimes ?? 0;
-                int used = e.useTimes ?? 0;
-                if (life <= used)
-                    continue;
+                var items = new List<SelectItem>();
 
-                // ✅ 顯示電極全名
-                Brush brush = StatusColor(e.state);
-                items.Add(new SelectItem(e.electrodeName, e.state ?? string.Empty, brush));
+                foreach (var e in _cachedElectrodes)
+                {
+                    // 同工單
+                    if (!string.Equals(e.worksheetNumber, SelectedWorksheetItem.WorkOrderNo, StringComparison.Ordinal))
+                        continue;
+
+                    // 只挑尾碼為 -02
+                    if (string.IsNullOrWhiteSpace(e.electrodeName) ||
+                        !e.electrodeName.EndsWith("-02", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    // lifeTimes > useTimes
+                    int life = e.lifeTimes ?? 0;
+                    int used = e.useTimes ?? 0;
+                    if (life <= used)
+                        continue;
+
+                    // ✅ 顯示電極全名
+                    Brush brush = StatusColor(e.state);
+                    items.Add(new SelectItem(e.electrodeName, e.state ?? string.Empty, brush));
+                }
+
+                if (items.Count == 0) return;
+
+                var dlg = new SelectItemWindow(SelectItemType.Electrode, _ => items) { Owner = _owner };
+
+                if (dlg.ShowDialog() == true)
+                {
+                    SelectedElectrodeItem = dlg.Tag as SelectItem;
+                    SelectedElectrodeNameDisplay = SelectedElectrodeItem?.MaterialName ?? "請選擇電極";
+                }
             }
-
-            if (items.Count == 0) return;
-
-            var dlg = new SelectItemWindow(SelectItemType.Electrode, _ => items) { Owner = _owner };
-
-            if (dlg.ShowDialog() == true)
-            {
-                SelectedElectrodeItem = dlg.Tag as SelectItem;
-                SelectedElectrodeNameDisplay = SelectedElectrodeItem?.MaterialName ?? "請選擇電極";
-            }
+            catch { }
         }
 
         // ------------------------------------------------------------

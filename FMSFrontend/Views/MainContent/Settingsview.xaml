@@ -76,7 +76,7 @@
                                                                 <!-- 分隔線顏色可自訂 -->
 
                                                                 <!-- 內容 -->
-                                                                <ComboBox Grid.Column="2" Width="250" Margin="8,0,0,0" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding AvailablePermissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}" HorizontalAlignment="Left" />
+                                                                    <ComboBox Grid.Column="2" Width="250" Margin="8,0,0,0" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding AvailablePermissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}" HorizontalAlignment="Left" />
                                                             </Grid>
                                                         </GroupBox>
 

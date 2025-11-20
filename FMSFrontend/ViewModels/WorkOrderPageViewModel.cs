@@ -9,7 +9,6 @@ using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.Views;
-using OSCARMAXFMS_V3.DBmodels; // ← 新增：Workpiece 模型
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -186,57 +185,57 @@ namespace FMSFrontend.ViewModels
         // 最小改動：呼叫後端 API 並綁定到對應的 UI 集合（使用 CancellationToken）
         private async Task FetchAndBindByStatusAsync()
         {
-            // try
-            // {
-            // 支援取消
-            _currentUpdateCts?.Cancel();
-            _currentUpdateCts?.Dispose();
-            _currentUpdateCts = new CancellationTokenSource();
-            _currentUpdateCts.CancelAfter(TimeSpan.FromMilliseconds(1000));
-            var ct = _currentUpdateCts.Token;
-            var status = "";
-            if (SelectedTabIndexParameter == 0) status = "New";
-            else if (SelectedTabIndexParameter == 1) status = MapWorkStatusForEdmTab(EDMSelectedTab);
-            else if (SelectedTabIndexParameter == 2) status = "Failure";
-            else return;
-            List<WorksheetsDto> ws = await _WorksheetsService.GetWorkSheetByWorkStatusAsync(status, ct) ?? new List<WorksheetsDto>();
-             WorkOrderList.Clear();
-            FilteredEDMList.Clear();
-            FailureWorkOrders.Clear();
-            foreach (var w in ws)
+            try
             {
-                var workOrder = MapToWorkOrderData(w); // 建立工單資料
-                var es = await _ElectrodeService.GetElectrodeByWorksheetNumberAsync(w.worksheetNumber ?? string.Empty, ct) // 取得該工單的電極清單
-                         ?? new List<ElectrodeDto>();
-                foreach (var e in es)
+                // 支援取消
+                _currentUpdateCts?.Cancel();
+                _currentUpdateCts?.Dispose();
+                _currentUpdateCts = new CancellationTokenSource();
+                _currentUpdateCts.CancelAfter(TimeSpan.FromMilliseconds(1000));
+                var ct = _currentUpdateCts.Token;
+                var status = "";
+                if (SelectedTabIndexParameter == 0) status = "New";
+                else if (SelectedTabIndexParameter == 1) status = MapWorkStatusForEdmTab(EDMSelectedTab);
+                else if (SelectedTabIndexParameter == 2) status = "Failure";
+                else return;
+                List<WorksheetsDto> ws = await _WorksheetsService.GetWorkSheetByWorkStatusAsync(status, ct) ?? new List<WorksheetsDto>();
+                WorkOrderList.Clear();
+                FilteredEDMList.Clear();
+                FailureWorkOrders.Clear();
+                foreach (var w in ws)
                 {
-                    // DTO 裡 edM_offsetPGM 為字串，需轉成整數
-                    int offsetVal = 0;
-                    if (!string.IsNullOrWhiteSpace(e.edM_offsetPGM))
-                        int.TryParse(e.edM_offsetPGM, out offsetVal);
-
-                    // NeedEDM 判斷：有程式且尚未完成/驗證
-                    bool needEDM = !string.IsNullOrWhiteSpace(e.edmpgm) &&
-                                   !string.Equals(e.state, "Completed", StringComparison.OrdinalIgnoreCase) &&
-                                   !string.Equals(e.state, "Verified", StringComparison.OrdinalIgnoreCase);
-
-                    workOrder.EDMDetails.Add(new EDMDetail
+                    var workOrder = MapToWorkOrderData(w); // 建立工單資料
+                    var es = await _ElectrodeService.GetElectrodeByWorksheetNumberAsync(w.worksheetNumber ?? string.Empty, ct) // 取得該工單的電極清單
+                             ?? new List<ElectrodeDto>();
+                    foreach (var e in es)
                     {
-                        ElectrodeName = e.electrodeName ?? "",
-                        LabelSerial = e.tagSerial ?? "",
-                        Status = e.state ?? "",
-                        NeedEDM = true, //代定義
-                        EDMProgram = e.edmpgm ?? "",
-                        Offset = e.offsetStatus ?? 0 
-                    });
+                        // DTO 裡 edM_offsetPGM 為字串，需轉成整數
+                        int offsetVal = 0;
+                        if (!string.IsNullOrWhiteSpace(e.edM_offsetPGM))
+                            int.TryParse(e.edM_offsetPGM, out offsetVal);
+
+                        // NeedEDM 判斷：有程式且尚未完成/驗證
+                        bool needEDM = !string.IsNullOrWhiteSpace(e.edmpgm) &&
+                                       !string.Equals(e.state, "Completed", StringComparison.OrdinalIgnoreCase) &&
+                                       !string.Equals(e.state, "Verified", StringComparison.OrdinalIgnoreCase);
+
+                        workOrder.EDMDetails.Add(new EDMDetail
+                        {
+                            ElectrodeName = e.electrodeName ?? "",
+                            LabelSerial = e.tagSerial ?? "",
+                            Status = e.state ?? "",
+                            NeedEDM = true, //代定義
+                            EDMProgram = e.edmpgm ?? "",
+                            Offset = e.offsetStatus ?? 0
+                        });
+                    }
+                    if (SelectedTabIndexParameter == 0) WorkOrderList.Add(workOrder);
+                    else if (SelectedTabIndexParameter == 1) FilteredEDMList.Add(workOrder);
+                    else if (SelectedTabIndexParameter == 2) FailureWorkOrders.Add(workOrder);
                 }
-                if (SelectedTabIndexParameter == 0) WorkOrderList.Add(workOrder);
-                else if (SelectedTabIndexParameter == 1) FilteredEDMList.Add(workOrder);
-                else if (SelectedTabIndexParameter == 2) FailureWorkOrders.Add(workOrder);
+                return;
             }
-            return;
-            //  }
-            //  catch { }
+            catch { }
         }
 
         // 新增：處理刪除工單的非同步方法（包含 UI 確認、API 呼叫與錯誤處理）

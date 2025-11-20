@@ -16,6 +16,7 @@ using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Threading;
+using static System.Net.Mime.MediaTypeNames;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FMSFrontend.ViewModels
@@ -43,14 +44,16 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private int selectedTabIndexParameter;                     // 加工參數 Tab選擇
         [ObservableProperty] private int selectedTabIndexWorkOrder;                     // 工單資訊 Tab選擇
         [ObservableProperty] private MachineDisplayData displayData; //顯示機台詳細資訊
-        [ObservableProperty] private bool isRestriction = false; //機台禁用
+
         public int MachineNumber = 0;
         [RelayCommand]
         private async Task RestrictionClick() //禁用事件
         {
             try
             {
-                await _machinesService.SetMachineCanControlAsync(MachineNumber, !IsRestriction);
+                var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
+                if (edm != null)
+                    await _machinesService.SetMachineCanControlAsync(edm.MachineNumber, !edm.OscarEdm.CanControl);
             }
             catch { }
         }
@@ -59,7 +62,9 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
-                await _machinesService.ResetDispatchErrorMessageAsync();
+                var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
+                if (edm != null)
+                    await _machinesService.ResetDispatchErrorMessageAsync(edm.MachineNumber);
             }
             catch { }
                 
@@ -167,35 +172,38 @@ namespace FMSFrontend.ViewModels
         //設定日期End
         private async Task RefreshFetch()
         {
-            //try { 
-            if (FromDate != null && ToDate != null)
-            {
-                List<WorksheetsTimelineDto>? WorksheetsTimelineDtos =
-                    await _worksheetService.GetWorksheetTimelineByDateTimeAsync(FromDate.Value, ToDate.Value);
-                WorkOrders.Clear();
-                if (WorksheetsTimelineDtos != null)
+            try {
+                if (FromDate != null && ToDate != null)
                 {
-                    foreach (var w in WorksheetsTimelineDtos)
+                    List<WorksheetsTimelineDto>? WorksheetsTimelineDtos =
+                        await _worksheetService.GetWorksheetTimelineByDateTimeAsync(FromDate.Value, ToDate.Value);
+                    WorkOrders.Clear();
+                    if (WorksheetsTimelineDtos != null)
                     {
-                        if (w.EDMnumber == Machine.MachineName)
+                        foreach (var w in WorksheetsTimelineDtos)
                         {
-                            WorkOrders.Add(new WorkOrderRow
+                            if (w.EDMnumber == Machine.MachineName)
                             {
-                                CreatTime = w.TimeStampe.ToString("yyyy/MM/dd") ?? "",
-                                WorksheetNumber = w.WorkSheetSerial ?? "",
-                                WorkStatus = w.WorkCommand,
-                                WorkpieceName = "" // 代定義
-                            });
-                           
+                                WorkOrders.Add(new WorkOrderRow
+                                {
+                                    CreatTime = w.TimeStampe.ToString("yyyy/MM/dd") ?? "",
+                                    WorksheetNumber = w.WorkSheetSerial ?? "",
+                                    WorkStatus = w.WorkCommand,
+                                    WorkpieceName = "" // 代定義
+                                });
+
+                            }
                         }
                     }
                 }
-            }
-            else
+                else
+                {
+                    _windowService.ShowMessage("日期格式錯誤");
+                }
+            } 
+            catch
             {
-                _windowService.ShowMessage("日期格式錯誤");
             }
-            //} Catch{}
         }
 
         // ✅ 實際使用的建構式
@@ -239,7 +247,7 @@ namespace FMSFrontend.ViewModels
 
             selectedTabIndex = 0; selectedTabIndexPosition = 0; selectedTabIndexParameter = 0; selectedTabIndexWorkOrder = 1;
         }
-
+        bool test = false;
         private void RefreshFromStore()
         {
             if (Machine == null || DisplayData == null) return;
@@ -247,6 +255,8 @@ namespace FMSFrontend.ViewModels
             var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
             if (edm == null || edm.OscarEdm == null) return;
             MachineNumber = int.TryParse(edm.OscarEdm.MachineNumber, out var num) ? num : -1;
+            test = !test;
+            DisplayData.CanControl = edm.OscarEdm.CanControl;
             // 機台資訊
             DisplayData.MachineNumber = edm.OscarEdm.MachineNumber;
             DisplayData.MachineStatus = edm.OscarEdm.MachineStatus;
@@ -303,6 +313,8 @@ namespace FMSFrontend.ViewModels
 
         public partial class MachineDisplayData : ObservableObject
         {
+            //機台禁用
+            [ObservableProperty] private bool canControl = false; 
             //機台資訊
             [ObservableProperty] private string machineNumber = "";
             [ObservableProperty] private string machineStatus = "";
@@ -347,6 +359,7 @@ namespace FMSFrontend.ViewModels
             [ObservableProperty] private string hV = "";
             [ObservableProperty] private string jT = "";
             [ObservableProperty] private string jD = "";
+            
 
         }
         public class WorkOrderRow
