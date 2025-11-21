@@ -45,6 +45,7 @@ namespace FMSFrontend.ViewModels
         private readonly IMachinesService _machinesService;
         private readonly IRobotService _robotService;
         private readonly IDevicesService _devicesService;
+        private readonly IWorkerService _workerService;
         private readonly IAppointmentMaintenanceService _appointmentMaintenanceService;
 
         public SettingsPageViewModel(IWindowService windowService, IHttpService httpService)
@@ -55,6 +56,7 @@ namespace FMSFrontend.ViewModels
             _machinesService = new MachinesService(_httpService);
             _robotService = new RobotService(_httpService);
             _devicesService = new DevicesService(_httpService);
+            _workerService = new WorkerService(_httpService);
             _appointmentMaintenanceService = new AppointmentMaintenanceService(_httpService);
 
 
@@ -107,6 +109,9 @@ namespace FMSFrontend.ViewModels
             // 建立 View + Filter
             _devicesView = CollectionViewSource.GetDefaultView(DeviceList);
             _devicesView.Filter = FilterDevice;
+
+            _workerListView = CollectionViewSource.GetDefaultView(WorkerList);
+            _workerListView.Filter = FilterWorker;
         }
         // 這就是缺少的屬性，用來綁定 Tab 切換
         [ObservableProperty] private int selectedTabIndexParameter;
@@ -122,10 +127,11 @@ namespace FMSFrontend.ViewModels
                 case 1: //系統還原
                     break;
                 case 2: //設備資訊
-                 //   selectedSubTabIndexParameter = 0;
-                 //   OnSeelectedSubTabIndexParameterChanged(0);
+                    selectedSubTabIndexParameter = 0;
+                    OnSelectedSubTabIndexParameterChanged(0); // 修正拼字錯誤
                     break;
                 case 3:
+                    _=  WorkerRefresh();
                     break;
                 case 4: //保養 
                    // _appointmentMaintenanceService.GetAllAppointmentMaintenanceAsync()
@@ -216,6 +222,28 @@ namespace FMSFrontend.ViewModels
             }
             catch { }
         }
+        private async Task WorkerRefresh()
+        {
+            try
+            {
+                List<WorkerDto> dtos = await _workerService.GetAllWorkerAsync() ?? new();
+
+                WorkerList.Clear();
+                foreach (var dto in dtos)
+                {
+                    WorkerList.Add(
+                    new WorkerInfo
+                    {
+                        WorkerNumber = dto.WorkerNumber,
+                        WorkerName = dto.WorkerName
+                    });
+                }
+            }
+            catch
+            {
+            }
+        }
+
         /*
         private async Task AppointmentMaintenanceRefresh()
         {
@@ -255,6 +283,23 @@ namespace FMSFrontend.ViewModels
         private string selectedPermission = "";
 
         //MachineList
+        public ObservableCollection<WorkerInfo> WorkerList { get; set; } = new();
+        private readonly ICollectionView _workerListView;
+        private string _workerSearchText = "";
+        public string WorkerSearchText
+        {
+            get => _workerSearchText;
+            set
+            {
+                // 由 ObservableObject 提供，會幫你 Raise PropertyChanged
+                if (SetProperty(ref _workerSearchText, value))
+                {
+                    _workerListView?.Refresh(); // 每次變更就重新套過濾
+                }
+            }
+        }
+
+        //MachineList
         public ObservableCollection<MachineInfo> MachineList { get; set; } = new();
         private readonly ICollectionView _machinesView;
         private string _searchText = "";
@@ -285,7 +330,8 @@ namespace FMSFrontend.ViewModels
                     _robotsView?.Refresh(); // 每次變更就重新套過濾
                 }
             }
-        }// ====== Device 區 ======
+        }
+        // ====== Device 區 ======
 
         // 1) 清單 + 視圖
         public ObservableCollection<DeviceInfo> DeviceList { get; set; } = new();
@@ -310,6 +356,7 @@ namespace FMSFrontend.ViewModels
                     _devicesView?.Refresh();
             }
         }
+
         private void OpenPeriodDialog()
         {
             var win = new PeriodWindow
@@ -444,7 +491,17 @@ namespace FMSFrontend.ViewModels
             }
           */
         }
-            
+        private bool FilterWorker(object obj)
+        {
+            if (obj is not WorkerInfo m) return false;
+
+            var q = (WorkerSearchText ?? string.Empty).Trim();
+            if (q.Length == 0) return true;
+
+            var cmp = StringComparison.OrdinalIgnoreCase;
+            return (m.WorkerNumber?.Contains(q, cmp) ?? false)
+                || (m.WorkerName?.Contains(q, cmp) ?? false);
+        }
 
         private bool FilterMachine(object obj)
         {
@@ -522,6 +579,10 @@ namespace FMSFrontend.ViewModels
             public string AssetNo { get; set; } = "";
             public string Owner { get; set; } = "";
         }
-
+        public class WorkerInfo
+        {
+            public string WorkerNumber { get; set; } = "";
+            public string WorkerName { get; set; } = "";
+        }
     }
 }

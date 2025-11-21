@@ -210,10 +210,10 @@ namespace FMSFrontend.ViewModels
         public MachineMainDetailViewModel(MachineOverviewCard machine, MachineOverviewMainViewModel parent)
         {
             Machine = machine;
-            _windowService = parent._WindowService;
+            _windowService = parent._windowService;
             _machineStore = parent._machineStore;
-            _worksheetService = parent._WorksheetsService;
-            _machinesService = parent._MachinesService;
+            _worksheetService = parent._worksheetsService;
+            _machinesService = parent._machinesService;
 
             _machineStore = parent._machineStore;
 

@@ -158,7 +158,7 @@ namespace FMSFrontend.ViewModels
                 _currentUpdateCts.CancelAfter(TimeSpan.FromMilliseconds(100));
 
                 var ct = _currentUpdateCts.Token;
-                if (slot.Kind == MaterialType.Electrode || slot.Kind == MaterialType.Electrode || slot.Kind == MaterialType.None)
+                if (slot.Kind == MaterialType.Electrode || slot.Kind == MaterialType.Probe || slot.Kind == MaterialType.None)
                 {
                     List<ElectrodeDto>? es = await _ElectrodeService.DB_GetElectrodesByTagSerialAsync(slot.Serial, ct);
                     if (es != null) //檢查是否為電極

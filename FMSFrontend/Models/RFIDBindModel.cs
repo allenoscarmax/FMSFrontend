@@ -13,9 +13,11 @@ namespace FMSFrontend.Models
         public DateTime? from = DateTime.Now; //過濾 起始日期 EX : 1/1
         public DateTime? to = DateTime.Now;   //過濾 結束日期 EX : 1/7
         [ObservableProperty] private ObservableCollection<BurnRecord> burnHistoryList = new(); //燒錄歷史
+        [ObservableProperty] private Brush connectedBrush = LightOff; //連線狀態
+
         [ObservableProperty] private string tagSerial = ""; //標籤序號
         [ObservableProperty] private Brush tagBrush = LightOff; //標籤狀態
-        [ObservableProperty] private Brush connectedBrush = LightOff; //連線狀態
+
     }
 
     public class BurnRecord

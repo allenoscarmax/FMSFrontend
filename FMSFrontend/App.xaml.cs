@@ -72,6 +72,7 @@ namespace FMSFrontend
             services.AddSingleton<IMachinesService, MachinesService>();
             services.AddSingleton<IAlarmService, AlarmService>();
 
+
             // === Singleton ===
             services.AddSingleton<AlarmStore>();
             services.AddSingleton<CommandScheduleStore>();
@@ -79,6 +80,7 @@ namespace FMSFrontend
             services.AddSingleton<RFIDBindStore>();
             services.AddSingleton<RobotStore>();
             services.AddSingleton<GlobalProperties>();
+            services.AddSingleton<StationStore>();
             services.AddSingleton<StorageStore>();
             services.AddSingleton<MachineStore>();
       
@@ -90,6 +92,7 @@ namespace FMSFrontend
             services.AddSingleton<PlcLiveUpdater>();          
             services.AddSingleton<RFIDBindLiveUpdater>();
             services.AddSingleton<ServerHealthLiveUpdater>();
+            services.AddSingleton<StationLiveUpdater>();
             services.AddSingleton<StorageLiveUpdater>();
             services.AddSingleton<MachineLiveUpdater>();
             #endregion
@@ -151,6 +154,7 @@ namespace FMSFrontend
             // 一般頁面 (Transient，每次開啟新頁面會重新建立)
             services.AddTransient<FactoryOverviewPageViewModel>();
             services.AddTransient<InventoryInformationViewModel>();
+            services.AddTransient<MachineStationViewModel>();
             services.AddTransient<MachineOverviewMainViewModel>();
             services.AddTransient<MachineMainDetailViewModel>();
             services.AddTransient<OperationHistoryViewModel>();
@@ -180,6 +184,7 @@ namespace FMSFrontend
             services.AddTransient<AlarmPage>();
             services.AddTransient<FactoryOverviewPage>();
             services.AddTransient<InventoryInformationPage>();
+            services.AddTransient<MachineStationControl>();
             services.AddTransient<MachineOverviewPage>();
             services.AddTransient<Manual>();
             services.AddTransient<OperationHistory>();

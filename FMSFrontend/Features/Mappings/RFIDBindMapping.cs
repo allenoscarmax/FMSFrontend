@@ -1,6 +1,7 @@
 ﻿using FMSFrontend.Features.Dtos;
 using FMSFrontend.Models;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Runtime.ExceptionServices;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -28,22 +29,19 @@ namespace FMSFrontend.Features.Mappings
                 }
             }
         }
-        public static void ApplyParasDto(this RFIDParasDto dtos, RFIDBindModel output)
+        public static void ApplyParasDto(this RFIDParasDto dtos, RFIDBindModel output, bool IsElectrode)
         {
-            output.ConnectedBrush = dtos.rFID_Is_Present[2] ? RFIDBindModel.LightOff : RFIDBindModel.LightOn;
-            Random rnd = new Random();
-            //模擬資料
-            //  output.ConnectedBrush = rnd.Next(2) == 1 ? RFIDBindModel.LightOff : RFIDBindModel.LightOn;
-            //  output.TagBrush = rnd.Next(2) == 1 ? RFIDBindModel.LightOff : RFIDBindModel.LightOn;
-            //  output.TagSerial = rnd.Next(10000).ToString();
+            if (IsElectrode)
+                output.ConnectedBrush = dtos.rFID_Is_Present[2] ? RFIDBindModel.LightOn : RFIDBindModel.LightOff;
+            else
+                output.ConnectedBrush = dtos.rFID_Is_Present[1] ? RFIDBindModel.LightOn : RFIDBindModel.LightOff;
         }
 
-        public static void ApplyTagDto(this string dtos, RFIDBindModel output)
+        public static void ApplyTagDto(this string? dtos, RFIDBindModel output)
         {
             //尚須驗證
-            output.TagSerial = dtos;
+            output.TagSerial = dtos ?? "";
             output.TagBrush = string.IsNullOrWhiteSpace(dtos) ? RFIDBindModel.LightOff : RFIDBindModel.LightOn;
-            Random rnd = new Random();
         }
     }
 }

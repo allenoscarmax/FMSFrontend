@@ -1,26 +1,37 @@
-﻿using FMSFrontend.Features.Services;
+﻿using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Dtos.Database;
+using FMSFrontend.Features.Mappings;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
+using FMSFrontend.Models;
+using FMSFrontend.Views.Windows;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Shapes;
 using System.Windows.Threading;
-
+using System.Xml.Linq;
 namespace FMSFrontend.Features.Threading
 {
-    public class RFIDBindLiveUpdater : IDisposable
+    public class StationLiveUpdater : IDisposable
     {
-        private readonly IRfidService _svc;
-        private readonly RFIDBindStore _store;
+        private readonly IPlcService _svc;
+   
+        private readonly StationStore _store;
         private readonly DispatcherTimer _timer;
-        public bool ReadTagFlag { get; set; } = false;
-        public bool IsElectrode = false; //標籤狀態
+
+        public string SelectName =""; // 選擇的機台編號
 
         //private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
         private bool _isUpdating; // 用於避免重入的旗標
-        public RFIDBindLiveUpdater(IRfidService svc, RFIDBindStore store)
+
+        public StationLiveUpdater(IPlcService svc, StationStore store)
         {
             _svc = svc;
             _store = store;
@@ -44,39 +55,16 @@ namespace FMSFrontend.Features.Threading
         {
             try
             {
-                if (ReadTagFlag)
-                {
-                    var ParasDto = await _svc.GetRFIDParasAsync();
-                    if (ParasDto != null)
-                        _store.ApplyParasDto(ParasDto, IsElectrode);
-                    string? TagDto;
-                    if (IsElectrode)
-                    {
-                        TagDto = await _svc.Read_Tag_IDAsync(0, 2);
-                    }
-                    else
-                    {
-                        TagDto = await _svc.Read_Tag_IDAsync(0, 1);
-                    }
-                    _store.ApplyTagDto(TagDto);
-                }
-                else
-                {
-                    var LogDto = await _svc.GetAllRFIDWriteLogAsync();
-                    if (LogDto != null)
-                        _store.ApplyRFIDBindPageDto(LogDto);
-                }
+                //取得所有機器基本資料
+                AssemblyStationParaDto dto = await _svc.GetAssemblyStationParaAsync()?? new();
+                _store.ApplyStationDto(dto);
                 return true;
             }
             catch //(Exception ex)
             {
                 return false;
-                // TODO: 可加 log
-                // ex.Message 或紀錄至 LogService
-                //return false;
             }
-        } 
-
+        }
         public void Start()
         {
             _ = UpdateStatusAsync();
