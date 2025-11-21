@@ -63,11 +63,13 @@ public partial class MaterialPairViewModel : ObservableObject
         RfidBindStore = rFIDBindStore;
         // ==LiveUpdater===
         _rfidUpdater = rFIDBindLiveUpdater;
+        _rfidUpdater.IsElectrode = isElectrode;
     }
     public void OnPageActivated()
     {
         _rfidUpdater.Start();
         _rfidUpdater.ReadTagFlag = true;
+
     }
     public void OnPageDeactivated()
     {

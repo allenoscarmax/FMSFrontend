@@ -432,7 +432,7 @@ namespace FMSFrontend.ViewModels.Windows
 
             string worksheetNumber = DateTime.Now.ToString("yyyyMMddHHmmss"); // 年月日時分秒
             string targetEDM
-;            if (SelectedEdm.Contains("EDM"))
+;           if (SelectedEdm.Contains("EDM"))
             {
                 targetEDM = MapTargetEdm(SelectedEdm);   // EDM1 -> EDM-
             }
@@ -440,12 +440,17 @@ namespace FMSFrontend.ViewModels.Windows
             {
                 targetEDM = "";
             }
-                string pairedEDM = MapPairedEdm(SelectedEdm);   // EDM1 -> EMD1
+
+            string pairedEDM = MapPairedEdm(SelectedEdm);   // EDM1 -> EMD1
             string coordinate = SelectedCoordinate;
+
 
             int extraOffset = selectedEles.Count(e => IsOffsetOneOrTwo(e.OffsetStatus));
             int totalProcessStep = selectedWorks.Count + selectedEles.Count + extraOffset;
-
+            if (selectedWorks.Count!=0 && selectedEles.Count == 0)//只有上傳工件就是只有量測工件，工單步驟為1 不要新增電極資料
+            {
+                totalProcessStep = 1;
+            }
             // 1) 先上傳工單
 
             WorksheetsDto wsDto = new WorksheetsDto
@@ -472,24 +477,26 @@ namespace FMSFrontend.ViewModels.Windows
                 }
             }
             catch { }
-            
+
 
             // 2) 依照工件數量上傳
-            foreach (var w in selectedWorks)
+            if (selectedEles.Count != 0 && selectedWorks.Count == 0) // 只有上傳電極，沒有工件加入一張工單
             {
+                string[] sr = selectedEles[0].ElectrodeName.Split('-');
                 WorkpieceDto wpDto = new WorkpieceDto
                 {
                     tagSerial = "",
                     worksheetNumber = worksheetNumber,
-                    workpieceName = w.WorkpieceName,
+                    workpieceName = sr[0] + "-W",
                     status = "New",
                     restriction = false,
                     pairedEDM = pairedEDM,
                     currentLocation = "",
                     tempRetSLocation = "",
                     isCompleted = false,
-                    edmpgm = w.MeasurementProgram ?? "",
-                    needInspect = true,
+                    edmpgm = "",
+                    // 若只有上傳電極，則不需要檢驗工件(needInspect = false)
+                    needInspect = false,
                     inspected = false,
                     inspectStatus = "",
                     inspectOffset = "",
@@ -499,13 +506,46 @@ namespace FMSFrontend.ViewModels.Windows
                     ok = await _workpieceService.InsertWorkpieceAsync(wpDto);
                     if (!ok)
                     {
-                        new DialogMessageWindow("工件上傳失敗: " + w.WorkpieceName.ToString()).ShowDialog();
+                        new DialogMessageWindow("工件上傳失敗: ").ShowDialog();
                         return;
                     }
                 }
                 catch { }
             }
-
+            else
+            {
+                foreach (var w in selectedWorks)
+                {
+                    WorkpieceDto wpDto = new WorkpieceDto
+                    {
+                        tagSerial = "",
+                        worksheetNumber = worksheetNumber,
+                        workpieceName = w.WorkpieceName,
+                        status = "New",
+                        restriction = false,
+                        pairedEDM = pairedEDM,
+                        currentLocation = "",
+                        tempRetSLocation = "",
+                        isCompleted = false,
+                        edmpgm = w.MeasurementProgram ?? "",
+                        // 若只有上傳電極，則不需要檢驗工件(needInspect = false)
+                        needInspect = true,
+                        inspected = false,
+                        inspectStatus = "",
+                        inspectOffset = "",
+                    };
+                    try
+                    {
+                        ok = await _workpieceService.InsertWorkpieceAsync(wpDto);
+                        if (!ok)
+                        {
+                            new DialogMessageWindow("工件上傳失敗: " + w.WorkpieceName.ToString()).ShowDialog();
+                            return;
+                        }
+                    }
+                    catch { }
+                }
+            }
             // 3) 依照電極數量上傳
             string singleWorkName = selectedWorks.Count == 1 ? selectedWorks[0].WorkpieceName : string.Empty;
 

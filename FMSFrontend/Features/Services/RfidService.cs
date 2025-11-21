@@ -34,7 +34,7 @@ namespace FMSFrontend.Features.Services
         public async Task<string?> Read_Tag_IDAsync(int index, int header, CancellationToken ct = default)  //讀取RFID標籤ID
         {
             var route = $"RFIDMgmtModule/Read_Tag_ID/{index}/{header}";
-            return await _http.GetJsonAsync<string>(route, ct);
+            return await _http.GetJsonAsyncNoDeserialize(route, ct);
         }
         public async Task<List<RFIDWriteLogDto>?> GetAllRFIDWriteLogAsync(CancellationToken ct = default)//取得所有燒錄記錄
         {
