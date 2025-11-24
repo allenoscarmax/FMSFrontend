@@ -92,12 +92,17 @@ namespace FMSFrontend.ViewModels.Windows
                 string[] sr = _targetElectrodeName.Split('-');
 
                 // 檢查工單的電極是否被分享過，若有任何 shared 則移除該工單
-                items.RemoveAll(item =>
+                /*
+                items.RemoveAll(async item =>
                 {
-                    var electrodes = _electrodeService.GetElectrodeByWorksheetNumberAsync(item.WorkOrderNo).Result;
+                    List<ElectrodeDto> electrodes = await _electrodeService.GetElectrodeByWorksheetNumberAsync(item.WorkOrderNo) ?? new();
+                    foreach (ElectrodeDto dto in electrodes)
+                    {
+                        
+                    }
                     return electrodes != null && electrodes.Any(ele => ele.shared);
                 });
-
+                */
                 if (sr.Length > 2)
                     items.RemoveAll(x => x.PartName.IndexOf(sr[0] + "-" + sr[1]) == 0);
 
