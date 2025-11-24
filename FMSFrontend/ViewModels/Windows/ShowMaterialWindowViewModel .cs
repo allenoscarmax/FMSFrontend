@@ -32,20 +32,17 @@ namespace FMSFrontend.ViewModels.Windows
         private readonly IProbeService _ProbeService;
 
 
-
         // 空畫面
-        public ShowMaterialWindowViewModel(IHttpService httpService,
-              IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService)
+        public ShowMaterialWindowViewModel(IHttpService httpService)
         {
             Kind = MaterialKind.None;
 
             DetailViewModel = new EmptyMaterialDetailViewModel();
             _httpService = httpService;
-
-            _ElectrodeService = electrodeService;
-            _WorkpieceService = workpieceService;
-            _ProbeService = probeService;
-            _StorageService = storageService;
+            _ElectrodeService = new ElectrodeService(httpService);
+            _WorkpieceService = new WorkpieceService(httpService);
+            _ProbeService = new ProbeService(httpService);
+            _StorageService = new StorageService(httpService);
         }
 
         [ObservableProperty]

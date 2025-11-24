@@ -300,8 +300,10 @@
 
                     <StackPanel Grid.Column="4" Orientation="Horizontal" Margin="10,0,0,0" VerticalAlignment="Center">
                         <!-- 用我們創建的 Not 轉換器 -->
+                        <!--
                         <RadioButton Style="{StaticResource SegmentRadio}" Content="AM" GroupName="ampm" IsChecked="{Binding IsPm, Converter={StaticResource Not}}" />
                         <RadioButton Style="{StaticResource SegmentRadio}" Content="PM" GroupName="ampm" IsChecked="{Binding IsPm}" />
+                        -->
                     </StackPanel>
                 </Grid>
 

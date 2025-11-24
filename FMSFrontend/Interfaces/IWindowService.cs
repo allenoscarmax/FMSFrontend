@@ -20,22 +20,12 @@ namespace FMSFrontend.Interfaces
         bool ShowYesNoDialog(string message);
         bool ShowMaterialTypeSelectWindow(out MaterialKind kind);
         void ShowMaterialPairWindow(bool isElectrode);
-        void ShowMaterial(object detailViewModel, IEnumerable<TimelineItemViewModel> timeline, MaterialKind kind, IHttpService httpService,
-           IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService,
-           string? slotCode = null);
-        void ShowWorkpiece(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
-              IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService,
-              string? slotCode = null);
-        void ShowElectrode(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
-             IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService,
-             string? slotCode = null);
-        void ShowMaterialEmpty(IHttpService httpService,
-             IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService);
-        void ShowMaterialInformation(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
-               IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService);
-        void ShowMaterialInformation(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
-            IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService);
-
+        void ShowMaterial(object detailViewModel, IEnumerable<TimelineItemViewModel> timeline, MaterialKind kind, IHttpService httpService, string? slotCode = null);
+        void ShowWorkpiece(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, IHttpService httpService, string? slotCode = null);
+        void ShowElectrode(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, IHttpService httpService, string? slotCode = null);
+        void ShowMaterialEmpty(Slot slot, IHttpService httpService);
+        void ShowMaterialInformation(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, IHttpService httpService);
+        void ShowMaterialInformation(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, IHttpService httpService);
 
         // 保留舊版無回傳功能
         void ShowSelectSharedElectrodeWindow(string targetWorkpieceName);

@@ -55,9 +55,9 @@
 
                 <!-- Spacer Column (Grid.Column=2) -->
 
-                <!-- Right-aligned PAIR buttons -->
+                <!-- Right-Reset buttons -->
                 <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="重新連線" Width="80" Height="30" Margin="3" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Command="{Binding PairCommand}" />
+                    <Button Content="重新連線" Width="100" Height="30" Margin="3" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Command="{Binding BalluffResetCommand}" />
                 </StackPanel>
             </Grid>
 

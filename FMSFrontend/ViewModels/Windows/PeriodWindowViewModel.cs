@@ -59,7 +59,7 @@ namespace FMSFrontend.ViewModels.Windows
         public ObservableCollection<OptionItem> MonthlyOptions { get; } = new();
 
         // 時間
-        public ObservableCollection<int> Hours { get; } = new(Enumerable.Range(1, 12).ToList());
+        public ObservableCollection<int> Hours { get; } = new(Enumerable.Range(0, 24).ToList());
         public ObservableCollection<int> Minutes { get; } = new(Enumerable.Range(0, 60).ToList());
 
         private int _hour = 9;
@@ -121,7 +121,7 @@ namespace FMSFrontend.ViewModels.Windows
 
 
         // 讓外部設定預設值（SettingsPage 開窗前呼叫）
-        public void ApplyInitial(ScheduleMode mode, int[] weekly, int[] monthly, int hour12, int minute, bool isPm, string? title = null)
+        public void ApplyInitial(ScheduleMode mode, int[] weekly, int[] monthly, int hour, int minute, bool isPm, string? title = null)
         {
             if (!string.IsNullOrWhiteSpace(title)) WindowTitle = title!;
             SelectedMode = mode;
@@ -132,7 +132,7 @@ namespace FMSFrontend.ViewModels.Windows
             MarkInitial(WeeklyOptions, weekly);
             MarkInitial(MonthlyOptions, monthly);
 
-            Hour = hour12;
+            Hour = hour;
             Minute = minute;
             IsPm = isPm;
         }

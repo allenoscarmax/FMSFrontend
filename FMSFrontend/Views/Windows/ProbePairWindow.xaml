@@ -52,21 +52,31 @@
                     <Button Content="✕" Grid.Column="1" Background="Transparent" Foreground="White" BorderThickness="0" FontSize="16" FontWeight="Bold" Cursor="Hand" Click="Close_Click" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Grid>
             </Border>
-
-            <!-- 返回 + RFID 狀態燈 -->
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="20,16,20,0" VerticalAlignment="Center">
-                <Button Width="36" Height="36" Background="#EEE" BorderBrush="#DDD" BorderThickness="1" Command="{Binding BackCommand}">
+            <Grid Grid.Row="1" Margin="20,16,20,0" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <!-- 返回 + RFID 狀態燈 -->
+                <Button  Grid.Column="0"  Width="36" Height="36" Background="#EEE" BorderBrush="#DDD" BorderThickness="1" Command="{Binding BackCommand}">
                     <materialDesign:PackIcon Kind="ArrowLeft" Width="20" Height="20" />
                 </Button>
-
-                <StackPanel Orientation="Horizontal" Margin="16,0,0,0" VerticalAlignment="Center">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="16,0,0,0" VerticalAlignment="Center">
                     <Ellipse Width="12" Height="12" Fill="{Binding RfidBindmodel.ConnectedBrush}" VerticalAlignment="Center" />
                     <TextBlock Text="RFID Connected" FontSize="14" Margin="6,0,16,0" VerticalAlignment="Center" />
                     <Ellipse Width="12" Height="12" Fill="{Binding RfidBindmodel.TagBrush}" VerticalAlignment="Center" />
                     <TextBlock Text="RFID Tag" FontSize="14" Margin="6,0,0,0" VerticalAlignment="Center" />
                 </StackPanel>
-            </StackPanel>
+                <!-- Spacer Column (Grid.Column=2) -->
 
+                <!-- Right- Reset buttons -->
+                <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="重新連線" Width="100" Height="30" Margin="3" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Command="{Binding BalluffResetCommand}" />
+                </StackPanel>
+                
+            </Grid>
             <!-- 主內容：探針配對（只保留標籤序號） -->
             <Grid Grid.Row="2" Margin="20,10,20,0">
                 <StackPanel>

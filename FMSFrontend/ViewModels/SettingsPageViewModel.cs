@@ -8,6 +8,7 @@ using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using IniFile;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -32,7 +33,7 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private ScheduleMode selectedMode = ScheduleMode.None;
         public ObservableCollection<int> Weekly { get; } = new();   // 1~7、可負數
         public ObservableCollection<int> Monthly { get; } = new();   // 1~31、0=last、可負數
-        [ObservableProperty] private int hour12 = 9;   // 1~12
+        [ObservableProperty] private int hour = 9;   // 0~23
         [ObservableProperty] private int minute = 41;  // 0~59
         [ObservableProperty] private bool isPm = false;
 
@@ -123,7 +124,7 @@ namespace FMSFrontend.ViewModels
             switch (value)
             {
                 case 0: //設定ip
-                break;
+                    break;
                 case 1: //系統還原
                     break;
                 case 2: //設備資訊
@@ -131,10 +132,10 @@ namespace FMSFrontend.ViewModels
                     OnSelectedSubTabIndexParameterChanged(0); // 修正拼字錯誤
                     break;
                 case 3:
-                    _=  WorkerRefresh();
+                    _ = WorkerRefresh();
                     break;
                 case 4: //保養 
-                   // _appointmentMaintenanceService.GetAllAppointmentMaintenanceAsync()
+                    _ = AppointmentMaintenanceRefresh();
                     break;
             }
         }
@@ -244,15 +245,30 @@ namespace FMSFrontend.ViewModels
             }
         }
 
-        /*
+
         private async Task AppointmentMaintenanceRefresh()
         {
-            
-            List<AppointmentMaintenanceDto> dtos = await _appointmentMaintenanceService.GetAllAppointmentMaintenanceAsync() ?? new List<AppointmentMaintenanceDto>();
-            //AppointmentMaintenanceList.Clear();
-            PeriodDisplay = dtos[0];
+            try
+            {
+                List<AppointmentMaintenanceDto> dtos = await _appointmentMaintenanceService.GetAllAppointmentMaintenanceAsync() ?? new List<AppointmentMaintenanceDto>();
+                //AppointmentMaintenanceList.Clear();
+                switch (dtos[0].Type)
+                {
+                    case "Monthly":
+                        PeriodDisplay = BuildPeriodDisplay(ScheduleMode.Monthly, [0], dtos[0].DayValues.ToArray(), dtos[0].Hour % 12, dtos[0].Minute);
+                        break;
+                    case "Weekly":
+                        PeriodDisplay = BuildPeriodDisplay(ScheduleMode.Weekly, [0], dtos[0].DayValues.ToArray(), dtos[0].Hour % 12, dtos[0].Minute);
+                        break;
+                    default:
+                        PeriodDisplay = BuildPeriodDisplay(ScheduleMode.None, [0], [0], dtos[0].Hour % 12, dtos[0].Minute);
+                        break;
+                }
+               
+            }
+            catch { }
         }
-        */
+        
 
         // === 設定屬性 ===
         [ObservableProperty]
@@ -365,7 +381,7 @@ namespace FMSFrontend.ViewModels
             };
 
             var vm = (PeriodWindowViewModel)win.DataContext;
-            vm.ApplyInitial(SelectedMode, Weekly.ToArray(), Monthly.ToArray(), Hour12, Minute, IsPm, "潤滑週期");
+            vm.ApplyInitial(SelectedMode, Weekly.ToArray(), Monthly.ToArray(), Hour, Minute, IsPm, "潤滑週期");
 
             if (win.ShowDialog() == true)
             {
@@ -378,19 +394,20 @@ namespace FMSFrontend.ViewModels
                     foreach (var v in vm.ConfirmedDays) Weekly.Add(v);
                 else if (SelectedMode == ScheduleMode.Monthly)
                     foreach (var v in vm.ConfirmedDays) Monthly.Add(v);
-
-                Hour12 = vm.Hour;
-                Minute = vm.Minute;
+                if (IsPm)
+                    Hour = vm.Hour + 12;
+                else 
+                    Minute = vm.Minute;
                 IsPm = vm.IsPm;
 
-                PeriodDisplay = BuildPeriodDisplay(SelectedMode, Weekly.ToArray(), Monthly.ToArray(), Hour12, Minute, IsPm);
+                PeriodDisplay = BuildPeriodDisplay(SelectedMode, Weekly.ToArray(), Monthly.ToArray(), Hour, Minute);
             }
         }
 
-        private static string BuildPeriodDisplay(ScheduleMode mode, int[] weekly, int[] monthly, int hour12, int minute, bool isPm)
+        private static string BuildPeriodDisplay(ScheduleMode mode, int[] weekly, int[] monthly, int hour12, int minute)
         {
             if (mode == ScheduleMode.None) return "不設定";
-            string time = $"{hour12:00}:{minute:00} {(isPm ? "PM" : "AM")}";
+            string time = $"{hour12:00}:{minute:00}";
 
             if (mode == ScheduleMode.Weekly)
             {
@@ -401,7 +418,7 @@ namespace FMSFrontend.ViewModels
             else
             {
                 string L(int v) => v == 0 ? "last" : v.ToString();
-                return $"每月 {string.Join(" ", monthly.Select(L))} {time} 進行潤滑";
+                return $"每月 {string.Join(" ", monthly.Select(L))} 日 {time} 進行潤滑";
             }
         }
 
