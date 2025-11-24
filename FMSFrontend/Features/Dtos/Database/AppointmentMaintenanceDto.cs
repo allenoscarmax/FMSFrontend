@@ -22,10 +22,10 @@ namespace FMSFrontend.Features.Dtos
         public int Index { get; set; }                  // 第幾台
 
         [JsonPropertyName("type")]
-        public string Type { get; set; } = "";          // 保養類型 (e.g. daily/weekly/monthly)
+        public string Type { get; set; } = "";          // 保養類型 (e.g. daily/weekly/monthly) <--先檢查這個項目
 
         [JsonPropertyName("day_values")]
-        public List<int> DayValues { get; set; } = new List<int>();// 例如 [1,3,5] 表示週日、週二、週四
+        public List<int> DayValues { get; set; } = new List<int>();// 例如 [1,3,5] 表示週日、週二、週四 
 
         [JsonPropertyName("hour")]
         public int Hour { get; set; }                   // 幾點 (24 小時制)

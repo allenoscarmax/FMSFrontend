@@ -160,11 +160,11 @@
                                                                                     </DataGrid.RowStyle>
 
                                                                                     <DataGrid.Columns>
-                                                                                        <DataGridTextColumn Header="電極名稱" Binding="{Binding ElectrodeName}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Header="電極名稱" Binding="{Binding ElectrodeName}" Width="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                                                         <DataGridTextColumn Header="標籤序號" Binding="{Binding LabelSerial}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                        <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                                                         <!-- ✅ Read-only, non-interactive checkbox -->
-                                                                                        <DataGridCheckBoxColumn Header="需EDM" Binding="{Binding NeedEDM, Mode=OneWay}" Width="120" IsReadOnly="True">
+                                                                                        <DataGridCheckBoxColumn Header="需EDM" Binding="{Binding NeedEDM, Mode=OneWay}" Width="110" IsReadOnly="True">
                                                                                             <DataGridCheckBoxColumn.ElementStyle>
                                                                                                 <Style TargetType="CheckBox" BasedOn="{StaticResource CenterAlignedCheckBoxStyle}">
                                                                                                     <Setter Property="IsHitTestVisible" Value="False" />
@@ -174,6 +174,8 @@
                                                                                         </DataGridCheckBoxColumn>
                                                                                         <DataGridTextColumn Header="加工程式" Binding="{Binding EDMProgram}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                                                         <DataGridTextColumn Header="Offset" Binding="{Binding Offset}" Width="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Header="Share" Binding="{Binding IsShare}" Width="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Header="Share電極" Binding="{Binding ShareElectroe}" Width="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                                                     </DataGrid.Columns>
                                                                                 </DataGrid>
                                                                             </StackPanel>

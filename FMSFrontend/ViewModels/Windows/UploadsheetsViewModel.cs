@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Extensions;
+using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,10 +11,8 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using FMSFrontend.Features.Services;
-using FMSFrontend.Features.Dtos;
+using System.Threading.Tasks;
 
 namespace FMSFrontend.ViewModels.Windows
 {
@@ -408,7 +408,10 @@ namespace FMSFrontend.ViewModels.Windows
                     OffsetStatus = offsetVal,
                     State = "new",
                     MeasurementProgram = measurementProgram,
-                    SetupUser = CurrentUserName
+                    SetupUser = CurrentUserName,
+                    ShareWorksheet = "",
+                    ShareElectrode = "",
+                    IsShareText = "選取",
                 });
             }
         }
@@ -432,11 +435,11 @@ namespace FMSFrontend.ViewModels.Windows
 
             string worksheetNumber = DateTime.Now.ToString("yyyyMMddHHmmss"); // 年月日時分秒
             string targetEDM
-;           if (SelectedEdm.Contains("EDM"))
+; if (SelectedEdm.Contains("EDM"))
             {
                 targetEDM = MapTargetEdm(SelectedEdm);   // EDM1 -> EDM-
             }
-            else 
+            else
             {
                 targetEDM = "";
             }
@@ -447,7 +450,7 @@ namespace FMSFrontend.ViewModels.Windows
 
             int extraOffset = selectedEles.Count(e => IsOffsetOneOrTwo(e.OffsetStatus));
             int totalProcessStep = selectedWorks.Count + selectedEles.Count + extraOffset;
-            if (selectedWorks.Count!=0 && selectedEles.Count == 0)//只有上傳工件就是只有量測工件，工單步驟為1 不要新增電極資料
+            if (selectedWorks.Count != 0 && selectedEles.Count == 0)//只有上傳工件就是只有量測工件，工單步驟為1 不要新增電極資料
             {
                 totalProcessStep = 1;
             }
@@ -570,8 +573,8 @@ namespace FMSFrontend.ViewModels.Windows
                     lifeTimes = e.LifeTimes,
                     offsetStatus = e.OffsetStatus,
                     underSize = "",
-                    shared = false,
-                    shareLink = "",
+                    shared = e.Share,
+                    shareLink = e.ShareElectrode,
                     worksheetDone = "",
                     setupUser = "admin"
                 };
@@ -585,8 +588,25 @@ namespace FMSFrontend.ViewModels.Windows
                     }
                 }
                 catch { }
+                if (e.Share)
+                {
+                    ElectrodeDto? dto = await _electrodeService.DB_GetElectrodeByIdAsync(e.ShareId) ?? new();
+                    if (dto == null)
+                    {
+                        new DialogMessageWindow("更新Share電極失敗").ShowDialog();
+                        return;
+                    }
+                    dto.shared = true;
+                    dto.shareLink = e.ElectrodeName;
+                    ok = await _electrodeService.DB_UpdateElectrodeDataAsync(dto);
+                    if (!ok)
+                    {
+                        new DialogMessageWindow("更新Share電極失敗").ShowDialog();
+                        return;
+                    }
+                }
+                new DialogMessageWindow("上傳完成").ShowDialog();
             }
-            new DialogMessageWindow("上傳完成").ShowDialog();
         }
 
         private static bool IsOffsetOneOrTwo(int? n)
@@ -614,40 +634,49 @@ namespace FMSFrontend.ViewModels.Windows
         private void Share(ElectrodeItem item)
         {
             if (item == null) return;
+            if (item.IsShareText == "選取")
+            {
+                if (string.IsNullOrEmpty(item.ElectrodeName)) return;
 
-            // 從 electrodeName 萃取工件名稱（第一個 '_' 之前的字串）
-            var workpieceName = ExtractWorkpieceNameFromElectrodeName(item.ElectrodeName);
-            if (string.IsNullOrEmpty(workpieceName)) return;
+                // SelectionInfo selection = new SelectionInfo();
+                // 若你還要接回傳結果，可用：
 
-            // 開窗（把工件名稱丟進去）
-            _windowService.ShowSelectSharedElectrodeWindow(workpieceName);
-
-            // 若你還要接回傳結果，可用：
-            // if (_windowService.ShowSelectSharedElectrodeWindow(workpieceName, out var selection) && selection != null)
-            // { ...後續處理... }
-
+                _windowService.ShowSelectSharedElectrodeWindow(item.ElectrodeName, out var selection);
+                if (!string.IsNullOrWhiteSpace(selection.WorkOrderNo) && !string.IsNullOrWhiteSpace(selection.ElectrodeName))
+                {
+                    item.IsShareText = "取消";
+                    item.ShareWorksheet = selection.WorkOrderNo;
+                    item.ShareElectrode = selection.ElectrodeName;
+                    item.ShareId = selection.ElectrodeId;
+                }
+            }
+            else
+            {
+                item.IsShareText = "選取";
+                item.ShareWorksheet = "";
+                item.ShareElectrode = "";
+                item.ShareId = "";
+            }
         }
         /// <summary>
         /// 例： "2504AF019617-001_3-001A-01" -> "2504AF019617-001"
         /// 規則：取第一個 '_' 前的所有字元；若沒有 '_'，就回傳原字串。
         /// </summary>
-        private static string ExtractWorkpieceNameFromElectrodeName(string? electrodeName)
-        {
-            if (string.IsNullOrWhiteSpace(electrodeName))
-                return string.Empty;
 
-            // 方式一：最快，找第一個底線
-            int idx = electrodeName.IndexOf('_');
-            if (idx > 0)
-                return electrodeName.Substring(0, idx);
-
-            // 方式二（防極端格式）：取到 "-01"、"-02" 前面的主體再去掉後段，但通常不會走到這
-            // var m = Regex.Match(electrodeName, @"^(.+?)_");
-            // return m.Success ? m.Groups[1].Value : electrodeName;
-
-            return electrodeName;
-        }
     }
+    /*
+    public class SelectionInfo
+    { 
+        //WorkOrderId = wsDto?._id,
+        //WorkOrderNo = wsDto?.worksheetNumber,
+        //WorkOrderName = wsDto?.workpieceName,
+        //ElectrodeId = eleDto?._id,
+        //ElectrodeName = eleDto?.electrodeName,
+        //ElectrodeState = eleDto?.state
+        public string ShareWorksheet { get; set; } = "";
+        public string ShareElectrode { get; set; } = "";
+    }
+    */
 
     public partial class ElectrodeItem : ObservableObject
     {
@@ -659,11 +688,16 @@ namespace FMSFrontend.ViewModels.Windows
         [ObservableProperty] public string state = "new";
         [ObservableProperty] public string measurementProgram = "";
         [ObservableProperty] public string setupUser = "";
+        [ObservableProperty] public string isShareText = "";
+        [ObservableProperty] public string shareWorksheet = "";
+        [ObservableProperty] public string shareElectrode = "";
+        [ObservableProperty] public string shareId = "";
 
+
+        public bool Share => !string.IsNullOrWhiteSpace(ShareWorksheet);
+        partial void OnShareWorksheetChanged(string value) => OnPropertyChanged(nameof(Share));
         // 根據電極名稱尾碼決定是否可分享 (例如尾碼為 "02")
-        public bool CanShare => !string.IsNullOrWhiteSpace(ElectrodeName) && ElectrodeName.Trim().EndsWith("01", StringComparison.OrdinalIgnoreCase);
-
-        // 當影響 CanShare 的欄位變更時發通知以更新 UI
+        public bool CanShare => (!string.IsNullOrWhiteSpace(ElectrodeName) && ElectrodeName.Trim().EndsWith("01", StringComparison.OrdinalIgnoreCase));
         partial void OnElectrodeNameChanged(string value) => OnPropertyChanged(nameof(CanShare));
         partial void OnOffsetStatusChanged(int value) => OnPropertyChanged(nameof(CanShare));
     }

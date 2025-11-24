@@ -56,7 +56,7 @@
 
                     <!-- Header Bar -->
                     <Border Grid.Row="0" Background="#666" CornerRadius="10,10,0,0" Margin="24,16,24,0">
-                        <TextBlock Text="零件名稱（工單編號）" Foreground="White" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <TextBlock Text="工件名稱（工單編號）" Foreground="White" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
 
                     <!-- List -->

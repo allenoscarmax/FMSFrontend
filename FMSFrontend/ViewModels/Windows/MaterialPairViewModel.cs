@@ -158,9 +158,38 @@ public partial class MaterialPairViewModel : ObservableObject
                     _windowService.ShowMessage("請選擇要配對的工單");
                     return;
                 }
-                electrode.state = SelectStatus;
+
+                // 解除既有電極的 TagSerial 綁定
+                var existingElectrodes = await _ElectrodeService.DB_GetElectrodesByTagSerialAsync(RfidBindmodel.TagSerial ?? "");
+
+                while (existingElectrodes != null)
+                {
+                    if (existingElectrodes != null && existingElectrodes.Count > 0)
+                    {
+                        foreach (var dto in existingElectrodes)
+                        {
+                            dto.state = "OffShelf";
+                            dto.tagSerial = "";
+                            try
+                            {
+                                ok = await _ElectrodeService.DB_UpdateElectrodeDataAsync(dto);
+                                if (!ok)
+                                {
+                                    _windowService.ShowMessage("電極上傳失敗");
+                                    return;
+                                }
+                            }
+                            catch { }
+                        }
+                    }
+                    existingElectrodes = await _ElectrodeService.DB_GetElectrodesByTagSerialAsync(RfidBindmodel.TagSerial ?? "");
+                }
+
+                // 更新目前選到的電極資料
+                electrode.state = "Verified";
                 electrode.worksheetNumber = SelectedWorksheetItem?.WorkOrderNo ?? string.Empty;
                 electrode.tagSerial = RfidBindmodel.TagSerial ?? "";
+                electrode.currentLocation = "OffShelf";
                 try
                 {
                     ok = await _ElectrodeService.DB_UpdateElectrodeDataAsync(electrode);
@@ -185,17 +214,57 @@ public partial class MaterialPairViewModel : ObservableObject
                     _windowService.ShowMessage("請選擇要配對的工單");
                     return;
                 }
-                workpiece.status = SelectStatus;
+                    // 解除既有工件的 TagSerial 綁定
+                    var existingWp = await _WorkpieceService.GetWorkpieceByTagSerialAsync(RfidBindmodel.TagSerial ?? "");
+
+                while (existingWp != null)
+                {
+
+                    existingWp.status = "OffShelf";
+                    existingWp.tagSerial = "";
+                    try
+                    {
+                        ok = await _WorkpieceService.UpdateWorkpieceDataAsync(existingWp);
+                        if (!ok)
+                        {
+                            _windowService.ShowMessage("電極上傳失敗");
+                            return;
+                        }
+                    }
+                    catch { }
+                    existingWp = await _WorkpieceService.GetWorkpieceByTagSerialAsync(RfidBindmodel.TagSerial ?? "");
+                }
+                // 更新目前選到的工件資料
+                workpiece.status = "Verified";
                 workpiece.worksheetNumber = SelectedWorksheetItem?.WorkOrderNo ?? string.Empty;
                 workpiece.tagSerial = RfidBindmodel.TagSerial ?? "";
+                workpiece.currentLocation = "onASE1";
+
                 ok = await _WorkpieceService.UpdateWorkpieceDataAsync(workpiece);
                 if (!ok)
                 {
                     _windowService.ShowMessage("工件上傳失敗");
                     return;
                 }
-            }
 
+                //更新工單狀態
+                var existingWorksheet = await _WorksheetService.GetWorkSheetByWorkSheetNumberAsync(SelectedWorksheetItem?.WorkOrderNo ?? string.Empty);
+                if (existingWorksheet != null)
+                {
+                    existingWorksheet.workStatus = "Queue";
+                    try
+                    {
+                        ok = await _WorksheetService.UpdateWorkSheetDataAsync(existingWorksheet);
+                        if (!ok)
+                        {
+                            _windowService.ShowMessage("電極上傳失敗");
+                            return;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            // 上傳 RFIDWriteLog
             var RFIDWriteLog = new RFIDWriteLogDto
             {
                 timeStamp = DateTime.Now,
@@ -425,6 +494,8 @@ public partial class MaterialPairViewModel : ObservableObject
         {
             _windowService.ShowMessage("選擇工單失敗");
         }
+        SelectedElectrodeItem = null;
+        SelectedWorkpieceItem = null;
     }
     /*
     // 新增：計時器事件讀取RFID最新Tag

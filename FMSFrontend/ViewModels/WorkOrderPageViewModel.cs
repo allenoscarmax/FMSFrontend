@@ -181,6 +181,8 @@ namespace FMSFrontend.ViewModels
         private void OpenUploadSheet()
         {
             _WindowService.ShowUploadSheetWindow();
+
+            _ = FetchAndBindByStatusAsync();
         }
         // 最小改動：呼叫後端 API 並綁定到對應的 UI 集合（使用 CancellationToken）
         private async Task FetchAndBindByStatusAsync()
@@ -226,7 +228,9 @@ namespace FMSFrontend.ViewModels
                             Status = e.state ?? "",
                             NeedEDM = true, //代定義
                             EDMProgram = e.edmpgm ?? "",
-                            Offset = e.offsetStatus ?? 0
+                            Offset = e.offsetStatus ?? 0,
+                            IsShare = e.shared,
+                            ShareElectrode = e.shareLink ?? ""
                         });
                     }
                     if (SelectedTabIndexParameter == 0) WorkOrderList.Add(workOrder);
@@ -334,6 +338,8 @@ namespace FMSFrontend.ViewModels
         public string SetupUser { get; set; } = "";//設定者
         public int ProcessStep { get; set; } = 1; //目前步數
         public int TotalProcessStep { get; set; } = 3; //總步數
+
+
         public double EDMStageProgress => TotalProcessStep == 0 ? 0 : (100.0 * ProcessStep / TotalProcessStep);  // 進度條百分比（回傳 double）
         public string EDMStageDisplay => $"EDM加工階段：{ProcessStep} / {TotalProcessStep}"; // 顯示文字，如 "EDM加工階段：1 / 3"
         public ObservableCollection<EDMDetail> EDMDetails { get; set; } = new ObservableCollection<EDMDetail>();
@@ -365,6 +371,8 @@ namespace FMSFrontend.ViewModels
         public bool NeedEDM { get; set; }
         public string EDMProgram { get; set; } = "";
         public int Offset { get; set; }
+        public bool IsShare { get; set; } = false; //總步數
+        public string ShareElectrode { get; set; } = ""; //總步數
 
     }
 }
