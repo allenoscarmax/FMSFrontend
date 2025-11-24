@@ -605,8 +605,8 @@ namespace FMSFrontend.ViewModels.Windows
                         return;
                     }
                 }
-                new DialogMessageWindow("上傳完成").ShowDialog();
             }
+            new DialogMessageWindow("上傳完成").ShowDialog();
         }
 
         private static bool IsOffsetOneOrTwo(int? n)

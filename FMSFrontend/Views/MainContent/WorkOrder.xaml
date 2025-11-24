@@ -175,7 +175,7 @@
                                                                                         <DataGridTextColumn Header="加工程式" Binding="{Binding EDMProgram}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                                                         <DataGridTextColumn Header="Offset" Binding="{Binding Offset}" Width="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                                                         <DataGridTextColumn Header="Share" Binding="{Binding IsShare}" Width="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                        <DataGridTextColumn Header="Share電極" Binding="{Binding ShareElectroe}" Width="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Header="Share電極" Binding="{Binding ShareElectrode}" Width="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                                                     </DataGrid.Columns>
                                                                                 </DataGrid>
                                                                             </StackPanel>
