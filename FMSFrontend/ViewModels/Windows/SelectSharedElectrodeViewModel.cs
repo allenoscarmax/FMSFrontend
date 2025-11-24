@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Markup;
 using System.Windows.Media;
 
 namespace FMSFrontend.ViewModels.Windows
@@ -20,8 +22,8 @@ namespace FMSFrontend.ViewModels.Windows
         private readonly IWorksheetsService _worksheetService;
         private readonly IElectrodeService _electrodeService;
         private readonly Window _owner;
-        private readonly string _targetWorkpieceName; // Share 時傳入的工件名稱
-
+        private readonly string _targetElectrodeName; // Share 時傳入的電極名稱
+        
         // 🔹 顯示文字用屬性
         [ObservableProperty] private string? selectedWorkOrderName = "請選擇工單";
         [ObservableProperty] private string? selectedElectrodeNameDisplay = "請選擇電極";
@@ -43,21 +45,41 @@ namespace FMSFrontend.ViewModels.Windows
             IWorksheetsService worksheetService,
             IElectrodeService electrodeService,
             Window owner,
-            string targetWorkpieceName)
+            string targetElectrodeName)
         {
             _worksheetService = worksheetService;
             _electrodeService = electrodeService;
             _owner = owner;
-            _targetWorkpieceName = targetWorkpieceName;
+            _targetElectrodeName = targetElectrodeName;
         }
 
         // ------------------------------------------------------------
+        private static string ExtractWorkpieceNameFromElectrodeName(string? electrodeName)
+        {
+            if (string.IsNullOrWhiteSpace(electrodeName))
+                return string.Empty;
+
+            // 方式一：最快，找第一個底線
+            int idx = electrodeName.IndexOf('_');
+            if (idx > 0)
+                return electrodeName.Substring(0, idx);
+
+            // 方式二（防極端格式）：取到 "-01"、"-02" 前面的主體再去掉後段，但通常不會走到這
+            // var m = Regex.Match(electrodeName, @"^(.+?)_");
+            // return m.Success ? m.Groups[1].Value : electrodeName;
+
+            return electrodeName;
+        }
         [RelayCommand]
         private async Task SelectWorkOrderAsync()
         {
             try
             {
-                _cachedWorksheets = await _worksheetService.DB_GetWorkSheetsbyContainWorkpieceName(_targetWorkpieceName) ?? new List<WorksheetsDto>();
+                // 從 electrodeName 萃取工件名稱（第一個 '_' 之前的字串）
+                var workpieceName = ExtractWorkpieceNameFromElectrodeName(_targetElectrodeName);
+                if (string.IsNullOrEmpty(workpieceName)) return;
+
+                _cachedWorksheets = await _worksheetService.DB_GetWorkSheetsbyContainWorkpieceName(workpieceName) ?? new List<WorksheetsDto>();
                 var items = _cachedWorksheets
                     .Select(ws => new WorksheetItem
                     {
@@ -65,6 +87,19 @@ namespace FMSFrontend.ViewModels.Windows
                         WorkOrderNo = ws.worksheetNumber ?? string.Empty
                     })
                     .ToList();
+                
+                //移除自己的工單編號
+                string[] sr = _targetElectrodeName.Split('-');
+
+                // 檢查工單的電極是否被分享過，若有任何 shared 則移除該工單
+                items.RemoveAll(item =>
+                {
+                    var electrodes = _electrodeService.GetElectrodeByWorksheetNumberAsync(item.WorkOrderNo).Result;
+                    return electrodes != null && electrodes.Any(ele => ele.shared);
+                });
+
+                if (sr.Length > 2)
+                    items.RemoveAll(x => x.PartName.IndexOf(sr[0] + "-" + sr[1]) == 0);
 
                 if (items.Count == 0)
                     return;
@@ -145,20 +180,21 @@ namespace FMSFrontend.ViewModels.Windows
             if (SelectedWorksheetItem == null || SelectedElectrodeItem == null)
                 return;
 
-            var wsDto = _cachedWorksheets.FirstOrDefault(w =>
-                string.Equals(w.worksheetNumber, SelectedWorksheetItem.WorkOrderNo, StringComparison.Ordinal));
+            WorksheetsDto wsDto = _cachedWorksheets.FirstOrDefault(w =>
+                string.Equals(w.worksheetNumber, SelectedWorksheetItem.WorkOrderNo, StringComparison.Ordinal)) ?? new();
 
-            var eleDto = _cachedElectrodes.FirstOrDefault(e =>
-                string.Equals(e.electrodeName, SelectedElectrodeItem.MaterialName, StringComparison.Ordinal));
+            ElectrodeDto eleDto = _cachedElectrodes.FirstOrDefault(e =>
+                string.Equals(e.electrodeName, SelectedElectrodeItem.MaterialName, StringComparison.Ordinal)) ?? new();
+
 
             var result = new SharedElectrodeSelection
             {
-                WorkOrderId = wsDto?._id,
-                WorkOrderNo = wsDto?.worksheetNumber,
-                WorkOrderName = wsDto?.workpieceName,
-                ElectrodeId = eleDto?._id,
-                ElectrodeName = eleDto?.electrodeName,
-                ElectrodeState = eleDto?.state
+                WorkOrderId = wsDto._id,
+                WorkOrderNo = wsDto.worksheetNumber,
+                WorkOrderName = wsDto.workpieceName,
+                ElectrodeId = eleDto._id,
+                ElectrodeName = eleDto.electrodeName,
+                ElectrodeState = eleDto.state
             };
 
             CloseRequested?.Invoke(this, result);
@@ -180,11 +216,11 @@ namespace FMSFrontend.ViewModels.Windows
     // 回傳型別（可放在同檔）
     public class SharedElectrodeSelection
     {
-        public string? WorkOrderId { get; set; }
-        public string? WorkOrderNo { get; set; }
-        public string? WorkOrderName { get; set; }
-        public string? ElectrodeId { get; set; }
-        public string? ElectrodeName { get; set; }
-        public string? ElectrodeState { get; set; }
+        public string WorkOrderId { get; set; } = "";
+        public string WorkOrderNo { get; set; } = "";
+        public string WorkOrderName { get; set; } = "";
+        public string ElectrodeId { get; set; } = "";
+        public string ElectrodeName { get; set; } = "";
+        public string ElectrodeState { get; set; } = "";
     }
 }

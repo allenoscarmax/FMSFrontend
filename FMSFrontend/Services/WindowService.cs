@@ -25,7 +25,7 @@ namespace FMSFrontend.Services
         // 移除 readonly，改為可為 null 的欄位，稍後在 EnsureMaterialWindow 建立
         private ShowMaterialWindowViewModel? _vm;  // ← 單一 VM，重複使用
 
-      //  private readonly IServiceProvider _serviceProvider;
+        //  private readonly IServiceProvider _serviceProvider;
 
 
         public void ShowUploadSheetWindow()
@@ -115,14 +115,14 @@ namespace FMSFrontend.Services
             EnsureMaterialWindow(httpService, electrodeService, workpieceService, probeService, storageService);
             _vm!.Kind = MaterialKind.Electrode;
             _vm.SlotCode = slotCode ?? (!string.IsNullOrWhiteSpace(electrode?.No) ? electrode.No : electrode?.Name);
-            _vm.DetailViewModel = new ElectrodeDetailViewModel(electrode?? new ElectrodeModel());
+            _vm.DetailViewModel = new ElectrodeDetailViewModel(electrode ?? new ElectrodeModel());
             _vm.IsLocked = electrode?.ElecRestriction ?? false;
             _vm.IsDisabled = electrode?.StorageRestriction ?? false;
             FillTimeline(timeline);               // ← 把 timeline 塞回去
             ShowOrActivate();
         }
 
-        public void ShowMaterialEmpty( IHttpService httpService,
+        public void ShowMaterialEmpty(IHttpService httpService,
              IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService)
         {
             EnsureMaterialWindow(httpService, electrodeService, workpieceService, probeService, storageService);
@@ -133,12 +133,28 @@ namespace FMSFrontend.Services
             ShowOrActivate();
         }
 
-        public void ShowSelectSharedElectrodeWindow(string targetWorkpieceName)
+        // 保留舊版無回傳功能（若其他舊程式碼仍使用）
+        public void ShowSelectSharedElectrodeWindow(string targetElectrodeName)
         {
-
-            var window = new SelectSharedElectrodeWindow(targetWorkpieceName);
+            var window = new SelectSharedElectrodeWindow(targetElectrodeName);
             window.ShowDialog();
         }
+
+        // 新增：帶 out 參數取得使用者選擇結果
+        public void ShowSelectSharedElectrodeWindow(string targetElectrodeName, out SelectionInfo selection)
+        {
+            selection = new SelectionInfo();
+            var window = new SelectSharedElectrodeWindow(targetElectrodeName);
+            bool? dialogResult = window.ShowDialog();
+            if (dialogResult == true && window.Tag is SharedElectrodeSelection shared)
+            {
+                // 對應回傳內容到 SelectionInfo
+                selection.WorkOrderNo = shared.WorkOrderNo ?? string.Empty;
+                selection.ElectrodeName = shared.ElectrodeName ?? string.Empty;
+                selection.ElectrodeId = shared.ElectrodeId ?? string.Empty;
+            }
+        }
+
 
         private void EnsureMaterialWindow(IHttpService httpService,
               IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService)
@@ -194,7 +210,7 @@ namespace FMSFrontend.Services
         private ShowMaterialWindowViewModel? _infoVm;
 
         // ===== 你要的公開 API：Electrode =====
-        public void ShowMaterialInformation(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline,IHttpService httpService,
+        public void ShowMaterialInformation(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
              IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService)
         {
             EnsureMaterialInformationWindow(httpService, electrodeService, workpieceService, probeService, storageService);
@@ -259,11 +275,21 @@ namespace FMSFrontend.Services
             }
         }
 
-        
     }
+    public class SelectionInfo
+    {
+        public string WorkOrderId { get; set; } = "";
+        public string WorkOrderNo { get; set; } = "";
+        public string WorkOrderName { get; set; } = "";
+        public string ElectrodeId { get; set; } = "";
+        public string ElectrodeName { get; set; } = "";
+        public string ElectrodeState { get; set; } = "";
+    }
+
     // 新增：簡單的訊息型別（放在同一 namespace 下）
     public sealed class UploadSheetsClosedMessage : ValueChangedMessage<bool>
     {
         public UploadSheetsClosedMessage(bool value) : base(value) { }
     }
+
 }

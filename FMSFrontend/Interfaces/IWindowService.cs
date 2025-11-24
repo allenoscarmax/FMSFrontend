@@ -16,35 +16,30 @@ namespace FMSFrontend.Interfaces
     public interface IWindowService
     {
         void ShowUploadSheetWindow();
-
         void ShowMessage(string message);
-
         bool ShowYesNoDialog(string message);
-
         bool ShowMaterialTypeSelectWindow(out MaterialKind kind);
         void ShowMaterialPairWindow(bool isElectrode);
-
         void ShowMaterial(object detailViewModel, IEnumerable<TimelineItemViewModel> timeline, MaterialKind kind, IHttpService httpService,
            IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService,
            string? slotCode = null);
         void ShowWorkpiece(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
               IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService,
               string? slotCode = null);
-
         void ShowElectrode(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
              IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService,
              string? slotCode = null);
-        // 空材料視窗
         void ShowMaterialEmpty(IHttpService httpService,
              IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService);
-        // 電極資訊視窗
         void ShowMaterialInformation(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
                IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService);
-        // 工件資訊視窗
         void ShowMaterialInformation(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, IHttpService httpService,
             IElectrodeService electrodeService, IWorkpieceService workpieceService, IProbeService probeService, IStorageService storageService);
 
 
+        // 保留舊版無回傳功能
         void ShowSelectSharedElectrodeWindow(string targetWorkpieceName);
+        // 新增：取得選擇結果
+        void ShowSelectSharedElectrodeWindow(string targetWorkpieceName, out SelectionInfo selection);
     }
 }
