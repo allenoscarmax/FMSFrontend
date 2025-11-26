@@ -32,11 +32,13 @@ public partial class MaterialPairViewModel : ObservableObject
     private readonly IWindowService _windowService;
     private readonly IHttpService _httpService;
     // === Services ===
-    private readonly IElectrodeService _ElectrodeService;
-    private readonly IProbeService _ProbeService;
-    private readonly IRfidService _RfidService;
-    private readonly IWorkpieceService _WorkpieceService;
-    private readonly IWorksheetsService _WorksheetService;
+    private readonly IElectrodeService _electrodeService;
+    private readonly IProbeService _probeService;
+    private readonly IRfidService _rfidService;
+    private readonly IWorkpieceService _workpieceService;
+    private readonly IWorksheetsService _worksheetService;
+    private readonly IPlcService _plcService;
+
     // === Singleton ===
     public RFIDBindStore RfidBindStore { get; } = new();
     public RFIDBindModel RfidBindmodel => RfidBindStore.RfidBind;
@@ -54,11 +56,12 @@ public partial class MaterialPairViewModel : ObservableObject
         _windowService = windowService;
         _httpService = httpService;
         // === Services ===
-        _ElectrodeService = electrodeService;
-        _ProbeService = probeService;
-        _RfidService = rfidService;
-        _WorkpieceService = workpieceService;
-        _WorksheetService = worksheetService;
+        _electrodeService = electrodeService;
+        _probeService = probeService;
+        _rfidService = rfidService;
+        _workpieceService = workpieceService;
+        _worksheetService = worksheetService;
+        _plcService = new PlcService(_httpService);
         // === Singleton ===
         RfidBindStore = rFIDBindStore;
         // ==LiveUpdater===
@@ -132,6 +135,18 @@ public partial class MaterialPairViewModel : ObservableObject
         OnPropertyChanged(nameof(SelectedWorkOrderName));
         SelectEnable = SelectedWorksheetItem != null;
     }
+    // Pair
+    [RelayCommand]
+    private async Task BalluffReset()
+    {
+        try
+        {
+            bool ok = await _plcService.BalluffPowerAsync(false);
+            await Task.Delay(1000);
+            ok = await _plcService.BalluffPowerAsync(true);
+        }
+        catch { }
+    }
 
     // Pair
     [RelayCommand]
@@ -160,7 +175,7 @@ public partial class MaterialPairViewModel : ObservableObject
                 }
 
                 // 解除既有電極的 TagSerial 綁定
-                var existingElectrodes = await _ElectrodeService.DB_GetElectrodesByTagSerialAsync(RfidBindmodel.TagSerial ?? "");
+                var existingElectrodes = await _electrodeService.DB_GetElectrodesByTagSerialAsync(RfidBindmodel.TagSerial ?? "");
 
                 while (existingElectrodes != null)
                 {
@@ -172,7 +187,7 @@ public partial class MaterialPairViewModel : ObservableObject
                             dto.tagSerial = "";
                             try
                             {
-                                ok = await _ElectrodeService.DB_UpdateElectrodeDataAsync(dto);
+                                ok = await _electrodeService.DB_UpdateElectrodeDataAsync(dto);
                                 if (!ok)
                                 {
                                     _windowService.ShowMessage("電極上傳失敗");
@@ -182,7 +197,7 @@ public partial class MaterialPairViewModel : ObservableObject
                             catch { }
                         }
                     }
-                    existingElectrodes = await _ElectrodeService.DB_GetElectrodesByTagSerialAsync(RfidBindmodel.TagSerial ?? "");
+                    existingElectrodes = await _electrodeService.DB_GetElectrodesByTagSerialAsync(RfidBindmodel.TagSerial ?? "");
                 }
 
                 // 更新目前選到的電極資料
@@ -192,7 +207,7 @@ public partial class MaterialPairViewModel : ObservableObject
                 electrode.currentLocation = "OffShelf";
                 try
                 {
-                    ok = await _ElectrodeService.DB_UpdateElectrodeDataAsync(electrode);
+                    ok = await _electrodeService.DB_UpdateElectrodeDataAsync(electrode);
                     if (!ok)
                     {
                         _windowService.ShowMessage("電極上傳失敗");
@@ -215,7 +230,7 @@ public partial class MaterialPairViewModel : ObservableObject
                     return;
                 }
                     // 解除既有工件的 TagSerial 綁定
-                    var existingWp = await _WorkpieceService.GetWorkpieceByTagSerialAsync(RfidBindmodel.TagSerial ?? "");
+                    var existingWp = await _workpieceService.GetWorkpieceByTagSerialAsync(RfidBindmodel.TagSerial ?? "");
 
                 while (existingWp != null)
                 {
@@ -224,7 +239,7 @@ public partial class MaterialPairViewModel : ObservableObject
                     existingWp.tagSerial = "";
                     try
                     {
-                        ok = await _WorkpieceService.UpdateWorkpieceDataAsync(existingWp);
+                        ok = await _workpieceService.UpdateWorkpieceDataAsync(existingWp);
                         if (!ok)
                         {
                             _windowService.ShowMessage("電極上傳失敗");
@@ -232,7 +247,7 @@ public partial class MaterialPairViewModel : ObservableObject
                         }
                     }
                     catch { }
-                    existingWp = await _WorkpieceService.GetWorkpieceByTagSerialAsync(RfidBindmodel.TagSerial ?? "");
+                    existingWp = await _workpieceService.GetWorkpieceByTagSerialAsync(RfidBindmodel.TagSerial ?? "");
                 }
                 // 更新目前選到的工件資料
                 workpiece.status = "Verified";
@@ -240,7 +255,7 @@ public partial class MaterialPairViewModel : ObservableObject
                 workpiece.tagSerial = RfidBindmodel.TagSerial ?? "";
                 workpiece.currentLocation = "onASE1";
 
-                ok = await _WorkpieceService.UpdateWorkpieceDataAsync(workpiece);
+                ok = await _workpieceService.UpdateWorkpieceDataAsync(workpiece);
                 if (!ok)
                 {
                     _windowService.ShowMessage("工件上傳失敗");
@@ -248,13 +263,13 @@ public partial class MaterialPairViewModel : ObservableObject
                 }
 
                 //更新工單狀態
-                var existingWorksheet = await _WorksheetService.GetWorkSheetByWorkSheetNumberAsync(SelectedWorksheetItem?.WorkOrderNo ?? string.Empty);
+                var existingWorksheet = await _worksheetService.GetWorkSheetByWorkSheetNumberAsync(SelectedWorksheetItem?.WorkOrderNo ?? string.Empty);
                 if (existingWorksheet != null)
                 {
                     existingWorksheet.workStatus = "Queue";
                     try
                     {
-                        ok = await _WorksheetService.UpdateWorkSheetDataAsync(existingWorksheet);
+                        ok = await _worksheetService.UpdateWorkSheetDataAsync(existingWorksheet);
                         if (!ok)
                         {
                             _windowService.ShowMessage("電極上傳失敗");
@@ -274,7 +289,7 @@ public partial class MaterialPairViewModel : ObservableObject
                 objName = SelectName ,
             };
 
-            ok = await _RfidService.InsertNewRFIDWriteLogDataAsync(RFIDWriteLog);
+            ok = await _rfidService.InsertNewRFIDWriteLogDataAsync(RFIDWriteLog);
             if (!ok)
             {
                 _windowService.ShowMessage("RFIDWriteLog上傳失敗: ");
@@ -337,7 +352,7 @@ public partial class MaterialPairViewModel : ObservableObject
             }
             // 1) 準備資料（此 API 回傳單筆 WorkpieceDto）
             var items = new List<SelectItem>();
-            WorkpieceDto? wp = await _WorkpieceService.GetWorkpieceByWorksheetNumberAsync(SelectedWorksheetItem.WorkOrderNo);
+            WorkpieceDto? wp = await _workpieceService.GetWorkpieceByWorksheetNumberAsync(SelectedWorksheetItem.WorkOrderNo);
             if (wp != null)
             {
                 Brush statusBrush = StatusColor(wp.status);
@@ -402,7 +417,7 @@ public partial class MaterialPairViewModel : ObservableObject
         var items = new List<SelectItem>();
         try
         {
-            List<ElectrodeDto> Electrodes = await _ElectrodeService.GetElectrodeByWorksheetNumberAsync(SelectedWorksheetItem.WorkOrderNo) ?? new List<ElectrodeDto>();
+            List<ElectrodeDto> Electrodes = await _electrodeService.GetElectrodeByWorksheetNumberAsync(SelectedWorksheetItem.WorkOrderNo) ?? new List<ElectrodeDto>();
 
             foreach (var e in Electrodes)
             {
@@ -461,7 +476,7 @@ public partial class MaterialPairViewModel : ObservableObject
         {
             // 1) 準備資料
             var items = new List<WorksheetItem>();
-            List<WorksheetsDto> worksheets = await _WorksheetService.GetAllWorkSheetAsync() ?? new List<WorksheetsDto>();
+            List<WorksheetsDto> worksheets = await _worksheetService.GetAllWorkSheetAsync() ?? new List<WorksheetsDto>();
             foreach (var ws in worksheets)
             {
                 if (ws.workStatus != "Completed" && ws.workStatus != "Failure")

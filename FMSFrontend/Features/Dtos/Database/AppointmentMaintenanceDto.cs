@@ -25,7 +25,7 @@ namespace FMSFrontend.Features.Dtos
         public string Type { get; set; } = "";          // 保養類型 (e.g. daily/weekly/monthly) <--先檢查這個項目
 
         [JsonPropertyName("day_values")]
-        public List<int> DayValues { get; set; } = new List<int>();// 例如 [1,3,5] 表示週日、週二、週四 
+        public List<int> DayValues { get; set; } = new List<int>();//monthly: 日期   weekly:例如 [1,2,3,4,5,6,7] 表示週日、週一、週二、週三、週四、週五、週六 
 
         [JsonPropertyName("hour")]
         public int Hour { get; set; }                   // 幾點 (24 小時制)

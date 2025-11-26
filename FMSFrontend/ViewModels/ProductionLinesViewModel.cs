@@ -42,7 +42,7 @@ namespace FMSFrontend.ViewModels
         private readonly IElectrodeService _ElectrodeService;
         private readonly IWorkpieceService _WorkpieceService;
         private readonly IProbeService _ProbeService;
-        private readonly IMachinesService _MachinesService;
+        public readonly IMachinesService _MachinesService;
         public readonly IWorksheetsService _worksheetsService;
 
         private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
@@ -146,7 +146,7 @@ namespace FMSFrontend.ViewModels
         {
             if (string.IsNullOrEmpty(slot.Serial))
             {
-                _windowService.ShowMaterialEmpty(_httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
+                _windowService.ShowMaterialEmpty(slot,_httpService);
                 return;
             }
             try
@@ -169,24 +169,21 @@ namespace FMSFrontend.ViewModels
                             List<EleTimelineDto>? eleTimelineDto = await _ElectrodeService.DB_GetElectrodeTimelineByIdAsync(e._id, ct);
                             // eleTimelineDto = null;
                             var timelineModels = eleTimelineDto?.Select(MapElectrodeTimeline).ToList() ?? new List<TimelineItemModel>();
-                            _windowService.ShowElectrode(MapElectrode(e, slot), timelineModels, _httpService,
-                                _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService, slot.SlotCode);
+                            _windowService.ShowElectrode(MapElectrode(e, slot), timelineModels, _httpService);
                         }
                         else
                         {
-                            _windowService.ShowMaterialEmpty(_httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
+                            _windowService.ShowMaterialEmpty(slot,_httpService);
                         }
                     }
                     else //檢查是否為探針
                     {
                         ProbeDto? prrobe = await _ProbeService.DB_GetProbeByTagSerialAsync(slot.Serial, ct);
                         if (prrobe != null)
-                            _windowService.ShowElectrode(MapProbe(prrobe, slot), new List<TimelineItemModel>(), _httpService,
-                                 _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService,
-                                 slot.SlotCode);
+                            _windowService.ShowElectrode(MapProbe(prrobe, slot), new List<TimelineItemModel>(), _httpService, slot.SlotCode);
                         else // 皆非 則顯示空資料
                         {
-                            _windowService.ShowMaterialEmpty(_httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
+                            _windowService.ShowMaterialEmpty(slot,_httpService);
                         }
                     }
                 }
@@ -197,12 +194,11 @@ namespace FMSFrontend.ViewModels
                     {
                         List<WpTimelineDto>? wpTimelineDto = await _WorkpieceService.GetWorkpieceTimelineByWorkpieceIdAsync(wp._id, ct);
                         var wpTimelineModels = wpTimelineDto?.Select(MapWorkpieceTimeline).ToList() ?? new List<TimelineItemModel>();
-                        _windowService.ShowWorkpiece(MapWorkpiece(wp, slot), wpTimelineModels, _httpService,
-                             _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService, slot.SlotCode);
+                        _windowService.ShowWorkpiece(MapWorkpiece(wp, slot), wpTimelineModels, _httpService);
                     }
                     else // 皆非 則顯示空資料
                     {
-                        _windowService.ShowMaterialEmpty(_httpService, _ElectrodeService, _WorkpieceService, _ProbeService, _StorageService);
+                        _windowService.ShowMaterialEmpty(slot,_httpService);
                     }
                 }
             }
@@ -364,7 +360,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void OpenRobotWindow() //開啟機器人視窗
         {
-            var win = new ShowRobotWindow(RobotModel);
+            var win = new ShowRobotWindow(_httpService, RobotModel);
             var owner = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
             if (owner != null) win.Owner = owner;
 

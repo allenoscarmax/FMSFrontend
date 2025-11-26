@@ -61,6 +61,8 @@ namespace FMSFrontend.ViewModels
         {
             OnPropertyChanged(nameof(IsCustomDateMode));
             ApplyDateFilter();
+            // 切換日期篩選選項後立即重新抓資料
+            _ = FetchAndBindByStatusAsync();
         }
         [ObservableProperty]
         private DateTime? fromDate = DateTime.Today;
@@ -88,6 +90,10 @@ namespace FMSFrontend.ViewModels
             }
 
             lastValidFromDate = value;
+
+            // 自訂日期變更後立即重新抓資料
+            if (IsCustomDateMode)
+                _ = FetchAndBindByStatusAsync();
         }
 
         [ObservableProperty]
@@ -120,6 +126,10 @@ namespace FMSFrontend.ViewModels
                 return;
             }
             lastValidToDate = value;
+
+            // 自訂日期變更後立即重新抓資料
+            if (IsCustomDateMode)
+                _ = FetchAndBindByStatusAsync();
         }
         public bool IsCustomDateMode => SelectedFilterOption == "自訂";
         public ObservableCollection<WorkOrderData> WorkOrderList { get; set; } = new();
@@ -142,6 +152,9 @@ namespace FMSFrontend.ViewModels
                 default:
                     break;
             }
+            // 非自訂範圍（今天/過去7天）更新後也要重新抓資料
+            if (!IsCustomDateMode)
+                _ = FetchAndBindByStatusAsync();
         }
         public ICommand DeleteCommand { get; }
 
@@ -185,6 +198,35 @@ namespace FMSFrontend.ViewModels
             _ = FetchAndBindByStatusAsync();
         }
         // 最小改動：呼叫後端 API 並綁定到對應的 UI 集合（使用 CancellationToken）
+        List<WorksheetsDto> MappedWorksheets(List<WorksheetIncludeTimelineDto> dtos) 
+        {
+            var result = new List<WorksheetsDto>();
+            if (dtos == null || dtos.Count == 0)
+                return result;
+
+            foreach (var dto in dtos)
+            {
+                // 僅映射已完成的工單
+                if (!string.Equals(dto.status, "Completed", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                result.Add(new WorksheetsDto
+                {
+                    _id = dto._id,
+                    worksheetNumber = dto.workSheetNumber,
+                    workpieceName = dto.workpieceName,
+                    workStatus = dto.status,
+                    targetEDM = dto.TargetEDM,
+                    // 已完成的工單通常不再有進度，安全預設
+                    processStep = 0,
+                    totalProcessStep = 0,
+                    coordinate = string.Empty,
+                    setupUser = string.Empty
+                });
+            }
+
+            return result;
+        }
         private async Task FetchAndBindByStatusAsync()
         {
             try
@@ -200,7 +242,18 @@ namespace FMSFrontend.ViewModels
                 else if (SelectedTabIndexParameter == 1) status = MapWorkStatusForEdmTab(EDMSelectedTab);
                 else if (SelectedTabIndexParameter == 2) status = "Failure";
                 else return;
-                List<WorksheetsDto> ws = await _WorksheetsService.GetWorkSheetByWorkStatusAsync(status, ct) ?? new List<WorksheetsDto>();
+                List<WorksheetsDto> ws = new();
+
+                if (status == "Completed")
+                {
+                    if (FromDate != null && ToDate != null)
+                    {
+                        List<WorksheetIncludeTimelineDto> dtos = await _WorksheetsService.GetWorkSheetsIncludeTimelineByDateTimeAsync(FromDate.Value, ToDate.Value, ct) ?? new();
+                        ws = MappedWorksheets(dtos);
+                    }
+                }
+                else
+                    ws = await _WorksheetsService.GetWorkSheetByWorkStatusAsync(status, ct) ?? new List<WorksheetsDto>();
                 WorkOrderList.Clear();
                 FilteredEDMList.Clear();
                 FailureWorkOrders.Clear();

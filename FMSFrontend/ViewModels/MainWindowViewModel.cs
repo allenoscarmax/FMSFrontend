@@ -1,17 +1,20 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Extensions;
+using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
+using FMSFrontend.Views.Windows;
 using IniFile;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Security.Claims;
 using System.Text.Json; // ← 新增：JsonElement
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls; // 放在你的 ViewModel 上方
 using System.Windows.Media;
@@ -478,12 +481,42 @@ namespace FMSFrontend.ViewModels
         #endregion
 
         #region Login
+        public static bool LoginFlag = false;
+        public static string UserName = "";
         [RelayCommand]
-        private void Login()
+        private async Task Login()
         {
-            LoggedInUser = "王小明";
-            var dialog = new DialogMessageWindow($"歡迎登入，{LoggedInUser}！");
-            dialog.ShowDialog();
+            try
+            {
+                IWorkerService workerService = new WorkerService(_httpService);
+                List<WorkerDto> dtos =  await workerService.GetAllWorkerAsync()?? new();
+                if (dtos.Count > 0)
+                {
+                    var LoginDatas = new List<LoginInfo>();
+                    for (int i = 0; i < dtos.Count; i++)
+                    {
+                        LoginDatas.Add(new LoginInfo
+                        {
+                            Name = dtos[i].WorkerNumber,
+                            Password = dtos[i].Password
+                        });
+                    }
+                    var win = new LoginWindow(LoginDatas, UserName);
+                    var result = win.ShowDialog();
+                    if (result == true && !string.IsNullOrWhiteSpace(win.ViewModel.Name))
+                    {
+                        UserName = win.ViewModel.Name;
+                        LoggedInUser = UserName; // 使用者輸入的名稱
+                        LoginFlag = true;
+                        var dialog = new DialogMessageWindow($"歡迎登入，{LoggedInUser}！").ShowDialog();
+                    }
+                }
+                else
+                {
+                    var dialog = new DialogMessageWindow($"目前無員工資料").ShowDialog();
+                }
+            }
+            catch { }
         }
         #endregion
 

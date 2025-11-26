@@ -42,9 +42,10 @@ namespace FMSFrontend.ViewModels
         DispatcherTimer _timer;
         
         [ObservableProperty] private MachineOverviewCard? selectedMachine;
-        
+
         // UI 綁定的卡片清單（會變）
-        public ObservableCollection<MachineOverviewCard> FilteredMachines { get; } = new();
+        public ObservableCollection<MachineOverviewCard> FilteredMachines { get; } = new(); 
+        public ObservableCollection<MachineOverviewCard> AllMachines { get; } = new();
 
         [ObservableProperty] private int selectedTabIndex = 0; // 預設選 EDM
 
@@ -98,19 +99,20 @@ namespace FMSFrontend.ViewModels
             _timer.Stop();
             _timer = null!;
         }
+       
         void RefreshFromStore()
         {
             if (Machines != null)
             {
                 foreach (var machine in Machines)
                 {
-                    var existingCard = FilteredMachines.FirstOrDefault(c => c.MachineName == machine.MachineName && c.Type != MachineType.STATION);
-                    if (existingCard != null)
+                    var existingCard = AllMachines.FirstOrDefault(c => c.MachineName == machine.MachineName && c.Type != MachineType.STATION);
+                    if (existingCard != null) //更新機台卡片
                     {
                         existingCard.Status = machine.Status;
                         existingCard.Type = MapToMachineType(machine.Type);
                     }
-                    else
+                    else//新增機台卡片
                     {
                         var card = new MachineOverviewCard
                         {
@@ -118,29 +120,53 @@ namespace FMSFrontend.ViewModels
                             Type = MapToMachineType(machine.Type),
                             Status = machine.Status
                         };
-                        FilteredMachines.Add(card);
+                        AllMachines.Add(card);
+                    }
+                }
+                //移除不存在的機台卡片
+                foreach (var machine in AllMachines)
+                {
+                    if (machine.Type == MachineType.STATION) continue;
+                    if (!Machines.Any(m => m.MachineName == machine.MachineName))
+                    {
+                        AllMachines.Remove(machine);
+                        break; //跳出迴圈避免修改集合時發生錯誤
                     }
                 }
             }
-            // Station card (single instance, update if exists)
-            var stationCard = FilteredMachines.FirstOrDefault(c => c.Type == MachineType.STATION);
-            if (stationCard == null)
+            if (AllMachines != null && AllMachines.Count > 0)
             {
-                stationCard = new MachineOverviewCard
+                // Station card (single instance, update if exists)
+                var stationCard = AllMachines.FirstOrDefault(c => c.Type == MachineType.STATION);
+                if (stationCard == null)
                 {
-                    MachineName = "工作站",
-                    Type = MachineType.STATION,
-                    Status = Station != null ? "Running" : ""
-                };
-                FilteredMachines.Add(stationCard);
+                    stationCard = new MachineOverviewCard
+                    {
+                        MachineName = "工作站",
+                        Type = MachineType.STATION,
+                        Status = Station != null ? "Running" : ""
+                    };
+                    AllMachines.Add(stationCard);
+                }
+                else
+                {
+                    stationCard.Status = Station != null ? "Running" : "";
+                }
             }
-            else
+            FilteredMachinesInit(); //初始化計數
+            //將AllMachines依照類型排序
+            if (SelectedTabIndex == 0 || SelectedTabIndex == 1) //EDM or All
             {
-                stationCard.Status = Station != null ? "Running" : "";
+                UpdataFilteredMachines(MachineType.EDM);
             }
+            if (SelectedTabIndex == 0 || SelectedTabIndex == 2) //STATION or All
+            {
+                UpdataFilteredMachines(MachineType.STATION);
+            }
+            RemoveFilteredMachines();
+           
             if (SelectedMachine == null && FilteredMachines.Count > 0)
             {
-                SelectedTabIndex = 0;
                 SelectedMachine = FilteredMachines[0];
                 _machineLiveUpdater.SelectName = SelectedMachine.MachineName;
             }
@@ -151,7 +177,36 @@ namespace FMSFrontend.ViewModels
                 else
                     CurrentMachineDetailContent = new MachineStationControl(SelectedMachine, this);
             }
-            
+        }
+
+        int FilterCnt = 0;
+        void FilteredMachinesInit()
+        {
+            FilterCnt = 0;
+        }
+        void UpdataFilteredMachines(MachineType type)
+        {
+            for (int i = 0; i < AllMachines.Count; i++)
+            {
+                if (AllMachines[i].Type == type) //更新資料
+                {
+                    if (FilteredMachines.Count == FilterCnt)
+                    {
+                        FilteredMachines.Add(new MachineOverviewCard());
+                    }
+                    FilteredMachines[FilterCnt].MachineName = AllMachines[i].MachineName;
+                    FilteredMachines[FilterCnt].Type = AllMachines[i].Type;
+                    FilteredMachines[FilterCnt].Status = AllMachines[i].Status;
+                    FilterCnt++;
+                }
+            }
+        }
+        void RemoveFilteredMachines()
+        {
+            while (FilteredMachines.Count > FilterCnt)
+            {
+                FilteredMachines.RemoveAt(FilteredMachines.Count - 1); 
+            }
         }
         private static MachineType MapToMachineType(string s)
         {
@@ -162,22 +217,65 @@ namespace FMSFrontend.ViewModels
                 _ => MachineType.EDM,
             };
         }
+        private static async ValueTask CloseUserControlAsync(UserControl? control, CancellationToken ct = default)
+        {
+            if (control is null) return;
+
+            if (control is IAsyncDisposable asyncDisposable)
+            {
+                await asyncDisposable.DisposeAsync();
+            }
+            else if (control is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+
+            control.Visibility = System.Windows.Visibility.Collapsed;
+        }
 
         [RelayCommand]
-        private void SelectMachine(MachineOverviewCard? card)
+        private async Task SelectMachine(MachineOverviewCard? card)
         {
             if (card is null) return;
             SelectedMachine = card;
             _machineLiveUpdater.SelectName = SelectedMachine.MachineName;
+            if (CurrentMachineDetailContent is IAsyncDisposable asyncDisposable)
+            {
+                await asyncDisposable.DisposeAsync();
+            }
+            else if (CurrentMachineDetailContent is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
             if (card.Type == MachineType.EDM)
                 CurrentMachineDetailContent = new MachineMainDetailControl(card, this);
             else
                 CurrentMachineDetailContent = new MachineStationControl(card, this);
         }
 
+        // 修正：移除重複定義，並避免每次切換 Tab 強制清空 SelectedMachine
         partial void OnSelectedTabIndexChanged(int value)
         {
+            // 更新資料
             RefreshFromStore();
+
+            SelectedMachine = null;
+
+            if (SelectedMachine == null && FilteredMachines.Count > 0)
+            {
+                SelectedMachine = FilteredMachines[0];
+                _machineLiveUpdater.SelectName = SelectedMachine.MachineName;
+
+                // 重建詳細內容
+                if (CurrentMachineDetailContent is IAsyncDisposable asyncDisposable)
+                    _ = asyncDisposable.DisposeAsync();
+                else if (CurrentMachineDetailContent is IDisposable disposable)
+                    disposable.Dispose();
+
+                CurrentMachineDetailContent = SelectedMachine.Type == MachineType.EDM
+                    ? new MachineMainDetailControl(SelectedMachine, this)
+                    : new MachineStationControl(SelectedMachine, this);
+            }
         }
     }
 
@@ -190,10 +288,10 @@ namespace FMSFrontend.ViewModels
         private string status = "idle";
         public Brush StatusBrush => Status switch
         {
-            "Running" => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)), //綠色 1
-            "Stopping" => new SolidColorBrush(Color.FromRgb(0xE6, 0xB9, 0x3E)), //黃色 2
-            "EmergencyStop" => new SolidColorBrush(Color.FromRgb(0xC0, 0x39, 0x2B)), //紅色 3
-            _ => new SolidColorBrush(Color.FromRgb(0x55, 0x55, 0x55)), //灰色 
+            "Running" => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)),
+            "Stopping" => new SolidColorBrush(Color.FromRgb(0xE6, 0xB9, 0x3E)),
+            "EmergencyStop" => new SolidColorBrush(Color.FromRgb(0xC0, 0x39, 0x2B)),
+            _ => new SolidColorBrush(Color.FromRgb(0x55, 0x55, 0x55)),
         };
         partial void OnStatusChanged(string value) => OnPropertyChanged(nameof(StatusBrush));
         [ObservableProperty]

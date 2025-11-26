@@ -1,6 +1,7 @@
 ﻿using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.ViewModels;
+using FMSFrontend.ViewModels.Production;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,8 @@ namespace FMSFrontend.Controls
         {
             InitializeComponent();
             this.DataContext = new MachineMainDetailViewModel(selectedMachine, machineOverviewMainViewModel);
+            Loaded += (_, __) => ((MachineMainDetailViewModel)DataContext).OnPageActivated();
+            Unloaded += (_, __) => ((MachineMainDetailViewModel)DataContext).OnPageDeactivated();
         }
         private void TabItem_MouseEnter(object sender, MouseEventArgs e)
         {

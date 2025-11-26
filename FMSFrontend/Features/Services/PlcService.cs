@@ -22,7 +22,7 @@ namespace FMSFrontend.Features.Services
         Task<bool> ASE_Require_OutcomingPartAsync(bool open);                                    // PUT  PLC/ASE_Require_OutcomingPart/{Open}
         Task<bool> ASE_Require_IncomingPartAsync(bool open);                                     // PUT  PLC/ASE_Require_IncomingPart/{Open}
 
-        Task<bool> LubricatorStartAsync();                                                       // PUT  PLC/LubricatorStart
+        Task<bool> LubricatorStartAsync();                                                       // PUT  PLC/LubricatorStart <--強制論華
         Task<bool> BalluffPowerAsync(bool open);                                                 // PUT  PLC/BalluffPower/{Open}
     }
 

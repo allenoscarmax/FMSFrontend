@@ -63,6 +63,7 @@ namespace FMSFrontend.ViewModels.Windows
         {
             _rfidUpdater.Start();
             _rfidUpdater.ReadTagFlag = true;
+            _rfidUpdater.IsElectrode = true;
             // 確保進入頁面時更新一次按鈕狀態
             PairCommand.NotifyCanExecuteChanged();
         }
