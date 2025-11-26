@@ -1,6 +1,6 @@
 ﻿using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
-using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -8,18 +8,18 @@ using System.Windows.Input;
 namespace FMSFrontend.Views.Windows
 {
     /// <summary>
-    /// LoginWindow.xaml 的互動邏輯
+    /// AddWorrkerWindow.xaml 的互動邏輯 (登入使用者)
     /// </summary>
-    public partial class LoginWindow : Window
+    public partial class AddWorrkerWindow : Window
     {
-        public LoginViewModel ViewModel { get; }
-        public LoginWindow(List<LoginInfo> workers,string initialUserName)
+        public AddWorkerViewModel ViewModel { get; }
+        public AddWorrkerWindow(List<LoginInfo> workers, string initialUserName)
         {
             InitializeComponent();
-            ViewModel = new LoginViewModel(workers);
+            // 傳遞 initialUserName 給 ViewModel 建構函式
+            ViewModel = new AddWorkerViewModel(workers, initialUserName);
             if (!string.IsNullOrWhiteSpace(initialUserName))
                 ViewModel.Name = initialUserName;
-            // 關閉視窗事件 (成功登入後 ViewModel 會設定 DialogResult)
             DataContext = ViewModel;
         }
 
@@ -37,12 +37,19 @@ namespace FMSFrontend.Views.Windows
             DialogResult = false;
             Close();
         }
-        // 新增密碼變更事件處理，同步到 ViewModel
+        // 密碼與確認密碼 PasswordBox 內容同步到 ViewModel
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (DataContext is LoginViewModel vm && sender is PasswordBox pb)
+            if (DataContext is AddWorkerViewModel vm && sender is PasswordBox pb)
             {
-                vm.Password = pb.Password;
+                if (pb.Name == nameof(PasswordInput))
+                {
+                    vm.Password = pb.Password;
+                }
+                else if (pb.Name == nameof(ConfirmPasswordInput))
+                {
+                    vm.ConfirmPassword = pb.Password;
+                }
             }
         }
     }

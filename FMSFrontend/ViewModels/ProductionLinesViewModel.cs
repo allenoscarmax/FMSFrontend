@@ -42,7 +42,7 @@ namespace FMSFrontend.ViewModels
         private readonly IElectrodeService _ElectrodeService;
         private readonly IWorkpieceService _WorkpieceService;
         private readonly IProbeService _ProbeService;
-        private readonly IMachinesService _MachinesService;
+        public readonly IMachinesService _MachinesService;
         public readonly IWorksheetsService _worksheetsService;
 
         private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
@@ -360,7 +360,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void OpenRobotWindow() //開啟機器人視窗
         {
-            var win = new ShowRobotWindow(RobotModel);
+            var win = new ShowRobotWindow(_httpService, RobotModel);
             var owner = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
             if (owner != null) win.Owner = owner;
 

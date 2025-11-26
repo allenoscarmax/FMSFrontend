@@ -31,5 +31,13 @@ namespace FMSFrontend.Views
             this.DataContext = viewModel;
 
         }
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is SettingsPageViewModel vm && sender is PasswordBox pb)
+            {
+                vm.Password = pb.Password;
+            }
+        }
+
     }
 }

@@ -181,7 +181,7 @@ namespace FMSFrontend.ViewModels.Production
         //設備資訊
         [ObservableProperty] private string mainProgramName = "";
         [ObservableProperty] private string cycleTime = "";
-
+        public string machineId { get; set; } = "";// 機台Id
         public string onDeckElectrodeSerial { get; set; } = "";// 夾持中電極標籤序號（RFID）
         public string onDeckWorkpieceSerial { get; set; } = "";// 夾持中工件標籤序號（RFID）
         public string onDeckWorksheetSerial { get; set; } = "";// 當前工單號/序號  

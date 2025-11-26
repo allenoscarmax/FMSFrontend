@@ -7,6 +7,7 @@ using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
+using FMSFrontend.ViewModels.Factory;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
 using MahApps.Metro.Controls;
@@ -46,6 +47,8 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private MachineDisplayData displayData; //顯示機台詳細資訊
 
         public int MachineNumber = 0;
+        public string  SelectMachineName = "";
+
         [RelayCommand]
         private async Task RestrictionClick() //禁用事件
         {
@@ -53,7 +56,11 @@ namespace FMSFrontend.ViewModels
             {
                 var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
                 if (edm != null)
-                    await _machinesService.SetMachineCanControlAsync(edm.MachineNumber, !edm.OscarEdm.CanControl);
+                {
+                    bool canctrl = !edm.OscarEdm.CanControl;
+                    await _machinesService.SetMachineCanControlAsync(edm.MachineNumber - 1, canctrl);
+                    canctrlDelay = 5;
+                }
             }
             catch { }
         }
@@ -74,9 +81,9 @@ namespace FMSFrontend.ViewModels
         public MachineOverviewCard Machine { get; } //由machineoverview傳入選中的卡片
         public string MachineImagePath => Machine.MachineImagePath; //機台圖片路徑
         public string MachineName => Machine.MachineName; //機台名稱
-       
+
         
-        
+
         //工單資訊
         public ObservableCollection<WorkOrderRow> WorkOrders { get; } = new();
         public List<string> DateFilterOptions { get; set; } = new() { "今天", "前7天", "自訂" };
@@ -217,8 +224,9 @@ namespace FMSFrontend.ViewModels
 
             _machineStore = parent._machineStore;
 
+           
 
-            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
             _timer.Tick += (_, __) => RefreshFromStore();
             _timer.Start();
 
@@ -247,7 +255,17 @@ namespace FMSFrontend.ViewModels
 
             selectedTabIndex = 0; selectedTabIndexPosition = 0; selectedTabIndexParameter = 0; selectedTabIndexWorkOrder = 1;
         }
+        public void OnPageActivated()
+        {
+            
+        }
+        public void OnPageDeactivated()
+        {
+            _timer.Stop();
+            _timer = null!;
+        }
         bool test = false;
+       public int canctrlDelay = 3;
         private void RefreshFromStore()
         {
             if (Machine == null || DisplayData == null) return;
@@ -256,7 +274,8 @@ namespace FMSFrontend.ViewModels
             if (edm == null || edm.OscarEdm == null) return;
             MachineNumber = int.TryParse(edm.OscarEdm.MachineNumber, out var num) ? num : -1;
             test = !test;
-            DisplayData.CanControl = edm.OscarEdm.CanControl;
+            if(canctrlDelay>0) canctrlDelay--;
+            if (canctrlDelay == 0) DisplayData.CanControl = edm.OscarEdm.CanControl;
             // 機台資訊
             DisplayData.MachineNumber = edm.OscarEdm.MachineNumber;
             DisplayData.MachineStatus = edm.OscarEdm.MachineStatus;

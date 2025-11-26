@@ -78,6 +78,24 @@ namespace FMSFrontend.ViewModels
             OnPropertyChanged(nameof(CanGoNext));
         }
 
+        // 新增：切換 Tab 時更新對應表格
+        partial void OnSelectedTabIndexParameterChanged(int value)
+        {
+            // 0 = 目前警報；1 = 歷史警報
+            if (value == 0)
+            {
+                // 切回目前警報時，從 Store 重刷列表與摘要
+                RefreshFromStore();
+                RecomputeSummary();
+            }
+            else if (value == 1)
+            {
+                // 切到歷史警報：依當前日期條件重刷分頁資料，並從服務抓取最新資料
+                ApplyFilter();
+                _ = RefreshFromDate();
+            }
+        }
+
         // ===================== End Pagination =====================
 
         public AlarmPageViewModel(IWindowService windowService, IAlarmService alarmService, AlarmStore alarmStore)
@@ -238,16 +256,31 @@ namespace FMSFrontend.ViewModels
         }
 
         [RelayCommand]
-        private void RemoveSelectedAlarms()
+        private async Task RemoveSelectedAlarms()
         {
+            //確認是否刪除
+            bool confirm = _windowService.ShowYesNoDialog("確定要清除警告");
+            if (!confirm) return;
+            if (FromDate != null && ToDate != null)
+            {
+                bool ok = await _alarmService.RemoveErrorMessageLogByDateTimeAsync(FromDate.Value, ToDate.Value);
+                if (!ok)
+                {
+                    _windowService.ShowMessage("刪除歷史警報失敗");
+                    return;
+                }
+            }
+            /*
             if (SelectedHistoryAlarm is null)
             {
-                _windowService.ShowMessage("請先選擇要移除的項目");
+                // _windowService.ShowMessage("請先選擇要移除的項目");
                 return;
             }
             HistoryAlarms.Remove(SelectedHistoryAlarm);
             SelectedHistoryAlarm = null;
             ApplyFilter();
+            */
+            _ = RefreshFromDate();
         }
 
         // ====== Helpers ======

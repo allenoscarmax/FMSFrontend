@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
 
 
@@ -12,6 +13,7 @@ using FMSFrontend.ViewModels.Production;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using System.Windows;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -24,6 +26,7 @@ namespace FMSFrontend.ViewModels.Windows
         // === Services ===
         public readonly IWindowService _windowService;
         private readonly IWorksheetsService _worksheetsService;
+        private readonly IMachinesService _machinesService;
 
         [ObservableProperty] private string deviceName = "設備名稱";
         [ObservableProperty] private MachineInfo info = new();
@@ -34,6 +37,7 @@ namespace FMSFrontend.ViewModels.Windows
 
             _windowService = parent._windowService;
             _worksheetsService = parent._worksheetsService;
+            _machinesService = parent._MachinesService;
 
             if (machineCard is MachineCardViewModel m)
             {
@@ -174,8 +178,31 @@ namespace FMSFrontend.ViewModels.Windows
             catch{ }
         }
         //設定日期End
-        [RelayCommand] private void ForceElectrodeOut() { /* TODO */ }
-        [RelayCommand] private void ForceWorkOut() { /* TODO */ }
+        [RelayCommand] 
+        private async Task ForceElectrodeOut() 
+        {
+            try
+            {
+                List<MachinesDto> dtos = await _machinesService.GetAllMachinesAsync() ?? new();
+                MachinesDto dto = dtos.FirstOrDefault(x => x.machineName == DeviceName)!;
+                dto.onDeckElectrodeSerial = "";
+                bool ok = await _machinesService.UpdateMachinesDataAsync(dto);
+            }
+            catch { }
+        }
+
+        [RelayCommand]
+        private async Task ForceWorkOut()
+        {
+            try
+            {
+                List<MachinesDto> dtos = await _machinesService.GetAllMachinesAsync() ?? new();
+                MachinesDto dto = dtos.FirstOrDefault(x => x.machineName == DeviceName)!;
+                dto.onDeckWorkpieceSerial = "";
+                bool ok = await _machinesService.UpdateMachinesDataAsync(dto);
+            }
+            catch { }
+        }
         [RelayCommand] private void CloseWindow(Window? w) => w?.Close();
     }
 

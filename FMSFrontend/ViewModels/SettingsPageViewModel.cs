@@ -7,6 +7,7 @@ using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
+using FMSFrontend.Views.Windows;
 using IniFile;
 using Microsoft.Extensions.Primitives;
 using System;
@@ -17,6 +18,9 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Collections.Generic;
+using System.Windows.Media.Animation;
+using System.Security;
 
 namespace FMSFrontend.ViewModels
 {
@@ -36,7 +40,7 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private int hour = 9;   // 0~23
         [ObservableProperty] private int minute = 41;  // 0~59
         [ObservableProperty] private bool isPm = false;
-
+       
         // ===== 開窗指令 ── 綁到你的 Button =====
         public IRelayCommand OpenSetPeriodDialogCommand { get; }
 
@@ -119,11 +123,12 @@ namespace FMSFrontend.ViewModels
 
         [ObservableProperty] private int selectedSubTabIndexParameter;
 
-        partial void OnSelectedTabIndexParameterChanged(int value )
+        partial void OnSelectedTabIndexParameterChanged(int value) //主頁籤切換
         {
             switch (value)
             {
                 case 0: //設定ip
+
                     break;
                 case 1: //系統還原
                     break;
@@ -135,27 +140,39 @@ namespace FMSFrontend.ViewModels
                     _ = WorkerRefresh();
                     break;
                 case 4: //保養 
-                    _ = AppointmentMaintenanceRefresh();
+                    int[] week = { 1, 3, 5, 7 };
+                    PeriodDisplay = BuildPeriodDisplay(ScheduleMode.Weekly, week, [0], 10, 12);
+                    // _ = AppointmentMaintenanceRefresh();
                     break;
             }
         }
+        // 修正：CommunityToolkit 產生的部分方法必須是 partial void；內部以 fire-and-forget 呼叫非同步刷新
         partial void OnSelectedSubTabIndexParameterChanged(int value) //設備資訊子頁籤切換
         {
             switch (value)
             {
                 case 0:
-                    _ = MachinesRefresh();
+                    _ = MachinesRefresh().ContinueWith(t =>
+                    {
+                        if (MachineList.Count > 0) SelectedMachine = MachineList[0];
+                    }, TaskScheduler.FromCurrentSynchronizationContext());
                     break;
                 case 1:
-                    _ = RobotRefresh();
+                    _ = RobotRefresh().ContinueWith(t =>
+                    {
+                        if (RobotList.Count > 0) SelectedRobot = RobotList[0];
+                    }, TaskScheduler.FromCurrentSynchronizationContext());
                     break;
                 case 2:
-                  _ = DeviceRefresh(); 
+                    _ = DeviceRefresh().ContinueWith(t =>
+                    {
+                        if (DeviceList.Count > 0) SelectedDevice = DeviceList[0];
+                    }, TaskScheduler.FromCurrentSynchronizationContext());
                     break;
             }
         }
-
-        private async Task MachinesRefresh()
+        
+        private async Task MachinesRefresh() //更新Machine資訊
         {
             try
             {
@@ -166,15 +183,16 @@ namespace FMSFrontend.ViewModels
                     MachineList.Add(
                     new MachineInfo
                     {
-                        MachineId = dto._id,
+                        MachineId = dto._id, 
+                        MachineNo = dto.machineNumber.ToString(),
                         MachineName = dto.machineName,
                         MachineType = dto.machineCode,
-                        IpAddress = dto._id,
+                        IpAddress = dto.ip,
                         Port = dto.port,
-                        AssetNo = dto.machineNumber.ToString(),
                         Owner = dto.setupUser
                     });
                 }
+               
             }
             catch
             {
@@ -192,16 +210,18 @@ namespace FMSFrontend.ViewModels
                     new RobotInfo
                     {
                         RobotId = dto._id,
+                        RobotNo = "1",
                         RobotName = dto.robotName,
-                        RobotType = dto.robotCode,
+                        RobotType = "FANUC",
                         IpAddress = dto.robot_IP,
                         Owner = dto.setupUser
                     });
                 }
+               
             }
             catch { }
         }
-        private async Task DeviceRefresh()
+        private async Task DeviceRefresh() //更新Device資訊
         {
             try
             {
@@ -213,17 +233,18 @@ namespace FMSFrontend.ViewModels
                     new DeviceInfo
                     {
                         DeviceId = dto.Id,
+                        DeviceNo = dto.DeviceNumber.ToString(),
                         DeviceName = dto.DeviceName,
                         IpAddress = dto.DeviceIP,
                         Port = dto.DevicePort,
-                        AssetNo = dto.DeviceNumber.ToString(),
                         Owner = dto.SetupUser
                     });
                 }
+               
             }
             catch { }
         }
-        private async Task WorkerRefresh()
+        private async Task WorkerRefresh() //更新Worker資訊
         {
             try
             {
@@ -235,8 +256,10 @@ namespace FMSFrontend.ViewModels
                     WorkerList.Add(
                     new WorkerInfo
                     {
+                        Id = dto.Id,
                         WorkerNumber = dto.WorkerNumber,
-                        WorkerName = dto.WorkerName
+                        WorkerName = dto.WorkerName,
+                        Psssword = dto.Password
                     });
                 }
             }
@@ -244,27 +267,261 @@ namespace FMSFrontend.ViewModels
             {
             }
         }
+        [RelayCommand]
+        private async Task EditMachine()
+        {
+            if (SelectedMachine == null)
+            {
+                _windowService.ShowMessage("請先選擇要編輯的機台");
+                return;
+            }
 
+            // 動態建立可編輯欄位：IP / Port 可編輯，其餘只顯示
+            var items = new List<EditGridViewModel.EditGridInfo>
+            {
+                new() { Title = "機台編號", Data = SelectedMachine.MachineId, Enable = false },
+                new() { Title = "名稱", Data = SelectedMachine.MachineName, Enable = false },
+                new() { Title = "類型", Data = SelectedMachine.MachineType, Enable = false },
+                new() { Title = "IP", Data = SelectedMachine.IpAddress, Enable = true },
+                new() { Title = "Port", Data = SelectedMachine.Port, Enable = true }
+            };
+            var win = new EditGridWindow(items, "編輯機台連線參數");
+            if (new EditGridWindow(items, "編輯機台連線參數").ShowDialog() == true)
+            {
+                try
+                {
+                    // 使用顯示集合找出輸入後的值
+                    string newIp = win.ViewModel.Display.First(x => x.Title == "IP").Data.Trim();
+                    string newPort = win.ViewModel.Display.First(x => x.Title == "Port").Data.Trim();
 
+                    // 取得所有機台，找出欲更新的 DTO
+                    var all = await _machinesService.GetMachinesByMachineNameAsync(SelectedMachine.MachineName) ?? new();
+                    var dto = all.FirstOrDefault(m => m._id == SelectedMachine.MachineId);
+                    if (dto == null)
+                    {
+                        _windowService.ShowMessage("找不到原始機台資料，更新失敗");
+                        return;
+                    }
+
+                    dto.ip = newIp;
+                    dto.port = newPort;
+                    
+                    bool ok = await _machinesService.UpdateMachinesDataAsync(dto);
+                    if (!ok)
+                    {
+                        _windowService.ShowMessage("機台更新失敗，請稍後再試");
+                        return;
+                    }
+                    
+                    StatusMessage = "✅ 機台參數已更新";
+                }
+                catch
+                {
+                    _windowService.ShowMessage("更新過程發生錯誤");
+                }
+                // 重新載入機台列表
+                await MachinesRefresh();
+            }
+        }
+        [ObservableProperty] private RobotInfo? selectedRobot;
+        [RelayCommand]
+        private async Task EditRobot()
+        {
+            if (SelectedRobot == null)
+            {
+                _windowService.ShowMessage("請先選擇要編輯的機械手臂");
+                return;
+            }
+
+            // 動態建立可編輯欄位：僅 IP 可編輯
+            var items = new List<EditGridViewModel.EditGridInfo>
+            {
+                new() { Title = "機械手臂編號", Data = SelectedRobot.RobotId, Enable = false },
+                new() { Title = "名稱", Data = SelectedRobot.RobotName, Enable = false },
+                new() { Title = "類型", Data = SelectedRobot.RobotType, Enable = false },
+                new() { Title = "IP", Data = SelectedRobot.IpAddress, Enable = true }
+            };
+            var win = new EditGridWindow(items, "編輯機械手臂連線參數");
+            if (new EditGridWindow(items, "編輯機械手臂連線參數").ShowDialog() == true)
+            {
+                // 使用顯示集合找出輸入後的值
+                string newIp = win.ViewModel.Display.First(x => x.Title == "IP").Data.Trim();
+
+                // 取得所有機械手臂，找出欲更新的 DTO
+                var all = await _robotService.DB_GetAllRobotsAsync() ?? new();
+                var dto = all.FirstOrDefault(r => r._id == SelectedRobot.RobotId);
+                if (dto == null)
+                {
+                    _windowService.ShowMessage("找不到原始機械手臂資料，更新失敗");
+                    return;
+                }
+
+                dto.robot_IP = newIp;
+                
+                bool ok = await _robotService.DB_UpdateRobotDataAsync(dto);
+                if (!ok)
+                {
+                    _windowService.ShowMessage("機械手臂更新失敗，請稍後再試");
+                    return;
+                }
+                
+                StatusMessage = "✅ 機械手臂參數已更新";
+
+                // 重新載入機械手臂列表
+                await RobotRefresh();
+            }
+        }
+        [RelayCommand]
+        private async Task EditDevice()
+        {
+            if (SelectedDevice == null)
+            {
+                _windowService.ShowMessage("請先選擇要編輯的裝置");
+                return;
+            }
+
+            // 動態建立可編輯欄位：IP / Port 可編輯，其餘只顯示
+            var items = new List<EditGridViewModel.EditGridInfo>
+            {
+                new() { Title = "裝置編號", Data = SelectedDevice.DeviceId, Enable = false },
+                new() { Title = "名稱", Data = SelectedDevice.DeviceName, Enable = false },
+                new() { Title = "IP", Data = SelectedDevice.IpAddress, Enable = true },
+                new() { Title = "Port", Data = SelectedDevice.Port, Enable = true }
+            };
+            var win = new EditGridWindow(items, "編輯裝置連線參數");
+            if (new EditGridWindow(items, "編輯裝置連線參數").ShowDialog() == true)
+            {
+                // 使用顯示集合找出輸入後的值
+                string newIp = win.ViewModel.Display.First(x => x.Title == "IP").Data.Trim();
+                string newPort = win.ViewModel.Display.First(x => x.Title == "Port").Data.Trim();
+
+                // 取得所有裝置，找出欲更新的 DTO
+                var all = await _devicesService.GetAllDevicesAsync() ?? new();
+                var dto = all.FirstOrDefault(d => d.Id == SelectedDevice.DeviceId);
+                if (dto == null)
+                {
+                    _windowService.ShowMessage("找不到原始裝置資料，更新失敗");
+                    return;
+                }
+
+                dto.DeviceIP = newIp;
+                dto.DevicePort = newPort;
+                /*
+                bool ok = await _devicesService.UpdateDeviceDataAsync(dto);
+                if (!ok)
+                {
+                    _windowService.ShowMessage("裝置更新失敗，請稍後再試");
+                    return;
+                }
+                */
+                StatusMessage = "✅ 裝置參數已更新";
+
+                // 重新載入裝置列表
+                await DeviceRefresh();
+            }
+        }
+        [RelayCommand]
+        private async Task AddWorker() //新增使用者
+        {
+            // 取得現有使用者清單，傳入新增視窗供重複檢查
+            var existingWorkers = WorkerList.Select(w => new LoginInfo { Name = w.WorkerNumber, Password = w.Psssword }).ToList();
+            var win = new AddWorrkerWindow(existingWorkers, "");
+            if (win.ShowDialog() == true)
+            {
+                try
+                {
+                    bool ok = await _workerService.InsertNewWorkerDataAsync(new WorkerDto
+                    {
+                        WorkerNumber = win.ViewModel.Name,
+                        WorkerName = win.ViewModel.Name,
+                        Password = win.ViewModel.Password
+                    });
+                }
+                catch { }
+                await WorkerRefresh();
+            }
+        }
+        [RelayCommand]
+        private async Task EditWorker() //編輯使用者
+        {
+            // 取得現有使用者清單，傳入新增/編輯視窗供重複檢查
+
+            var existingWorkers = WorkerList.Select(w => new LoginInfo { Id = w.Id, Name = w.WorkerNumber, Password = w.Psssword }).ToList();
+            if (SelectedWorker == null || string.IsNullOrWhiteSpace(SelectedWorker.WorkerNumber))
+            {
+                _windowService.ShowMessage("請先選擇要編輯的使用者");
+                return;
+            }
+            // 傳入選取的使用者帳號，視窗將以編輯模式開啟
+            var win = new AddWorrkerWindow(existingWorkers, SelectedWorker.WorkerNumber);
+            if (win.ShowDialog() == true)
+            {
+                try
+                {
+                    bool ok = await _workerService.UpdateWorkerDataAsync(new WorkerDto
+                    {
+                        Id = SelectedWorker.Id, // ← 修正這裡，原本是 win.ViewModel.Id
+                        WorkerNumber = win.ViewModel.Name,
+                        WorkerName = win.ViewModel.Name,
+                        Password = win.ViewModel.Password
+                    });
+                    if (!ok)
+                    {
+                        _windowService.ShowMessage("使用者更新失敗，請稍後再試");
+                    }
+                }
+                catch { }
+                await WorkerRefresh();
+            }
+        }
+        
+        [RelayCommand]
+        private async Task RemoveWorker() 
+        {
+            try
+            {
+                if (SelectedWorker.WorkerNumber == null || SelectedWorker.WorkerNumber == "")
+                {
+                    _windowService.ShowMessage("請選擇要刪除的使用者");
+                    return;
+                }
+                bool ok = await _workerService.DeleteWorkerDataByIdAsync(SelectedWorker.Id);
+                if (!ok)
+                {
+                    _windowService.ShowMessage("使用者刪除失敗，請稍後再試");
+                }
+                await WorkerRefresh();
+            }
+            catch { }
+        }
         private async Task AppointmentMaintenanceRefresh()
         {
             try
             {
                 List<AppointmentMaintenanceDto> dtos = await _appointmentMaintenanceService.GetAllAppointmentMaintenanceAsync() ?? new List<AppointmentMaintenanceDto>();
                 //AppointmentMaintenanceList.Clear();
-                switch (dtos[0].Type)
+                if (!dtos[0].IsEnabled)
                 {
-                    case "Monthly":
-                        PeriodDisplay = BuildPeriodDisplay(ScheduleMode.Monthly, [0], dtos[0].DayValues.ToArray(), dtos[0].Hour % 12, dtos[0].Minute);
-                        break;
-                    case "Weekly":
-                        PeriodDisplay = BuildPeriodDisplay(ScheduleMode.Weekly, [0], dtos[0].DayValues.ToArray(), dtos[0].Hour % 12, dtos[0].Minute);
-                        break;
-                    default:
-                        PeriodDisplay = BuildPeriodDisplay(ScheduleMode.None, [0], [0], dtos[0].Hour % 12, dtos[0].Minute);
-                        break;
+                    PeriodDisplay = "不設定";
                 }
-               
+                else
+                {
+                    switch (dtos[0].Type)
+                    {
+                        case "daily":
+                            PeriodDisplay = BuildPeriodDisplay(ScheduleMode.Daily, [0], [0], dtos[0].Hour, dtos[0].Minute);
+                            break;
+                        case "weekly":
+                            PeriodDisplay = BuildPeriodDisplay(ScheduleMode.Weekly, dtos[0].DayValues.ToArray(), [0], dtos[0].Hour, dtos[0].Minute);
+                            break;
+                        case "monthly":
+                            PeriodDisplay = BuildPeriodDisplay(ScheduleMode.Monthly, [0], dtos[0].DayValues.ToArray(), dtos[0].Hour, dtos[0].Minute);
+                            break;
+                        default:
+                            PeriodDisplay = BuildPeriodDisplay(ScheduleMode.None, [0], [0], dtos[0].Hour, dtos[0].Minute);
+                            break;
+                    }
+                }
             }
             catch { }
         }
@@ -300,6 +557,7 @@ namespace FMSFrontend.ViewModels
 
         //MachineList
         public ObservableCollection<WorkerInfo> WorkerList { get; set; } = new();
+        [ObservableProperty] private WorkerInfo selectedWorker = new();
         private readonly ICollectionView _workerListView;
         private string _workerSearchText = "";
         public string WorkerSearchText
@@ -331,6 +589,8 @@ namespace FMSFrontend.ViewModels
                 }
             }
         }
+        // ★ 新增：選取的機台（供編輯用）
+        [ObservableProperty] private MachineInfo? selectedMachine;
         //RobotList
         public ObservableCollection<RobotInfo> RobotList { get; set; } = new();
         private readonly ICollectionView _robotsView;
@@ -394,31 +654,68 @@ namespace FMSFrontend.ViewModels
                     foreach (var v in vm.ConfirmedDays) Weekly.Add(v);
                 else if (SelectedMode == ScheduleMode.Monthly)
                     foreach (var v in vm.ConfirmedDays) Monthly.Add(v);
-                if (IsPm)
-                    Hour = vm.Hour + 12;
-                else 
-                    Minute = vm.Minute;
-                IsPm = vm.IsPm;
 
+                Hour = vm.Hour;
+                Minute = vm.Minute;
                 PeriodDisplay = BuildPeriodDisplay(SelectedMode, Weekly.ToArray(), Monthly.ToArray(), Hour, Minute);
             }
+             _ = UpdataPeriod();
         }
-
-        private static string BuildPeriodDisplay(ScheduleMode mode, int[] weekly, int[] monthly, int hour12, int minute)
+        private async Task UpdataPeriod()
         {
-            if (mode == ScheduleMode.None) return "不設定";
-            string time = $"{hour12:00}:{minute:00}";
-
-            if (mode == ScheduleMode.Weekly)
+            try
             {
-                string[] w = { "週一", "週二", "週三", "週四", "週五", "週六", "週日" };
+                List<AppointmentMaintenanceDto> dtos = await _appointmentMaintenanceService.GetAllAppointmentMaintenanceAsync() ?? new List<AppointmentMaintenanceDto>();
+                dtos[0].IsEnabled = SelectedMode != ScheduleMode.None;
+                if (SelectedMode != ScheduleMode.None)
+                {
+                    dtos[0].Type = SelectedMode switch
+                    {
+                        ScheduleMode.Daily => "daily",
+                        ScheduleMode.Weekly => "weekly",
+                        ScheduleMode.Monthly => "monthly",
+                        _ => string.Empty
+                    };
+                    if (SelectedMode == ScheduleMode.Weekly)
+                    {
+                        dtos[0].DayValues = Weekly.ToList();
+                    }
+                    else if(SelectedMode == ScheduleMode.Monthly)
+                    {
+                        dtos[0].DayValues = Monthly.ToList();
+                    }
+                    dtos[0].Hour = Hour;
+                    dtos[0].Minute = Minute;    
+                }
+                bool ok = await _appointmentMaintenanceService.UpdateAppointmentMaintenanceAsync(dtos[0]);
+                if (!ok)
+                {
+                    _windowService.ShowMessage("潤滑週期更新失敗，請稍後再試");
+                }
+            }
+            catch { }
+        }
+        private static string BuildPeriodDisplay(ScheduleMode mode, int[] weekly, int[] monthly, int hour, int minute)
+        {
+            string time = $"{hour:00}:{minute:00}";
+            if (mode == ScheduleMode.None)
+            {
+                return "不設定";
+            }
+            else if (mode == ScheduleMode.Daily)
+            {
+                return $"每日 {time} 進行潤滑";
+            }
+            else if (mode == ScheduleMode.Weekly)
+            {
+                string[] w = { "日", "一", "二", "三", "四", "五", "六" };
                 string L(int v) => v > 0 ? w[v - 1] : "-" + w[-v - 1];
-                return $"每週 {string.Join(" ", weekly.Select(L))} {time} 進行潤滑";
+                return $"每週 {string.Join("、", weekly.Select(L))} {time} 進行潤滑";
             }
             else
             {
                 string L(int v) => v == 0 ? "last" : v.ToString();
-                return $"每月 {string.Join(" ", monthly.Select(L))} 日 {time} 進行潤滑";
+                return $"每月 {string.Join(",", monthly.Select(L))} 日 {time} 進行潤滑";
             }
         }
 
@@ -474,12 +771,12 @@ namespace FMSFrontend.ViewModels
             _windowService.ShowMessage("密碼重置完成");
         }
 
-        // === 機器人維護完成 ===
+        // === 機械手臂維護完成 ===
         [RelayCommand]
         private void CompleteRobotMaintenance()
         {
             // TODO: 加入維護完成標記邏輯
-            StatusMessage = "🤖 機器人維護已標記為完成";
+            StatusMessage = "🤖 機械手臂維護已標記為完成";
             _windowService.ShowMessage("維護狀態已更新");
         }
         // === 設定IP ===
@@ -532,9 +829,7 @@ namespace FMSFrontend.ViewModels
                 || (m.MachineName?.Contains(q, cmp) ?? false)
                 || (m.MachineType?.Contains(q, cmp) ?? false)
                 || (m.IpAddress?.Contains(q, cmp) ?? false)
-                || m.Port.ToString().Contains(q, cmp)
-                || (m.AssetNo?.Contains(q, cmp) ?? false)
-                || (m.Owner?.Contains(q, cmp) ?? false);
+                || m.Port.ToString().Contains(q, cmp);
         }
         private bool FilterRobot(object obj)
         {
@@ -544,11 +839,10 @@ namespace FMSFrontend.ViewModels
             if (q.Length == 0) return true;
 
             var cmp = StringComparison.OrdinalIgnoreCase;
-            return (m.RobotId?.Contains(q, cmp) ?? false)
+            return (m.RobotNo?.Contains(q, cmp) ?? false)
                 || (m.RobotName?.Contains(q, cmp) ?? false)
                 || (m.RobotType?.Contains(q, cmp) ?? false)
-                || (m.IpAddress?.Contains(q, cmp) ?? false)
-                || (m.Owner?.Contains(q, cmp) ?? false);
+                || (m.IpAddress?.Contains(q, cmp) ?? false);
         }
         // 4) Filter：任一欄位包含關鍵字就顯示
         private bool FilterDevice(object obj)
@@ -559,12 +853,10 @@ namespace FMSFrontend.ViewModels
             if (q.Length == 0) return true;
 
             var cmp = StringComparison.OrdinalIgnoreCase;
-            return (d.DeviceId?.Contains(q, cmp) ?? false)
+            return (d.DeviceNo?.Contains(q, cmp) ?? false)
                 || (d.DeviceName?.Contains(q, cmp) ?? false)
                 || (d.IpAddress?.Contains(q, cmp) ?? false)
-                || d.Port.ToString().Contains(q, cmp)
-                || (d.AssetNo?.Contains(q, cmp) ?? false)
-                || (d.Owner?.Contains(q, cmp) ?? false);
+                || d.Port.ToString().Contains(q, cmp);
         }
 
        
@@ -572,16 +864,17 @@ namespace FMSFrontend.ViewModels
         public class MachineInfo
         {
             public string MachineId { get; set; } = "";
+            public string MachineNo { get; set; } = "";
             public string MachineName { get; set; } = "";
             public string MachineType { get; set; } = "";
             public string IpAddress { get; set; } = "";
-            public string Port { get; set; } = "";
-            public string AssetNo { get; set; } = "";
+            public string Port { get; set; } = ""; // reverted to string
             public string Owner { get; set; } = "";
         }
         public class RobotInfo
         {
             public string RobotId { get; set; } = "";
+            public string RobotNo { get; set; } = "";
             public string RobotName { get; set; } = "";
             public string RobotType { get; set; } = "";
             public string IpAddress { get; set; } = "";
@@ -590,16 +883,68 @@ namespace FMSFrontend.ViewModels
         public class DeviceInfo
         {
             public string DeviceId { get; set; } = "";
+            public string DeviceNo { get; set; } = "";
             public string DeviceName { get; set; } = "";
             public string IpAddress { get; set; } = "";
-            public string Port { get; set; } = "";
-            public string AssetNo { get; set; } = "";
+            public string Port { get; set; } = ""; // reverted to string
             public string Owner { get; set; } = "";
         }
         public class WorkerInfo
         {
+            public string Id { get; set; } = "";
             public string WorkerNumber { get; set; } = "";
             public string WorkerName { get; set; } = "";
+            public string Psssword { get; set; } = "";
+        }
+        // === 專家模式相關屬性 ===
+        [ObservableProperty] private bool showPasswordPrompt; // 是否顯示輸入密碼面板
+        [ObservableProperty] private bool isAdvancedEnabled;  // 進階設定 Tab 是否啟用
+
+        partial void OnSelectedPermissionChanged(string value)
+        {
+            // 選擇權限後觸發：若選擇專家但尚未啟用，顯示密碼輸入面板
+            if (value == "專家")
+            {
+                ShowPasswordPrompt = !IsAdvancedEnabled; // 尚未解鎖才顯示輸入區
+            }
+            else
+            {
+                // 切換回工作人員 -> 關閉進階與密碼面板
+                IsAdvancedEnabled = false;
+                ShowPasswordPrompt = false;
+            }
+        }
+        [ObservableProperty] private string password = "";
+        [RelayCommand]
+        private void PermissionClick()
+        {
+            if (SelectedPermission != "專家")
+            {
+                StatusMessage = "⚠️ 請選擇專家模式再輸入密碼";
+                _windowService.ShowMessage("請先選擇專家模式");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Password))
+            {
+                StatusMessage = "❌ 密碼不可為空";
+                _windowService.ShowMessage("請輸入密碼");
+                return;
+            }
+
+            if (Password == "1758")
+            {
+                IsAdvancedEnabled = true;          // 啟用進階設定頁籤
+                ShowPasswordPrompt = false;        // 隱藏密碼輸入面板
+                StatusMessage = "✅ 已開啟專家模式";
+                _windowService.ShowMessage("已開啟專家模式");
+            }
+            else
+            {
+                IsAdvancedEnabled = false;
+                StatusMessage = "❌ 密碼錯誤";
+                _windowService.ShowMessage("密碼錯誤，請再試一次");
+            }
         }
     }
 }

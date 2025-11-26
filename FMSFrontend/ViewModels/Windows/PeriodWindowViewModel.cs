@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 namespace FMSFrontend.ViewModels.Windows
 {
     // 讓 XAML 的 {x:Static vm:ScheduleMode.*} 能找到
-    public enum ScheduleMode { None, Weekly, Monthly }
+    public enum ScheduleMode { None, Daily, Weekly, Monthly }
 
     /// <summary>
     /// 內容區的選項（週一~週日、1~31、last）
@@ -46,6 +46,8 @@ namespace FMSFrontend.ViewModels.Windows
     // ⭐ 用 partial，讓 [RelayCommand] 的 Source Generator 產生 *Command 屬性
     public partial class PeriodWindowViewModel : INotifyPropertyChanged
     {
+
+
         // 顯示在 TitleBar 的標題
         private string _windowTitle = "排程週期";
         public string WindowTitle { get => _windowTitle; set { _windowTitle = value; OnPropertyChanged(); } }
@@ -77,7 +79,7 @@ namespace FMSFrontend.ViewModels.Windows
         public PeriodWindowViewModel()
         {
             // 週一~週日 (Mon=1)
-            string[] days = { "週一", "週二", "週三", "週四", "週五", "週六", "週日" };
+            string[] days = { "週日", "週一", "週二", "週三", "週四", "週五", "週六" };
             for (int i = 0; i < 7; i++) WeeklyOptions.Add(new OptionItem(i + 1, days[i]));
 
             // 1~31 + last=0

@@ -51,7 +51,7 @@
 
                     <TabItem Header="ALL" Tag="#777777" />
                     <TabItem Header="EDM" Tag="#555555" />
-                 <!-- <TabItem Header="CNC" Tag="#555555" /> -->
+                    <TabItem Header="工作站" Tag="#555555" /> 
                  <!--   <TabItem Header="ROBOT" Tag="#4CAF50" /> -->
                 </TabControl>
 

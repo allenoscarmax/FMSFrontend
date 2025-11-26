@@ -1,19 +1,25 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Models;
+using FMSFrontend.Services;
+using MongoDB.Bson.IO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using FMSFrontend.Models;
 namespace FMSFrontend.ViewModels.Windows
 {
     public partial class ShowRobotViewModel : ObservableObject
     {
         [ObservableProperty] private RobotDisplayData displayData = new();
-
-        public ShowRobotViewModel(Robot robot)
+        IRobotService   _robotService;
+        public ShowRobotViewModel(IHttpService httpService, Robot robot)
         {
+            _robotService = new RobotService(httpService);
+
             DisplayData.RobotName = robot.Name;
             DisplayData.EquipmentType = robot.EquipmentType;
             DisplayData.EquipmentModel = robot.EquipmentModel;
@@ -23,9 +29,16 @@ namespace FMSFrontend.ViewModels.Windows
         }
 
         [RelayCommand]
-        private void MoveOut()
+        private async Task MoveOut()
         {
             // TODO: 呼叫你的 MCC / TAS 邏輯
+            try
+            {
+                List<RobotDto> dtos = await _robotService.DB_GetAllRobotsAsync() ?? new();
+                dtos[0].onDeckObjSerial = "";
+                bool ok = await _robotService.DB_UpdateRobotDataAsync(dtos[0]);
+            }
+            catch { }
         }
 
         [RelayCommand]
