@@ -141,9 +141,15 @@ public partial class MaterialPairViewModel : ObservableObject
     {
         try
         {
-            bool ok = await _plcService.BalluffPowerAsync(false);
+            bool ok = await _plcService.BalluffPowerAsync(true);
             await Task.Delay(1000);
-            ok = await _plcService.BalluffPowerAsync(true);
+            ok = await _plcService.BalluffPowerAsync(false);
+            await Task.Delay(1000);
+            ok = await _rfidService.RFID_to_disconnect(0);
+            await Task.Delay(300);
+            ok = await _rfidService.RFID_to_connect(0);
+
+            _windowService.ShowMessage("OK");
         }
         catch { }
     }

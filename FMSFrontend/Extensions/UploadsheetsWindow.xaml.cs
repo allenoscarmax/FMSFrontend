@@ -28,10 +28,12 @@ namespace FMSFrontend.Extensions
             var electrodeService = new ElectrodeService(new HttpService());
             var workpieceService = new WorkpieceService(new HttpService());
             var worksheetsService = new WorksheetsService(new HttpService());
+            var worksheetAppService = new WorksheetAppService(new HttpService());
             this.DataContext = new UploadSheetViewModel(windowService,
                 electrodeService,
                 workpieceService,
-                worksheetsService);
+                worksheetsService,
+                worksheetAppService);
             InitializeComponent();
         }
         private void Close_Click(object sender, RoutedEventArgs e)

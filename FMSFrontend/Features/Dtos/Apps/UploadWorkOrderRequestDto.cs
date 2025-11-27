@@ -1,0 +1,45 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace FMSFrontend.Features.Dtos.Apps
+{
+    public class UploadWorkOrderRequestDto
+    {
+        public string selectedEdm { get; set; }
+        public string selectedCoordinate { get; set; }
+        public string setupUser { get; set; } = "admin";
+
+        public List<UploadWorkItemDto> workItems { get; set; }
+        public List<UploadElectrodeItemDto> electrodeItems { get; set; }
+    }
+
+    public class UploadWorkItemDto
+    {
+        public string workpieceName { get; set; }
+        public string measurementProgram { get; set; }
+        public string wrokpieceProgramFolderPath { get; set; }
+    }
+
+    public class UploadElectrodeItemDto
+    {
+        public string electrodeName { get; set; }
+        public string measurementProgram { get; set; }
+        public string electrodeProgramFolderPath { get; set; }
+
+        public int? lifeTimes { get; set; }
+        public int? offsetStatus { get; set; }
+        public bool share { get; set; }
+        public string shareElectrode { get; set; }
+        public string shareId { get; set; }
+    }
+
+    public class UploadWorkOrderResultDto
+    {
+        public string worksheetNumber { get; set; }
+        public bool success { get; set; }
+        public string message { get; set; }
+    }
+}

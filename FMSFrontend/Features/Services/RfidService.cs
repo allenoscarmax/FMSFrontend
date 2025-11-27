@@ -16,6 +16,8 @@ namespace FMSFrontend.Features.Services
         public Task<List<RFIDWriteLogDto>?> GetAllRFIDWriteLogAsync(CancellationToken ct = default);//取得所有燒錄記錄
 
         //====PUT====
+        public Task<bool> RFID_to_connect(int index);
+        public Task<bool> RFID_to_disconnect(int index);
         public Task<bool> DeleteAllRFIDWriteLogDataAsync(); //刪除所有燒錄記錄
         public Task<bool> InsertNewRFIDWriteLogDataAsync(RFIDWriteLogDto RFIDWriteLog, CancellationToken ct = default); //新增燒錄記錄
 
@@ -42,7 +44,20 @@ namespace FMSFrontend.Features.Services
             return json;
         }
 
+
+
         //====PUT====
+
+        public async Task<bool> RFID_to_connect(int index)
+        {
+            var route = $"RFIDMgmtModule/RFID_to_connect/{index}";
+            return await _http.SendPutAsync(route, new { });
+        }
+        public async Task<bool> RFID_to_disconnect(int index)
+        {
+            var route = $"RFIDMgmtModule/RFID_to_disconnect/{index}";
+            return await _http.SendPutAsync(route, new { });
+        }
         public async Task<bool> DeleteAllRFIDWriteLogDataAsync()      //刪除所有燒錄記錄
         {
             var route = $"RFIDMgmtModule/DB_DeleteAllRFIDWriteLogData";

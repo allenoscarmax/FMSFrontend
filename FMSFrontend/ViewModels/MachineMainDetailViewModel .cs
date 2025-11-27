@@ -71,7 +71,7 @@ namespace FMSFrontend.ViewModels
             {
                 var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
                 if (edm != null)
-                    await _machinesService.ResetDispatchErrorMessageAsync(edm.MachineNumber);
+                    await _machinesService.ResetDispatchErrorMessageAsync(edm.MachineNumber - 1);
             }
             catch { }
                 

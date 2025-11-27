@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Extensions;
 using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Dtos.Apps;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
@@ -23,17 +24,21 @@ namespace FMSFrontend.ViewModels.Windows
         private readonly IElectrodeService  _electrodeService;
         private readonly IWorkpieceService  _workpieceService;
         private readonly IWorksheetsService _worksheetsService;
+        private readonly IWorksheetAppService _worksheetAppService;
 
         public UploadSheetViewModel(
             IWindowService windowService,
             IElectrodeService electrodeService,
             IWorkpieceService workpieceService,
-            IWorksheetsService worksheetsService)
+            IWorksheetsService worksheetsService,
+            IWorksheetAppService worksheetAppService)
         {
             _windowService = windowService;
             _worksheetsService = worksheetsService;
             _electrodeService = electrodeService;
             _workpieceService = workpieceService;
+            _worksheetAppService = worksheetAppService;
+
         }
 
         [ObservableProperty]
@@ -426,187 +431,211 @@ namespace FMSFrontend.ViewModels.Windows
         [RelayCommand]
         private async Task UpdataButton()
         {
-            bool ok = false;
-            var selectedWorks = WorkItems.Where(w => w.IsSelected).ToList();
-            var selectedEles = ElectrodeItems.Where(e => e.IsSelected).ToList();
-
-            if (selectedWorks.Count == 0 && selectedEles.Count == 0)
+            var selectedWorks = WorkItems.Where(w => w.IsSelected).Select(w=> new UploadWorkItemDto {workpieceName = w.WorkpieceName, measurementProgram = w.MeasurementProgram }).ToList();
+            var selectedEles = ElectrodeItems.Where(e => e.IsSelected).Select(e => new UploadElectrodeItemDto { electrodeName = e.ElectrodeName,
+            measurementProgram = e.MeasurementProgram, lifeTimes = e.LifeTimes,
+            offsetStatus = e.OffsetStatus, share = e.Share,
+            shareElectrode = e.ShareElectrode, shareId = e.ShareId,}).ToList();
+            
+            if(!selectedWorks.Any() && !selectedEles.Any())
                 return;
 
-            string worksheetNumber = DateTime.Now.ToString("yyyyMMddHHmmss"); // 年月日時分秒
-            string targetEDM
-; if (SelectedEdm.Contains("EDM"))
+            var dto = new UploadWorkOrderRequestDto
             {
-                targetEDM = MapTargetEdm(SelectedEdm);   // EDM1 -> EDM-
-            }
-            else
-            {
-                targetEDM = "";
-            }
-
-            string pairedEDM = MapPairedEdm(SelectedEdm);   // EDM1 -> EMD1
-            string coordinate = SelectedCoordinate;
-
-
-            int extraOffset = selectedEles.Count(e => IsOffsetOneOrTwo(e.OffsetStatus));
-            int totalProcessStep = selectedWorks.Count + selectedEles.Count + extraOffset;
-            if (selectedWorks.Count != 0 && selectedEles.Count == 0)//只有上傳工件就是只有量測工件，工單步驟為1 不要新增電極資料
-            {
-                totalProcessStep = 1;
-            }
-            // 1) 先上傳工單
-
-            WorksheetsDto wsDto = new WorksheetsDto
-            {
-                worksheetNumber = worksheetNumber,
-                workpieceName = selectedWorks.FirstOrDefault()?.WorkpieceName ?? "",
-                workPriority = 0,
-                workEnabled = true,
-                workStatus = "New",
-                workPercentage = "0",
-                targetEDM = targetEDM,
-                processStep = 0,
-                totalProcessStep = totalProcessStep,
-                coordinate = coordinate,
-                setupUser = "admin"
+                selectedEdm = SelectedEdm,
+                selectedCoordinate = SelectedCoordinate,
+                setupUser = "admin",
+                workItems = selectedWorks,
+                electrodeItems = selectedEles,
             };
-            try
+
+            var result = await _worksheetAppService.Upload(dto);
+            if(result == true)
             {
-                ok = await _worksheetsService.InsertNewWorkSheetDataAsync(wsDto);
-                if (!ok)
-                {
-                    new DialogMessageWindow("工單上傳失敗").ShowDialog();
-                    return;
-                }
+                _windowService.ShowMessage("上傳成功");
             }
-            catch { }
+
+            //            bool ok = false;
+            //            var selectedWorks = WorkItems.Where(w => w.IsSelected).ToList();
+            //            var selectedEles = ElectrodeItems.Where(e => e.IsSelected).ToList();
+
+            //            if (selectedWorks.Count == 0 && selectedEles.Count == 0)
+            //                return;
+
+            //            string worksheetNumber = DateTime.Now.ToString("yyyyMMddHHmmss"); // 年月日時分秒
+            //            string targetEDM
+            //; if (SelectedEdm.Contains("EDM"))
+            //            {
+            //                targetEDM = MapTargetEdm(SelectedEdm);   // EDM1 -> EDM-
+            //            }
+            //            else
+            //            {
+            //                targetEDM = "";
+            //            }
+
+            //            string pairedEDM = MapPairedEdm(SelectedEdm);   // EDM1 -> EMD1
+            //            string coordinate = SelectedCoordinate;
 
 
-            // 2) 依照工件數量上傳
-            if (selectedEles.Count != 0 && selectedWorks.Count == 0) // 只有上傳電極，沒有工件加入一張工單
-            {
-                string[] sr = selectedEles[0].ElectrodeName.Split('-');
-                WorkpieceDto wpDto = new WorkpieceDto
-                {
-                    tagSerial = "",
-                    worksheetNumber = worksheetNumber,
-                    workpieceName = sr[0] + "-W",
-                    status = "New",
-                    restriction = false,
-                    pairedEDM = pairedEDM,
-                    currentLocation = "",
-                    tempRetSLocation = "",
-                    isCompleted = false,
-                    edmpgm = "",
-                    // 若只有上傳電極，則不需要檢驗工件(needInspect = false)
-                    needInspect = false,
-                    inspected = false,
-                    inspectStatus = "",
-                    inspectOffset = "",
-                };
-                try
-                {
-                    ok = await _workpieceService.InsertWorkpieceAsync(wpDto);
-                    if (!ok)
-                    {
-                        new DialogMessageWindow("工件上傳失敗: ").ShowDialog();
-                        return;
-                    }
-                }
-                catch { }
-            }
-            else
-            {
-                foreach (var w in selectedWorks)
-                {
-                    WorkpieceDto wpDto = new WorkpieceDto
-                    {
-                        tagSerial = "",
-                        worksheetNumber = worksheetNumber,
-                        workpieceName = w.WorkpieceName,
-                        status = "New",
-                        restriction = false,
-                        pairedEDM = pairedEDM,
-                        currentLocation = "",
-                        tempRetSLocation = "",
-                        isCompleted = false,
-                        edmpgm = w.MeasurementProgram ?? "",
-                        // 若只有上傳電極，則不需要檢驗工件(needInspect = false)
-                        needInspect = true,
-                        inspected = false,
-                        inspectStatus = "",
-                        inspectOffset = "",
-                    };
-                    try
-                    {
-                        ok = await _workpieceService.InsertWorkpieceAsync(wpDto);
-                        if (!ok)
-                        {
-                            new DialogMessageWindow("工件上傳失敗: " + w.WorkpieceName.ToString()).ShowDialog();
-                            return;
-                        }
-                    }
-                    catch { }
-                }
-            }
-            // 3) 依照電極數量上傳
-            string singleWorkName = selectedWorks.Count == 1 ? selectedWorks[0].WorkpieceName : string.Empty;
+            //            int extraOffset = selectedEles.Count(e => IsOffsetOneOrTwo(e.OffsetStatus));
+            //            int totalProcessStep = selectedWorks.Count + selectedEles.Count + extraOffset;
+            //            if (selectedWorks.Count != 0 && selectedEles.Count == 0)//只有上傳工件就是只有量測工件，工單步驟為1 不要新增電極資料
+            //            {
+            //                totalProcessStep = 1;
+            //            }
+            //            // 1) 先上傳工單
 
-            foreach (var e in selectedEles)
-            {
-                ElectrodeDto elDto = new ElectrodeDto
-                {
-                    tagSerial = "",
-                    worksheetNumber = worksheetNumber,
-                    electrodeName = e.ElectrodeName,
-                    state = "New",
-                    restriction = false,
-                    pairedEDM = pairedEDM,
-                    currentLocation = "",
-                    tempRetSLocation = "",
-                    edmpgm = e.MeasurementProgram ?? "",
-                    offset = "",
-                    complementUpload = false,    // Electrode 類別為非 nullable bool，需給預設值
-                    measuremented = false,       // 尚未量測
-                    measurementStatus = "",
-                    useTimes = null,
-                    lifeTimes = e.LifeTimes,
-                    offsetStatus = e.OffsetStatus,
-                    underSize = "",
-                    shared = e.Share,
-                    shareLink = e.ShareElectrode,
-                    worksheetDone = "",
-                    setupUser = "admin"
-                };
-                try
-                {
-                    ok = await _electrodeService.DB_InsertElectrodeAsync(elDto);
-                    if (!ok)
-                    {
-                        new DialogMessageWindow("電極資料上傳失敗").ShowDialog();
-                        return;
-                    }
-                }
-                catch { }
-                if (e.Share)
-                {
-                    ElectrodeDto? dto = await _electrodeService.DB_GetElectrodeByIdAsync(e.ShareId) ?? new();
-                    if (dto == null)
-                    {
-                        new DialogMessageWindow("更新Share電極失敗").ShowDialog();
-                        return;
-                    }
-                    dto.shared = true;
-                    dto.shareLink = e.ElectrodeName;
-                    ok = await _electrodeService.DB_UpdateElectrodeDataAsync(dto);
-                    if (!ok)
-                    {
-                        new DialogMessageWindow("更新Share電極失敗").ShowDialog();
-                        return;
-                    }
-                }
-            }
-            new DialogMessageWindow("上傳完成").ShowDialog();
+            //            WorksheetsDto wsDto = new WorksheetsDto
+            //            {
+            //                worksheetNumber = worksheetNumber,
+            //                workpieceName = selectedWorks.FirstOrDefault()?.WorkpieceName ?? "",
+            //                workPriority = 0,
+            //                workEnabled = true,
+            //                workStatus = "New",
+            //                workPercentage = "0",
+            //                targetEDM = targetEDM,
+            //                processStep = 0,
+            //                totalProcessStep = totalProcessStep,
+            //                coordinate = coordinate,
+            //                setupUser = "admin"
+            //            };
+            //            try
+            //            {
+            //                ok = await _worksheetsService.InsertNewWorkSheetDataAsync(wsDto);
+            //                if (!ok)
+            //                {
+            //                    new DialogMessageWindow("工單上傳失敗").ShowDialog();
+            //                    return;
+            //                }
+            //            }
+            //            catch { }
+
+
+            //            // 2) 依照工件數量上傳
+            //            if (selectedEles.Count != 0 && selectedWorks.Count == 0) // 只有上傳電極，沒有工件加入一張工單
+            //            {
+            //                string[] sr = selectedEles[0].ElectrodeName.Split('-');
+            //                WorkpieceDto wpDto = new WorkpieceDto
+            //                {
+            //                    tagSerial = "",
+            //                    worksheetNumber = worksheetNumber,
+            //                    workpieceName = sr[0] + "-W",
+            //                    status = "New",
+            //                    restriction = false,
+            //                    pairedEDM = pairedEDM,
+            //                    currentLocation = "",
+            //                    tempRetSLocation = "",
+            //                    isCompleted = false,
+            //                    edmpgm = "",
+            //                    // 若只有上傳電極，則不需要檢驗工件(needInspect = false)
+            //                    needInspect = false,
+            //                    inspected = false,
+            //                    inspectStatus = "",
+            //                    inspectOffset = "",
+            //                };
+            //                try
+            //                {
+            //                    ok = await _workpieceService.InsertWorkpieceAsync(wpDto);
+            //                    if (!ok)
+            //                    {
+            //                        new DialogMessageWindow("工件上傳失敗: ").ShowDialog();
+            //                        return;
+            //                    }
+            //                }
+            //                catch { }
+            //            }
+            //            else
+            //            {
+            //                foreach (var w in selectedWorks)
+            //                {
+            //                    WorkpieceDto wpDto = new WorkpieceDto
+            //                    {
+            //                        tagSerial = "",
+            //                        worksheetNumber = worksheetNumber,
+            //                        workpieceName = w.WorkpieceName,
+            //                        status = "New",
+            //                        restriction = false,
+            //                        pairedEDM = pairedEDM,
+            //                        currentLocation = "",
+            //                        tempRetSLocation = "",
+            //                        isCompleted = false,
+            //                        edmpgm = w.MeasurementProgram ?? "",
+            //                        // 若只有上傳電極，則不需要檢驗工件(needInspect = false)
+            //                        needInspect = true,
+            //                        inspected = false,
+            //                        inspectStatus = "",
+            //                        inspectOffset = "",
+            //                    };
+            //                    try
+            //                    {
+            //                        ok = await _workpieceService.InsertWorkpieceAsync(wpDto);
+            //                        if (!ok)
+            //                        {
+            //                            new DialogMessageWindow("工件上傳失敗: " + w.WorkpieceName.ToString()).ShowDialog();
+            //                            return;
+            //                        }
+            //                    }
+            //                    catch { }
+            //                }
+            //            }
+            //            // 3) 依照電極數量上傳
+            //            string singleWorkName = selectedWorks.Count == 1 ? selectedWorks[0].WorkpieceName : string.Empty;
+
+            //            foreach (var e in selectedEles)
+            //            {
+            //                ElectrodeDto elDto = new ElectrodeDto
+            //                {
+            //                    tagSerial = "",
+            //                    worksheetNumber = worksheetNumber,
+            //                    electrodeName = e.ElectrodeName,
+            //                    state = "New",
+            //                    restriction = false,
+            //                    pairedEDM = pairedEDM,
+            //                    currentLocation = "",
+            //                    tempRetSLocation = "",
+            //                    edmpgm = e.MeasurementProgram ?? "",
+            //                    offset = "",
+            //                    complementUpload = false,    // Electrode 類別為非 nullable bool，需給預設值
+            //                    measuremented = false,       // 尚未量測
+            //                    measurementStatus = "",
+            //                    useTimes = null,
+            //                    lifeTimes = e.LifeTimes,
+            //                    offsetStatus = e.OffsetStatus,
+            //                    underSize = "",
+            //                    shared = e.Share,
+            //                    shareLink = e.ShareElectrode,
+            //                    worksheetDone = "",
+            //                    setupUser = "admin"
+            //                };
+            //                try
+            //                {
+            //                    ok = await _electrodeService.DB_InsertElectrodeAsync(elDto);
+            //                    if (!ok)
+            //                    {
+            //                        new DialogMessageWindow("電極資料上傳失敗").ShowDialog();
+            //                        return;
+            //                    }
+            //                }
+            //                catch { }
+            //                if (e.Share)
+            //                {
+            //                    ElectrodeDto? dto = await _electrodeService.DB_GetElectrodeByIdAsync(e.ShareId) ?? new();
+            //                    if (dto == null)
+            //                    {
+            //                        new DialogMessageWindow("更新Share電極失敗").ShowDialog();
+            //                        return;
+            //                    }
+            //                    dto.shared = true;
+            //                    dto.shareLink = e.ElectrodeName;
+            //                    ok = await _electrodeService.DB_UpdateElectrodeDataAsync(dto);
+            //                    if (!ok)
+            //                    {
+            //                        new DialogMessageWindow("更新Share電極失敗").ShowDialog();
+            //                        return;
+            //                    }
+            //                }
+            //            }
+            //            new DialogMessageWindow("上傳完成").ShowDialog();
         }
 
         private static bool IsOffsetOneOrTwo(int? n)

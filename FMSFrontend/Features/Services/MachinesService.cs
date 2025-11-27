@@ -83,7 +83,7 @@ namespace FMSFrontend.Features.Services
                 => await _http.GetJsonAsync<int>("Machine/GetMachineCount", ct);
 
             public async Task<bool> ResetDispatchErrorMessageAsync(int no, CancellationToken ct = default)
-                => await _http.SendPutAsync("Machine/ResetDispathErrorMes/{no}", new { });
+                => await _http.SendPutAsync($"Machine/ResetDispathErrorMes/{no}", new { });
         }
     }
 
