@@ -450,9 +450,18 @@ namespace FMSFrontend.ViewModels.Windows
             };
 
             var result = await _worksheetAppService.Upload(dto);
-            if(result == true)
+            if(result.success)
             {
                 _windowService.ShowMessage("上傳成功");
+            }
+            else
+            {
+                // 補上 else 的內容
+                var msg = string.IsNullOrWhiteSpace(result?.message)
+                    ? "上傳失敗（未知錯誤）"
+                    : $"上傳失敗：{result.message}";
+
+                _windowService.ShowMessage(msg);
             }
 
             //            bool ok = false;

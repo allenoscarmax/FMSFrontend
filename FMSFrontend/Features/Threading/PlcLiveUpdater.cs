@@ -22,7 +22,7 @@ namespace FMSFrontend.Features.Threading
         {
             _svc = svc;
             _store = store;
-            _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(0.6) };
             _timer.Tick += async (_, __) =>
             {
                 // 避免重入

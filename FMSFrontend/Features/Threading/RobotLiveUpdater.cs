@@ -32,7 +32,7 @@ namespace FMSFrontend.Features.Threading
             _svc_Probe = probeService;
 
             _store = store;
-            _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(0.8) };
             _timer.Tick += async (_, __) => await UpdateStatusAsync();
         }
         private async Task UpdateStatusAsync()

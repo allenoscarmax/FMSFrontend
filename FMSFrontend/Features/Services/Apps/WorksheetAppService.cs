@@ -11,7 +11,7 @@ namespace FMSFrontend.Features.Services
 {
     public interface IWorksheetAppService
     {
-        Task<bool> Upload(UploadWorkOrderRequestDto data, CancellationToken ct = default);
+        Task<UploadWorkOrderResultDto> Upload(UploadWorkOrderRequestDto data, CancellationToken ct = default);
     }
     public class WorksheetAppService : IWorksheetAppService
     {
@@ -19,8 +19,13 @@ namespace FMSFrontend.Features.Services
         public WorksheetAppService(IHttpService http) => _http = http;
 
         // ===== PUT（寫入，回傳 bool）=====
-        public async Task<bool> Upload(UploadWorkOrderRequestDto data, CancellationToken ct = default)
-            => await _http.SendPutAsync("Apps/WorksheetApp/Upload", data);
-
+        public async Task<UploadWorkOrderResultDto?> Upload(UploadWorkOrderRequestDto data, CancellationToken ct = default)
+        {
+            return await _http.PutJsonAsync<UploadWorkOrderRequestDto, UploadWorkOrderResultDto>(
+                "Apps/WorksheetApp/Upload",
+                data,
+                ct
+            );
+        }
     }
 }
