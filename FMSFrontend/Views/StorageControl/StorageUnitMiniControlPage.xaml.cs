@@ -24,5 +24,19 @@ namespace FMSFrontend.Views
         {
             InitializeComponent();
         }
+
+        public void ScrollToStorageId(string storageId)
+        {
+            if (storageId == null) return;
+            foreach (var item in MagazineItems.Items)
+            {
+                if (item is Models.MagazineParaInfo info && info.StorageId == storageId)
+                {
+                    var container = MagazineItems.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
+                    container?.BringIntoView();
+                    break;
+                }
+            }
+        }
     }
 }

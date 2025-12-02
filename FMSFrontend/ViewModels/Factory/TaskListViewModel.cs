@@ -18,31 +18,18 @@ namespace FMSFrontend.ViewModels.Factory
         private readonly CommandScheduleStore _commandSchedulesStore;
         public ObservableCollection<CommandScheduleModel> commandSchedules
             => _commandSchedulesStore.CommandSchedules.CommandSchedules;
-        // ==LiveUpdater===
-        private readonly CommandScheduleLiveUpdater _commandScheduleLiveUpdater;
-
+ 
         public ObservableCollection<TaskItem> TaskItems { get; } = new();
         
 
         public TaskListViewModel(ICommandScheduleService commandScheduleService,
-            CommandScheduleStore commandScheduleStore,
-            CommandScheduleLiveUpdater commandScheduleLiveUpdater)
+            CommandScheduleStore commandScheduleStore)
         {
             _commandScheduleService = commandScheduleService;
             _commandSchedulesStore = commandScheduleStore;
-            _commandScheduleLiveUpdater = commandScheduleLiveUpdater;
             _commandSchedulesStore.CommandSchedules.PropertyChanged += (_, __) => RefreshFromStore();
-            // 假資料
-            
         }
-        public void OnPageActivated()
-        {
-            _commandScheduleLiveUpdater.Start();
-        }
-        public void OnPageDeactivated()
-        {
-            _commandScheduleLiveUpdater.Stop();
-        }
+
         void RefreshFromStore()
         {
             var sorted = commandSchedules.OrderBy(x => x.Priority).ToList();

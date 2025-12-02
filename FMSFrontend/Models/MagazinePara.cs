@@ -9,18 +9,23 @@ namespace FMSFrontend.Models
     {
         private static readonly SolidColorBrush PortTilieColor = new(Color.FromRgb(0x27, 0x79, 0xA7));
         private static readonly SolidColorBrush EleTilieColor = new(Color.FromRgb(0xE0, 0x8E, 0x45));
-        //日光燈
-        [ObservableProperty] private bool isDoorLightOn = false;
+        public int magazineParasNumber = 2; //magazine參數數量
+        
+        [ObservableProperty] private bool isDoorLightOn = false; //日光燈
+        [ObservableProperty] private ObservableCollection<MagazineParaInfo> magazineParas = new();
+    }
+    public partial class MagazineParaInfo : ObservableObject
+    {
+        // 新增 DoorId 供 UI 綁定（保持字串 StorageId 以符合既有 Control 的依賴屬性型別）
+        [ObservableProperty] string storageId = string.Empty; // 與 doorId 對應，用於現有控件的文字顯示
+        [ObservableProperty] Brush leftTitleBrush = Brushes.Gray;
+        [ObservableProperty] string leftTitle = "";
+        [ObservableProperty] Brush rightTitleBrush = Brushes.Gray;
+        [ObservableProperty] string rightTitle = "";
 
-        //標題
-        [ObservableProperty] private ObservableCollection<Brush> leftTitleBrush = new ObservableCollection<Brush>(Enumerable.Repeat(EleTilieColor, 1));
-        [ObservableProperty] private ObservableCollection<string> leftTitle = new ObservableCollection<string> (Enumerable.Repeat("電極", 1));
-        [ObservableProperty] private ObservableCollection<Brush> rightTitleBrush = new ObservableCollection<Brush>(Enumerable.Repeat(PortTilieColor, 1));
-        [ObservableProperty] private ObservableCollection<string> rightTitle = new ObservableCollection<string>(Enumerable.Repeat("工件", 1));
-        //狀態燈
-        [ObservableProperty] private ObservableCollection<Brush> upperScanStatus = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
-        [ObservableProperty] private ObservableCollection<Brush> upperDoorStatus = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
-        [ObservableProperty] private ObservableCollection<Brush> lowerScanStatus = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
-        [ObservableProperty] private ObservableCollection<Brush> lowerDoorStatus = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
+        [ObservableProperty] Brush upperScanStatus = Brushes.Gray;
+        [ObservableProperty] Brush upperDoorStatus = Brushes.Gray;
+        [ObservableProperty] Brush lowerScanStatus = Brushes.Gray;
+        [ObservableProperty] Brush lowerDoorStatus = Brushes.Gray;
     }
 }

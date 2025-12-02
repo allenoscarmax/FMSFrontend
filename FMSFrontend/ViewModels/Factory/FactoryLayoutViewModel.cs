@@ -1,18 +1,38 @@
-﻿using System.Collections.ObjectModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Threading;
+using FMSFrontend.Models;
+using FMSFrontend.Services;
+using IniFile;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq; // 需要
+using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Linq; // 需要
 using System.Windows.Media.Animation;
 
 namespace FMSFrontend.ViewModels.Factory
 {
     public partial class FactoryLayoutViewModel : INotifyPropertyChanged
     {
+        // == Service ===
+        private readonly IHttpService _httpService;
+        private readonly IMachinesService _machinesService;
+        private readonly IStorageService _storageService;
+        private readonly IRobotService _robotService;
+        // === Singleton ===
+        private readonly CommandScheduleStore _commandSchedulesStore;
+        public ObservableCollection<CommandScheduleModel> commandSchedules
+            => _commandSchedulesStore.CommandSchedules.CommandSchedules;
+   
         public ObservableCollection<MachineNode> Machines { get; } = new();
         private static string Pack(string rel) => $"/FMSFrontend;component/{rel}";
 
@@ -63,10 +83,11 @@ namespace FMSFrontend.ViewModels.Factory
         private void UpdateHighlight()
         {
             MachineNode? target = null;
-
+            if (RobotAtId == null || RobotAtId == "") return;
             foreach (var m in Machines)
             {
-                var active = string.Equals(m.Id, RobotAtId, StringComparison.OrdinalIgnoreCase);
+                // var active = string.Equals(m.Id, RobotAtId, StringComparison.OrdinalIgnoreCase); 
+                var active =  m.Id.IndexOf(RobotAtId, StringComparison.OrdinalIgnoreCase) >= 0;
                 m.IsActive = active;
                 if (active) target = m;
             }
@@ -84,7 +105,7 @@ namespace FMSFrontend.ViewModels.Factory
             var targetY = robot.Y; // 預設不動 Y
             var track = Find(TrackId);
             if (track != null && robot.Height > 0)
-                targetY = track.Y - robot.Height + 1;
+                targetY = track.Y - 160;
 
             // 🔔 通知 View（UserControl）去做動畫
             RobotMoveRequested?.Invoke(robot, targetX, targetY);
@@ -109,11 +130,22 @@ namespace FMSFrontend.ViewModels.Factory
         /// </summary>
 
 
-        public FactoryLayoutViewModel()
+        public FactoryLayoutViewModel(IHttpService httpService, CommandScheduleStore commandScheduleStore)
         {
+            _httpService = httpService;
+            _machinesService = new MachinesService(_httpService);
+            _storageService = new StorageService(_httpService);
+            _robotService = new RobotService(_httpService);
+            _commandSchedulesStore = commandScheduleStore;
             UpdateHighlight(); // 初始化一次
+            _commandSchedulesStore.CommandSchedules.PropertyChanged += (_, __) => RefreshFromStore();
         }
-
+        void RefreshFromStore()
+        {
+            var sorted = commandSchedules.OrderBy(x => x.Priority).ToList();
+            if (sorted != null && sorted.Count > 0)
+                SetRobotAt(sorted[0].EndPoint);
+        }
         public async Task SaveLayoutAsync(string path)
         {
             var json = JsonSerializer.Serialize(Machines, new JsonSerializerOptions { WriteIndented = true });
@@ -130,26 +162,159 @@ namespace FMSFrontend.ViewModels.Factory
             if (nodes == null) return;
             Machines.Clear();
             foreach (var n in nodes) Machines.Add(n);
-            
             /*
             //測試
             Machines.Clear();
             Machines.Add(new MachineNode { Id = "EDM1", DisplayName = "EDM1", X = 80, Y = 60, IconPath = Pack("Image/MachineIcons/EDM.png") });
             Machines.Add(new MachineNode { Id = "EDM2", DisplayName = "EDM2", X = 300, Y = 60, IconPath = Pack("Image/MachineIcons/EDM.png") });
             Machines.Add(new MachineNode { Id = "EDM3", DisplayName = "EDM3", X = 520, Y = 60, IconPath = Pack("Image/MachineIcons/EDM.png") });
-         
+
             Machines.Add(new MachineNode { Id = "ROBOT", DisplayName = "Robot", X = 80, Y = 250, Width = 130, Height = 130, IconPath = Pack("Image/MachineIcons/Robot.png") });
 
             Machines.Add(new MachineNode { Id = "Track", DisplayName = "", X = 80, Y = 400, Width = 850, Height = 80, IconPath = Pack("Image/MachineIcons/long-track.png") });
             Machines.Add(new MachineNode { Id = "FMS", DisplayName = "FMS", X = 80, Y = 500, IconPath = Pack("Image/MachineIcons/FMS.png") });
             Machines.Add(new MachineNode { Id = "ES1", DisplayName = "ES1", X = 300, Y = 500, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/Magzine.png") });
             */
+        }
+        public async Task LayoutInit()
+        {
+            Machines.Clear();
+            //978*822
+            int WinWidth = 968; //視窗寬度
+            int X_str = 10;    //起始位置X
+            int MarginW = 10;  //圖片距離
+            
+            //第一排 機台
+            int MachH = 140;   //每台機台圖片高度
+            int MachY = 30;    //每台機台圖片高度
+            //第二排 機械手臂與軌道       
+            int RobotW = 110;   //機械手臂圖片寬度
+            int RobotH = 130;   //機械手臂圖片高度
+            int TrackH = 40;    //軌道高度
+            int TrackY = 430;   //軌道位置Y
+            //第三排 倉儲 與工作站(與倉儲同)
+            int StorageH = 140; //每個倉儲圖片高度
+            int StorageY = 500;   //每個倉儲圖片高度
 
+            //讀取機台資料
+            List<MachinesDto> dtos = await _machinesService.GetAllMachinesAsync() ?? [];
+            for (int i = 0; i < dtos.Count; i++)
+            {
+                var dto = dtos[i];
+                Machines.Add(new MachineNode
+                {
+                    Id = dto.machineName,
+                    DisplayName = dto.machineName,
+                    X = X_str + WinWidth / dtos.Count * i,
+                    Y = MachY,
+                    Width = WinWidth / dtos.Count - MarginW,
+                    Height = MachH,
+                    IconPath = Pack($"Image/MachineIcons/EDM.png")
+                });
+            }
+            int StorageCnt = 0; //計算實際有幾個倉儲位置
 
+            //讀取工作站資料
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "Basesitting.ini");
+            int stationCount = 0;
+            try
+            {
+                stationCount = Convert.ToInt16(ini.Read("Prarm", "StationCount"));
+                stationCount = 0;
+                if (stationCount != 0)
+                {
+                    Machines.Add(new MachineNode
+                    {
+                        Id = "工作站",
+                        DisplayName = "工作站",
+                        //  X = X_str,
+                        Y = StorageY,
+                        //   Width = StorageW,
+                        Height = StorageH,
+                        IconPath = Pack("Image/MachineIcons/FMS.png")
+                    });
+                    StorageCnt++;
+                }
+            }
+            catch { }
+
+            //讀取倉儲資料
+            List<StorageDto> storageDtos = await _storageService.GetAllStorageAsync() ?? [];
+            // 將 storageName 為 E 或 W，且 storageNumber 為數字 的資料，依 number 分組
+            var storages = storageDtos
+                .Where(s => !string.IsNullOrWhiteSpace(s.storageName) && !string.IsNullOrWhiteSpace(s.storageNumber))
+                .Where(s => (string.Equals(s.storageName, "E", StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(s.storageName, "W", StringComparison.OrdinalIgnoreCase))
+                            && int.TryParse(s.storageNumber, out _))
+                .GroupBy(s => int.Parse(s.storageNumber))
+                .OrderBy(g => g.Key);
+            foreach (var g in storages)
+            {
+                int number = g.Key;
+                bool hasE = g.Any(x => string.Equals(x.storageName, "E", StringComparison.OrdinalIgnoreCase));
+                bool hasW = g.Any(x => string.Equals(x.storageName, "W", StringComparison.OrdinalIgnoreCase));
+                // 依需求：若同一號碼同時有 E 與 W，僅保留一筆，Id/DisplayName = "E{n}/W{n}"；否則分別為 "E{n}" 或 "W{n}"
+                string id;
+                if (hasE && hasW)
+                    id = $"E{number}/W{number}";
+                else if (hasE)
+                    id = $"E{number}";
+                else if (hasW)
+                    id = $"W{number}";
+                else
+                    continue;
+                // 避免重複加入相同 Id
+                if (Machines.Any(m => string.Equals(m.Id, id, StringComparison.OrdinalIgnoreCase))) continue;
+                Machines.Add(new MachineNode
+                {
+                    Id = id,
+                    DisplayName = id,
+                    //  X = X_str + (StorageW + MarginW) * (number - 1 + stationCount),
+                    Y = StorageY,
+                    //    Width = StorageW,
+                    Height = StorageH,
+                    IconPath = Pack("Image/MachineIcons/Magzine.png")
+                });
+                StorageCnt++;
+            }
+            //計算寬度
+            for (int i = 0; i < StorageCnt; i++)
+            {
+                Machines[Machines.Count - StorageCnt + i].X = X_str + WinWidth / StorageCnt * i;
+                Machines[Machines.Count - StorageCnt + i].Width = WinWidth / StorageCnt - MarginW;
+                //  Machines[Machines.Count - StorageCnt + i].Height = WinWidth / StorageCnt - MarginW;
+            }
+
+            //讀取機械手臂資料
+            List<RobotDto> robotDtos = await _robotService.DB_GetAllRobotsAsync() ?? [];
+            for (int i = 0; i < robotDtos.Count; i++)
+            {
+                var dto = robotDtos[i];
+                Machines.Add(new MachineNode
+                {
+                    Id = "ROBOT",
+                    DisplayName = "ROBOT",
+                    X = X_str,
+                    Y = TrackY - 160,
+                    Width = RobotW,
+                    Height = RobotH,
+                    IconPath = Pack($"Image/MachineIcons/Robot.png")
+                });
+                Machines.Add(new MachineNode
+                {
+                    Id = "Track",
+                    DisplayName = "",
+                    X = X_str,
+                    Y = TrackY,
+                    Width = WinWidth,
+                    Height = TrackH,
+                    IconPath = Pack($"Image/MachineIcons/long-track.png")
+                });
+            }
         }
         [RelayCommand]
         private async Task onMove()
-        { 
+        {
             await Moverobot();
         }
 
@@ -177,6 +342,7 @@ namespace FMSFrontend.ViewModels.Factory
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
+    
     public class MachineNode : INotifyPropertyChanged
     {
         public string Id { get; set; } = "";

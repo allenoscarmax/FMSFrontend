@@ -207,111 +207,6 @@ namespace FMSFrontend.ViewModels
             DispatchBackground = DispatchStatus ? Dark : Light;
             DispatchForeground = DispatchStatus ? Light : Dark;
         }
-
-        //讀取初始參數
-        /*
-        private async Task MainWindowViewModelAsync_Init()
-        {
-            try  //取得Robot資料
-            {
-                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Robot/DB_GetAllRobots", default);
-                List<DBRobots> list = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
-                     JsonSerializer.Deserialize<List<DBRobots>>(json.Value.GetRawText()) ?? new List<DBRobots>() :
-                     new List<DBRobots>();
-               
-            }
-            catch { }
-            _ = FetchASRSParameterAsync();
-            
-            // Start ASRS parameter polling timer
-            asrsTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, async (s, e) =>
-            {
-                await FetchRobotAsync();
-                await FetchASRSParameterAsync();
-                await FetchDoorAsync();
-            }, Application.Current.Dispatcher);
-            asrsTimer.Start();
-        }
-        //輪尋讀取ASRS參數
-        private async Task FetchRobotAsync()
-        {
-            JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Robot/DB_GetAllRobots", default);
-            if (json.HasValue)
-            {
-                var root = json.Value;
-                if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
-                {
-                    List<DBRobots> List = JsonSerializer.Deserialize<List<DBRobots>>(root.GetRawText()) ?? new();
-                    if (List != null && List.Count > 0)
-                    {
-                        DBRobots a = List[0];
-                        Robot.TagSerial = a.onDeckObjSerial;
-                        Robot.Name = a.robotName;
-                        Robot.SelectedRobotIndexDisplay = "1 / 1";
-                    }
-                }
-                else return;
-            }
-            if (CurrentPageKey == "ProductionLines")
-            {
-                var s = $"Electrode/DB_GetElectrodesByTagSerial/{Robot.TagSerial}";
-                json = await _httpService.GetJsonAsync<JsonElement>(s, default);
-                if (json.HasValue)
-                {
-                    var root = json.Value;
-                    if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
-                    {
-                        List<Electrode> List = JsonSerializer.Deserialize<List<Electrode>>(root.GetRawText()) ?? new();
-                        if (List != null && List.Count > 0)
-                        {
-                            Electrode a = List[0];
-                            Robot.MaterialKind = "電極";
-                            Robot.MaterialName = "電極: " + a.electrodeName;
-                            return;
-                        }
-                    }
-                }
-
-                string wroute = $"Workpiece/DB_GetWorkpieceByTagSerial/{Robot.TagSerial}";
-                json = await _httpService.GetJsonAsync<JsonElement>(wroute, default);
-                if (json.HasValue)
-                {
-                    var root = json.Value;
-                    if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
-                    {
-                        List<Workpiece> List = JsonSerializer.Deserialize<List<Workpiece>>(root.GetRawText()) ?? new();
-                        if (List != null && List.Count > 0)
-                        {
-                            Workpiece a = List[0];
-                            Robot.MaterialKind = "工件";
-                            Robot.MaterialName = "工件: " + a.workpieceName;
-                            return;
-                        }
-                    }
-                }
-            }
-            Robot.MaterialName = "";
-        }
-       
-        private async Task FetchDoorAsync()
-        {
-            try
-            {
-                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("PLC/GetALLMagazinePara", default);
-                MagazinePara p = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
-                      JsonSerializer.Deserialize<MagazinePara>(json.Value.GetRawText()) ?? new MagazinePara() :
-                      new MagazinePara();
-                if (p != null)
-                {
-                    UpperDoorLights1[0] = p.ShouldScanEle ? Brushes.Lime : Brushes.Gray;
-                    UpperDoorLights2[0] = p.EleMagzineDoorOpen[0] ? Brushes.Lime : Brushes.Gray;
-                    LowerDoorLights1[0] = p.ShouldScanPart ? Brushes.Lime : Brushes.Gray;
-                    LowerDoorLights2[0] = p.PartMagzineDoorOpen[0] ? Brushes.Lime : Brushes.Gray;
-                }
-            }
-            catch { }
-        }
-         */
         #region PageChange
 
         [RelayCommand]
@@ -383,7 +278,8 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
-                var success = await _PlcService.EleMagzineDoorSwitchAsync(0,0,true);
+                int id = int.Parse(storageId);
+                var success = await _PlcService.EleMagzineDoorSwitchAsync(id ,0,true);
                 if (!success)
                 {
                     new DialogMessageWindow("API 回傳失敗").ShowDialog();
@@ -402,7 +298,8 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
-                var success = await _PlcService.EleMagzineDoorSwitchAsync(0, 1, true);
+                int id = int.Parse(storageId);
+                var success = await _PlcService.EleMagzineDoorSwitchAsync(id, 1, true);
                 if (!success)
                 {
                     new DialogMessageWindow("API 回傳失敗").ShowDialog();

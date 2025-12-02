@@ -26,15 +26,13 @@ namespace FMSFrontend.Controls.FactoryOverview
     public partial class TaskListControl : UserControl
     {
         public TaskListControl(ICommandScheduleService commandScheduleService,
-            CommandScheduleStore commandScheduleStore,
-            CommandScheduleLiveUpdater commandScheduleLiveUpdater) 
+            CommandScheduleStore commandScheduleStore) 
         {
             InitializeComponent();
             // 假設有方法可以取得這三個必要參數，請根據實際情況替換
 
-            DataContext = new TaskListViewModel(commandScheduleService, commandScheduleStore, commandScheduleLiveUpdater);
-            Loaded += (_, __) => ((TaskListViewModel)DataContext).OnPageActivated();
-            Unloaded += (_, __) => ((TaskListViewModel)DataContext).OnPageDeactivated();
+            DataContext = new TaskListViewModel(commandScheduleService, commandScheduleStore);
+
         }
 
     }

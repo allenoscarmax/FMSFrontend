@@ -30,7 +30,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <!-- TabControl -->
-                    <RowDefinition Height="82" />
+                    <RowDefinition Height="95" />
                     <!-- 卡片列 -->
                     <RowDefinition Height="*" />
                     <!-- 主內容 -->

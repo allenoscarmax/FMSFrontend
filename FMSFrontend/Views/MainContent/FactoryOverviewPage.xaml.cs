@@ -1,4 +1,5 @@
 ﻿using FMSFrontend.ViewModels;
+using FMSFrontend.ViewModels.Factory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,8 @@ namespace FMSFrontend.Views
         {
             InitializeComponent();
             this.DataContext = viewModel; // ← 關鍵
-
+            Loaded += (_, __) => ((FactoryOverviewPageViewModel)DataContext).OnPageActivated();
+            Unloaded += (_, __) => ((FactoryOverviewPageViewModel)DataContext).OnPageDeactivated();
         }
     }
 }

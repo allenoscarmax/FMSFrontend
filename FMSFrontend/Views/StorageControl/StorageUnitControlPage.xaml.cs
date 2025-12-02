@@ -1,18 +1,6 @@
 ﻿using FMSFrontend.Controls;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows; // for FrameworkElement
 
 namespace FMSFrontend.Views
 {
@@ -28,11 +16,15 @@ namespace FMSFrontend.Views
 
         public void ScrollToStorageId(string storageId)
         {
-            foreach (var child in MainStackPanel.Children)
+            // 透過 ItemsControl 的 Items 遍歷資料項，找到 StorageId 相符者並 BringIntoView
+            if (storageId == null) return;
+            foreach (var item in MagazineItems.Items)
             {
-                if (child is StorageUnitControl control && control.StorageId == storageId)
+                if (item is Models.MagazineParaInfo info && info.StorageId == storageId)
                 {
-                    control.BringIntoView();
+                    // 找出對應生成的容器元素
+                    var container = MagazineItems.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
+                    container?.BringIntoView();
                     break;
                 }
             }

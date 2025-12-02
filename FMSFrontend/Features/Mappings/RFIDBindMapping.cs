@@ -29,12 +29,9 @@ namespace FMSFrontend.Features.Mappings
                 }
             }
         }
-        public static void ApplyParasDto(this RFIDParasDto dtos, RFIDBindModel output, bool IsElectrode)
+        public static void ApplyParasDto(this RFIDParasDto dtos, RFIDBindModel output, int TagNumber)
         {
-            if (IsElectrode)
-                output.ConnectedBrush = dtos.rFID_Is_Present[2] ? RFIDBindModel.LightOn : RFIDBindModel.LightOff;
-            else
-                output.ConnectedBrush = dtos.rFID_Is_Present[1] ? RFIDBindModel.LightOn : RFIDBindModel.LightOff;
+            output.ConnectedBrush = dtos.rFID_Is_Present[TagNumber] ? RFIDBindModel.LightOn : RFIDBindModel.LightOff;
         }
 
         public static void ApplyTagDto(this string? dtos, RFIDBindModel output)

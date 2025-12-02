@@ -9,6 +9,7 @@ using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.ViewModels.Factory;
 using FMSFrontend.ViewModels.Production;
+using IniFile;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -58,7 +59,7 @@ namespace FMSFrontend.ViewModels
             get => _currentMachineDetailContent;
             set => SetProperty(ref _currentMachineDetailContent, value);
         }
-        
+        int StationCount = 0; //工作站數量
         public MachineOverviewMainViewModel(
             IWindowService windowService,
             IMachinesService machinesService,
@@ -74,7 +75,7 @@ namespace FMSFrontend.ViewModels
             _windowService = windowService;
             _machinesService = machinesService;
             _worksheetsService = worksheetsService;
-           
+
             _machineStore = machineStore;
             _stationStore = stationStore;
 
@@ -85,6 +86,13 @@ namespace FMSFrontend.ViewModels
             _timer.Start();
 
             _ = _machineLiveUpdater.UpdateStatusAsync();
+
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "Basesitting.ini");
+            try
+            {
+                StationCount = Convert.ToInt16(ini.Read("Prarm", "StationCount"));
+            }
+            catch { }
             RefreshFromStore();
         }
         public void OnPageActivated()
@@ -134,7 +142,8 @@ namespace FMSFrontend.ViewModels
                     }
                 }
             }
-            if (AllMachines != null && AllMachines.Count > 0)
+
+            if (AllMachines != null && AllMachines.Count > 0 && StationCount != 0)
             {
                 // Station card (single instance, update if exists)
                 var stationCard = AllMachines.FirstOrDefault(c => c.Type == MachineType.STATION);
