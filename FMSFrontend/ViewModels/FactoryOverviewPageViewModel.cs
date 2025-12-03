@@ -21,21 +21,24 @@ namespace FMSFrontend.ViewModels
         private readonly CommandScheduleStore CommandScheduleStore;
         // ==LiveUpdater===
         public CommandScheduleLiveUpdater _commandScheduleLiveUpdater;
-        
+        private readonly RobotStore _robotStore;
+
         public object FactoryLayoutContent { get; }
         public object TaskListContent { get; } = new(); // 右側先佔位
 
         public FactoryOverviewPageViewModel(ICommandScheduleService commandScheduleService,
             CommandScheduleStore commandScheduleStore,
-            CommandScheduleLiveUpdater commandScheduleUpdater)
+            CommandScheduleLiveUpdater commandScheduleUpdater,
+            RobotStore robotStore)
         {
             _commandScheduleService = commandScheduleService;
             CommandScheduleStore = commandScheduleStore;
             _commandScheduleLiveUpdater = commandScheduleUpdater;
+            _robotStore = robotStore;
 
             var layout = new FactoryLayoutCanvasControl
             {
-                DataContext = new FactoryLayoutViewModel()
+                DataContext = new FactoryLayoutViewModel(_robotStore)
             };
             var taskListControl = new TaskListControl(commandScheduleService, commandScheduleStore, commandScheduleUpdater);
             taskListControl.DataContext = new TaskListViewModel(commandScheduleService, commandScheduleStore, commandScheduleUpdater);

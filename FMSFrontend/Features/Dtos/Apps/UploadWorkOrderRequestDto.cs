@@ -14,6 +14,10 @@ namespace FMSFrontend.Features.Dtos.Apps
 
         public List<UploadWorkItemDto> workItems { get; set; }
         public List<UploadElectrodeItemDto> electrodeItems { get; set; }
+
+        // ★ 新增：電極 / 工件 CSV 檔完整路徑（可以為 null / 空）
+        public string electrodeCsvPath { get; set; }
+        public string workpieceCsvPath { get; set; }
     }
 
     public class UploadWorkItemDto

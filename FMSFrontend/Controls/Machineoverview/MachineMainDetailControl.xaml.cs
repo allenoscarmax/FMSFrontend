@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Windows.Controls.Primitives;
 using System.Windows.Shapes;
 
 namespace FMSFrontend.Controls
@@ -46,6 +47,16 @@ namespace FMSFrontend.Controls
                     if (DataContext is MachineMainDetailViewModel vm)
                         vm.MachineInfoTabControlSelectedIndex = index;
                 }
+            }
+        }
+        private void ToggleRoot_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is Grid grid && grid.TemplatedParent is ToggleButton toggle)
+            {
+                string state = toggle.IsChecked == true ? "CheckedInstant" : "UncheckedInstant";
+
+                // ★ 切到無動畫的狀態
+                VisualStateManager.GoToState(toggle, state, false);
             }
         }
     }

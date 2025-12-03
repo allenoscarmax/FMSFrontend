@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:local="clr-namespace:FMSFrontend.Extensions"
+        xmlns:local="clr-namespace:FMSFrontend.Extensions" 
+        xmlns:covs="clr-namespace:FMSFrontend.Converters" 
         mc:Ignorable="d"
         Title="上傳工單"
         Width="1280"
@@ -22,6 +23,7 @@
         <local:BoolToToolTipConverter x:Key="BoolToToolTipConverter"/>
         <!-- 修正 Visibility 綁定：加入標準的 BooleanToVisibilityConverter -->
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <covs:InverseBoolConverter x:Key="InverseBoolConverter" />
     </Window.Resources>
 
     <Border Background="White" CornerRadius="10" Padding="0" Effect="{DynamicResource ShadowEffect}" BorderBrush="#CCC" BorderThickness="1">
@@ -196,8 +198,18 @@
                 <!--按鈕:清除 -->
                 <Button Content="🗑 Clear/清除" Width="180" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="Gray" Margin="0,0,10,0" Command="{Binding ClearButtonCommand}" />
                 <!-- 按鈕:上傳 -->
-                <Button Content="⏫ Upload/上傳" Width="180" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Command="{Binding UpdataButtonCommand}" />
+                <Button Content="⏫ Upload/上傳" Width="180" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Command="{Binding UpdataButtonCommand}" IsEnabled="{Binding IsUploading, Converter={StaticResource InverseBoolConverter}}" />
             </StackPanel>
+
+            <!-- 上傳中遮罩 -->
+            <Grid Background="#80000000" Visibility="{Binding IsUploading, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Row="1">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF333333">
+                    <TextBlock Text="上傳中，請稍候..." Foreground="White" FontSize="16" Margin="0,0,0,10" HorizontalAlignment="Center" />
+                    <ProgressBar IsIndeterminate="True" Width="200" Height="6" />
+                </StackPanel>
+            </Grid>
         </Grid>
+        
+        
     </Border>
 </Window>

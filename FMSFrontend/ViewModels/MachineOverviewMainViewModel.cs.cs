@@ -49,6 +49,7 @@ namespace FMSFrontend.ViewModels
 
         [ObservableProperty] private int selectedTabIndex = 0; // 預設選 EDM
 
+
         [ObservableProperty] private double cardOpacity = 1.0; // 卡片透明度（用於淡入效果）
 
         // 讓 Content 能通知 UI 更新（使用手動屬性確保型別為 UserControl）
@@ -86,6 +87,7 @@ namespace FMSFrontend.ViewModels
 
             _ = _machineLiveUpdater.UpdateStatusAsync();
             RefreshFromStore();
+            RebuildFilteredMachines();
         }
         public void OnPageActivated()
         {
@@ -99,7 +101,7 @@ namespace FMSFrontend.ViewModels
             _timer.Stop();
             _timer = null!;
         }
-       
+        /*  先前版本
         void RefreshFromStore()
         {
             if (Machines != null)
@@ -164,7 +166,7 @@ namespace FMSFrontend.ViewModels
                 UpdataFilteredMachines(MachineType.STATION);
             }
             RemoveFilteredMachines();
-           
+
             if (SelectedMachine == null && FilteredMachines.Count > 0)
             {
                 SelectedMachine = FilteredMachines[0];
@@ -178,7 +180,112 @@ namespace FMSFrontend.ViewModels
                     CurrentMachineDetailContent = new MachineStationControl(SelectedMachine, this);
             }
         }
+        */
+        void RefreshFromStore()
+        {
+            // 1) 同步 AllMachines（新增 / 更新 / 移除）
+            if (Machines != null)
+            {
+                foreach (var machine in Machines)
+                {
+                    var existingCard = AllMachines
+                        .FirstOrDefault(c => c.MachineName == machine.MachineName &&
+                                             c.Type != MachineType.STATION);
 
+                    if (existingCard != null) // 更新機台卡片
+                    {
+                        existingCard.Status = machine.Status;
+                        existingCard.Type = MapToMachineType(machine.Type);
+                    }
+                    else // 新增機台卡片
+                    {
+                        AllMachines.Add(new MachineOverviewCard
+                        {
+                            MachineName = machine.MachineName,
+                            Type = MapToMachineType(machine.Type),
+                            Status = machine.Status
+                        });
+                    }
+                }
+
+                // 移除不存在的機台卡片（用倒序迴圈避免邊走邊刪）
+                for (int i = AllMachines.Count - 1; i >= 0; i--)
+                {
+                    var card = AllMachines[i];
+                    if (card.Type == MachineType.STATION) continue;
+
+                    if (!Machines.Any(m => m.MachineName == card.MachineName))
+                    {
+                        AllMachines.RemoveAt(i);
+                    }
+                }
+            }
+
+            // 2) Station 卡（單一張）
+            if (AllMachines.Count > 0)
+            {
+                var stationCard = AllMachines.FirstOrDefault(c => c.Type == MachineType.STATION);
+                if (stationCard == null)
+                {
+                    AllMachines.Add(new MachineOverviewCard
+                    {
+                        MachineName = "工作站",
+                        Type = MachineType.STATION,
+                        Status = Station != null ? "Running" : ""
+                    });
+                }
+                else
+                {
+                    stationCard.Status = Station != null ? "Running" : "";
+                }
+            }
+
+            // 3) 更新畫面上「已經存在」的 FilteredMachines 狀態（不重建清單）
+            foreach (var card in FilteredMachines)
+            {
+                var src = AllMachines.FirstOrDefault(m =>
+                    m.MachineName == card.MachineName &&
+                    m.Type == card.Type);
+
+                if (src != null)
+                {
+                    card.Status = src.Status;
+                    card.Type = src.Type; // 基本上不太會變，但寫著也沒關係
+                }
+            }
+
+            // 4) 如果一開始什麼都還沒有，第一次進來幫你建一次清單/預設選項
+            if (FilteredMachines.Count == 0 && AllMachines.Count > 0)
+            {
+                RebuildFilteredMachines();
+                if (FilteredMachines.Count > 0 && SelectedMachine == null)
+                {
+                    SelectedMachine = FilteredMachines[0];
+                    _machineLiveUpdater.SelectName = SelectedMachine.MachineName;
+
+                    CurrentMachineDetailContent = SelectedMachine.Type == MachineType.EDM
+                        ? new MachineMainDetailControl(SelectedMachine, this)
+                        : new MachineStationControl(SelectedMachine, this);
+                }
+            }
+        }
+        void RebuildFilteredMachines()
+        {
+            FilteredMachines.Clear();
+
+            IEnumerable<MachineOverviewCard> source = SelectedTabIndex switch
+            {
+                0 => AllMachines, // ALL
+                1 => AllMachines.Where(m => m.Type == MachineType.EDM),
+                2 => AllMachines.Where(m => m.Type == MachineType.STATION),
+                _ => AllMachines
+            };
+
+            foreach (var m in source)
+                FilteredMachines.Add(m);
+        }
+
+        /* 先前版本
         int FilterCnt = 0;
         void FilteredMachinesInit()
         {
@@ -207,7 +314,7 @@ namespace FMSFrontend.ViewModels
             {
                 FilteredMachines.RemoveAt(FilteredMachines.Count - 1); 
             }
-        }
+        }*/
         private static MachineType MapToMachineType(string s)
         {
             return s switch
@@ -217,28 +324,19 @@ namespace FMSFrontend.ViewModels
                 _ => MachineType.EDM,
             };
         }
-        private static async ValueTask CloseUserControlAsync(UserControl? control, CancellationToken ct = default)
-        {
-            if (control is null) return;
-
-            if (control is IAsyncDisposable asyncDisposable)
-            {
-                await asyncDisposable.DisposeAsync();
-            }
-            else if (control is IDisposable disposable)
-            {
-                disposable.Dispose();
-            }
-
-            control.Visibility = System.Windows.Visibility.Collapsed;
-        }
 
         [RelayCommand]
         private async Task SelectMachine(MachineOverviewCard? card)
         {
             if (card is null) return;
+
+            // ⭐ 如果點到的是同一張卡片，就什麼都不做，避免重建畫面
+            if (SelectedMachine == card && CurrentMachineDetailContent != null)
+                return;
+
             SelectedMachine = card;
             _machineLiveUpdater.SelectName = SelectedMachine.MachineName;
+
             if (CurrentMachineDetailContent is IAsyncDisposable asyncDisposable)
             {
                 await asyncDisposable.DisposeAsync();
@@ -247,12 +345,40 @@ namespace FMSFrontend.ViewModels
             {
                 disposable.Dispose();
             }
-            if (card.Type == MachineType.EDM)
-                CurrentMachineDetailContent = new MachineMainDetailControl(card, this);
-            else
-                CurrentMachineDetailContent = new MachineStationControl(card, this);
+
+            CurrentMachineDetailContent = card.Type == MachineType.EDM
+                ? new MachineMainDetailControl(card, this)
+                : new MachineStationControl(card, this);
+        }
+        partial void OnSelectedTabIndexChanged(int value)
+        {
+            // 1) 根據 Tab 重建卡片列
+            RebuildFilteredMachines();
+
+            if (FilteredMachines.Count == 0)
+                return;
+
+            // 2) 如果原本選的機台不在新的清單裡，就選第一台
+            if (SelectedMachine == null ||
+                !FilteredMachines.Contains(SelectedMachine))
+            {
+                SelectedMachine = FilteredMachines[0];
+                _machineLiveUpdater.SelectName = SelectedMachine.MachineName;
+
+                // 重建詳細內容
+                if (CurrentMachineDetailContent is IAsyncDisposable asyncDisposable)
+                    _ = asyncDisposable.DisposeAsync();
+                else if (CurrentMachineDetailContent is IDisposable disposable)
+                    disposable.Dispose();
+
+                CurrentMachineDetailContent = SelectedMachine.Type == MachineType.EDM
+                    ? new MachineMainDetailControl(SelectedMachine, this)
+                    : new MachineStationControl(SelectedMachine, this);
+            }
+            // 如果原本選的機台還在清單裡，就什麼都不做，下面畫面保持不動
         }
 
+        /*  先前版本
         // 修正：移除重複定義，並避免每次切換 Tab 強制清空 SelectedMachine
         partial void OnSelectedTabIndexChanged(int value)
         {
@@ -277,6 +403,7 @@ namespace FMSFrontend.ViewModels
                     : new MachineStationControl(SelectedMachine, this);
             }
         }
+        */
     }
 
     public partial class MachineOverviewCard : ObservableObject

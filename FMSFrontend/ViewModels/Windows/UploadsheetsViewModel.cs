@@ -52,6 +52,8 @@ namespace FMSFrontend.ViewModels.Windows
 
         [ObservableProperty]
         private bool showWorkpieceSection;
+        [ObservableProperty]
+        private bool isUploading;
 
         // ▼ 下拉選單：機台
         [ObservableProperty]
@@ -426,19 +428,27 @@ namespace FMSFrontend.ViewModels.Windows
         {
             ElectrodeItems.Clear();
             WorkItems.Clear();
+            selectedWorkCsvPath = "尚未選擇檔案";
+            selectedEleCsvPath = "尚未選擇檔案";
         }
 
         [RelayCommand]
         private async Task UpdataButton()
         {
+            if (IsUploading)
+                return; // 防止連點
+
             var selectedWorks = WorkItems.Where(w => w.IsSelected).Select(w=> new UploadWorkItemDto {workpieceName = w.WorkpieceName, measurementProgram = w.MeasurementProgram }).ToList();
             var selectedEles = ElectrodeItems.Where(e => e.IsSelected).Select(e => new UploadElectrodeItemDto { electrodeName = e.ElectrodeName,
             measurementProgram = e.MeasurementProgram, lifeTimes = e.LifeTimes,
             offsetStatus = e.OffsetStatus, share = e.Share,
             shareElectrode = e.ShareElectrode, shareId = e.ShareId,}).ToList();
-            
-            if(!selectedWorks.Any() && !selectedEles.Any())
+
+            if (!selectedWorks.Any() && !selectedEles.Any())
+            {
+                _windowService.ShowMessage("請選擇工件或電極");
                 return;
+            }
 
             var dto = new UploadWorkOrderRequestDto
             {
@@ -447,21 +457,38 @@ namespace FMSFrontend.ViewModels.Windows
                 setupUser = "admin",
                 workItems = selectedWorks,
                 electrodeItems = selectedEles,
+                // 把 UI 綁定的兩個路徑送到後端
+                workpieceCsvPath = selectedWorkCsvPath != "尚未選擇檔案" ? selectedWorkCsvPath : null,
+                electrodeCsvPath = selectedEleCsvPath != "尚未選擇檔案" ? selectedEleCsvPath : null,
+
+
+
             };
 
-            var result = await _worksheetAppService.Upload(dto);
-            if(result.success)
-            {
-                _windowService.ShowMessage("上傳成功");
-            }
-            else
-            {
-                // 補上 else 的內容
-                var msg = string.IsNullOrWhiteSpace(result?.message)
-                    ? "上傳失敗（未知錯誤）"
-                    : $"上傳失敗：{result.message}";
 
-                _windowService.ShowMessage(msg);
+
+            IsUploading = true;
+            try
+            {
+                var result = await _worksheetAppService.Upload(dto);
+
+                if (result?.success == true)
+                {
+                    _windowService.ShowMessage("上傳成功");
+                }
+                else
+                {
+                    var msg = string.IsNullOrWhiteSpace(result?.message)
+                        ? "上傳失敗（未知錯誤）"
+                        : $"上傳失敗：{result.message}";
+
+                    _windowService.ShowMessage(msg);
+                }
+            }
+            finally
+            {
+                IsUploading = false;
+                ClearButton();
             }
 
             //            bool ok = false;

@@ -1,12 +1,15 @@
-﻿using System.Collections.ObjectModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Models;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq; // 需要
 using System.Runtime.CompilerServices;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Linq; // 需要
 using System.Windows.Media.Animation;
 
 namespace FMSFrontend.ViewModels.Factory
@@ -22,6 +25,13 @@ namespace FMSFrontend.ViewModels.Factory
             get => isEditMode;
             set { isEditMode = value; OnPropertyChanged(); }
         }
+
+        // 可以放在 ViewModel / code-behind 的欄位
+        private readonly HashSet<string> _validRobotPositions =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            { "EW1", "EDM1", "EDM2", "EDM3", "ASE1" };
+
+        private string _currentRobotPosition;  // 記住目前畫面上的位置（選用）
 
 
         /// <summary>
@@ -75,20 +85,48 @@ namespace FMSFrontend.ViewModels.Factory
             if (robot == null || target == null || ReferenceEquals(robot, target))
                 return;
 
-            // 計算目標 X/Y（置中對齊，Y 放在軌道上方一點）
-            var targetWidth = target.Width > 0 ? target.Width : 150;
-            var robotWidth = robot.Width > 0 ? robot.Width : 130;
+            double targetX;
 
-            var targetX = target.X + (targetWidth - robotWidth) / 2.0;
+            // ============================
+            // ⭐ 特例：EDM1 要排在「軌道的最右側」
+            // ============================
+            if (string.Equals(target.Id, "EDM1", StringComparison.OrdinalIgnoreCase))
+            {
+                var track = Find(TrackId);
+                if (track != null)
+                {
+                    // 手臂放軌道最右側（扣掉自己的寬）
+                    targetX = track.X + track.Width - robot.Width - 5;  // -5 可微調間距
+                }
+                else
+                {
+                    targetX = target.X; // 找不到軌道就退回普通模式
+                }
+            }
+            else
+            {
+                // ============================
+                // ⭐ 一般機台：置中對齊
+                // ============================
+                var targetWidth = target.Width > 0 ? target.Width : 150;
+                var robotWidth = robot.Width > 0 ? robot.Width : 130;
 
-            var targetY = robot.Y; // 預設不動 Y
-            var track = Find(TrackId);
-            if (track != null && robot.Height > 0)
-                targetY = track.Y - robot.Height + 1;
+                targetX = target.X + (targetWidth - robotWidth) / 2.0;
+            }
 
-            // 🔔 通知 View（UserControl）去做動畫
+            // ============================
+            // ⭐ Y 座標：放在軌道上方
+            // ============================
+            var targetY = robot.Y;
+            var trackNode = Find(TrackId);
+
+            if (trackNode != null && robot.Height > 0)
+                targetY = trackNode.Y - robot.Height + 1;
+
+            // ⭐ 通知前端動畫
             RobotMoveRequested?.Invoke(robot, targetX, targetY);
         }
+
 
         private void AlignRobotToTargetX(MachineNode robot, MachineNode target)
         {
@@ -107,11 +145,46 @@ namespace FMSFrontend.ViewModels.Factory
             }
         }
         /// </summary>
-
-
-        public FactoryLayoutViewModel()
+        //控制區按鈕
+        public RobotStore RobotStore { get; }
+        public Robot Robot => RobotStore.Robot;
+        public FactoryLayoutViewModel(RobotStore store)
         {
+            RobotStore = store;
+            // 監聽 Robot 的屬性變化
+            Robot.PropertyChanged += RobotOnPropertyChanged;
             UpdateHighlight(); // 初始化一次
+            
+        }
+        private void RobotOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Robot.CurrentLocation))
+            {
+                SyncRobotPositionFromStore();
+            }
+        }
+        /// <summary>
+        /// 根據 Robot.CurrentLocation 更新畫面上的手臂位置
+        /// </summary>
+        private void SyncRobotPositionFromStore()
+        {
+            var pos = Robot.CurrentLocation;
+
+            if (string.IsNullOrWhiteSpace(pos))
+                return;
+
+            if (!_validRobotPositions.Contains(pos))
+                return;
+
+            // 找出對應 Machine（Id 要是 EDM1 / EDM2 / EDM3 / EW1 / ASE1）
+            var target = Machines.FirstOrDefault(
+                m => string.Equals(m.Id, pos, StringComparison.OrdinalIgnoreCase));
+
+            if (target == null)
+                return;
+
+            // 這是你原本的移動函式
+            SetRobotAt(target.Id);
         }
 
         public async Task SaveLayoutAsync(string path)
@@ -130,20 +203,20 @@ namespace FMSFrontend.ViewModels.Factory
             if (nodes == null) return;
             Machines.Clear();
             foreach (var n in nodes) Machines.Add(n);
-            
-            /*
-            //測試
-            Machines.Clear();
-            Machines.Add(new MachineNode { Id = "EDM1", DisplayName = "EDM1", X = 80, Y = 60, IconPath = Pack("Image/MachineIcons/EDM.png") });
-            Machines.Add(new MachineNode { Id = "EDM2", DisplayName = "EDM2", X = 300, Y = 60, IconPath = Pack("Image/MachineIcons/EDM.png") });
-            Machines.Add(new MachineNode { Id = "EDM3", DisplayName = "EDM3", X = 520, Y = 60, IconPath = Pack("Image/MachineIcons/EDM.png") });
-         
-            Machines.Add(new MachineNode { Id = "ROBOT", DisplayName = "Robot", X = 80, Y = 250, Width = 130, Height = 130, IconPath = Pack("Image/MachineIcons/Robot.png") });
 
-            Machines.Add(new MachineNode { Id = "Track", DisplayName = "", X = 80, Y = 400, Width = 850, Height = 80, IconPath = Pack("Image/MachineIcons/long-track.png") });
-            Machines.Add(new MachineNode { Id = "FMS", DisplayName = "FMS", X = 80, Y = 500, IconPath = Pack("Image/MachineIcons/FMS.png") });
-            Machines.Add(new MachineNode { Id = "ES1", DisplayName = "ES1", X = 300, Y = 500, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/Magzine.png") });
-            */
+
+            //////測試
+            //Machines.Clear();
+            //Machines.Add(new MachineNode { Id = "EDM1", DisplayName = "EDM1", X = 780, Y = 230, Width = 180, Height = 200, IconPath = Pack("Image/MachineIcons/EDM.png") });
+            //Machines.Add(new MachineNode { Id = "EDM2", DisplayName = "EDM2", X = 520, Y = 60, Width = 200, Height = 200, IconPath = Pack("Image/MachineIcons/EDM.png") });
+            //Machines.Add(new MachineNode { Id = "EDM3", DisplayName = "EDM3", X = 250, Y = 60, Width = 200, Height = 200, IconPath = Pack("Image/MachineIcons/EDM.png") });
+
+            //Machines.Add(new MachineNode { Id = "ROBOT", DisplayName = "Robot", X = 0, Y = 250, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/Robot.png") });
+
+            //Machines.Add(new MachineNode { Id = "Track", DisplayName = "", X = 0, Y = 400, Width = 760, Height = 80, IconPath = Pack("Image/MachineIcons/long-track.png") });
+            //Machines.Add(new MachineNode { Id = "ASE1", DisplayName = "ASE1", X = -20, Y = 500, Width = 800, Height = 150, IconPath = Pack("Image/MachineIcons/FMS.png") });
+            //Machines.Add(new MachineNode { Id = "EW1", DisplayName = "EW1", X = 520, Y = 430, Width = 230, Height = 230, IconPath = Pack("Image/MachineIcons/Magzine.png") });
+
 
 
         }
