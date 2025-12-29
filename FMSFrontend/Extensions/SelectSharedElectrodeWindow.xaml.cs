@@ -23,19 +23,13 @@ namespace FMSFrontend.Extensions
     /// </summary>
     public partial class SelectSharedElectrodeWindow : Window
     {
-        string _targetElectrodeName; // Share 時傳入的工件名稱
-        public SelectSharedElectrodeWindow(string targetElectrodeName)
+        public SelectSharedElectrodeWindow(SelectSharedElectrodeViewModel viewModel)
         {
-            var httpService = new HttpService();
-            var windowService = new WindowService();
-            var electrodeService = new ElectrodeService(httpService);
-            var worksheetsService = new WorksheetsService(httpService);
-            _targetElectrodeName = targetElectrodeName;
-        InitializeComponent();
-            var vm = new SelectSharedElectrodeViewModel(worksheetsService, electrodeService, Owner, _targetElectrodeName);
+            var vm = viewModel;
             DataContext = vm;
-
-
+            InitializeComponent();
+           
+           
             // 訂閱 ViewModel 的關閉事件
             this.Loaded += (s, e) =>
             {

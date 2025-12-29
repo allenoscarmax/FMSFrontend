@@ -73,6 +73,8 @@ namespace FMSFrontend
             services.AddSingleton<IAlarmService, AlarmService>();
             services.AddSingleton<IWorksheetAppService, WorksheetAppService>();
 
+            services.AddSingleton<IAuthorizationService, AuthorizationService>();
+
 
             // === Singleton ===
             services.AddSingleton<AlarmStore>();
@@ -84,7 +86,8 @@ namespace FMSFrontend
             services.AddSingleton<StationStore>();
             services.AddSingleton<StorageStore>();
             services.AddSingleton<MachineStore>();
-      
+            services.AddSingleton<UserSession>();
+
 
             // ==LiveUpdater===
             services.AddSingleton<AlarmLiveUpdater>();
@@ -106,7 +109,7 @@ namespace FMSFrontend
             RegisterViews(services);
 
             // === Window 註冊 ===
-        //    RegisterWindows(services);
+            RegisterWindows(services);
 
 
             // === MainWindow ===
@@ -122,29 +125,6 @@ namespace FMSFrontend
             // 啟動主視窗
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
-        }
-        private static void RegisterAllSingletons(IServiceCollection services)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-
-            var types = assembly.GetTypes()
-                .Where(t => !t.IsInterface && !t.IsAbstract &&
-                       (t.Name.EndsWith("Service") ||
-                        t.Name.EndsWith("Store") ||
-                        t.Name.EndsWith("LiveUpdater")));
-
-            foreach (var implType in types)
-            {
-                var interfaceType = implType.GetInterfaces().FirstOrDefault();
-                if (interfaceType != null)
-                {
-                    services.AddSingleton(interfaceType, implType);
-                }
-                else
-                {
-                    services.AddSingleton(implType);  // 沒有介面也直接註冊自己
-                }
-            }
         }
         private void RegisterViewModels(IServiceCollection services)
         {
@@ -172,13 +152,27 @@ namespace FMSFrontend
             services.AddTransient<MaterialPairViewModel>();
             services.AddTransient<ProbePairViewModel>();
             services.AddTransient<ShowMaterialWindowViewModel>();
+            services.AddTransient<ShowMaterialInformationViewModel>();
 
             services.AddTransient<TaskListViewModel>();
             services.AddTransient<FactoryLayoutViewModel>();
             services.AddTransient<FactoryOverviewPageViewModel>();
 
+            services.AddTransient<MachineStationViewModel>();
+            services.AddTransient<SelectWorksheetWindowViewModel>();
+            services.AddTransient<SelectItemWindowViewModel>();
+
+
             //Windows
-            //  services.AddTransient<SelectSharedElectrodeViewModel>();
+            services.AddTransient<SelectSharedElectrodeViewModel>();
+            services.AddTransient<UploadSheetViewModel>();
+            services.AddTransient<ProbePairViewModel>();
+            services.AddTransient<LoginViewModel>();
+            services.AddTransient<ShutdownWindowViewModel>();
+            services.AddTransient<AddWorkerViewModel>();
+            services.AddTransient<ShowMachineWindowViewModel>();
+            services.AddTransient<ShowRobotViewModel>();
+            services.AddTransient<ReviseProcessViewModel>();
         }
         private void RegisterViews(IServiceCollection services)
         {
@@ -193,18 +187,35 @@ namespace FMSFrontend
             services.AddTransient<RFIDBind>();
             services.AddTransient<SettingsView>();
             services.AddTransient<WorkOrder>();
-            services.AddTransient<MaterialPairWindow>();
-            services.AddTransient<ProbePairWindow>();
-            services.AddTransient<ShowMaterialWindow>();
             services.AddTransient<MachineMainDetailControl>();
-
             services.AddTransient<TaskListControl>();
             services.AddTransient<FactoryOverviewPage>();
         }
 
         private void RegisterWindows(IServiceCollection services)
         {
+
             services.AddTransient<SelectSharedElectrodeWindow>();
+            services.AddTransient<UploadsheetsWindow>();
+            services.AddTransient<MaterialPairWindow>();
+            services.AddTransient<ShowMaterialWindow>();
+            services.AddTransient<ShowMaterialInformationWindow>();
+            services.AddTransient<ProbePairWindow>();
+            services.AddTransient<SelectWorksheetWindow>();
+            services.AddTransient<SelectItemWindow>();
+            services.AddTransient<LoginWindow>();
+            services.AddTransient<ShutdownWindow>();
+            services.AddTransient<AddWorrkerWindow>();
+            services.AddTransient<ShowMachineWindow>();
+            services.AddTransient<ShowRobotWindow>();
+            services.AddTransient<ReviseProcessWindow>();
+
+            
+
+
+
+
+
         }
 
     }

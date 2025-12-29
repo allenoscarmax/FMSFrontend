@@ -21,8 +21,6 @@ namespace FMSFrontend.ViewModels.Windows
 {
     public partial class ShowMachineWindowViewModel : ObservableObject
     {
-        public ProductionLinesViewModel _parent;
-
         // === Services ===
         public readonly IWindowService _windowService;
         private readonly IWorksheetsService _worksheetsService;
@@ -31,35 +29,34 @@ namespace FMSFrontend.ViewModels.Windows
         [ObservableProperty] private string deviceName = "設備名稱";
         [ObservableProperty] private MachineInfo info = new();
         public ObservableCollection<WorkOrderRow> WorkOrders { get; } = new();
-        public ShowMachineWindowViewModel(object? machineCard, ProductionLinesViewModel parent)
+        public ShowMachineWindowViewModel(
+        IWindowService windowService,
+        IWorksheetsService worksheetsService,
+        IMachinesService machinesService)
         {
-            _parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            _windowService = windowService;
+            _worksheetsService = worksheetsService;
+            _machinesService = machinesService;
+        }
+        /// <summary>
+        /// 由 WindowService / 呼叫端注入哪一台機台的卡片。
+        /// </summary>
+        public void Initialize(MachineCardViewModel m)
+        {
+            DeviceName = m.MachineName ?? "設備名稱";
+            Info.MachineTypeName = m.MachineTypeName;
+            Info.EquipmentName = m.MachineName ?? "";
+            Info.EquipmentType = m.Type.ToString();
+            Info.ModelNo = m.MachineName ?? "";
+            Info.MainProgramName = m.MainProgramName;
+            Info.MachineState = m.Status;
+            Info.CycleTime = m.CycleTime;
+            Info.ElectrodeName = m.ElectrodeName;
+            Info.WorkSheetName = m.onDeckWorksheetSerial;
+            Info.WorkPieceName = m.WorkpieceName;
 
-            _windowService = parent._windowService;
-            _worksheetsService = parent._worksheetsService;
-            _machinesService = parent._MachinesService;
-
-            if (machineCard is MachineCardViewModel m)
-            {
-                DeviceName = m.MachineName ?? "設備名稱";
-                Info.MachineTypeName = m.MachineTypeName;       // 給 Converter 用（EDM/CNC/ZNC…）
-
-                Info.EquipmentName = m.MachineName ?? "";       // 0.設備名稱
-                Info.EquipmentType = m.Type.ToString();         // 1.設備類型
-                Info.ModelNo = m.MachineName ?? "";             // 2.設備型號
-                Info.MainProgramName = m.MainProgramName;       // 3.當前程式
-                Info.MachineState = m.Status;                   // 4.機台狀態
-                Info.CycleTime = m.CycleTime;                   // 5.狀態持續時間
-                Info.ElectrodeName = m.ElectrodeName;           // 6.電極名稱
-                Info.WorkSheetName = m.onDeckWorksheetSerial;   // 7.工單名稱
-                Info.WorkPieceName = m.WorkpieceName;           // 8.電極名稱
-            }
-            else
-            {
-                // 若沒帶入卡片 VM，保留預設
-                DeviceName = "設備名稱";
-            }
-
+            // 如果你之後要在這裡撈工單清單，也可以用 _worksheetsService / _machinesService
+            // 去填 WorkOrders
         }
         // 日期篩選選項
         public List<string> DateFilterOptions { get; set; } = new() { "今天", "前7天", "自訂" };

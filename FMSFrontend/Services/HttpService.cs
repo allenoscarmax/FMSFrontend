@@ -1,4 +1,5 @@
-﻿using IniFile;
+﻿using FMSFrontend.Models;
+using IniFile;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -12,6 +13,7 @@ namespace FMSFrontend.Services
     public class HttpService : IHttpService
     {
         private readonly HttpClient _httpClient;
+        private readonly GlobalProperties _global;
         private readonly JsonSerializerOptions _jsonOptions = new()
         {
             PropertyNameCaseInsensitive = true
@@ -20,10 +22,11 @@ namespace FMSFrontend.Services
         private const string DefaultScheme = "http";
         private const int DefaultPort = 5032;
 
-        public HttpService()
+        public HttpService(GlobalProperties global)
         {
             _httpClient = new HttpClient();
-
+            _global = global;
+            _httpClient.Timeout = TimeSpan.FromSeconds(30);
             // 初始化 ServerIp（從 INI 載入）
             var ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             var ip = ini.Read("Prarm", "IP");
@@ -32,6 +35,14 @@ namespace FMSFrontend.Services
                 // 僅設定 ServerIp，不修改 HttpClient 屬性，避免已發送請求後拋例外
                 UpdateServerIp(ip);
             }
+        }
+
+        private bool ShouldBlockApiCall()
+        {
+            // 建議用你前面討論的規則：Open 或 HalfOpen 都擋（避免雪崩）
+            if (_global.IsOpen) return true;
+            if (_global.IsHalfOpen) return true;
+            return false;
         }
 
         // 建立絕對 URL 字串（若 route 已是絕對 URL，則直接回傳）
@@ -66,8 +77,10 @@ namespace FMSFrontend.Services
 
         public async Task<bool> SendPutAsync<T>(string route, T payload)
         {
+            if (ShouldBlockApiCall())
+                return default;
             try
-            {
+            { 
                 var url = BuildUrl(route);
                 using var resp = await _httpClient.PutAsJsonAsync(url, payload, _jsonOptions).ConfigureAwait(false);
                 return resp.IsSuccessStatusCode;
@@ -87,6 +100,11 @@ namespace FMSFrontend.Services
         // 改為有過濾的 GetJsonAsync：當回傳為 null / undefined / 空陣列 / 空字串 時回傳 null (default)
         public async Task<T?> GetJsonAsync<T>(string route, CancellationToken cancellationToken = default)
         {
+            bool isHealth = route.StartsWith("/Health/", StringComparison.OrdinalIgnoreCase);
+
+            if (!isHealth && ShouldBlockApiCall())
+                return default;
+
             try {
                 var url = BuildUrl(route);
                 using var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
@@ -116,6 +134,9 @@ namespace FMSFrontend.Services
         // 取得原始字串（不反序列化）
         public async Task<string?> GetJsonAsyncNoDeserialize(string route, CancellationToken cancellationToken = default)
         {
+            if (ShouldBlockApiCall())
+                return default;
+
             var url = BuildUrl(route);
             using var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
 
@@ -189,6 +210,9 @@ namespace FMSFrontend.Services
     TRequest payload,
     CancellationToken cancellationToken = default)
         {
+            if (ShouldBlockApiCall())
+                return default;
+
             var url = BuildUrl(route);
             using var response = await _httpClient.PutAsJsonAsync(url, payload, _jsonOptions, cancellationToken).ConfigureAwait(false);
 

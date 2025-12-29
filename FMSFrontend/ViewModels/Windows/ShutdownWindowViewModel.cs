@@ -12,11 +12,16 @@ namespace FMSFrontend.ViewModels.Windows
         // 使用 [ObservableProperty] 屬性，它會自動生成 IsRobotRunning 屬性
         // 並處理 INotifyPropertyChanged 的通知
         [ObservableProperty]
-        private bool _isRobotRunning;
+        private bool _isRobotRunning = false;
         [ObservableProperty]
         private string _shutdownMessage ="";
 
-        public ShutdownWindowViewModel(bool isRobotRunning)
+        public ShutdownWindowViewModel()
+        {
+            // 不塞東西，避免破壞 DI
+        }
+
+        public void Initialize(bool isRobotRunning)
         {
             _isRobotRunning = isRobotRunning;
             UpdateMessage();

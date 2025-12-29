@@ -51,22 +51,34 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty]
         private string machineName = string.Empty; // 機台名稱
 
-        public MachineStationViewModel(MachineOverviewCard machine, MachineOverviewMainViewModel parant)
+        public MachineStationViewModel(IWindowService windowService,
+        IHttpService httpService,
+        IPlcService plcService,
+        StationStore stationStore)
         {
-            _windowService = new WindowService(); // 新增這一行，確保 _windowService 被初始化
-            MachineImagePath = machine.MachineImagePath;
-            MachineName = machine.MachineName;
-            _httpService = new HttpService();
-            _plcService = new PlcService(_httpService);
-            _store = parant._stationStore;
+            _windowService = windowService;
+            _httpService = httpService;
+            _plcService = plcService;
+            _store = stationStore;
 
-            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1000) };
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
             _timer.Tick += (_, __) => RefreshFromStore();
-            _timer.Start();
 
             // 初始化一次顯示資料
             RefreshFromStore();
         }
+
+        // 由外部把「要顯示哪一台機」與「父 VM」丟進來
+        public void Initialize(MachineOverviewCard machine, MachineOverviewMainViewModel parent)
+        {
+            MachineImagePath = machine.MachineImagePath;
+            MachineName = machine.MachineName;
+
+
+            RefreshFromStore();
+            _timer.Start();
+        }
+
 
         int Cnt = 0;
         void RefreshFromStore()

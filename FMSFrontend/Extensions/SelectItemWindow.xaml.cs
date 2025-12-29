@@ -19,12 +19,12 @@ namespace FMSFrontend.Extensions
     /// </summary>
     public partial class SelectItemWindow : Window
     {
-        public SelectItemWindow(SelectItemType type, Func<SelectItemType, IEnumerable<SelectItem>>? dataLoader = null)
+        public SelectItemWindow(SelectItemWindowViewModel vm)
         {
             InitializeComponent();
 
             // 直接設置 DataContext（你的 XAML 沒有設 DataContext）
-            DataContext = new SelectItemWindowViewModel(type, dataLoader);
+            DataContext = vm;
         }
     }
 

@@ -10,6 +10,7 @@ using FMSFrontend.ViewModels.Windows;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel; // for PropertyChangedEventArgs
 using System.Diagnostics;
 using System.Linq;  // ← 需要
 using System.Security.Permissions;
@@ -18,7 +19,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
-using System.ComponentModel; // for PropertyChangedEventArgs
+using static FMSFrontend.ViewModels.ProductionLinesViewModel;
 //using System.Collections.Specialized;
 namespace FMSFrontend.ViewModels.Production
 {
@@ -134,9 +135,9 @@ namespace FMSFrontend.ViewModels.Production
         }
 
         [RelayCommand]
-        private void OpenMaterial(Slot slot)
+        private async Task OpenMaterial(Slot slot) //打開材料資訊視窗
         {
-            _parent.OpenMaterial(slot);
+            await _parent.OpenMaterialAsync(slot, MaterialOpenMode.SlotWindow);
         }
     }
 }

@@ -12,12 +12,24 @@ namespace FMSFrontend.ViewModels.Windows
         [ObservableProperty] private string password = string.Empty;
         [ObservableProperty] private string message = "";
 
-        public List<LoginInfo> Workers { get; } = new();
-        public LoginViewModel(List<LoginInfo> workers)
+        public List<LoginInfo> Workers { get; private set; } = new();
+
+        public LoginViewModel()
         {
-            if (workers != null)
-                Workers = workers;
+            // 這裡可以初始化其他東西，Workers 預設為空 List
         }
+
+        /// <summary>
+        /// 由 WindowService 呼叫，注入員工清單與預設帳號。
+        /// </summary>
+        public void Initialize(List<LoginInfo> workers, string initialUserName)
+        {
+            Workers = workers ?? new List<LoginInfo>();
+
+            if (!string.IsNullOrWhiteSpace(initialUserName))
+                Name = initialUserName;
+        }
+
         [RelayCommand]
         private void LoginClick()
         {

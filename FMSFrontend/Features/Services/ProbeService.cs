@@ -14,6 +14,8 @@ namespace FMSFrontend.Features.Services
         Task<List<ProbeDto>?> DB_GetAllProbeAsync(CancellationToken ct = default);                        // GET  Probe/DB_GetAllProbe
         Task<ProbeDto?> DB_GetProbeByTagSerialAsync(string tagSerial, CancellationToken ct = default); // GET  Probe/DB_GetProbeByTagSerial/{TagSerial}
         Task<ProbeDto?> DB_GetProbeByIdAsync(string id, CancellationToken ct = default);            // GET  Probe/DB_GetProbeById/{Id}
+
+        Task<bool> DB_SetProbeRestrictionByTagSerialAsync(string tagSerial, bool restriction, CancellationToken ct = default);
     }
 
     public class ProbeService : IProbeService
@@ -44,5 +46,9 @@ namespace FMSFrontend.Features.Services
         /// <summary>以 Id 取得單筆探針</summary>
         public async Task<ProbeDto?> DB_GetProbeByIdAsync(string id, CancellationToken ct = default)
             => await _http.GetJsonAsync<ProbeDto>($"Probe/DB_GetProbeById/{Enc(id)}", ct);
+
+        public async Task<bool> DB_SetProbeRestrictionByTagSerialAsync(string tagSerial, bool restriction, CancellationToken ct = default)
+            => await _http.SendPutAsync($"Probe/DB_SetProbeRestrictionbyTagSerial/{Enc(tagSerial)}/{restriction.ToString().ToLower()}", new { });
+
     }
 }

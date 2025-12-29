@@ -20,6 +20,7 @@ namespace FMSFrontend.Models
         // 斷路器參數（可視需求調整）
         [ObservableProperty] private int _consecutiveFailures;    // 連續失敗數
         [ObservableProperty] private DateTime _openUntil;         // 開路到何時（冷卻時間）
+        public DateTime LastProbeAtUtc { get; set; } = DateTime.MinValue;
 
         public bool IsOpen => DateTime.UtcNow < OpenUntil;       // 斷路器是否開路（拒絕）
         public bool IsHalfOpen => !IsOpen && !IsServerAlive;      // 半開：允許少量探測
@@ -38,6 +39,30 @@ namespace FMSFrontend.Models
 
             if (ConsecutiveFailures >= threshold)
                 OpenUntil = DateTime.UtcNow.AddSeconds(coolDownSeconds); // 開路冷卻
+        }
+
+        public bool CanCallBusinessApi()
+        {
+            // 開路期間全部拒絕
+            if (IsOpen) return false;
+
+            // 你目前的 HalfOpen 定義其實代表「不確定活著」
+            // 建議：半開仍拒絕業務 API（只讓 health probe 去證明恢復）
+            if (IsHalfOpen) return false;
+
+            return true;
+        }
+        public bool CanProbeHealth(int openStateMinIntervalSeconds = 10, int normalMinIntervalSeconds = 3)
+        {
+            var now = DateTime.UtcNow;
+            var minInterval = IsOpen ? TimeSpan.FromSeconds(openStateMinIntervalSeconds)
+                                     : TimeSpan.FromSeconds(normalMinIntervalSeconds);
+
+            if (now - LastProbeAtUtc < minInterval)
+                return false;
+
+            LastProbeAtUtc = now;
+            return true;
         }
     }
 }

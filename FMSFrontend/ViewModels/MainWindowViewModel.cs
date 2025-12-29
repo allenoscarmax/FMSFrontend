@@ -4,6 +4,7 @@ using FMSFrontend.Extensions;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
+using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
@@ -33,13 +34,16 @@ namespace FMSFrontend.ViewModels
 
         private readonly IHttpService _httpService;
         private readonly IRobotService _robotService;
-
+        private readonly IWorkerService _workerService;
+        private readonly IWindowService _windowService;
+        private readonly IAlarmService _alarmService;
+        private readonly IPlcService _PlcService;
+        private readonly IAuthorizationService _auth;
 
 
         public GlobalProperties _globalProperties { get; }
         public AlarmPageViewModel AlarmVM { get; }
-        //警報
-        private readonly IAlarmService _alarmService;
+        
         public AlarmStore AlarmStore { get; }
         public AlarmGroupModel AlarmGroup => AlarmStore.AlarmGroup;
 
@@ -62,7 +66,6 @@ namespace FMSFrontend.ViewModels
         public RobotStore RobotStore { get; }
 
         private List<string> RobotNames = new List<string>() ;
-        //[ObservableProperty] private Robot _robot = new Robot();
         public Robot Robot => RobotStore.Robot;
 
 
@@ -84,13 +87,20 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private Brush dispatchBackground = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
         [ObservableProperty] private Brush dispatchForeground = new SolidColorBrush(Color.FromRgb(0x00, 0x4E, 0x79));
 
-        //PLC
-        private readonly IPlcService _PlcService;
+        // 新增：控制按鈕是否可以按 (IsEnabled)
+        [ObservableProperty] private bool isStartEnabled;
+        [ObservableProperty] private bool isPauseEnabled;
+        [ObservableProperty] private bool isStopEnabled;
+
+        
         public PlcStore PlcStore { get; }
         public MagazinePara MagazinePara => PlcStore.MagazinePara;
+            private readonly UserSession _userSession;
+        public UserSession UserSession => _userSession;
+
 
         // ASRS 參數輪詢計時器
-       // DispatcherTimer? asrsTimer;
+        // DispatcherTimer? asrsTimer;
         // ✅ 新增：關機儲存UI設定
         public void SaveCurrentStoragePageType()
         {
@@ -112,21 +122,29 @@ namespace FMSFrontend.ViewModels
             IRobotService robotService,
             IPlcService plcService , 
             IAlarmService alarmService,
+            IWorkerService workerService,
+            IWindowService windowService,
+            IAuthorizationService auth,
             AlarmPageViewModel alarmVM, 
             RobotStore store, 
             PlcStore plcStore,
             AlarmStore alarmStore,
-            GlobalProperties globalProperties)
+            GlobalProperties globalProperties,
+            UserSession userSession)
         {
             _httpService = httpService;
             _robotService = robotService;
             _alarmService = alarmService;
             _PlcService = plcService;
+            _workerService = workerService;
+            _windowService = windowService;
+            _auth = auth;
 
             RobotStore = store;
             PlcStore = plcStore;
             AlarmStore = alarmStore;
             _globalProperties = globalProperties;
+            _userSession = userSession;
 
             // 使用 DispatcherTimer 在 UI Thread 週期性更新時間（比起背景執行緒直接更新屬性更安全且不會產生跨執行緒問題）
             var timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Normal, (s, e) =>
@@ -190,16 +208,36 @@ namespace FMSFrontend.ViewModels
             StartStatus = start;
             StartBackground = start ? Dark : Light;
             StartForeground = start ? Light : Dark;
-
-            // Pause（修正原本的誤設）
+            // Pause
             PauseStatus = pause;
             PauseBackground = pause ? Dark : Light;
             PauseForeground = pause ? Light : Dark;
-
             // Stop
             StopStatus = stop;
             StopBackground = stop ? Dark : Light;
             StopForeground = stop ? Light : Dark;
+            // --- 2. 新增：按鈕啟用邏輯 ---
+            if (start)
+            {
+                // 當 AsrsControlState = Started：
+                IsStartEnabled = true; // 已經啟動了，不用再按
+                IsPauseEnabled = true;  // Pause 按鈕 enable
+                IsStopEnabled = false;  // Stop 按鈕 disabled (需求指定)
+            }
+            else if (pause)
+            {
+                // 當 AsrsControlState = Paused：
+                IsStartEnabled = true;  // Start 按鈕 enable (恢復執行)
+                IsPauseEnabled = true; // 已經暫停了，不用再按
+                IsStopEnabled = true;   // Stop 按鈕 enable
+            }
+            else // 假設其餘情況視為 Stopped
+            {
+                // 當 AsrsControlState = Stopped：
+                IsStartEnabled = true;  // Start 按鈕 enable
+                IsPauseEnabled = false; // Pause 按鈕 disable
+                IsStopEnabled = true;  // 已經停止了，不用再按
+            }
 
             // Dispatch
             DispatchStatus = r.DispatchEnabled;
@@ -208,110 +246,6 @@ namespace FMSFrontend.ViewModels
             DispatchForeground = DispatchStatus ? Light : Dark;
         }
 
-        //讀取初始參數
-        /*
-        private async Task MainWindowViewModelAsync_Init()
-        {
-            try  //取得Robot資料
-            {
-                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Robot/DB_GetAllRobots", default);
-                List<DBRobots> list = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
-                     JsonSerializer.Deserialize<List<DBRobots>>(json.Value.GetRawText()) ?? new List<DBRobots>() :
-                     new List<DBRobots>();
-               
-            }
-            catch { }
-            _ = FetchASRSParameterAsync();
-            
-            // Start ASRS parameter polling timer
-            asrsTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, async (s, e) =>
-            {
-                await FetchRobotAsync();
-                await FetchASRSParameterAsync();
-                await FetchDoorAsync();
-            }, Application.Current.Dispatcher);
-            asrsTimer.Start();
-        }
-        //輪尋讀取ASRS參數
-        private async Task FetchRobotAsync()
-        {
-            JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("Robot/DB_GetAllRobots", default);
-            if (json.HasValue)
-            {
-                var root = json.Value;
-                if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
-                {
-                    List<DBRobots> List = JsonSerializer.Deserialize<List<DBRobots>>(root.GetRawText()) ?? new();
-                    if (List != null && List.Count > 0)
-                    {
-                        DBRobots a = List[0];
-                        Robot.TagSerial = a.onDeckObjSerial;
-                        Robot.Name = a.robotName;
-                        Robot.SelectedRobotIndexDisplay = "1 / 1";
-                    }
-                }
-                else return;
-            }
-            if (CurrentPageKey == "ProductionLines")
-            {
-                var s = $"Electrode/DB_GetElectrodesByTagSerial/{Robot.TagSerial}";
-                json = await _httpService.GetJsonAsync<JsonElement>(s, default);
-                if (json.HasValue)
-                {
-                    var root = json.Value;
-                    if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
-                    {
-                        List<Electrode> List = JsonSerializer.Deserialize<List<Electrode>>(root.GetRawText()) ?? new();
-                        if (List != null && List.Count > 0)
-                        {
-                            Electrode a = List[0];
-                            Robot.MaterialKind = "電極";
-                            Robot.MaterialName = "電極: " + a.electrodeName;
-                            return;
-                        }
-                    }
-                }
-
-                string wroute = $"Workpiece/DB_GetWorkpieceByTagSerial/{Robot.TagSerial}";
-                json = await _httpService.GetJsonAsync<JsonElement>(wroute, default);
-                if (json.HasValue)
-                {
-                    var root = json.Value;
-                    if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
-                    {
-                        List<Workpiece> List = JsonSerializer.Deserialize<List<Workpiece>>(root.GetRawText()) ?? new();
-                        if (List != null && List.Count > 0)
-                        {
-                            Workpiece a = List[0];
-                            Robot.MaterialKind = "工件";
-                            Robot.MaterialName = "工件: " + a.workpieceName;
-                            return;
-                        }
-                    }
-                }
-            }
-            Robot.MaterialName = "";
-        }
-       
-        private async Task FetchDoorAsync()
-        {
-            try
-            {
-                JsonElement? json = await _httpService.GetJsonAsync<JsonElement>("PLC/GetALLMagazinePara", default);
-                MagazinePara p = (json.HasValue && json.Value.ValueKind != JsonValueKind.Undefined) ?
-                      JsonSerializer.Deserialize<MagazinePara>(json.Value.GetRawText()) ?? new MagazinePara() :
-                      new MagazinePara();
-                if (p != null)
-                {
-                    UpperDoorLights1[0] = p.ShouldScanEle ? Brushes.Lime : Brushes.Gray;
-                    UpperDoorLights2[0] = p.EleMagzineDoorOpen[0] ? Brushes.Lime : Brushes.Gray;
-                    LowerDoorLights1[0] = p.ShouldScanPart ? Brushes.Lime : Brushes.Gray;
-                    LowerDoorLights2[0] = p.PartMagzineDoorOpen[0] ? Brushes.Lime : Brushes.Gray;
-                }
-            }
-            catch { }
-        }
-         */
         #region PageChange
 
         [RelayCommand]
@@ -454,19 +388,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void PowerButtonClick()
         {
-            // MessageBox.Show("關機囉！");
-
-            // 1. 建立 ViewModel 的實例
-            var viewModel = new ShutdownWindowViewModel(false);
-
-            // 2. 建立視窗的實例
-            var dialog = new ShutdownWindow();
-
-            // 3. 將 ViewModel 設定為視窗的 DataContext
-            dialog.DataContext = viewModel;
-
-            // 4. 顯示視窗
-            dialog.ShowDialog();
+            _windowService.ShowShutdownWindow(isRobotRunning: false);
         }
         #endregion
 
@@ -474,56 +396,68 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void Logout()
         {
-            LoggedInUser = string.Empty;
-            var dialog = new DialogMessageWindow("您已成功登出！");
-            dialog.ShowDialog();
+            _userSession.SignOut();
+            _windowService.ShowMessage("您已成功登出！");
         }
         #endregion
 
         #region Login
-        public static bool LoginFlag = false;
-        public static string UserName = "";
+      
         [RelayCommand]
         private async Task Login()
         {
+            if(!_globalProperties.IsServerAlive)
+            {
+                _windowService.ShowMessage("伺服器斷線，請確認");
+                return;
+            }
             try
             {
-                IWorkerService workerService = new WorkerService(_httpService);
-                List<WorkerDto> dtos =  await workerService.GetAllWorkerAsync()?? new();
-                if (dtos.Count > 0)
+                var dtos = await _workerService.GetAllWorkerAsync() ?? new();
+
+                if (dtos.Count == 0)
                 {
-                    var LoginDatas = new List<LoginInfo>();
-                    for (int i = 0; i < dtos.Count; i++)
-                    {
-                        LoginDatas.Add(new LoginInfo
-                        {
-                            Name = dtos[i].WorkerNumber,
-                            Password = dtos[i].Password
-                        });
-                    }
-                    var win = new LoginWindow(LoginDatas, UserName);
-                    var result = win.ShowDialog();
-                    if (result == true && !string.IsNullOrWhiteSpace(win.ViewModel.Name))
-                    {
-                        UserName = win.ViewModel.Name;
-                        LoggedInUser = UserName; // 使用者輸入的名稱
-                        LoginFlag = true;
-                        var dialog = new DialogMessageWindow($"歡迎登入，{LoggedInUser}！").ShowDialog();
-                    }
+                    _windowService.ShowMessage("目前無員工資料");
+                    return;
                 }
-                else
+
+                var loginDatas = dtos.Select(dto => new LoginInfo
                 {
-                    var dialog = new DialogMessageWindow($"目前無員工資料").ShowDialog();
+                    Name = dto.WorkerNumber,
+                    Password = dto.Password
+                }).ToList();
+
+                // 傳入目前登入者作為預設值
+                var loginName = _windowService.ShowLoginWindow(
+                    loginDatas,
+                    _userSession.UserName);
+
+                if (!string.IsNullOrWhiteSpace(loginName))
+                {
+                    _userSession.SignIn(loginName);
+                    _windowService.ShowMessage($"歡迎登入，{loginName}！");
                 }
             }
-            catch { }
+            catch
+            {
+                _windowService.ShowMessage("登入過程發生錯誤");
+            }
         }
+
         #endregion
 
         #region ControlUnit Start Pause Stop  Reset Dispatch
         [RelayCommand]
         private async Task RobotStartButtonClick()
         {
+            if (!_auth.RequireLogin())
+                return;
+
+            if (!Robot.IsRobotConnected)
+            {
+                 _windowService.ShowMessage("機器人未連線，無法啟動");
+                return;
+            }
             if (!StartStatus)
             {
                 try
@@ -536,7 +470,7 @@ namespace FMSFrontend.ViewModels
                         var success = await _robotService.SetRobotStartAsync();
                         if (!success)
                         {
-                            new DialogMessageWindow("API 回傳失敗").ShowDialog();
+                            new DialogMessageWindow("忙碌中").ShowDialog();
                             return;
                         }
 
@@ -557,6 +491,13 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private async Task RobotPauseButtonClick()
         {
+            if (!_auth.RequireLogin())
+                return;
+            if (!Robot.IsRobotConnected)
+            {
+                _windowService.ShowMessage("機器人未連線，無法執行");
+                return;
+            }
             if (!PauseStatus)
             {
                 try
@@ -569,7 +510,7 @@ namespace FMSFrontend.ViewModels
                         var success = await _robotService.SetRobotPauseAsync();
                         if (!success)
                         {
-                            new DialogMessageWindow("API 回傳失敗").ShowDialog();
+                            new DialogMessageWindow("忙碌中").ShowDialog();
                             return;
                         }
 
@@ -591,6 +532,12 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private async Task RobotStopButtonClick()
         {
+
+            if (!Robot.IsRobotConnected)
+            {
+                _windowService.ShowMessage("機器人未連線，無法執行");
+                return;
+            }
             if (!StopStatus)
             {
                 try
@@ -603,7 +550,7 @@ namespace FMSFrontend.ViewModels
                         var success = await _robotService.SetRobotStopAsync();
                         if (!success)
                         {
-                            new DialogMessageWindow("API 回傳失敗").ShowDialog();
+                            new DialogMessageWindow("忙碌中").ShowDialog();
                             return;
                         }
 
@@ -624,12 +571,19 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private async Task RobotResetButtonClick()
         {
+            if (!_auth.RequireLogin())
+                return;
+            if (!Robot.IsRobotConnected)
+            {
+                _windowService.ShowMessage("機器人未連線，無法執行");
+                return;
+            }
             try
             {
                 var success = await _robotService.ASRSRobotResetStatusAsync(0);
                 if (!success)
                 {
-                    new DialogMessageWindow("API 回傳失敗").ShowDialog();
+                    new DialogMessageWindow("忙碌中").ShowDialog();
                     return;
                 }
             }
@@ -641,6 +595,8 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private async Task RobotDispatchButtonClick()
         {
+            if (!_auth.RequireLogin())
+                return;
             var target = !DispatchStatus;
             try
             {
@@ -650,12 +606,6 @@ namespace FMSFrontend.ViewModels
                     new DialogMessageWindow("Dispatch Fail").ShowDialog();
                     return;
                 }
-
-                // 成功更新畫面
-               // DispatchStatus = target;
-               // DispatchText = DispatchStatus ? "派工中" : "派工啟動";
-               // DispatchBackground = DispatchStatus ? Dark : Light;
-               // DispatchForeground = DispatchStatus ? Light : Dark;
             }
             catch
             {

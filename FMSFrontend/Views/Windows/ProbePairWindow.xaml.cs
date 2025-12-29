@@ -24,37 +24,13 @@ namespace FMSFrontend.Views.Windows
     /// </summary>
     public partial class ProbePairWindow : Window
     {
-        public ProbePairWindow()
+        public ProbePairWindow(ProbePairViewModel probePairViewModel)
         {   
             InitializeComponent();
-            var windowService = new WindowService();
-            var httpService = new HttpService();
 
-            // 建立必要服務 (需傳入 httpService)
-            var electrodeService = new ElectrodeService(httpService);
-            var probeService = new ProbeService(httpService);
-            var rfidService = new RfidService(httpService);
-            var workpieceService = new WorkpieceService(httpService);
-            var worksheetsService = new WorksheetsService(httpService);
-
-            // 建立資料存放與即時更新元件 (RFIDBindLiveUpdater 需 rfidService 與 store)
-            var rfidBindStore = new RFIDBindStore();
-            var rfidBindLiveUpdater = new RFIDBindLiveUpdater(rfidService, rfidBindStore);
-
-            DataContext = new ProbePairViewModel(
-                this,
-                windowService,
-                httpService,
-                electrodeService,
-                probeService,
-                rfidService,
-                workpieceService,
-                worksheetsService,
-                rfidBindStore,
-                rfidBindLiveUpdater
-            );
-            Loaded += (_, __) => ((ProbePairViewModel)DataContext).OnPageActivated();
-            Unloaded += (_, __) => ((ProbePairViewModel)DataContext).OnPageDeactivated();
+            DataContext = probePairViewModel;
+            Loaded += (_, __) => probePairViewModel.OnPageActivated();
+            Unloaded += (_, __) => probePairViewModel.OnPageDeactivated();
         }
         private void Close_Click(object sender, RoutedEventArgs e)
         {

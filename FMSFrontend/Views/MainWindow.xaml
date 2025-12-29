@@ -87,10 +87,23 @@
                             <TextBlock Text="{Binding CurrentDateTime}" FontSize="14" Foreground="White" VerticalAlignment="Center" DockPanel.Dock="Left" Margin="10,0,0,0" />
 
                             <!-- 右側：登入資訊 -->
+                            <!-- 右側：登入資訊 -->
+                            <!-- 右側：登入資訊 -->
                             <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,8,0">
 
                                 <!-- 未登入 -->
-                                <StackPanel Orientation="Horizontal" Visibility="{Binding LoggedInUser, Converter={StaticResource LoginVisibility_Null}}">
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding UserSession.IsLoggedIn}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+
                                     <materialDesign:PackIcon Kind="AccountOutline" Width="24" Height="24" Foreground="#808080" VerticalAlignment="Center" Margin="0,0,5,0" />
                                     <Button Width="36" Height="36" Background="#A7A7A780" BorderBrush="{x:Null}" Command="{Binding LoginCommand}">
                                         <Button.ToolTip>
@@ -108,9 +121,20 @@
                                 </StackPanel>
 
                                 <!-- 已登入 -->
-                                <StackPanel Orientation="Horizontal" Visibility="{Binding LoggedInUser, Converter={StaticResource LoginVisibility_NotNull}}">
-                                    <materialDesign:PackIcon Kind="Account" Width="24" Height="24" Foreground="White" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding LoggedInUser}" VerticalAlignment="Center" FontSize="16px" Foreground="White" Margin="0,0,5,0" />
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding UserSession.IsLoggedIn}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+
+                                    <materialDesign:PackIcon Kind="Account" Width="24" Height="24" Foreground="White" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding UserSession.UserName}" VerticalAlignment="Center" FontSize="16" Foreground="White" Margin="0,0,5,0" />
                                     <Button Width="36" Height="36" Background="#A7A7A780" BorderBrush="{x:Null}" Command="{Binding LogoutCommand}">
                                         <Button.ToolTip>
                                             <TextBlock Text="登出系統" />
@@ -146,16 +170,26 @@
                             <Border Padding="10" HorizontalAlignment="Center">
                                 <WrapPanel HorizontalAlignment="Center" ItemWidth="120" ItemHeight="120" Orientation="Horizontal">
                                     <!-- 手臂啟動 -->
-                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotStartButtonClickCommand}" Margin="5" Background="{Binding StartBackground}" BorderBrush="{Binding StartForeground}" BorderThickness="2" Focusable="False">
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotStartButtonClickCommand}" IsEnabled="{Binding IsStartEnabled}" Margin="5" Background="{Binding StartBackground}" BorderBrush="{Binding StartForeground}" BorderThickness="2" Focusable="False">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
+                                                <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
                                                     <Border.Effect>
                                                         <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.4" BlurRadius="6" />
                                                     </Border.Effect>
                                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="True" UseLayoutRounding="True" />
                                                 </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter TargetName="border" Property="Background" Value="#E0E0E0" />
+                                                        <Setter TargetName="border" Property="BorderBrush" Value="#A0A0A0" />
+                                                        <Setter TargetName="border" Property="Effect" Value="{x:Null}" />
+                                                        <Setter Property="Opacity" Value="0.5" />
+                                                        <Setter Property="Foreground" Value="Gray" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
                                             </ControlTemplate>
+                                            
                                         </Button.Template>
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                             <materialDesign:PackIcon Kind="Play" Width="60" Height="60" Margin="0,0,0,3" HorizontalAlignment="Center" Foreground="{Binding StartForeground}" />
@@ -164,15 +198,24 @@
                                     </Button>
 
                                     <!-- 手臂暫停 -->
-                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotPauseButtonClickCommand}" Margin="5" Background="{Binding PauseBackground}" BorderBrush="{Binding PauseForeground}" BorderThickness="2" Focusable="False">
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotPauseButtonClickCommand}" IsEnabled="{Binding IsPauseEnabled}" Margin="5" Background="{Binding PauseBackground}" BorderBrush="{Binding PauseForeground}" BorderThickness="2" Focusable="False">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
+                                                <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
                                                     <Border.Effect>
                                                         <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.4" BlurRadius="6" />
                                                     </Border.Effect>
                                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="True" UseLayoutRounding="True" />
                                                 </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter TargetName="border" Property="Background" Value="#E0E0E0" />
+                                                        <Setter TargetName="border" Property="BorderBrush" Value="#A0A0A0" />
+                                                        <Setter TargetName="border" Property="Effect" Value="{x:Null}" />
+                                                        <Setter Property="Opacity" Value="0.5" />
+                                                        <Setter Property="Foreground" Value="Gray" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
                                             </ControlTemplate>
                                         </Button.Template>
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
@@ -182,15 +225,24 @@
                                     </Button>
 
                                     <!-- 手臂停止 -->
-                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotStopButtonClickCommand}" Margin="5" Background="{Binding StopBackground}" BorderBrush="{Binding StopForeground}" BorderThickness="2" Focusable="False">
+                                    <Button Style="{StaticResource ControlCardButtonStyle}" Command="{Binding RobotStopButtonClickCommand}" IsEnabled="{Binding IsStopEnabled}" Margin="5" Background="{Binding StopBackground}" BorderBrush="{Binding StopForeground}" BorderThickness="2" Focusable="False">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
+                                                <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15" SnapsToDevicePixels="True" UseLayoutRounding="True" Padding="5">
                                                     <Border.Effect>
                                                         <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" Opacity="0.4" BlurRadius="6" />
                                                     </Border.Effect>
                                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="True" UseLayoutRounding="True" />
                                                 </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter TargetName="border" Property="Background" Value="#E0E0E0" />
+                                                        <Setter TargetName="border" Property="BorderBrush" Value="#A0A0A0" />
+                                                        <Setter TargetName="border" Property="Effect" Value="{x:Null}" />
+                                                        <Setter Property="Opacity" Value="0.5" />
+                                                        <Setter Property="Foreground" Value="Gray" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
                                             </ControlTemplate>
                                         </Button.Template>
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
@@ -419,26 +471,67 @@
                             </Button>
                             
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right" Margin="0,0,10,0">
-                                <materialDesign:PackIcon Kind="Bug" Width="25" Height="25" Margin="10,0" Foreground="White" VerticalAlignment="Center" />
-                                <materialDesign:PackIcon Kind="Tablet" Width="25" Height="25" Margin="10,0" Foreground="White" VerticalAlignment="Center" />
-                                <materialDesign:PackIcon Kind="AccountAlert" Width="25" Height="25" Margin="10,0" Foreground="White" VerticalAlignment="Center" />
-                                <!-- 新增：後端健康狀態 -->
-                                <materialDesign:PackIcon Kind="Server" Width="25" Height="25" Margin="10,0" VerticalAlignment="Center">
+                                <!--<materialDesign:PackIcon Kind="Bug" Width="25" Height="25" Margin="10,0" Foreground="White" VerticalAlignment="Center" />
+                                <materialDesign:PackIcon Kind="Tablet" Width="25" Height="25" Margin="10,0" Foreground="White" VerticalAlignment="Center" />-->
+                                <materialDesign:PackIcon Kind="AccountAlert" Width="25" Height="25" Margin="10,0" VerticalAlignment="Center" ToolTipService.InitialShowDelay="600">
                                     <materialDesign:PackIcon.Style>
                                         <Style TargetType="materialDesign:PackIcon">
+                                            <!-- 未登入 -->
                                             <Setter Property="Foreground" Value="Gray" />
-                                            <Setter Property="ToolTip" Value="{Binding _globalProperties.LastCheckedAt, StringFormat=Last check: {0:HH:mm:ss}}" />
+                                            <Setter Property="ToolTip" Value="尚未登入" />
+
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding _globalProperties.IsServerAlive}" Value="True">
-                                                    <Setter Property="Foreground" Value="LimeGreen" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding _globalProperties.IsServerAlive}" Value="False">
-                                                    <Setter Property="Foreground" Value="Red" />
+                                                <DataTrigger Binding="{Binding UserSession.IsLoggedIn}" Value="True">
+                                                    <Setter Property="Foreground" Value="White" />
+                                                    <Setter Property="ToolTip" Value="{Binding UserSession.UserName,
+                                            StringFormat=登入中：{0}}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </materialDesign:PackIcon.Style>
                                 </materialDesign:PackIcon>
+                                <materialDesign:PackIcon Kind="Server" Width="25" Height="25" Margin="10,0" VerticalAlignment="Center">
+                                    <materialDesign:PackIcon.Style>
+                                        <Style TargetType="materialDesign:PackIcon">
+                                            <!-- 預設狀態（可視為 Unknown） -->
+                                            <Setter Property="Foreground" Value="Gray" />
+                                            <Setter Property="ToolTipService.InitialShowDelay" Value="600" />
+
+                                            <Style.Triggers>
+
+                                                <!-- Server Alive -->
+                                                <DataTrigger Binding="{Binding _globalProperties.IsServerAlive}" Value="True">
+                                                    <Setter Property="Foreground" Value="LimeGreen" />
+                                                    <Setter Property="ToolTip">
+                                                        <Setter.Value>
+                                                            <StackPanel>
+                                                                <TextBlock Text="後台連線正常" FontWeight="SemiBold" />
+                                                                <TextBlock Text="{Binding _globalProperties.LastCheckedAt,
+                                                  StringFormat=Last check: {0:HH:mm:ss}}" Opacity="0.8" />
+                                                            </StackPanel>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+
+                                                <!-- Server Dead -->
+                                                <DataTrigger Binding="{Binding _globalProperties.IsServerAlive}" Value="False">
+                                                    <Setter Property="Foreground" Value="Red" />
+                                                    <Setter Property="ToolTip">
+                                                        <Setter.Value>
+                                                            <StackPanel>
+                                                                <TextBlock Text="未啟動 / 連線中斷" FontWeight="SemiBold" />
+                                                                <TextBlock Text="{Binding _globalProperties.LastCheckedAt,
+                                                  StringFormat=Last check: {0:HH:mm:ss}}" Opacity="0.8" />
+                                                            </StackPanel>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+
+                                            </Style.Triggers>
+                                        </Style>
+                                    </materialDesign:PackIcon.Style>
+                                </materialDesign:PackIcon>
+
                             </StackPanel>
                         </DockPanel>
                     </Border>

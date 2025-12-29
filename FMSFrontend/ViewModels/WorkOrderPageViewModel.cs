@@ -2,13 +2,17 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging; 
 using　CommunityToolkit.Mvvm.Messaging.Messages;
+using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Dtos.Apps;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
+using FMSFrontend.Models;
 using FMSFrontend.Services;
 using FMSFrontend.Views;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,8 +25,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using FMSFrontend.Models;
-using FMSFrontend.Features.Dtos;
+using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 
 namespace FMSFrontend.ViewModels
 {
@@ -33,8 +36,35 @@ namespace FMSFrontend.ViewModels
         private readonly IProbeService _ProbeService;
         private readonly IElectrodeService _ElectrodeService;
         private readonly IWorksheetsService _WorksheetsService;
+        private readonly IAuthorizationService _auth;
+        private readonly IWorksheetAppService _worksheetAppService;
+        private readonly RobotStore _robotStore;
 
         private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
+
+        private Robot _robot => _robotStore.Robot;
+
+        [ObservableProperty]
+        private int edmSelectedTab;
+
+        [ObservableProperty]
+        private WorkOrderData? selectedEDMQueueItem;
+
+        partial void OnEdmSelectedTabChanged(int value)
+        {
+            // 非 Processing(2) 時，清空選取，避免殘留造成誤判
+            if (value != 2)
+                SelectedEDMQueueItem = null;
+
+            ReviseCommand.NotifyCanExecuteChanged();
+        }
+        partial void OnSelectedEDMQueueItemChanged(WorkOrderData? value)
+        {
+        //    System.Diagnostics.Debug.WriteLine($"SelectedEDMQueueItemChanged: {(value == null ? "null" : value.WorksheetNumber)}");
+            ReviseCommand.NotifyCanExecuteChanged();
+        }
+        private bool CanRevise()
+    => EDMSelectedTab == 2 && SelectedEDMQueueItem != null;
 
         [ObservableProperty]
         private int selectedTabIndexParameter;
@@ -165,6 +195,8 @@ namespace FMSFrontend.ViewModels
             IStorageService storageService,
             IMachinesService machinesService,
             IWorksheetsService worksheetsService,
+            IAuthorizationService auth,
+            IWorksheetAppService worksheetAppService,
             RobotStore robotStore,
             MachineLiveUpdater machineLiveUpdater)
         {
@@ -173,6 +205,9 @@ namespace FMSFrontend.ViewModels
             _ProbeService = probeService;
             _ElectrodeService = electrodeService;
             _WorksheetsService = worksheetsService;
+            _worksheetAppService = worksheetAppService;
+            _auth = auth;
+            _robotStore = robotStore;
 
             // 使用非同步方法刪除：保留 RelayCommand，但在內部啟動 async Task
             DeleteCommand = new RelayCommand<WorkOrderData>(item =>
@@ -193,10 +228,62 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void OpenUploadSheet()
         {
+            if (!_auth.RequireLogin())
+                return;
+
             _WindowService.ShowUploadSheetWindow();
 
             _ = FetchAndBindByStatusAsync();
         }
+
+        [RelayCommand(CanExecute = nameof(CanRevise))]
+        private async Task Revise()
+        {
+            if (!_auth.RequireLogin()) return;
+
+            if (_robot.DispatchEnabled || _robot.IsStarted)
+            {
+                _WindowService.ShowMessage("請先取消機器人啟動狀態與關閉派工功能後，才能進行流程修正。");
+                return;
+            }
+            if (SelectedEDMQueueItem is null)
+            {
+                _WindowService.ShowMessage("請先選擇一筆工單。");
+                return;
+            }
+
+            var action = _WindowService.ShowReviseWindow();    
+
+            if (action is null or ReviseProcessAction.Cancel) return;
+
+            var item = SelectedEDMQueueItem;
+            if (item is null) return; // 防競態
+
+            ReviseWorksheetResultDto result;
+            try
+            {
+                result = await _worksheetAppService.Revise(new ReviseWorksheetRequestDto
+                {
+                    worksheetNumber = item.WorksheetNumber,
+                    action = (Features.Dtos.Apps.ReviseProcessAction)action,
+                    setupUser = "admin",
+                });
+            }
+            catch (Exception ex)
+            {
+                _WindowService.ShowMessage("後端連線失敗：" + ex.Message);
+                return;
+            }
+            if (!result.success)
+            {
+                _WindowService.ShowMessage(result.message);
+                return;
+            }
+
+            _WindowService.ShowMessage(result.message);
+            _WindowService.ShowMessage("請記得手動將電極從機台上移除並重新開啟遠端模式");
+        }
+
         // 最小改動：呼叫後端 API 並綁定到對應的 UI 集合（使用 CancellationToken）
         List<WorksheetsDto> MappedWorksheets(List<WorksheetIncludeTimelineDto> dtos) 
         {
@@ -253,14 +340,14 @@ namespace FMSFrontend.ViewModels
                     }
                 }
                 else
-                    ws = await _WorksheetsService.GetWorkSheetByWorkStatusAsync(status, ct) ?? new List<WorksheetsDto>();
+                    ws = await _WorksheetsService.GetWorkSheetByWorkStatusAsync(status, CancellationToken.None) ?? new List<WorksheetsDto>();
                 WorkOrderList.Clear();
                 FilteredEDMList.Clear();
                 FailureWorkOrders.Clear();
                 foreach (var w in ws)
                 {
                     var workOrder = MapToWorkOrderData(w); // 建立工單資料
-                    var es = await _ElectrodeService.GetElectrodeByWorksheetNumberAsync(w.worksheetNumber ?? string.Empty, ct) // 取得該工單的電極清單
+                    var es = await _ElectrodeService.GetElectrodeByWorksheetNumberAsync(w.worksheetNumber ?? string.Empty, CancellationToken.None) // 取得該工單的電極清單
                              ?? new List<ElectrodeDto>();
                     foreach (var e in es)
                     {
@@ -298,6 +385,8 @@ namespace FMSFrontend.ViewModels
         // 新增：處理刪除工單的非同步方法（包含 UI 確認、API 呼叫與錯誤處理）
         private async Task DeleteWorkOrderAsync(WorkOrderData item)
         {
+            if (!_auth.RequireLogin())
+                return;
             try
             {
                 // 要求使用者確認

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FMSFrontend.ViewModels.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,10 @@ namespace FMSFrontend.Views.Windows
     /// </summary>
     public partial class ShowMaterialInformationWindow : Window
     {
-        public ShowMaterialInformationWindow()
+        public ShowMaterialInformationWindow(ShowMaterialInformationViewModel vm)
         {
             InitializeComponent();
+            DataContext = vm;
         }
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

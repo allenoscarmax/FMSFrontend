@@ -22,27 +22,30 @@ namespace FMSFrontend.ViewModels.Windows
 
     public sealed partial class ShowMaterialWindowViewModel : ObservableObject
     {
-       // private readonly IWindowService _windowService;
-        private readonly IHttpService _httpService;
+        private readonly IWindowService _windowService;
 
         // === Services ===
-        private readonly IStorageService _StorageService;
-        private readonly IElectrodeService _ElectrodeService;
-        private readonly IWorkpieceService _WorkpieceService;
-        private readonly IProbeService _ProbeService;
+        private readonly IElectrodeService _electrodeService;
+        private readonly IWorkpieceService _workpieceService;
+        private readonly IProbeService _probeService;
+        private readonly IStorageService _storageService;
 
 
         // 空畫面
-        public ShowMaterialWindowViewModel(IHttpService httpService)
+        public ShowMaterialWindowViewModel(IWindowService windowService,IElectrodeService electrodeService,
+        IWorkpieceService workpieceService,
+        IProbeService probeService,
+        IStorageService storageService)
         {
             Kind = MaterialKind.None;
 
             DetailViewModel = new EmptyMaterialDetailViewModel();
-            _httpService = httpService;
-            _ElectrodeService = new ElectrodeService(httpService);
-            _WorkpieceService = new WorkpieceService(httpService);
-            _ProbeService = new ProbeService(httpService);
-            _StorageService = new StorageService(httpService);
+
+            _electrodeService = electrodeService;
+            _workpieceService = workpieceService;
+            _probeService = probeService;
+            _storageService = storageService;
+            _windowService = windowService;
         }
 
         [ObservableProperty]
@@ -114,7 +117,13 @@ namespace FMSFrontend.ViewModels.Windows
                 ElectrodeDetailViewModel e = (ElectrodeDetailViewModel)DetailViewModel;
                 try
                 {
-                    var ok = await _ElectrodeService.DB_SetElectrodeRestrictionByTagSerialAsync(e.TagSerial, IsLocked);
+                    bool ok;
+                    if (e.ElectrodeName.Contains("Probe"))
+                    {
+                        ok  = await _probeService.DB_SetProbeRestrictionByTagSerialAsync(e.TagSerial, IsLocked);
+                    }
+                    else
+                        ok = await _electrodeService.DB_SetElectrodeRestrictionByTagSerialAsync(e.TagSerial, IsLocked);
                 }
                 catch { }
             }
@@ -128,7 +137,7 @@ namespace FMSFrontend.ViewModels.Windows
                 WorkpieceDetailViewModel w = (WorkpieceDetailViewModel)DetailViewModel;
                 try
                 {
-                    var ok = await _WorkpieceService.SetWorkpieceRestrictionByTagSerialAsync(w.SerialCode, IsLocked);
+                    var ok = await _workpieceService.SetWorkpieceRestrictionByTagSerialAsync(w.SerialCode, IsLocked);
                 }
                 catch { }
             }
@@ -148,7 +157,7 @@ namespace FMSFrontend.ViewModels.Windows
                     int region = int.Parse(code[2]);
                     int column = int.Parse(code[3]);
                     int row = int.Parse(code[4]);
-                    var ok = await _StorageService.SetRestrictionByLocationAsync(storageName, storageNumber, region, column, row, IsDisabled);
+                    var ok = await _storageService.SetRestrictionByLocationAsync(storageName, storageNumber, region, column, row, IsDisabled);
                 }
                 catch { }
             }

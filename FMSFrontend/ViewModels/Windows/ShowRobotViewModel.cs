@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
 using MongoDB.Bson.IO;
@@ -15,17 +16,15 @@ namespace FMSFrontend.ViewModels.Windows
     public partial class ShowRobotViewModel : ObservableObject
     {
         [ObservableProperty] private RobotDisplayData displayData = new();
-        IRobotService   _robotService;
-        public ShowRobotViewModel(IHttpService httpService, Robot robot)
-        {
-            _robotService = new RobotService(httpService);
+        private readonly IRobotService _robotService;
+        public RobotStore Store { get; }
+        public Robot Robot => Store.Robot;
 
-            DisplayData.RobotName = robot.Name;
-            DisplayData.EquipmentType = robot.EquipmentType;
-            DisplayData.EquipmentModel = robot.EquipmentModel;
-            DisplayData.CurrentProgram = robot.CurrentProgram;
-            DisplayData.MachineState = robot.Status;
-            DisplayData.CurrentMaterial = robot.MaterialShortName;
+        public ShowRobotViewModel(IRobotService robotService, RobotStore store)
+        {
+            _robotService = robotService;
+            Store = store;
+
         }
 
         [RelayCommand]

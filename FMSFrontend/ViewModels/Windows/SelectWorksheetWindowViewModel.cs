@@ -72,16 +72,39 @@ namespace FMSFrontend.ViewModels.Windows
 
         public SelectWorksheetWindowViewModel(IEnumerable<WorksheetItem>? items = null)
         {
-            WorksheetItems = new ObservableCollection<WorksheetItem>(items ?? GetDesignItems());
+            WorksheetItems = new ObservableCollection<WorksheetItem>();
             ItemsView = CollectionViewSource.GetDefaultView(WorksheetItems);
             ItemsView.Filter = FilterItem;
 
-            // ✅ 明確使用 CommunityToolkit 的 RelayCommand
             SearchCommand = new CommunityToolkit.Mvvm.Input.RelayCommand<object?>(OnSearch);
             ConfirmCommand = new CommunityToolkit.Mvvm.Input.RelayCommand<Window?>(OnConfirm, _ => SelectedWorksheet != null);
             CancelCommand = new CommunityToolkit.Mvvm.Input.RelayCommand<Window?>(OnCancel);
+
+            // 設計時預覽資料
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            {
+                LoadDesignItems();
+            }
         }
 
+        // 執行時由 WindowService 呼叫
+        public void Initialize(IEnumerable<WorksheetItem> items)
+        {
+            WorksheetItems.Clear();
+            foreach (var item in items)
+                WorksheetItems.Add(item);
+
+            ItemsView.Refresh();
+        }
+
+        private void LoadDesignItems()
+        {
+            WorksheetItems.Clear();
+            foreach (var item in GetDesignItems())
+                WorksheetItems.Add(item);
+
+            ItemsView.Refresh();
+        }
         private bool FilterItem(object obj)
         {
             if (obj is not WorksheetItem it) return false;

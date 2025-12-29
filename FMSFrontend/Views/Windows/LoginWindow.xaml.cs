@@ -12,15 +12,11 @@ namespace FMSFrontend.Views.Windows
     /// </summary>
     public partial class LoginWindow : Window
     {
-        public LoginViewModel ViewModel { get; }
-        public LoginWindow(List<LoginInfo> workers,string initialUserName)
+
+        public LoginWindow(LoginViewModel viewModel)
         {
             InitializeComponent();
-            ViewModel = new LoginViewModel(workers);
-            if (!string.IsNullOrWhiteSpace(initialUserName))
-                ViewModel.Name = initialUserName;
-            // 關閉視窗事件 (成功登入後 ViewModel 會設定 DialogResult)
-            DataContext = ViewModel;
+            DataContext = viewModel;
         }
 
         // 新增的視窗拖曳事件處理

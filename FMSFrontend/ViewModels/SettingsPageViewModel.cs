@@ -24,8 +24,10 @@ using System.Security;
 
 namespace FMSFrontend.ViewModels
 {
+    
     public partial class SettingsPageViewModel : ObservableObject
     {
+
 
         // ===== 顯示用（你的 XAML 綁在這個上面）=====
         [ObservableProperty] private string periodDisplay = "不設定";
@@ -53,16 +55,18 @@ namespace FMSFrontend.ViewModels
         private readonly IWorkerService _workerService;
         private readonly IAppointmentMaintenanceService _appointmentMaintenanceService;
 
-        public SettingsPageViewModel(IWindowService windowService, IHttpService httpService)
+        public SettingsPageViewModel(IWindowService windowService, IHttpService httpService, IMachinesService machinesService, IRobotService robotService,
+            IDevicesService devicesService, IWorkerService workerService, IAppointmentMaintenanceService appointmentMaintenanceService
+            )
         {
             _windowService = windowService;
             _httpService = httpService;
 
-            _machinesService = new MachinesService(_httpService);
-            _robotService = new RobotService(_httpService);
-            _devicesService = new DevicesService(_httpService);
-            _workerService = new WorkerService(_httpService);
-            _appointmentMaintenanceService = new AppointmentMaintenanceService(_httpService);
+            _machinesService = machinesService;
+            _robotService = robotService;
+            _devicesService = devicesService;
+            _workerService = workerService;
+            _appointmentMaintenanceService = appointmentMaintenanceService;
 
 
             OpenSetPeriodDialogCommand = new RelayCommand(OpenPeriodDialog);
@@ -286,7 +290,7 @@ namespace FMSFrontend.ViewModels
                 new() { Title = "Port", Data = SelectedMachine.Port, Enable = true }
             };
             var win = new EditGridWindow(items, "編輯機台連線參數");
-            if (new EditGridWindow(items, "編輯機台連線參數").ShowDialog() == true)
+            if (win.ShowDialog() == true)
             {
                 try
                 {
@@ -342,7 +346,7 @@ namespace FMSFrontend.ViewModels
                 new() { Title = "IP", Data = SelectedRobot.IpAddress, Enable = true }
             };
             var win = new EditGridWindow(items, "編輯機械手臂連線參數");
-            if (new EditGridWindow(items, "編輯機械手臂連線參數").ShowDialog() == true)
+            if (win.ShowDialog() == true)
             {
                 // 使用顯示集合找出輸入後的值
                 string newIp = win.ViewModel.Display.First(x => x.Title == "IP").Data.Trim();
@@ -389,7 +393,7 @@ namespace FMSFrontend.ViewModels
                 new() { Title = "Port", Data = SelectedDevice.Port, Enable = true }
             };
             var win = new EditGridWindow(items, "編輯裝置連線參數");
-            if (new EditGridWindow(items, "編輯裝置連線參數").ShowDialog() == true)
+            if (win.ShowDialog() == true)
             {
                 // 使用顯示集合找出輸入後的值
                 string newIp = win.ViewModel.Display.First(x => x.Title == "IP").Data.Trim();
@@ -421,60 +425,78 @@ namespace FMSFrontend.ViewModels
             }
         }
         [RelayCommand]
-        private async Task AddWorker() //新增使用者
+        private async Task AddWorker() // 新增使用者
         {
-            // 取得現有使用者清單，傳入新增視窗供重複檢查
-            var existingWorkers = WorkerList.Select(w => new LoginInfo { Name = w.WorkerNumber, Password = w.Psssword }).ToList();
-            var win = new AddWorrkerWindow(existingWorkers, "");
-            if (win.ShowDialog() == true)
-            {
-                try
-                {
-                    bool ok = await _workerService.InsertNewWorkerDataAsync(new WorkerDto
-                    {
-                        WorkerNumber = win.ViewModel.Name,
-                        WorkerName = win.ViewModel.Name,
-                        Password = win.ViewModel.Password
-                    });
-                }
-                catch { }
-                await WorkerRefresh();
-            }
-        }
-        [RelayCommand]
-        private async Task EditWorker() //編輯使用者
-        {
-            // 取得現有使用者清單，傳入新增/編輯視窗供重複檢查
+            var existingWorkers = WorkerList
+                .Select(w => new LoginInfo { Name = w.WorkerNumber, Password = w.Psssword })
+                .ToList();
 
-            var existingWorkers = WorkerList.Select(w => new LoginInfo { Id = w.Id, Name = w.WorkerNumber, Password = w.Psssword }).ToList();
+            var result = _windowService.ShowAddWorkerWindow(existingWorkers, selectedName: string.Empty);
+            if (result == null)
+                return;
+
+            try
+            {
+                bool ok = await _workerService.InsertNewWorkerDataAsync(new WorkerDto
+                {
+                    WorkerNumber = result!.Name,      // result 不為 null 才會走到這裡，所以直接用
+                    WorkerName = result.Name,
+                    Password = result.Password
+                });
+
+                if (!ok)
+                {
+                    _windowService.ShowMessage("新增使用者失敗，請稍後再試");
+                }
+            }
+            catch
+            {
+                _windowService.ShowMessage("新增使用者時發生錯誤");
+            }
+
+            await WorkerRefresh();
+        }
+
+        [RelayCommand]
+        private async Task EditWorker() // 編輯使用者
+        {
+            var existingWorkers = WorkerList
+                .Select(w => new LoginInfo { Id = w.Id, Name = w.WorkerNumber, Password = w.Psssword })
+                .ToList();
+
             if (SelectedWorker == null || string.IsNullOrWhiteSpace(SelectedWorker.WorkerNumber))
             {
                 _windowService.ShowMessage("請先選擇要編輯的使用者");
                 return;
             }
-            // 傳入選取的使用者帳號，視窗將以編輯模式開啟
-            var win = new AddWorrkerWindow(existingWorkers, SelectedWorker.WorkerNumber);
-            if (win.ShowDialog() == true)
+
+            var result = _windowService.ShowAddWorkerWindow(existingWorkers, SelectedWorker.WorkerNumber);
+            if (result == null)
+                return;
+
+            try
             {
-                try
+                bool ok = await _workerService.UpdateWorkerDataAsync(new WorkerDto
                 {
-                    bool ok = await _workerService.UpdateWorkerDataAsync(new WorkerDto
-                    {
-                        Id = SelectedWorker.Id, // ← 修正這裡，原本是 win.ViewModel.Id
-                        WorkerNumber = win.ViewModel.Name,
-                        WorkerName = win.ViewModel.Name,
-                        Password = win.ViewModel.Password
-                    });
-                    if (!ok)
-                    {
-                        _windowService.ShowMessage("使用者更新失敗，請稍後再試");
-                    }
+                    Id = SelectedWorker.Id,
+                    WorkerNumber = result!.Name,      // result 不為 null 才會走到這裡，所以直接用
+                    WorkerName = result.Name,
+                    Password = result.Password
+                });
+
+                if (!ok)
+                {
+                    _windowService.ShowMessage("使用者更新失敗，請稍後再試");
                 }
-                catch { }
-                await WorkerRefresh();
             }
+            catch
+            {
+                _windowService.ShowMessage("使用者更新時發生錯誤");
+            }
+
+            await WorkerRefresh();
         }
-        
+
         [RelayCommand]
         private async Task RemoveWorker() 
         {
@@ -946,5 +968,19 @@ namespace FMSFrontend.ViewModels
                 _windowService.ShowMessage("密碼錯誤，請再試一次");
             }
         }
+
+
+
+        #region 保養
+        [RelayCommand]
+        private void ForceLubrication()
+        {
+            
+
+
+        }
+
+
+        #endregion
     }
 }

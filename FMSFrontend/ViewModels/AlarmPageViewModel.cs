@@ -161,9 +161,9 @@ namespace FMSFrontend.ViewModels
         }
         string GetLevel(string ErrorCode) // 取得警報等級
         {
-            if (ErrorCode.IndexOf("ALARM") != 0)
+            if (ErrorCode.Contains("ALARM"))
                 return "ALARM";
-            else if (ErrorCode.IndexOf("HINT") != 0)
+            else if (ErrorCode.Contains("HINT"))
                 return "HINT";
             else
                 return "INFO";

@@ -45,5 +45,11 @@ namespace FMSFrontend.Features.Dtos.Apps
         public string worksheetNumber { get; set; }
         public bool success { get; set; }
         public string message { get; set; }
+
+        // 新增：程式未上傳的機台（離線 / share 不可用）
+        public List<string> programSkippedMachines { get; set; }
+
+        // 可選：有成功上傳的機台
+        public List<string> programUploadedMachines { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace FMSFrontend.Views
         public WorkOrder(WorkOrderPageViewModel viewModel)
         {
             InitializeComponent();
-            this.PreviewMouseLeftButtonDown += WorkOrder_PreviewMouseLeftButtonDown;
+       //     this.PreviewMouseLeftButtonDown += WorkOrder_PreviewMouseLeftButtonDown;
 
             this.DataContext = viewModel;
 
@@ -44,6 +44,7 @@ namespace FMSFrontend.Views
         }
         private void WorkOrder_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine("WorkOrder_PreviewMouseLeftButtonDown fired");
             // 如果點擊的是 Button，就不處理展開
             if (IsInside<Button>(e.OriginalSource as DependencyObject))
                 return;
@@ -60,7 +61,7 @@ namespace FMSFrontend.Views
                 data.IsExpanded = !data.IsExpanded;
                 row.DetailsVisibility = data.IsExpanded ? Visibility.Visible : Visibility.Collapsed;
 
-                e.Handled = true; // 可選，防止冒泡干擾其他事件
+        //        e.Handled = true; // 可選，防止冒泡干擾其他事件
             }
         }
 

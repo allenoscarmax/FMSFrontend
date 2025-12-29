@@ -113,43 +113,43 @@
 								</Grid.Resources>
 
 								<!-- Row1~Row10 -->
-								<TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="Air Error"/>
+								<TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="空壓異常"/>
 								<TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Air_error}"/>
 								<Border Grid.Row="0" Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 								
-								<TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource LabelText}" Text="Door is open"/>
+								<TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource LabelText}" Text="門開著"/>
 								<TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.DoorisOpen}"/>
 								<Border Grid.Row="0" Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 								
-								<TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text=" RFID is Polarization"/>
+								<TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text="RFID在原點上"/>
 								<TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.RFIDisPolarization						}"/>
 								<Border Grid.Row="1" Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 								
-								<TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource LabelText}" Text="Workpiece on Station:"/>
+								<TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource LabelText}" Text="工件在組裝站上"/>
 								<TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.WorkpieceOnAssemblyStation}"/>
 								<Border Grid.Row="1" Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 								
-								<TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="Incoming Part:"/>
+								<TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="入料通知"/>
 								<TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Notification_IncomingPart}"/>
 								<Border Grid.Row="2"  Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 								
-								<TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource LabelText}" Text=" WaitingWorkpiece"/>
+								<TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource LabelText}" Text="等待工件回來組裝站"/>
 								<TextBlock Grid.Row="2" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.Notification_WaitingWorkpieceReturn}"/>
 								<Border Grid.Row="2" Grid.Column="3"  Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 								
-								<TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="Alarm"/>
+								<TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="異常"/>
 								<TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Alarm}"/>
 								<Border Grid.Row="3" Grid.Column="1"  Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 								
-								<TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource LabelText}" Text="Require IncomingPart"/>
+								<TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource LabelText}" Text="要求入料中"/>
 								<TextBlock Grid.Row="3" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.Require_IncomingPart}"/>
 								<Border Grid.Row="3" Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 								
-								<TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="Require OutcomingPart"/>
+								<TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="要求出料中"/>
 								<TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Require_OutcomingPart}"/>
 								<Border Grid.Row="4"  Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 								
-								<TextBlock Grid.Row="4" Grid.Column="2" Style="{StaticResource LabelText}" Text="Door is locked"/>
+								<TextBlock Grid.Row="4" Grid.Column="2" Style="{StaticResource LabelText}" Text="門關著"/>
 								<TextBlock Grid.Row="4" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.Notification_Doorislocked}"/>
 								<Border Grid.Row="4"  Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 							</Grid>
@@ -238,37 +238,29 @@
                                 </Grid.Resources>
 
                                 <!-- 開門 -->
-                                <TextBlock Grid.Row="0" Grid.Column="0" FontSize="18" Text="開門" VerticalAlignment="Center" Margin="5"/>
+                                <TextBlock Grid.Row="0" Grid.Column="0" FontSize="18" Text="組裝站門" VerticalAlignment="Center" Margin="5"/>
                                 <Button    Grid.Row="0" Grid.Column="1" FontSize="18" Style="{StaticResource BlueButton}"
-											Content="Open" Command="{Binding OpenDoorClickCommand}" Margin="5"/>
+											Content="開門" Command="{Binding OpenDoorClickCommand}" Margin="5"/>
 
                                 <!-- 開燈 -->
-                                <TextBlock Grid.Row="1" Grid.Column="0" FontSize="18" Text="開燈" VerticalAlignment="Center" Margin="5"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" FontSize="18" Text="組裝站燈" VerticalAlignment="Center" Margin="5"/>
                                 <Button    Grid.Row="1" Grid.Column="1" FontSize="18" Style="{StaticResource BlueButton}"
-											Content="Open" Command="{Binding OpenDoorLightClickCommand}" CommandParameter="True" Margin="5"/>
+											Content="開燈" Command="{Binding OpenDoorLightClickCommand}" CommandParameter="True" Margin="5"/>
                                 <Button    Grid.Row="1" Grid.Column="2" FontSize="18" Style="{StaticResource BlueButton}"
-											Content="Close" Command="{Binding OpenDoorLightClickCommand}" CommandParameter="False" Margin="5"/>
+											Content="關燈" Command="{Binding OpenDoorLightClickCommand}" CommandParameter="False" Margin="5"/>
 
                                 <!-- 夾頭 -->
                                 <TextBlock Grid.Row="2" Grid.Column="0" FontSize="18" Text="夾頭" VerticalAlignment="Center" Margin="5"/>
                                 <Button    Grid.Row="2" Grid.Column="1" FontSize="18" Style="{StaticResource BlueButton}"
-											Content="Open" Command="{Binding OpenChuckClickCommand}" CommandParameter="True" Margin="5"/>
+											Content="開爪" Command="{Binding OpenChuckClickCommand}" CommandParameter="True" Margin="5"/>
                                 <Button    Grid.Row="2" Grid.Column="2" FontSize="18" Style="{StaticResource BlueButton}"
-											Content="Close" Command="{Binding OpenChuckClickCommand}" CommandParameter="False" Margin="5"/>
-
-                                <!-- OutcomingPart -->
-                                <TextBlock Grid.Row="3" Grid.Column="0" FontSize="18" Text="送出 (OutcomingPart)" VerticalAlignment="Center" Margin="5"/>
-                                <Button    Grid.Row="3" Grid.Column="1" FontSize="18" Style="{StaticResource BlueButton}"
-											Content="Open" Command="{Binding OutcomingPartClickCommand}" CommandParameter="True" Margin="5"/>
-                                <Button    Grid.Row="3" Grid.Column="2" FontSize="18" Style="{StaticResource BlueButton}"
-												Content="Close" Command="{Binding OutcomingPartClickCommand}" CommandParameter="False" Margin="5"/>
+											Content="關爪" Command="{Binding OpenChuckClickCommand}" CommandParameter="False" Margin="5"/>
 
                                 <!-- IncomingPart -->
-                                <TextBlock Grid.Row="4" Grid.Column="0" FontSize="18" Text="取得 (IncomingPart)" VerticalAlignment="Center" Margin="5"/>
-                                <Button    Grid.Row="4" Grid.Column="1" FontSize="18" Style="{StaticResource BlueButton}"
-											Content="Open" Command="{Binding IncomingPartClickCommand}" CommandParameter="True" Margin="5"/>
-                                <Button    Grid.Row="4" Grid.Column="2" FontSize="18" Style="{StaticResource BlueButton}"
-											Content="Close" Command="{Binding IncomingPartClickCommand}" CommandParameter="False" Margin="5"/>
+                                <TextBlock Grid.Row="3" Grid.Column="0" FontSize="18" Text="取得 (IncomingPart)" VerticalAlignment="Center" Margin="5"/>
+                                <Button    Grid.Row="3" Grid.Column="1" FontSize="18" Style="{StaticResource BlueButton}"
+											Content="要求" Command="{Binding IncomingPartClickCommand}" CommandParameter="True" Margin="5"/>
+                                <Button    Grid.Row="3" Grid.Column="2" FontSize="18" Style="{StaticResource BlueButton}" Content="Close" Command="{Binding IncomingPartClickCommand}" CommandParameter="False" Margin="5" Visibility="Hidden" />
 
                             </Grid>	</Border>
 					</Grid>

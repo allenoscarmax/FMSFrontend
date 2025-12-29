@@ -25,11 +25,12 @@ namespace FMSFrontend.Features.Threading
 
         private async Task PollAsync()
         {
-            // 半開 or 關閉才探測；開路時先等冷卻別一直打
-            if (_global.IsOpen) return;
+            // 開路時也可以探測，但要節流
+            if (!_global.CanProbeHealth(openStateMinIntervalSeconds: 10, normalMinIntervalSeconds: 3))
+                return;
 
             var sw = Stopwatch.StartNew();
-            bool ok = false;
+            bool ok;
             try { ok = await _svc.CheckHealthAsync(); }
             catch { ok = false; }
             finally { sw.Stop(); }
@@ -38,7 +39,7 @@ namespace FMSFrontend.Features.Threading
             _global.LastCheckedAt = DateTime.Now;
 
             if (ok) _global.RecordSuccess();
-            else _global.RecordFailure(); // 內含 threshold/cooldown
+            else _global.RecordFailure();
         }
 
         public void Start() => _timer.Start();

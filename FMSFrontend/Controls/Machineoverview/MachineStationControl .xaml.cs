@@ -1,6 +1,7 @@
 ﻿using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,12 +24,21 @@ namespace FMSFrontend.Controls
     /// </summary>
     public partial class MachineStationControl : UserControl
     {
-        public MachineStationControl(MachineOverviewCard selectedMachine, MachineOverviewMainViewModel _parent )
+        public MachineStationControl(MachineOverviewCard selectedMachine,
+                                MachineOverviewMainViewModel parent)
         {
             InitializeComponent();
-            this.DataContext = new MachineStationViewModel(selectedMachine, _parent);
-            Loaded += (_, __) => ((MachineStationViewModel)DataContext).OnPageActivated();
-            Unloaded += (_, __) => ((MachineStationViewModel)DataContext).OnPageDeactivated();
+
+            // 從 App 的靜態 ServiceProvider 取得 VM
+            var vm = App.ServiceProvider!.GetRequiredService<MachineStationViewModel>();
+
+            // 把「這一格要顯示哪台機」丟給 VM
+            vm.Initialize(selectedMachine, parent);
+
+            DataContext = vm;
+
+            Loaded += (_, __) => vm.OnPageActivated();
+            Unloaded += (_, __) => vm.OnPageDeactivated();
         }
     }
 }

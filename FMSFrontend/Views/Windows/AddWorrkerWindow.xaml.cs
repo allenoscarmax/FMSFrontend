@@ -12,14 +12,13 @@ namespace FMSFrontend.Views.Windows
     /// </summary>
     public partial class AddWorrkerWindow : Window
     {
+
         public AddWorkerViewModel ViewModel { get; }
-        public AddWorrkerWindow(List<LoginInfo> workers, string initialUserName)
+
+        public AddWorrkerWindow(AddWorkerViewModel viewModel)
         {
             InitializeComponent();
-            // 傳遞 initialUserName 給 ViewModel 建構函式
-            ViewModel = new AddWorkerViewModel(workers, initialUserName);
-            if (!string.IsNullOrWhiteSpace(initialUserName))
-                ViewModel.Name = initialUserName;
+            ViewModel = viewModel;
             DataContext = ViewModel;
         }
 

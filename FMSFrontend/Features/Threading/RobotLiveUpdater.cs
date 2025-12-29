@@ -64,8 +64,8 @@ namespace FMSFrontend.Features.Threading
                         if (e != null && e.FirstOrDefault() != null) //為電極
                         {
                             _store.Robot.MaterialName = ((ElectrodeDto)(e.First())).electrodeName;
-                            _store.Robot.MaterialShortName ="電極 : "+
-                                Regex.Match(_store.Robot.MaterialName, @"_(\d+-[A-Za-z0-9]+)").Groups[1].Value;
+                            _store.Robot.MaterialShortName =
+    "電極 : " + (_store.Robot.MaterialName ?? "").PadLeft(7)[^7..];
                             _store.Robot.MaterialKind = "Electrode";
                             return;
                         }
@@ -73,8 +73,8 @@ namespace FMSFrontend.Features.Threading
                         if (w != null) //為工件
                         {
                             _store.Robot.MaterialName = ((WorkpieceDto)w).workpieceName;
-                            _store.Robot.MaterialShortName = "工件 : " +
-                              Regex.Match(_store.Robot.MaterialName, @"-(\d+_\d+-[A-Za-z]+)$").Groups[1].Value;
+                            _store.Robot.MaterialShortName =
+    "工件 : " + (_store.Robot.MaterialName ?? "").PadLeft(7)[^7..];
                             _store.Robot.MaterialKind = "Workpiece";
                             return;
                         }

@@ -222,8 +222,6 @@ namespace FMSFrontend.ViewModels
             _worksheetService = parent._worksheetsService;
             _machinesService = parent._machinesService;
 
-            _machineStore = parent._machineStore;
-
            
 
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };

@@ -11,7 +11,7 @@ namespace FMSFrontend.Extensions
 {
     public partial class SelectItemWindowViewModel : ObservableObject
     {
-        public SelectItemType Type { get; }
+        public SelectItemType Type { get; private set; }
 
         [ObservableProperty] private string title = "選擇物料";
         [ObservableProperty] private Brush titleBrush = Brushes.SlateGray;
@@ -22,70 +22,59 @@ namespace FMSFrontend.Extensions
         public ObservableCollection<SelectItem> Items { get; } = new();
         public ICollectionView ItemsView { get; }
 
-        // 可選：讓外部注入資料載入器（例如 API/Mongo）
-        private readonly Func<SelectItemType, IEnumerable<SelectItem>> _dataLoader;
-
-        public SelectItemWindowViewModel(SelectItemType type, Func<SelectItemType, IEnumerable<SelectItem>>? dataLoader = null)
+        public SelectItemWindowViewModel()
         {
-            Type = type;
-            _dataLoader = dataLoader ?? (_ => Enumerable.Empty<SelectItem>()); // 保證 _dataLoader 不為 null
-
             ItemsView = CollectionViewSource.GetDefaultView(Items);
             ItemsView.Filter = FilterItem;
 
-            SetupByType();
-            LoadData();
+            // 設計時假資料
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            {
+                Initialize(SelectItemType.Electrode, GetDesignItems());
+            }
         }
 
-        private void SetupByType()
+        /// <summary>
+        /// 執行時由 WindowService 呼叫，設定類型與項目清單。
+        /// </summary>
+        public void Initialize(SelectItemType type, IEnumerable<SelectItem> items)
         {
-            switch (Type)
+            Type = type;
+
+            SetupByType(type);
+
+            Items.Clear();
+            foreach (var it in items)
+                Items.Add(it);
+
+            ItemsView.Refresh();
+        }
+
+        private void SetupByType(SelectItemType type)
+        {
+            switch (type)
             {
                 case SelectItemType.Electrode:
                     Title = "選擇電極";
                     TitleBrush = BrushFrom("#4078B3");
-                  //  TitleBrush = (Brush)new BrushConverter().ConvertFrom("#4078B3")?? ;
                     break;
 
                 case SelectItemType.Workpiece:
                     Title = "選擇工件";
                     TitleBrush = BrushFrom("#E27B35");
-                  //  TitleBrush = (Brush)new BrushConverter().ConvertFrom("#E27B35");
+                    break;
+
+                default:
+                    Title = "選擇物料";
+                    TitleBrush = Brushes.SlateGray;
                     break;
             }
         }
 
-
-        private void LoadData()
+        private IEnumerable<SelectItem> GetDesignItems()
         {
-            Items.Clear();
-
-            // 1) 若外部提供 loader，優先用
-            if (_dataLoader != null)
-            {
-                foreach (var it in _dataLoader(Type))
-                    Items.Add(it);
-            }
-            else
-            {
-                // 2) Demo 假資料（你之後可移除）
-                /*
-                if (Type == SelectItemType.Electrode)
-                {
-                    Items.Add(new SelectItem("25-001-015-001A-01", "Verified", Brushes.Green));
-                    Items.Add(new SelectItem("25-001-015-001B-02", "Completed", BrushFrom("#3379FF")));
-                    Items.Add(new SelectItem("25-001-015-001C-03", "OffSelf", Brushes.Gray));
-                }
-                else // Workpiece
-                {
-                    Items.Add(new SelectItem("WP-2025-0001", "Verified", Brushes.Green));
-                    Items.Add(new SelectItem("WP-2025-0002", "Queued", BrushFrom("#E6C229")));
-                    Items.Add(new SelectItem("WP-2025-0003", "Completed", BrushFrom("#3379FF")));
-                }
-                */
-            }
-
-            ItemsView.Refresh();
+            yield return new SelectItem("DEMO-ITEM-01", "Idle", Brushes.Gray);
+            yield return new SelectItem("DEMO-ITEM-02", "Queued", BrushFrom("#E6C229"));
         }
 
         private static Brush BrushFrom(string hex)
@@ -111,31 +100,32 @@ namespace FMSFrontend.Extensions
 
         // 你 TextBox 的 Enter 已用 Converter 篩過了，只要刷新或執行搜尋即可
         [RelayCommand]
-        private void Search(object _)
+        private void Search(object? _)
         {
             ItemsView.Refresh();
         }
 
         // 禁用確認按鈕直到選擇項目後才可使用
         private bool CanConfirm(Window? win) => SelectedItem != null;
+
         [RelayCommand(CanExecute = nameof(CanConfirm))]
         private void Confirm(Window? win)
         {
             if (win == null || SelectedItem == null) return;
-            // 用 Window.Tag 回傳選擇結果（跟你同事風格一致）
+
+            // 用 Window.Tag 回傳選擇結果（跟你現有風格一致）
             win.Tag = SelectedItem;
             win.DialogResult = true;
             win.Close();
         }
 
         [RelayCommand]
-        private void Cancel(Window win)
+        private void Cancel(Window? win)
         {
+            if (win == null) return;
             win.DialogResult = false;
             win.Close();
         }
-
-
     }
     public enum SelectItemType
     {

@@ -17,6 +17,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.PortableExecutable;
+using System.Runtime.Intrinsics.Arm;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Media;
@@ -97,6 +98,7 @@ namespace FMSFrontend.ViewModels.Production
                     MachineCardVm[updateCnt].MainProgramName = Machines[updateCnt].OscarEdm.MainProgramName;
                     MachineCardVm[updateCnt].CycleTime = Machines[updateCnt].OscarEdm.CycleTime;
 
+                    MachineCardVm[updateCnt].Restriction =  !Machines[updateCnt].OscarEdm.CanControl;
                 }
                 while (MachineCardVm.Count > Machines.Count)
                 {
@@ -117,7 +119,10 @@ namespace FMSFrontend.ViewModels.Production
                     MachineCardVm[1].Restriction = false;
                     MachineCardVm[2].Restriction = false;
                 }
-                */
+                //*/
+                //MachineCardVm[0].Restriction = false;
+                //MachineCardVm[1].Restriction = false;
+                //MachineCardVm[2].Restriction = false;
 
             }
             var disp = Application.Current?.Dispatcher;
@@ -155,16 +160,10 @@ namespace FMSFrontend.ViewModels.Production
         [RelayCommand]
         private void OpenMachineWindow(object? machine)   // machine 建議是 MachineCardViewModel
         {
-            _parent.OpenMachineWindow(machine);
-            /* 
-            var vm = new ShowMachineWindowViewModel(machine);
-            var win = new ShowMachineWindow { DataContext = vm };
+            if (machine is not MachineCardViewModel card)
+                return;
 
-            var owner = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
-            if (owner != null) win.Owner = owner;
-
-            win.ShowDialog();
-            */
+            _parent.OpenMachineWindow(card);
         }
     }
 
@@ -206,7 +205,7 @@ namespace FMSFrontend.ViewModels.Production
         {
             //onDeckElectrodeSerial = "3"; // for test
             if (_parent == null) return;
-            _parent.OpenMaterialbySerial(onDeckElectrodeSerial, MaterialType.Electrode);
+            _parent.OpenMaterialInformationBySerialAsync(onDeckElectrodeSerial, MaterialType.Electrode);
         }
 
         [RelayCommand]
@@ -214,7 +213,7 @@ namespace FMSFrontend.ViewModels.Production
         {
             // onDeckWorkpieceSerial = "31"; // for test
             if (_parent == null) return;
-            _parent.OpenMaterialbySerial(onDeckWorkpieceSerial, MaterialType.Workpiece);
+            _parent.OpenMaterialInformationBySerialAsync(onDeckWorkpieceSerial, MaterialType.Workpiece);
         }
     }
     public enum MachineType

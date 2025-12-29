@@ -135,7 +135,7 @@
                                                                         <Border x:Name="Chip" CornerRadius="10" Margin="3,3,3,3" Padding="8,4" Background="#F1F1F1">
                                                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                                                 <materialDesign:PackIcon x:Name="ChipIcon" Kind="AlertOutline" Width="16" Height="16" Margin="0,0,6,0" />
-                                                                                <TextBlock Text="{Binding Code}" />
+                                                                                <TextBlock Text="{Binding Code}" FontSize="16"/>
                                                                             </StackPanel>
                                                                         </Border>
 
@@ -145,14 +145,14 @@
                                                                             <DataTrigger Binding="{Binding Level}" Value="ALARM">
                                                                                 <Setter TargetName="Chip" Property="Background" Value="#F8D1D1" />
                                                                                 <Setter TargetName="ChipIcon" Property="Kind" Value="AlarmLightOutline" />
-                                                                                <Setter TargetName="ChipIcon" Property="Foreground" Value="#B00020" />
+                                                                                <Setter TargetName="ChipIcon" Property="Foreground" Value="#C47F00" />
                                                                             </DataTrigger>
 
                                                                             <!-- 提示：HINT（黃） -->
                                                                             <DataTrigger Binding="{Binding Level}" Value="HINT">
                                                                                 <Setter TargetName="Chip" Property="Background" Value="#F9E6B0" />
                                                                                 <Setter TargetName="ChipIcon" Property="Kind" Value="AlertCircleOutline" />
-                                                                                <Setter TargetName="ChipIcon" Property="Foreground" Value="#C47F00" />
+                                                                                <Setter TargetName="ChipIcon" Property="Foreground" Value="#B00020" />
                                                                             </DataTrigger>
 
                                                                             <!-- 一般：INFO（藍）可選 -->
@@ -167,7 +167,7 @@
                                                             </DataGridTemplateColumn>
 
                                                             <!-- 訊息內容 -->
-                                                            <DataGridTextColumn Header="訊息內容" Width="*" Binding="{Binding Message}" />
+                                                            <DataGridTextColumn Header="訊息內容" Width="*" Binding="{Binding Message}" FontSize="22"/>
                                                             <!-- 若要加來源/機台，取消以下註解
                             <DataGridTextColumn Header="來源/機台"
                                                 Width="180"

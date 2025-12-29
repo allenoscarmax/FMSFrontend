@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Extensions;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
+using FMSFrontend.Interfaces;
 using FMSFrontend.Models;          // WorksheetItem、SelectItem
 using FMSFrontend.Services;       // IWorksheetService、IElectrodeService
 using FMSFrontend.Views.Windows;  // SelectWorksheetWindow、SelectItemWindow
@@ -21,8 +22,8 @@ namespace FMSFrontend.ViewModels.Windows
     {
         private readonly IWorksheetsService _worksheetService;
         private readonly IElectrodeService _electrodeService;
-        private readonly Window _owner;
-        private readonly string _targetElectrodeName; // Share 時傳入的電極名稱
+        private readonly IWindowService _windowService;
+        public string _targetElectrodeName; // Share 時傳入的電極名稱
         
         // 🔹 顯示文字用屬性
         [ObservableProperty] private string? selectedWorkOrderName = "請選擇工單";
@@ -42,15 +43,19 @@ namespace FMSFrontend.ViewModels.Windows
         public event EventHandler<SharedElectrodeSelection>? CloseRequested;
 
         public SelectSharedElectrodeViewModel(
+            IWindowService windowService,
             IWorksheetsService worksheetService,
-            IElectrodeService electrodeService,
-            Window owner,
-            string targetElectrodeName)
+            IElectrodeService electrodeService)
         {
+            _windowService = windowService;
             _worksheetService = worksheetService;
             _electrodeService = electrodeService;
-            _owner = owner;
-            _targetElectrodeName = targetElectrodeName;
+        }
+
+        public void Initialize(string electrodeName)
+        {
+            _targetElectrodeName = electrodeName;
+            // 如果這裡要做資料讀取，也能一併觸發
         }
 
         // ------------------------------------------------------------
@@ -77,9 +82,13 @@ namespace FMSFrontend.ViewModels.Windows
             {
                 // 從 electrodeName 萃取工件名稱（第一個 '_' 之前的字串）
                 var workpieceName = ExtractWorkpieceNameFromElectrodeName(_targetElectrodeName);
-                if (string.IsNullOrEmpty(workpieceName)) return;
+                if (string.IsNullOrEmpty(workpieceName))
+                    return;
 
-                _cachedWorksheets = await _worksheetService.DB_GetWorkSheetsbyContainWorkpieceName(workpieceName) ?? new List<WorksheetsDto>();
+                _cachedWorksheets = await _worksheetService
+                    .DB_GetWorkSheetsbyContainWorkpieceName(workpieceName)
+                    ?? new List<WorksheetsDto>();
+
                 var items = _cachedWorksheets
                     .Select(ws => new WorksheetItem
                     {
@@ -87,46 +96,33 @@ namespace FMSFrontend.ViewModels.Windows
                         WorkOrderNo = ws.worksheetNumber ?? string.Empty
                     })
                     .ToList();
-                
-                //移除自己的工單編號
-                string[] sr = _targetElectrodeName.Split('-');
 
-                // 檢查工單的電極是否被分享過，若有任何 shared 則移除該工單
-                /*
-                items.RemoveAll(async item =>
-                {
-                    List<ElectrodeDto> electrodes = await _electrodeService.GetElectrodeByWorksheetNumberAsync(item.WorkOrderNo) ?? new();
-                    foreach (ElectrodeDto dto in electrodes)
-                    {
-                        
-                    }
-                    return electrodes != null && electrodes.Any(ele => ele.shared);
-                });
-                */
+                // 移除自己的工單編號（依照你原本邏輯）
+                string[] sr = _targetElectrodeName.Split('-');
                 if (sr.Length > 2)
-                    items.RemoveAll(x => x.PartName.IndexOf(sr[0] + "-" + sr[1]) == 0);
+                    items.RemoveAll(x => x.PartName.IndexOf(sr[0] + "-" + sr[1], StringComparison.Ordinal) == 0);
 
                 if (items.Count == 0)
                     return;
 
-                var vm = new SelectWorksheetWindowViewModel(items);
-                var dlg = new SelectWorksheetWindow
-                {
-                    Owner = _owner,
-                    DataContext = vm
-                };
+                // ✅ 改用 WindowService
+                var selected = _windowService.ShowSelectWorksheetWindow(items);
+                if (selected == null)
+                    return;
 
-                if (dlg.ShowDialog() == true)
-                {
-                    SelectedWorksheetItem = dlg.Tag as WorksheetItem;
-                    SelectedWorkOrderName = SelectedWorksheetItem?.WorkOrderNo ?? "請選擇工單";
-                    // 清空電極
-                    SelectedElectrodeItem = null;
-                    SelectedElectrodeNameDisplay = "請選擇電極";
-                }
+                SelectedWorksheetItem = selected;
+                SelectedWorkOrderName = SelectedWorksheetItem.WorkOrderNo ?? "請選擇工單";
+
+                // 清空電極
+                SelectedElectrodeItem = null;
+                SelectedElectrodeNameDisplay = "請選擇電極";
             }
-            catch { }
+            catch
+            {
+                _windowService.ShowMessage("選擇工單失敗");
+            }
         }
+
 
         // ------------------------------------------------------------
         // 幫忙把完整電極名 ↔ 尾碼做對應用
@@ -139,7 +135,8 @@ namespace FMSFrontend.ViewModels.Windows
                 if (SelectedWorksheetItem == null)
                     return;
 
-                _cachedElectrodes = await _electrodeService.DB_GetAllElectrodeAsync() ?? new List<ElectrodeDto>();
+                _cachedElectrodes = await _electrodeService.DB_GetAllElectrodeAsync()
+                                    ?? new List<ElectrodeDto>();
 
                 var items = new List<SelectItem>();
 
@@ -165,18 +162,23 @@ namespace FMSFrontend.ViewModels.Windows
                     items.Add(new SelectItem(e.electrodeName, e.state ?? string.Empty, brush));
                 }
 
-                if (items.Count == 0) return;
+                if (items.Count == 0)
+                    return;
 
-                var dlg = new SelectItemWindow(SelectItemType.Electrode, _ => items) { Owner = _owner };
+                // ✅ 改用 WindowService
+                var selected = _windowService.ShowSelectItemWindow(SelectItemType.Electrode, items);
+                if (selected == null)
+                    return;
 
-                if (dlg.ShowDialog() == true)
-                {
-                    SelectedElectrodeItem = dlg.Tag as SelectItem;
-                    SelectedElectrodeNameDisplay = SelectedElectrodeItem?.MaterialName ?? "請選擇電極";
-                }
+                SelectedElectrodeItem = selected;
+                SelectedElectrodeNameDisplay = SelectedElectrodeItem.MaterialName ?? "請選擇電極";
             }
-            catch { }
+            catch
+            {
+                _windowService.ShowMessage("選擇電極失敗");
+            }
         }
+
 
         // ------------------------------------------------------------
         [RelayCommand]

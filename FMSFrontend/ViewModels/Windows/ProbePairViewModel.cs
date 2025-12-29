@@ -127,20 +127,30 @@ namespace FMSFrontend.ViewModels.Windows
         [RelayCommand]
         private void Back()
         {
+            // 關閉目前視窗（假設你有存 _window）
             _window?.Close();
 
-            //  var selectWindow = new MaterialTypeSelectWindow();
-            if (_windowService.ShowMaterialTypeSelectWindow(out MaterialKind kind))
-            {
-                Window? window = kind switch
-                {
-                    MaterialKind.Electrode => new MaterialPairWindow(isElectrode: true),
-                    MaterialKind.Workpiece => new MaterialPairWindow(isElectrode: false),
-                    MaterialKind.Probe => new FMSFrontend.Views.Windows.ProbePairWindow(),   // 新增的探針視窗
-                    _ => null
-                };
+            // 開啟物料種類選擇視窗（交給 WindowService）
+            if (!_windowService.ShowMaterialTypeSelectWindow(out MaterialKind kind))
+                return;
 
-                window?.ShowDialog();
+            // 根據種類開啟正確的配對視窗（仍交給 WindowService）
+            switch (kind)
+            {
+                case MaterialKind.Electrode:
+                    _windowService.ShowMaterialPairWindow(isElectrode: true);
+                    break;
+
+                case MaterialKind.Workpiece:
+                    _windowService.ShowMaterialPairWindow(isElectrode: false);
+                    break;
+
+                case MaterialKind.Probe:
+                    _windowService.ShowProbePairWindow();
+                    break;
+
+                default:
+                    return;
             }
         }
 

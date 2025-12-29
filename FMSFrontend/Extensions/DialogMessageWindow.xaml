@@ -5,23 +5,36 @@
     <Grid Background="Transparent" Margin="20">
         <Border Background="#F8F5EE" CornerRadius="12" Effect="{StaticResource ShadowEffect}" Padding="30">
 
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-                <TextBlock x:Name="MessageText" Text="這是一則提示訊息" FontSize="24" FontWeight="Bold" Foreground="#222" Margin="0,0,0,40" HorizontalAlignment="Center" />
+                <!-- 文字區 -->
+                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
 
-                <Button Width="120" Height="42" Content="確定" Foreground="White" Background="#2779A7" BorderBrush="{x:Null}" FontSize="16" FontWeight="SemiBold" Cursor="Hand" Click="Close_Click">
+                    <!-- ⭐ 這一層負責「視覺置中」 -->
+                    <Grid HorizontalAlignment="Center" MaxWidth="320">
+
+                        <!-- ⭐ 文字本身左對齊 -->
+                        <TextBlock x:Name="MessageText" FontSize="16" FontWeight="SemiBold" Foreground="#222" TextWrapping="Wrap" TextTrimming="None" TextAlignment="Left" />
+                    </Grid>
+
+                </ScrollViewer>
+
+                <!-- 按鈕區：永遠固定在底部 -->
+                <Button Grid.Row="1" Width="120" Height="42" Content="確定" Foreground="White" Background="#2779A7" BorderBrush="{x:Null}" FontSize="16" FontWeight="SemiBold" Cursor="Hand" Click="Close_Click" IsDefault="True" HorizontalAlignment="Center">
+                    <!-- 你的 Template 原封不動貼回來 -->
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="0">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,2" />
                             </Border>
                             <ControlTemplate.Triggers>
-                                <!-- 滑鼠移上去高亮 -->
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter TargetName="border" Property="Background" Value="#3498DB" />
                                 </Trigger>
-
-                                <!-- 滑鼠按下壓下感 -->
                                 <Trigger Property="IsPressed" Value="True">
                                     <Setter TargetName="border" Property="Background" Value="#2C80B4" />
                                     <Setter TargetName="border" Property="RenderTransform">
@@ -30,18 +43,14 @@
                                         </Setter.Value>
                                     </Setter>
                                 </Trigger>
-
-                                <!-- 禁用時灰掉 -->
                                 <Trigger Property="IsEnabled" Value="False">
                                     <Setter TargetName="border" Property="Opacity" Value="0.5" />
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Button.Template>
-
                 </Button>
-
-            </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 

@@ -474,13 +474,27 @@ namespace FMSFrontend.ViewModels.Windows
 
                 if (result?.success == true)
                 {
-                    _windowService.ShowMessage("上傳成功");
+                    // ⭐ 新增：有未上傳程式的機台
+                    if (result.programSkippedMachines != null &&
+                        result.programSkippedMachines.Count > 0)
+                    {
+                        var warningMsg =
+    "工單已建立，但以下機台未上傳程式，請手動傳送：" + Environment.NewLine +
+    string.Join(Environment.NewLine, result.programSkippedMachines);
+
+
+                        _windowService.ShowMessage(warningMsg);
+                    }
+                    else
+                    {
+                        _windowService.ShowMessage("上傳成功");
+                    }
                 }
                 else
                 {
                     var msg = string.IsNullOrWhiteSpace(result?.message)
-                        ? "上傳失敗（未知錯誤）"
-                        : $"上傳失敗：{result.message}";
+       ? "上傳失敗（未知錯誤）"
+       : $"上傳失敗：{result.message}";
 
                     _windowService.ShowMessage(msg);
                 }

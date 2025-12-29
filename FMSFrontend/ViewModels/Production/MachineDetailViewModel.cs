@@ -104,6 +104,7 @@ namespace FMSFrontend.ViewModels.Production
                     _machineDetails[updateCnt].WorkpieceName = Machines[updateCnt].WorkpieceShortName;
                     _machineDetails[updateCnt].MainProgramName = Machines[updateCnt].OscarEdm.MainProgramName;
                     _machineDetails[updateCnt].CycleTime = Machines[updateCnt].OscarEdm.CycleTime;
+                    _machineDetails[updateCnt].Restriction = !Machines[updateCnt].OscarEdm.CanControl;
                 }
                 while (_machineDetails.Count > Machines.Count) //刪除多餘的 CardVm
                 {
@@ -148,7 +149,10 @@ namespace FMSFrontend.ViewModels.Production
         [RelayCommand]
         private void OpenMachineWindow(object? machine)   // machine 建議是 MachineCardViewModel
         {
-            _parent.OpenMachineWindow(machine);
+            if (machine is not MachineCardViewModel card)
+                return;
+
+            _parent.OpenMachineWindow(card);
         }
     }
 }

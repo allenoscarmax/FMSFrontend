@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FMSFrontend.ViewModels.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,11 +20,12 @@ namespace FMSFrontend.Views.Windows
     /// </summary>
     public partial class ShowMachineWindow : Window
     {
-        public ShowMachineWindow()
+        public ShowMachineWindow(ShowMachineWindowViewModel vm)
         {
             InitializeComponent();
+            DataContext = vm;
         }
-         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ButtonState == MouseButtonState.Pressed)
                 this.DragMove(); // 支援拖曳視窗

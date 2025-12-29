@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FMSFrontend.ViewModels.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,10 @@ namespace FMSFrontend.Extensions
     /// </summary>
     public partial class ShutdownWindow : Window
     {
-        public ShutdownWindow()
+        public ShutdownWindow(ShutdownWindowViewModel vm)
         {
             InitializeComponent();
+            DataContext = vm;
         }
     }
 }

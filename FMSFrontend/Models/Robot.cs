@@ -32,7 +32,7 @@ namespace FMSFrontend.Models
         //設備資訊
         [ObservableProperty] private string status = ""; // 灰色 
         [ObservableProperty] private string equipmentType = "2"; //設備類型
-        [ObservableProperty] private string equipmentModel = ""; //設備型號
+        [ObservableProperty] private string equipmentModel = "M20iD"; //設備型號
         [ObservableProperty] private string currentProgram = ""; //目前程式
         
         [ObservableProperty] private string selectedRobotIndexDisplay = "";

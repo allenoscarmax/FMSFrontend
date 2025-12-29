@@ -7,8 +7,8 @@ namespace FMSFrontend.Models
 
     public partial class MagazinePara : ObservableObject
     {
-        private static readonly SolidColorBrush PortTilieColor = new(Color.FromRgb(0x27, 0x79, 0xA7));
-        private static readonly SolidColorBrush EleTilieColor = new(Color.FromRgb(0xE0, 0x8E, 0x45));
+        private static readonly SolidColorBrush PortTilieColor = new(Color.FromRgb(0xE0, 0x8E, 0x45 ));
+        private static readonly SolidColorBrush EleTilieColor = new(Color.FromRgb(0x27, 0x79, 0xA7));
         //日光燈
         [ObservableProperty] private bool isDoorLightOn = false;
 

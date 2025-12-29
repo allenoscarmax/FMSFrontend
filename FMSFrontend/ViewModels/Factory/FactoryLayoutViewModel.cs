@@ -50,25 +50,6 @@ namespace FMSFrontend.ViewModels.Factory
 
         public void SetRobotAt(string machineId) => RobotAtId = machineId;
 
-        //void UpdateHighlight()
-        //{
-        //    MachineNode? target = null;
-
-        //    foreach (var m in Machines)
-        //    {
-        //        var active = string.Equals(m.Id, RobotAtId, StringComparison.OrdinalIgnoreCase);
-        //        m.IsActive = active;
-        //        if (active) target = m;
-        //    }
-
-        //    var robot = Find(RobotId);
-        //    if (robot != null && target != null && !ReferenceEquals(robot, target))
-        //    {
-        //        AlignRobotToTargetX(robot, target);
-        //    }
-        //}
-        // ✅ 只計算高亮與目標座標 → 觸發事件給 View 做動畫
-        // 🔔 提供給 View 訂閱用：請在 View 裡接到後做動畫
         public event Action<MachineNode, double, double>? RobotMoveRequested;
         private void UpdateHighlight()
         {
@@ -128,33 +109,21 @@ namespace FMSFrontend.ViewModels.Factory
         }
 
 
-        private void AlignRobotToTargetX(MachineNode robot, MachineNode target)
-        {
-            // 以兩者的中心線對齊 X
-            var targetWidth = target.Width > 0 ? target.Width : 150;
-            var robotWidth = robot.Width > 0 ? robot.Width : 130;
-
-            robot.X = target.X + (targetWidth - robotWidth) / 2.0;
-
-            // 如需同時調整 Y：把手臂放在軌道上方（可留著或拿掉）
-            var track = Find(TrackId);
-            if (track != null && robot.Height > 0)
-            {
-                // 輕微疊在軌道上，視覺比較自然；可把 4 改成你想要的縫隙
-                robot.Y = track.Y - robot.Height + 1;
-            }
-        }
-        /// </summary>
+         /// </summary>
         //控制區按鈕
         public RobotStore RobotStore { get; }
         public Robot Robot => RobotStore.Robot;
         public FactoryLayoutViewModel(RobotStore store)
         {
             RobotStore = store;
-            // 監聽 Robot 的屬性變化
             Robot.PropertyChanged += RobotOnPropertyChanged;
-            UpdateHighlight(); // 初始化一次
-            
+
+            //// 1. 先把 RobotAtId 同步到畫面
+            //SyncRobotPositionFromStore();
+            //// 2. 再依照同步後的 RobotAtId 做第一次 highlight 與定位
+            //UpdateHighlight();
+
+
         }
         private void RobotOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
@@ -204,14 +173,14 @@ namespace FMSFrontend.ViewModels.Factory
             Machines.Clear();
             foreach (var n in nodes) Machines.Add(n);
 
-
+            SyncRobotPositionFromStore(); // 內部會呼叫 SetRobotAt(...)
             //////測試
             //Machines.Clear();
             //Machines.Add(new MachineNode { Id = "EDM1", DisplayName = "EDM1", X = 780, Y = 230, Width = 180, Height = 200, IconPath = Pack("Image/MachineIcons/EDM.png") });
             //Machines.Add(new MachineNode { Id = "EDM2", DisplayName = "EDM2", X = 520, Y = 60, Width = 200, Height = 200, IconPath = Pack("Image/MachineIcons/EDM.png") });
             //Machines.Add(new MachineNode { Id = "EDM3", DisplayName = "EDM3", X = 250, Y = 60, Width = 200, Height = 200, IconPath = Pack("Image/MachineIcons/EDM.png") });
 
-            //Machines.Add(new MachineNode { Id = "ROBOT", DisplayName = "Robot", X = 0, Y = 250, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/Robot.png") });
+            //Machines.Add(new MachineNode { Id = "ROBOT", DisplayName = "R", X = 350, Y = 250, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/Robot.png") });
 
             //Machines.Add(new MachineNode { Id = "Track", DisplayName = "", X = 0, Y = 400, Width = 760, Height = 80, IconPath = Pack("Image/MachineIcons/long-track.png") });
             //Machines.Add(new MachineNode { Id = "ASE1", DisplayName = "ASE1", X = -20, Y = 500, Width = 800, Height = 150, IconPath = Pack("Image/MachineIcons/FMS.png") });

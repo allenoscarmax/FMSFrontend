@@ -22,13 +22,11 @@ namespace FMSFrontend.Extensions
     /// </summary>
     public partial class SelectWorksheetWindow : Window
     {
-        public SelectWorksheetWindow()
+        public SelectWorksheetWindow(SelectWorksheetWindowViewModel vm)
         {
             InitializeComponent();
-            // 建立 ViewModel 並注入服務
-            SelectWorksheetWindowViewModel viewModel = new SelectWorksheetWindowViewModel();
 
-            this.DataContext = viewModel;
+            this.DataContext = vm;
         }
     }
 }

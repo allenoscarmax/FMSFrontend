@@ -18,6 +18,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
+using static FMSFrontend.ViewModels.ProductionLinesViewModel;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FMSFrontend.ViewModels.Production
@@ -45,9 +46,10 @@ namespace FMSFrontend.ViewModels.Production
         }
 
         [RelayCommand]
-        private void OpenMaterial(Slot slot) //打開材料資訊視窗
+        private async Task OpenMaterial(Slot slot) //打開材料資訊視窗
         {
-            _parent.OpenMaterial(slot);
+            await _parent.OpenMaterialAsync(slot, MaterialOpenMode.SlotWindow);
+         //   _parent.OpenMaterial(slot);
         }
     }
     public class MaterialRef

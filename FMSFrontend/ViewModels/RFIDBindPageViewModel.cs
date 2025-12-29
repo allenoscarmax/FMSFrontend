@@ -28,6 +28,7 @@ namespace FMSFrontend.ViewModels
     {
         // === Services ===
         private readonly IRfidService _RfidService;
+        private readonly IAuthorizationService _auth;
         private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
         // === Singleton ===
         public RFIDBindStore RfidBindStore { get; }
@@ -36,7 +37,7 @@ namespace FMSFrontend.ViewModels
         // === LiveUpdater ===
         public RFIDBindLiveUpdater _rfidUpdater;
         public RFIDBindPageViewModel(IWindowService windowService, IHttpService httpService,
-        IRfidService iRFIDMgmtModuleService, 
+        IRfidService iRFIDMgmtModuleService, IAuthorizationService auth,
         RFIDBindStore rfidBindStore, 
         RFIDBindLiveUpdater rfidUpdater)
         {
@@ -47,7 +48,7 @@ namespace FMSFrontend.ViewModels
             RfidBindStore = rfidBindStore;
             _rfidUpdater = rfidUpdater;
             _rfidUpdater.ReadTagFlag = true;
-
+            _auth = auth;
             // 初始化 SelectedFilterIndex 根據 SelectedFilterOption
             SelectedFilterIndex = DateFilterOptions.IndexOf(SelectedFilterOption);
         }
@@ -146,19 +147,35 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void OpenMaterialTypeSelect()
         {
-            if (_windowService.ShowMaterialTypeSelectWindow(out MaterialKind kind))
+            if (!_auth.RequireLogin())
+                return;
+
+            // 先讓使用者選「電極 / 工件 / 探針」
+            if (!_windowService.ShowMaterialTypeSelectWindow(out MaterialKind kind))
+                return;
+
+            // 交給 WindowService 照 kind 開對應的視窗
+            switch (kind)
             {
-                Window? window = kind switch
-                {
-                    MaterialKind.Electrode => new MaterialPairWindow(isElectrode: true),
-                    MaterialKind.Workpiece => new MaterialPairWindow(isElectrode: false),
-                    MaterialKind.Probe => new ProbePairWindow(),   // 新增的探針視窗
-                    _ => null
-                };
-                window?.ShowDialog();
-                _rfidUpdater.ReadTagFlag = false;
-                RefreshFetch();   // 關閉視窗後重新抓取並綁定
+                case MaterialKind.Electrode:
+                    _windowService.ShowMaterialPairWindow(isElectrode: true);
+                    break;
+
+                case MaterialKind.Workpiece:
+                    _windowService.ShowMaterialPairWindow(isElectrode: false);
+                    break;
+
+                case MaterialKind.Probe:
+                    _windowService.ShowProbePairWindow();   // 下面一起補這個
+                    break;
+
+                default:
+                    return;
             }
+
+            // 視窗關閉後執行原本的後續流程
+            _rfidUpdater.ReadTagFlag = false;
+            RefreshFetch();   // 關閉視窗後重新抓取並綁定
         }
 
         [RelayCommand]

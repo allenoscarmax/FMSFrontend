@@ -15,34 +15,12 @@ namespace FMSFrontend.Extensions
     /// </summary>
     public partial class MaterialPairWindow : Window
     {
-        public MaterialPairWindow(bool isElectrode)
+        public MaterialPairWindow( MaterialPairViewModel materialPairViewModel)
         {
-            var windowService = new WindowService();
-            var httpService = new HttpService();
-
-            var electrodeService = new ElectrodeService(httpService);
-            var probeService = new ProbeService(httpService);
-            var rfidService = new RfidService(httpService);
-            var workpieceService = new WorkpieceService(httpService);
-            var worksheetsService = new WorksheetsService(httpService);
-
-            var rfidBindStore = new RFIDBindStore();
-            var rfidLiveUpdater = new RFIDBindLiveUpdater(rfidService, rfidBindStore);
-            rfidLiveUpdater.Start();
-
             InitializeComponent();
-            DataContext = new MaterialPairViewModel(
-                isElectrode,
-                this,
-                windowService,
-                httpService,
-                electrodeService,
-                probeService,
-                rfidService,
-                workpieceService,
-                worksheetsService,
-                rfidBindStore,
-                rfidLiveUpdater);
+            DataContext = materialPairViewModel;
+            // 讓 ViewModel 可以關閉這個視窗（但不用知道 Window 類別）
+            materialPairViewModel.CloseAction = this.Close;
             Loaded += (_, __) => ((MaterialPairViewModel)DataContext).OnPageActivated();
             Unloaded += (_, __) => ((MaterialPairViewModel)DataContext).OnPageDeactivated();
         }
