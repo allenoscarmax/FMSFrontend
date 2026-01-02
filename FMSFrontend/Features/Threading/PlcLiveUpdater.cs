@@ -43,9 +43,8 @@ namespace FMSFrontend.Features.Threading
             try
             {
                 // === 第一段：更新 倉儲門 控制參數 ===
-                var Dto = await _svc.GetALLMagazineParaAsync();
-                if (Dto != null)
-                    _store.ApplyMagazineParaDto(Dto);
+                var Dto = await _svc.GetALLMagazineParaAsync() ?? new();
+                _store.ApplyMagazineParaDto(Dto);
             }
             catch //(Exception ex)
             {

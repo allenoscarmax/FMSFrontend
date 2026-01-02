@@ -139,6 +139,21 @@ namespace FMSFrontend.Controls.FactoryOverview
                 AnimateRobotTo(robot, x, y);
             });
         }
+        private async void LayoutInitClick(object sender, RoutedEventArgs e)
+        {
+            // 自動重新排列佈局：呼叫 VM 初始化，完成後保持在編輯模式讓使用者微調
+            if (VM == null) return;
+            try
+            {
+                await VM.LayoutInit();
+                // 重新排列後可選擇是否退出編輯；此處維持編輯模式供微調
+                //  MessageBox.Show("已自動排列佈局，可繼續微調或按儲存保存結果。");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("自動排列失敗：" + ex.Message);
+            }
+        }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {

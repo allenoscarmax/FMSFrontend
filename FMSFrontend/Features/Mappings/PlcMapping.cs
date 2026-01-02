@@ -14,23 +14,44 @@ namespace FMSFrontend.Features.Mappings
     {
         private static readonly SolidColorBrush LightOn = new(Color.FromRgb(0x61, 0xB4, 0x55));
         private static readonly SolidColorBrush LightOff = new(Color.FromRgb(0x00, 0x00, 0x00));
+        private static readonly SolidColorBrush EleTilieColor = new(Color.FromRgb(0x27, 0x79, 0xA7));
+        private static readonly SolidColorBrush PortTilieColor = new(Color.FromRgb(0xE0, 0x8E, 0x45));
 
         public static void ApplyMagazineParaDto(this MagazineParaDto dto, MagazinePara magazinePara)
         {
-            magazinePara.IsDoorLightOn = dto.door_to_light[0];
-            magazinePara.UpperScanStatus[0] = dto.shouldScanEle ? LightOn : LightOff;
-            magazinePara.UpperDoorStatus[0] = dto.eleMagzineDoorOpen[0] ? LightOn : LightOff;
-            magazinePara.LowerScanStatus[0] = dto.shouldScanPart ? LightOn : LightOff;
-            magazinePara.LowerDoorStatus[0] = dto.partMagzineDoorOpen[0] ? LightOn : LightOff;
-            /*
-            Random rnd = new Random();
-            bool[] b = new bool[4];
-            for (int i = 0; i < b.Length; i++)  b[i] = rnd.Next(2) == 1;
-            magazinePara.UpperScanStatus[0] = b[0] ? LightOn : LightOff;
-            magazinePara.UpperDoorStatus[0] = b[1] ? LightOn : LightOff;
-            magazinePara.LowerScanStatus[0] = b[2] ? LightOn : LightOff;
-            magazinePara.LowerDoorStatus[0] = b[3] ? LightOn : LightOff; 
-            */
+            // 依 magazineParasNumber 初始化集合
+            if (magazinePara.MagazineParas.Count != magazinePara.magazineParasNumber)
+            {
+                magazinePara.MagazineParas.Clear();
+                for (int i = 0; i < magazinePara.magazineParasNumber; i++)
+                {
+                    magazinePara.MagazineParas.Add(new MagazineParaInfo
+                    {
+                        StorageId = i.ToString(), // 0-based 給 PLC API
+                    });
+                }
+                // 設定標題與顏色 
+                magazinePara.MagazineParas[0].LeftTitle = "W1";
+                magazinePara.MagazineParas[0].RightTitle = "E1";
+                magazinePara.MagazineParas[1].LeftTitle = "E2";
+                magazinePara.MagazineParas[1].RightTitle = "";
+                magazinePara.MagazineParas[0].LeftTitleBrush = PortTilieColor;
+                magazinePara.MagazineParas[0].RightTitleBrush = EleTilieColor;
+                magazinePara.MagazineParas[1].LeftTitleBrush = EleTilieColor;
+                magazinePara.MagazineParas[1].RightTitleBrush = EleTilieColor;
+            }
+
+            magazinePara.IsDoorLightOn = dto.door_to_light.FirstOrDefault();
+
+            // 目前 DTO 只提供單一門狀態 -> 套用到第 0 個
+            if (magazinePara.MagazineParas.Count > 0)
+            {
+                var info = magazinePara.MagazineParas[0];
+                info.UpperScanStatus = dto.shouldScanEle ? LightOn : LightOff;
+                info.UpperDoorStatus = dto.eleMagzineDoorOpen.FirstOrDefault() ? LightOn : LightOff;
+                info.LowerScanStatus = dto.shouldScanPart ? LightOn : LightOff;
+                info.LowerDoorStatus = dto.partMagzineDoorOpen.FirstOrDefault() ? LightOn : LightOff;
+            }
         }
     }
 }

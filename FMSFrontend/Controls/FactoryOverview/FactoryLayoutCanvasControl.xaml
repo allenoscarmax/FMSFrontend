@@ -47,7 +47,8 @@
                 <Button Content="測試移動" Width="128" Height="28" Margin="0,0,8,0" Command="{Binding onMoveCommand}" Style="{StaticResource PrimaryButtonStyle}" Background="DarkSlateBlue"/>
                 <Button Content="編輯" Width="64" Height="28" Margin="0,0,8,0" IsEnabled="{Binding IsEditMode, Converter={StaticResource InverseBoolConverter}}" Click="OnEditClick" Style="{StaticResource PrimaryButtonStyle}" />
                 <Button Content="儲存" Width="64" Height="28" Margin="0,0,8,0" IsEnabled="{Binding IsEditMode}" Click="OnSaveClick" Style="{StaticResource PrimaryButtonStyle}" />
-                <Button Content="載入" Width="64" Height="28" Click="OnLoadClick" Style="{StaticResource PrimaryButtonStyle}" Cursor="Hand" />
+                <Button Content="自動排列" Width="90" Height="28" Margin="0,0,8,0" IsEnabled="{Binding IsEditMode}" Click="LayoutInitClick" Style="{StaticResource PrimaryButtonStyle}" />
+                <Button Content="載入舊檔" Width="90" Height="28" Click="OnLoadClick" IsEnabled="{Binding IsEditMode}" Style="{StaticResource PrimaryButtonStyle}" Cursor="Hand" />
             </StackPanel>
 
             <!-- 主畫布 -->
