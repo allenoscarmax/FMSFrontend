@@ -1,80 +1,37 @@
 ﻿<UserControl x:Class="FMSFrontend.Views.StorageUnitMiniControlPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:controls="clr-namespace:FMSFrontend.Controls">
+             xmlns:controls="clr-namespace:FMSFrontend.Controls"
+             x:Name="root">
     <Grid VerticalAlignment="Top">
-        <UniformGrid Columns="2" Margin="4">
-            <controls:StorageUnitMiniControl StorageTitle="1號" StorageId="1"
-                                             UpperDoorCommand="{Binding UpperDoorCommand}"
-                                             LowerDoorCommand="{Binding LowerDoorCommand}"
-                                             ShowDetailCommand="{Binding ShowDetailCommand}"
-                                             UpperScanStatus="{Binding MagazinePara.UpperScanStatus[0]}"
-                                             UpperDoorStatus="{Binding MagazinePara.UpperDoorStatus[0]}"
-                                             LowerScanStatus="{Binding MagazinePara.LowerScanStatus[0]}"
-                                             LowerDoorStatus="{Binding MagazinePara.LowerDoorStatus[0]}" />
-            <!--
-            <controls:StorageUnitMiniControl StorageTitle="2號" StorageId="2"
-                                             UpperDoorCommand="{Binding UpperDoorCommand}"
-                                             LowerDoorCommand="{Binding LowerDoorCommand}"
-                                             ShowDetailCommand="{Binding ShowDetailCommand}"
-                                             UpperDoorLight1="{Binding UpperDoorLights1[1]}"
-                                             UpperDoorLight2="{Binding UpperDoorLights2[1]}"
-                                             LowerDoorLight1="{Binding LowerDoorLights1[1]}"
-                                             LowerDoorLight2="{Binding LowerDoorLights2[1]}" />
-
-            <controls:StorageUnitMiniControl StorageTitle="3號" StorageId="3"
-                                             UpperDoorCommand="{Binding UpperDoorCommand}"
-                                             LowerDoorCommand="{Binding LowerDoorCommand}"
-                                             ShowDetailCommand="{Binding ShowDetailCommand}"
-                                             UpperDoorLight1="{Binding UpperDoorLights1[2]}"
-                                             UpperDoorLight2="{Binding UpperDoorLights2[2]}"
-                                             LowerDoorLight1="{Binding LowerDoorLights1[2]}"
-                                             LowerDoorLight2="{Binding LowerDoorLights2[2]}" />
-
-            <controls:StorageUnitMiniControl StorageTitle="4號" StorageId="4"
-                                             UpperDoorCommand="{Binding UpperDoorCommand}"
-                                             LowerDoorCommand="{Binding LowerDoorCommand}"
-                                             ShowDetailCommand="{Binding ShowDetailCommand}"
-                                             UpperDoorLight1="{Binding UpperDoorLights1[3]}"
-                                             UpperDoorLight2="{Binding UpperDoorLights2[3]}"
-                                             LowerDoorLight1="{Binding LowerDoorLights1[3]}"
-                                             LowerDoorLight2="{Binding LowerDoorLights2[3]}" />
-
-            <controls:StorageUnitMiniControl StorageTitle="5號" StorageId="5"
-                                             UpperDoorCommand="{Binding UpperDoorCommand}"
-                                             LowerDoorCommand="{Binding LowerDoorCommand}"
-                                             ShowDetailCommand="{Binding ShowDetailCommand}"
-                                             UpperDoorLight1="{Binding UpperDoorLights1[4]}"
-                                             UpperDoorLight2="{Binding UpperDoorLights2[4]}"
-                                             LowerDoorLight1="{Binding LowerDoorLights1[4]}"
-                                             LowerDoorLight2="{Binding LowerDoorLights2[4]}" />
-
-            <controls:StorageUnitMiniControl StorageTitle="6號" StorageId="6"
-                                             UpperDoorCommand="{Binding UpperDoorCommand}"
-                                             LowerDoorCommand="{Binding LowerDoorCommand}"
-                                             ShowDetailCommand="{Binding ShowDetailCommand}"
-                                             UpperDoorLight1="{Binding UpperDoorLights1[5]}"
-                                             UpperDoorLight2="{Binding UpperDoorLights2[5]}"
-                                             LowerDoorLight1="{Binding LowerDoorLights1[5]}"
-                                             LowerDoorLight2="{Binding LowerDoorLights2[5]}" />
-
-            <controls:StorageUnitMiniControl StorageTitle="7號" StorageId="7"
-                                             UpperDoorCommand="{Binding UpperDoorCommand}"
-                                             LowerDoorCommand="{Binding LowerDoorCommand}"
-                                             ShowDetailCommand="{Binding ShowDetailCommand}"
-                                             UpperDoorLight1="{Binding UpperDoorLights1[6]}"
-                                             UpperDoorLight2="{Binding UpperDoorLights2[6]}"
-                                             LowerDoorLight1="{Binding LowerDoorLights1[6]}"
-                                             LowerDoorLight2="{Binding LowerDoorLights2[6]}" />
-
-            <controls:StorageUnitMiniControl StorageTitle="8號" StorageId="8"
-                                             UpperDoorCommand="{Binding UpperDoorCommand}"
-                                             LowerDoorCommand="{Binding LowerDoorCommand}"
-                                             ShowDetailCommand="{Binding ShowDetailCommand}"
-                                             UpperDoorLight1="{Binding UpperDoorLights1[7]}"
-                                             UpperDoorLight2="{Binding UpperDoorLights2[7]}"
-                                             LowerDoorLight1="{Binding LowerDoorLights1[7]}"
-                                             LowerDoorLight2="{Binding LowerDoorLights2[7]}" /> -->
-        </UniformGrid>
+        <!-- 動態依 MagazinePara.MagazineParas 產生縮略 StorageUnitMiniControl -->
+        <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="MagazineItems" ItemsSource="{Binding MagazinePara.MagazineParas}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <!-- 使用 UniformGrid 兩欄顯示 -->
+                        <UniformGrid Columns="2" Margin="4" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <controls:StorageUnitMiniControl
+                            StorageId="{Binding StorageId}"
+                            StorageTitle="{Binding StorageId}"
+                            UpperDoorCommand="{Binding DataContext.UpperDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            LowerDoorCommand="{Binding DataContext.LowerDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            ShowDetailCommand="{Binding DataContext.ShowDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            LeftTitleBrush="{Binding LeftTitleBrush}"
+                            LeftTitle="{Binding LeftTitle}"
+                            RightTitleBrush="{Binding RightTitleBrush}"
+                            RightTitle="{Binding RightTitle}"
+                            UpperScanStatus="{Binding UpperScanStatus}"
+                            UpperDoorStatus="{Binding UpperDoorStatus}"
+                            LowerScanStatus="{Binding LowerScanStatus}"
+                            LowerDoorStatus="{Binding LowerDoorStatus}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </UserControl>

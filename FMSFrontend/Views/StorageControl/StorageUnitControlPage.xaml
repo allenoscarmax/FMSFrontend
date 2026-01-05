@@ -2,29 +2,32 @@
 
     <Grid>
         <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto">
-            <StackPanel x:Name="MainStackPanel" Orientation="Vertical" Margin="10">
-                <controls:StorageUnitControl
-                    StorageId="1"
-                    UpperDoorCommand="{Binding UpperDoorCommand}"
-                    LowerDoorCommand="{Binding LowerDoorCommand}" 
-                    LeftTitleBrush= "{Binding MagazinePara.LeftTitleBrush[0]}"
-                    LeftTitle=      "{Binding MagazinePara.LeftTitle[0]}"
-                    RightTitleBrush="{Binding MagazinePara.RightTitleBrush[0]}"
-                    RightTitle=     "{Binding MagazinePara.RightTitle[0]}"   
-                    UpperScanStatus="{Binding MagazinePara.UpperScanStatus[0]}"
-                    UpperDoorStatus="{Binding MagazinePara.UpperDoorStatus[0]}"
-                    LowerScanStatus="{Binding MagazinePara.LowerScanStatus[0]}"
-                    LowerDoorStatus="{Binding MagazinePara.LowerDoorStatus[0]}" />
-                <!--
-                <controls:StorageUnitControl StorageId="2" StorageTitle="2號倉門" SidebarBrush="#2779A7" Margin="0,0,0,20" />
-                <controls:StorageUnitControl StorageId="3" StorageTitle="3號倉門" SidebarBrush="#2779A7" Margin="0,0,0,20" />
-                <controls:StorageUnitControl StorageId="4" StorageTitle="4號倉門" SidebarBrush="#2779A7" Margin="0,0,0,20" />
-                <controls:StorageUnitControl StorageId="5" StorageTitle="5號倉門" SidebarBrush="#2779A7" Margin="0,0,0,20" />
-                <controls:StorageUnitControl StorageId="6" StorageTitle="6號倉門" SidebarBrush="#2779A7" Margin="0,0,0,20" />
-                <controls:StorageUnitControl StorageId="7" StorageTitle="1號倉門" SidebarBrush="#E08E45" Margin="0,0,0,20" />
-                <controls:StorageUnitControl StorageId="8" StorageTitle="2號倉門" SidebarBrush="#E08E45" Margin="0,0,0,20" />
-                -->
-            </StackPanel>
+            <!-- 依照 MagazinePara.MagazineParas 動態產生 StorageUnitControl -->
+            <ItemsControl x:Name="MagazineItems" ItemsSource="{Binding MagazinePara.MagazineParas}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" Margin="0" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <controls:StorageUnitControl
+                            Margin="5"
+                            StorageId="{Binding StorageId}"
+                            SidebarBrush="#2779A7"
+                            UpperDoorCommand="{Binding DataContext.UpperDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            LowerDoorCommand="{Binding DataContext.LowerDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            LeftTitleBrush="{Binding LeftTitleBrush}"
+                            LeftTitle="{Binding LeftTitle}"
+                            RightTitleBrush="{Binding RightTitleBrush}"
+                            RightTitle="{Binding RightTitle}"
+                            UpperScanStatus="{Binding UpperScanStatus}"
+                            UpperDoorStatus="{Binding UpperDoorStatus}"
+                            LowerScanStatus="{Binding LowerScanStatus}"
+                            LowerDoorStatus="{Binding LowerDoorStatus}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </ScrollViewer>
         <!-- 半透明的返回按鈕 -->
         <Button HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="36" Height="36" Background="Gray" Opacity="0.5" BorderBrush="Transparent" BorderThickness="1" FontSize="24" Foreground="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Command="{Binding BackCommand}" Margin="10">
