@@ -210,11 +210,6 @@ namespace FMSFrontend
             services.AddTransient<ShowRobotWindow>();
             services.AddTransient<ReviseProcessWindow>();
 
-            
-
-
-
-
 
         }
 

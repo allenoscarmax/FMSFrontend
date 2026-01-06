@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
@@ -9,12 +10,8 @@ using FMSFrontend.ViewModels.Production;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
+using System.Data.SqlTypes;
+
 
 namespace FMSFrontend.ViewModels.Windows
 {
@@ -68,6 +65,7 @@ namespace FMSFrontend.ViewModels.Windows
 
         [ObservableProperty]
         private bool isDisabled;
+
 
         // 1 電極再使用（綠）
         [RelayCommand]
@@ -162,30 +160,49 @@ namespace FMSFrontend.ViewModels.Windows
                 catch { }
             }
         }
-        /*
-        //解除預約 //20251113 GE: 延後施作目前只能用updataStorage解除鎖定
-        [RelayCommand]
-        private async Task CancelBookStorage() 
-        {
 
-        bool ok;
-        if (DetailViewModel is WorkpieceDetailViewModel)
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(CancelBookStorageCommand))]
+        private string? currentStorageState; // Booked / Vacant / Occupy
+
+        private bool CanCancelBookStorage()
+            => string.Equals(CurrentStorageState, StorageStateEnum.Booked.ToString(), StringComparison.OrdinalIgnoreCase)
+               && !string.IsNullOrWhiteSpace(SlotCode);
+
+        [RelayCommand(CanExecute = nameof(CanCancelBookStorage))]
+        private async Task CancelBookStorage(CancellationToken ct)
         {
-            WorkpieceDetailViewModel w = (WorkpieceDetailViewModel)DetailViewModel;
-            var wpayload = new { _id = w.StorageId, state = "Booked" };
-            ok = await _httpService.SendPutAsync("Storage/DB_UpdateStorageData", wpayload);
-            return;
-        }
-        else if (DetailViewModel is ElectrodeDetailViewModel)
-        {
-            ElectrodeDetailViewModel e = (ElectrodeDetailViewModel)DetailViewModel;
-            var epayload = new { _id = e.StorageId, state = "Vacant" };
-            ok = await _httpService.SendPutAsync("Storage/DB_UpdateStorageData", epayload);
-            return;
+            // 二次防呆（避免狀態不同步）
+            if (!string.Equals(CurrentStorageState, StorageStateEnum.Booked.ToString(), StringComparison.OrdinalIgnoreCase))
+                return;
+
+            if (string.IsNullOrWhiteSpace(SlotCode)) return;
+            var code = SlotCode.Split(":");
+            if (code.Length < 5) return;
+
+            try
+            {
+                string storageName = code[0];
+                string storageNumber = code[1];
+                int region = int.Parse(code[2]);
+                int column = int.Parse(code[3]);
+                int row = int.Parse(code[4]);
+
+                // 用你現有的 API：把 restriction 跟 state 分開思考
+                // 解除預約 = state 改 Vacant
+                // 這裡需要 StorageDto（建議帶 _id 最穩）
+
+                var ss = await _storageService.GetStorageByLocationAsync(storageName, storageNumber , region, column, row);
+                ss.state = StorageStateEnum.Vacant.ToString();
+                var ok = await _storageService.UpdateStorageDataAsync(ss, ct);
+                if (ok)
+                {
+                    CurrentStorageState = StorageStateEnum.Vacant.ToString(); // 立刻讓按鈕 disabled
+                }
+            }
+            catch { }
         }
 
-        }
-        */
         public string KindText => Kind switch
         {
             MaterialKind.Electrode => "電極",
@@ -193,71 +210,5 @@ namespace FMSFrontend.ViewModels.Windows
             _ => "物料"
         };
 
-
-
-
-        // ★ 由點擊的格位載入資料
-        // public void LoadFrom(SlotViewModel slot) //Allen
-        // {
-        //     ApplyMaterial(slot.Material, slot.Kind, slot.SlotCode);
-        // }
-
-        //public void LoadFrom(StorageSlotViewModel slot) //Allen
-        // {
-        // ApplyMaterial(slot.Material, slot.Material?.Kind ?? MaterialKind.None, slot.Material?.Electrode?.Name ?? slot.Material?.Workpiece?.Name ?? slot.Status);
-        // }
-
-        /// <summary>
-        /// 把 MaterialRef 套用到視窗 VM
-        /// </summary>
-        private void ApplyMaterial(MaterialRef material, MaterialKind kind, string slotCode)
-        {
-            Kind = kind;
-            SlotCode = slotCode;
-
-            if (material == null)
-            {
-                DetailViewModel = new EmptyMaterialDetailViewModel();
-                return;
-            }
-
-            DetailViewModel = kind switch
-            {
-                MaterialKind.Electrode => new ElectrodeDetailViewModel(material.Electrode),
-                MaterialKind.Workpiece => new WorkpieceDetailViewModel(material.Workpiece),
-                _ => new EmptyMaterialDetailViewModel()
-            };
-
-            Timeline.Clear();
-            if (material.Timeline != null)
-            {
-                foreach (var t in material.Timeline)
-                    Timeline.Add(new TimelineItemViewModel { Text = t.Text, Time = t.Time, Status = t.Status });
-            }
-        }
-
-        // Demo：先看得到畫面
-        /*
-        public ShowMaterialWindowViewModel(object detailVm, IEnumerable<TimelineItemViewModel> tl, MaterialKind kind)
-        {
-            Kind = kind;
-            DetailViewModel = detailVm;
-            foreach (var t in tl) Timeline.Add(t);
-        }
-
-        // 之後你再用這兩個「正式」建構子
-        public ShowMaterialWindowViewModel(ElectrodeDetailViewModel vm, IEnumerable<TimelineItemViewModel> tl)
-        {
-            Kind = MaterialKind.Electrode;
-            DetailViewModel = vm;
-            foreach (var t in tl) Timeline.Add(t);
-        }
-        public ShowMaterialWindowViewModel(WorkpieceDetailViewModel vm, IEnumerable<TimelineItemViewModel> tl)
-        {
-            Kind = MaterialKind.Workpiece;
-            DetailViewModel = vm;
-            foreach (var t in tl) Timeline.Add(t);
-        }
-        */
     }
 }

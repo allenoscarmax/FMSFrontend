@@ -21,6 +21,7 @@ using System.Windows.Data;
 using System.Collections.Generic;
 using System.Windows.Media.Animation;
 using System.Security;
+using System.Windows.Navigation;
 
 namespace FMSFrontend.ViewModels
 {
@@ -54,9 +55,10 @@ namespace FMSFrontend.ViewModels
         private readonly IDevicesService _devicesService;
         private readonly IWorkerService _workerService;
         private readonly IAppointmentMaintenanceService _appointmentMaintenanceService;
+        private readonly IMongoDBService _mongoDBService;
 
         public SettingsPageViewModel(IWindowService windowService, IHttpService httpService, IMachinesService machinesService, IRobotService robotService,
-            IDevicesService devicesService, IWorkerService workerService, IAppointmentMaintenanceService appointmentMaintenanceService
+            IDevicesService devicesService, IWorkerService workerService, IAppointmentMaintenanceService appointmentMaintenanceService, IMongoDBService mongoDBService
             )
         {
             _windowService = windowService;
@@ -67,6 +69,7 @@ namespace FMSFrontend.ViewModels
             _devicesService = devicesService;
             _workerService = workerService;
             _appointmentMaintenanceService = appointmentMaintenanceService;
+            _mongoDBService = mongoDBService;
 
 
             OpenSetPeriodDialogCommand = new RelayCommand(OpenPeriodDialog);
@@ -547,8 +550,34 @@ namespace FMSFrontend.ViewModels
             }
             catch { }
         }
-        
 
+        [ObservableProperty] private bool isBusy;
+        [ObservableProperty] private string busyMessage = "處理中...";
+        private bool CanBackupSystem() => !IsBusy;
+
+        [RelayCommand(CanExecute = nameof(CanBackupSystem))]
+        private async Task BackupSystem()
+        {
+            IsBusy = true;
+            BusyMessage = "系統備份中，請稍候...";
+            try
+            {
+                var ok = await _mongoDBService.BackupDatabaseAsync();
+
+                _windowService.ShowMessage(ok ? "系統備份成功" : "系統備份失敗");
+            }
+            catch (Exception ex)
+            {
+                _windowService.ShowMessage($"系統備份發生例外：{ex.Message}");
+                // 建議也寫 log
+            }
+            finally
+            {
+                IsBusy = false;
+                BackupSystemCommand.NotifyCanExecuteChanged();
+            }
+        }
+        
         // === 設定屬性 ===
         [ObservableProperty]
         private ObservableCollection<string> availableLanguages;

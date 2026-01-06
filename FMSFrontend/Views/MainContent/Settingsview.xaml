@@ -9,6 +9,8 @@
 
     <Border Background="{DynamicResource PageViewBrush}">
         <Grid Background="{DynamicResource PageViewBrush}" Margin="16,20,16,18">
+           
+
             <!-- 兩層：1. 標題 2. 內容 -->
             <Grid.RowDefinitions>
                 <RowDefinition Height="40" />
@@ -143,6 +145,22 @@
                                                                 <Border Grid.Column="1" Background="Black" />
 
                                                                 <TextBlock Grid.Column="2" Text="注意：點擊還原按鈕以還原系統。此過程將刪除所有材料、表單、日誌和使用情況。" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
+                                                            </Grid>
+                                                        </GroupBox>
+                                                        <!-- 系統備份 -->
+                                                        <GroupBox Header="系統備份" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="1.5" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                </Grid.ColumnDefinitions>
+
+                                                                <Button Grid.Column="0" Content="備份" Width="84" Height="32" VerticalAlignment="Center" Background="#CCCCCC" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding BackupSystemCommand}" />
+
+                                                                <Border Grid.Column="1" Background="Black" />
+
+                                                                <TextBlock Grid.Column="2" Text="注意：點擊備份資料庫。" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
                                                             </Grid>
                                                         </GroupBox>
 
@@ -742,6 +760,25 @@
                     </ContentControl>
                 </Border>
             </Grid>
+
+            <!-- Busy Overlay：全畫面鎖定（覆蓋 SettingsView 這一頁） -->
+            <Grid Grid.Row="0" Grid.RowSpan="2" Panel.ZIndex="9999" Background="#80000000" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="True">
+
+                <!-- 置中提示卡 -->
+                <Border Width="420" Padding="24" Background="{DynamicResource PageViewBrush}" CornerRadius="16" HorizontalAlignment="Center" VerticalAlignment="Center" Effect="{StaticResource ShadowEffect}">
+
+                    <StackPanel>
+                        <TextBlock Text="{Binding BusyMessage}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" Margin="0,0,0,16" />
+
+                        <ProgressBar IsIndeterminate="True" Height="10" />
+
+                        <TextBlock Text="請勿關閉程式或中斷電源" Foreground="{DynamicResource PrimaryTextBrush}" Opacity="0.7" Margin="0,12,0,0" TextAlignment="Center" />
+                    </StackPanel>
+
+                </Border>
+            </Grid>
         </Grid>
+        
+        
     </Border>
 </UserControl>

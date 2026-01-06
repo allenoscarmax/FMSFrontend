@@ -81,17 +81,36 @@ namespace FMSFrontend.Models
         [ObservableProperty] private bool materialRestriction;  // 材料是否有鎖定
         [ObservableProperty] private string storageStatus = "";         // 材料庫是否預約
         [ObservableProperty] private bool storageRestriction;           // 材料庫是否有鎖定
-        public Brush StatusBrush => StorageRestriction ? new SolidColorBrush(Color.FromRgb(0xE0, 0xE0, 0xE0)) :
-           MaterialStatus switch
-           {
-               "Verified" => new SolidColorBrush(Color.FromRgb(0xE6, 0xB9, 0x3E)), //黃色
-               "Working" => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)), //綠色
-               "Error" => new SolidColorBrush(Color.FromRgb(0xC0, 0x39, 0x2B)), //紅色
-               "Completed" => new SolidColorBrush(Color.FromRgb(0x2F, 0x64, 0xCF)), //藍色
-               _ => Brushes.White
-           };
+        public Brush StatusBrush
+        {
+            get
+            {
+                // ① Restriction：最高優先權
+                if (StorageRestriction)
+                {
+                    return new SolidColorBrush(Color.FromRgb(0xE0, 0xE0, 0xE0));
+                }
+
+                // ② 預約狀態（Reserved）
+                if (StorageStatus == "Booked")
+                {
+                    return Brushes.White; // 米色
+                }
+
+                // ③ 一般材料狀態
+                return MaterialStatus switch
+                {
+                    "Verified" => new SolidColorBrush(Color.FromRgb(0xE6, 0xB9, 0x3E)),
+                    "Working" => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)),
+                    "Error" => new SolidColorBrush(Color.FromRgb(0xC0, 0x39, 0x2B)),
+                    "Completed" => new SolidColorBrush(Color.FromRgb(0x2F, 0x64, 0xCF)),
+                    _ => new SolidColorBrush(Color.FromRgb(245, 245, 220))
+                };
+            }
+        }
         partial void OnStorageRestrictionChanged(bool value) => OnPropertyChanged(nameof(StatusBrush));
         partial void OnMaterialStatusChanged(string value) => OnPropertyChanged(nameof(StatusBrush));
+        partial void OnStorageStatusChanged(string value) => OnPropertyChanged(nameof(StatusBrush));
 
         string Code => Kind switch
         {
