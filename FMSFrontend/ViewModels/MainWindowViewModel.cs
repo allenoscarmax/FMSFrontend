@@ -317,7 +317,11 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
-                var success = await _PlcService.EleMagzineDoorSwitchAsync(0,0,true);
+                var success = false;
+                if (storageId == "0")
+                    success = await _PlcService.WEMagzineDoorSwitchAsync(0, 0, true);
+                else if (storageId == "1")
+                    success = await _PlcService.EMagzineDoorSwitchAsync(0, 0, true);
                 if (!success)
                 {
                     new DialogMessageWindow("API 回傳失敗").ShowDialog();
@@ -336,7 +340,11 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
-                var success = await _PlcService.EleMagzineDoorSwitchAsync(0, 1, true);
+                var success = false;
+                if (storageId == "0")
+                    success = await _PlcService.WEMagzineDoorSwitchAsync(0, 1, true);
+                else if (storageId == "1")
+                    await _PlcService.EMagzineDoorSwitchAsync(0, 1, true);
                 if (!success)
                 {
                     new DialogMessageWindow("API 回傳失敗").ShowDialog();
@@ -353,15 +361,15 @@ namespace FMSFrontend.ViewModels
         //private bool _isDoorLightOn;
 
         private bool _isDoorLightOn;
-        private int Cnt = 0;
         // 新增命令：ToggleButton 切換時呼叫
         [RelayCommand]
         private async Task DoorLightSwitchChanged(bool isChecked)
         {
             try
             {
-                Cnt++;
-                var success = await _PlcService.EleMagzineDoorLightSwitchAsync(0, isChecked);
+                var success = false;
+                success =  await _PlcService.WEMagzineDoorLightSwitchAsync(0, isChecked);
+                success =  await _PlcService.EMagzineDoorLightSwitchAsync(0, isChecked);
                 if (!success)
                 {
                     new DialogMessageWindow("API 回傳失敗").ShowDialog();

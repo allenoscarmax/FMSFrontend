@@ -38,16 +38,20 @@ namespace FMSFrontend.Features.Mappings
                 magazinePara.MagazineParas[1].RightTitleBrush = EleTilieColor;
             }
 
-            magazinePara.IsDoorLightOn = dto.door_to_light.FirstOrDefault();
-
+            magazinePara.IsDoorLightOn = dto.door_to_light[0] && dto.door_to_light[1];
+           
             // 目前 DTO 只提供單一門狀態 -> 套用到第 0 個
-            if (magazinePara.MagazineParas.Count > 0)
+            if (magazinePara.MagazineParas.Count == 2)
             {
-                var info = magazinePara.MagazineParas[0];
-                info.UpperScanStatus = dto.shouldScanEle ? LightOn : LightOff;
-                info.UpperDoorStatus = dto.eleMagzineDoorOpen.FirstOrDefault() ? LightOn : LightOff;
-                info.LowerScanStatus = dto.shouldScanPart ? LightOn : LightOff;
-                info.LowerDoorStatus = dto.partMagzineDoorOpen.FirstOrDefault() ? LightOn : LightOff;
+                magazinePara.MagazineParas[0].UpperScanStatus = dto.shouldScanPart ? LightOn : LightOff;
+                magazinePara.MagazineParas[0].UpperDoorStatus = dto.partMagzineDoorOpen[0] ? LightOn : LightOff;
+                magazinePara.MagazineParas[0].LowerScanStatus = dto.shouldScanEle[0] ? LightOn : LightOff;
+                magazinePara.MagazineParas[0].LowerDoorStatus = dto.eleMagzineDoorOpen[0] ? LightOn : LightOff;
+
+                magazinePara.MagazineParas[1].UpperScanStatus = dto.shouldScanEle[1] ? LightOn : LightOff;
+                magazinePara.MagazineParas[1].UpperDoorStatus = dto.eleMagzineDoorOpen[1] ? LightOn : LightOff;
+                magazinePara.MagazineParas[1].LowerScanStatus = dto.shouldScanEle[2] ? LightOn : LightOff;
+                magazinePara.MagazineParas[1].LowerDoorStatus = dto.eleMagzineDoorOpen[2] ? LightOn : LightOff;
             }
         }
     }
