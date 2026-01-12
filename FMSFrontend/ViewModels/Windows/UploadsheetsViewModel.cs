@@ -479,8 +479,8 @@ namespace FMSFrontend.ViewModels.Windows
                         result.programSkippedMachines.Count > 0)
                     {
                         var warningMsg =
-    "工單已建立，但以下機台未上傳程式，請手動傳送：" + Environment.NewLine +
-    string.Join(Environment.NewLine, result.programSkippedMachines);
+                        "工單已建立，但以下機台未上傳程式，請手動傳送：" + Environment.NewLine +
+                        string.Join(Environment.NewLine, result.programSkippedMachines);
 
 
                         _windowService.ShowMessage(warningMsg);

@@ -20,7 +20,6 @@ namespace FMSFrontend.ViewModels.Windows
 {
     public partial class ProbePairViewModel : ObservableObject
     {
-        private readonly Window _window;
         private readonly IWindowService _windowService;
         private readonly IHttpService _httpService;
         // === Services ===
@@ -32,12 +31,12 @@ namespace FMSFrontend.ViewModels.Windows
         // ==LiveUpdater===
         public RFIDBindLiveUpdater _rfidUpdater;
 
-        public ProbePairViewModel(Window window, IWindowService windowService, IHttpService httpService,
+        public ProbePairViewModel(IWindowService windowService, IHttpService httpService,
             IElectrodeService electrodeService, IProbeService probeService, IRfidService rfidService,
             IWorkpieceService workpieceService, IWorksheetsService worksheetService,
             RFIDBindStore rFIDBindStore, RFIDBindLiveUpdater rFIDBindLiveUpdater)
         {
-            _window = window;
+          
             _windowService = windowService;
             _httpService = httpService;
 
@@ -119,16 +118,16 @@ namespace FMSFrontend.ViewModels.Windows
                 _windowService.ShowMessage($"Probe上傳成功!");
 
                 // 配對成功後離開
-                _window?.Close();
+                CloseAction?.Invoke();
             }
             catch { _windowService.ShowMessage("發生錯誤"); }
         }
-
+        public Action? CloseAction { get; set; }
         [RelayCommand]
         private void Back()
         {
             // 關閉目前視窗（假設你有存 _window）
-            _window?.Close();
+            CloseAction?.Invoke();
 
             // 開啟物料種類選擇視窗（交給 WindowService）
             if (!_windowService.ShowMaterialTypeSelectWindow(out MaterialKind kind))
