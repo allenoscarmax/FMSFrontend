@@ -33,6 +33,7 @@ namespace FMSFrontend.ViewModels.Windows
         public WorksheetItem? SelectedWorksheetItem { get; private set; }
         public SelectItem? SelectedElectrodeItem { get; private set; }
 
+        private int ElectrodesFilter = 1; //佑義:2 鋐興:1
         // ------------------------------------------------------------
         // 📦 暫存資料區：在 ViewModel 開頭統一定義
         // ------------------------------------------------------------
@@ -148,7 +149,7 @@ namespace FMSFrontend.ViewModels.Windows
 
                     // 只挑尾碼為 -02
                     if (string.IsNullOrWhiteSpace(e.electrodeName) ||
-                        !e.electrodeName.EndsWith("-02", StringComparison.OrdinalIgnoreCase))
+                        !e.electrodeName.EndsWith("-"+ ElectrodesFilter.ToString("D2"), StringComparison.OrdinalIgnoreCase))
                         continue;
 
                     // lifeTimes > useTimes

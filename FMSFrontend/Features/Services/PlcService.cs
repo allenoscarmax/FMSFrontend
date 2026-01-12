@@ -13,8 +13,11 @@ namespace FMSFrontend.Features.Services
         Task<PLCCommonParaDto?> GetPLCCommonParaAsync(CancellationToken ct = default);    // GET  PLC/GetPLCCommonPara
 
         // ===== Actions (PUT) =====
-        Task<bool> EleMagzineDoorSwitchAsync(int doorNum, int upOrDown, bool open);              // PUT  PLC/ELEMagzineDoorSwitch/{DoorNum}/{UpandDown}/{Open}
-        Task<bool> EleMagzineDoorLightSwitchAsync(int doorNum, bool lightOn);                    // PUT  PLC/EleMagzineDoorLightSwitch/{DoorNum}/{LightSwitch}
+        Task<bool> WEMagzineDoorSwitchAsync(int doorNum, int upOrDown, bool open);              // PUT  PLC/ELEMagzineDoorSwitch/{DoorNum}/{UpandDown}/{Open}
+        Task<bool> WEMagzineDoorLightSwitchAsync(int doorNum, bool lightOn);                    // PUT  PLC/EleMagzineDoorLightSwitch/{DoorNum}/{LightSwitch}
+
+        Task<bool> EMagzineDoorSwitchAsync(int doorNum, int upOrDown, bool open);              // PUT  PLC/ELEMagzineDoorSwitch/{DoorNum}/{UpandDown}/{Open}
+        Task<bool> EMagzineDoorLightSwitchAsync(int doorNum, bool lightOn);                    // PUT  PLC/EleMagzineDoorLightSwitch/{DoorNum}/{LightSwitch}
 
         Task<bool> ASE_OpenDoorAsync();                                                          // PUT  PLC/ASE_OpenDoor
         Task<bool> ASE_OpenDoorLightAsync(bool open);                                            // PUT  PLC/ASE_OpenDoorLight/{Open}
@@ -42,15 +45,30 @@ namespace FMSFrontend.Features.Services
             => await _http.GetJsonAsync<PLCCommonParaDto>("PLC/GetPLCCommonPara", ct);
 
         // ===== Actions (PUT) =====
-        public async Task<bool> EleMagzineDoorLightSwitchAsync(int doorNum, bool lightOn)
+        //Task<bool> MEleMagzineDoorSwitchAsync(int doorNum, int upOrDown, bool open);              // PUT  PLC/ELEMagzineDoorSwitch/{DoorNum}/{UpandDown}/{Open}
+        //Task<bool> MEleMagzineDoorLightSwitchAsync(int doorNum, bool lightOn);                    // PUT  PLC/EleMagzineDoorLightSwitch/{DoorNum}/{LightSwitch}
+
+        public async Task<bool> WEMagzineDoorLightSwitchAsync(int doorNum, bool lightOn)
         {
-            var route = $"PLC/EleMagzineDoorLightSwitch/{doorNum}/{BoolSeg(lightOn)}";
+            var route = $"PLC/WEMagzineDoorLightSwitch/{doorNum}/{BoolSeg(lightOn)}";
             return await _http.SendPutAsync(route, new { });
         }
 
-        public async Task<bool> EleMagzineDoorSwitchAsync(int doorNum, int upOrDown, bool open)
+        public async Task<bool> WEMagzineDoorSwitchAsync(int doorNum, int upOrDown, bool open)
         {
-            var route = $"PLC/ELEMagzineDoorSwitch/{doorNum}/{upOrDown}/{BoolSeg(open)}";
+            var route = $"PLC/WEMagzineDoorSwitch/{doorNum}/{upOrDown}/{BoolSeg(open)}";
+            return await _http.SendPutAsync(route, new { });
+        }
+
+        public async Task<bool> EMagzineDoorLightSwitchAsync(int doorNum, bool lightOn)
+        {
+            var route = $"PLC/EMagzineDoorLightSwitch/{doorNum}/{BoolSeg(lightOn)}";
+            return await _http.SendPutAsync(route, new { });
+        }
+
+        public async Task<bool> EMagzineDoorSwitchAsync(int doorNum, int upOrDown, bool open)
+        {
+            var route = $"PLC/EMagzineDoorSwitch/{doorNum}/{upOrDown}/{BoolSeg(open)}";
             return await _http.SendPutAsync(route, new { });
         }
 
