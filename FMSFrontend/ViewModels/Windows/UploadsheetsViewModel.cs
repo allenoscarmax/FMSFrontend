@@ -431,18 +431,29 @@ namespace FMSFrontend.ViewModels.Windows
             selectedWorkCsvPath = "尚未選擇檔案";
             selectedEleCsvPath = "尚未選擇檔案";
         }
-
+        bool isFileNameUnique = true; //鋐興需求: 工件名稱重複只上傳一次
         [RelayCommand]
         private async Task UpdataButton()
         {
             if (IsUploading)
                 return; // 防止連點
 
-            var selectedWorks = WorkItems.Where(w => w.IsSelected).Select(w=> new UploadWorkItemDto {workpieceName = w.WorkpieceName, measurementProgram = w.MeasurementProgram }).ToList();
-            var selectedEles = ElectrodeItems.Where(e => e.IsSelected).Select(e => new UploadElectrodeItemDto { electrodeName = e.ElectrodeName,
-            measurementProgram = e.MeasurementProgram, lifeTimes = e.LifeTimes,
-            offsetStatus = e.OffsetStatus, share = e.Share,
-            shareElectrode = e.ShareElectrode, shareId = e.ShareId,}).ToList();
+            var selectedWorks = WorkItems.Where(w => w.IsSelected).Select(w => new UploadWorkItemDto { workpieceName = w.WorkpieceName, measurementProgram = w.MeasurementProgram }).ToList();
+            if (isFileNameUnique)
+            {
+                //如果selectedWorks 的 WorkpieceName重複 ,只留一個
+                selectedWorks = selectedWorks.GroupBy(w => w.workpieceName).Select(g => g.First()).ToList();
+            }
+            var selectedEles = ElectrodeItems.Where(e => e.IsSelected).Select(e => new UploadElectrodeItemDto
+            {
+                electrodeName = e.ElectrodeName,
+                measurementProgram = e.MeasurementProgram,
+                lifeTimes = e.LifeTimes,
+                offsetStatus = e.OffsetStatus,
+                share = e.Share,
+                shareElectrode = e.ShareElectrode,
+                shareId = e.ShareId,
+            }).ToList();
 
             if (!selectedWorks.Any() && !selectedEles.Any())
             {
@@ -492,10 +503,7 @@ namespace FMSFrontend.ViewModels.Windows
                 }
                 else
                 {
-                    var msg = string.IsNullOrWhiteSpace(result?.message)
-       ? "上傳失敗（未知錯誤）"
-       : $"上傳失敗：{result.message}";
-
+                    var msg = string.IsNullOrWhiteSpace(result?.message) ? "上傳失敗（未知錯誤）" : $"上傳失敗：{result.message}";
                     _windowService.ShowMessage(msg);
                 }
             }
