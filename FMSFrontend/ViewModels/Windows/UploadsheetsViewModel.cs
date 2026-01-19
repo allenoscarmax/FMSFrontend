@@ -447,7 +447,8 @@ namespace FMSFrontend.ViewModels.Windows
             var selectedEles = ElectrodeItems.Where(e => e.IsSelected).Select(e => new UploadElectrodeItemDto
             {
                 electrodeName = e.ElectrodeName,
-                measurementProgram = e.MeasurementProgram,
+                machiningProgram = e.MeasurementProgram, //鋐興需求: 電極量測程式名稱加 "_OF" 後綴
+                measurementProgram = e.MeasurementProgram + "_OF", //鋐興需求: 電極量測程式名稱加 "_OF" 後綴
                 lifeTimes = e.LifeTimes,
                 offsetStatus = e.OffsetStatus,
                 share = e.Share,

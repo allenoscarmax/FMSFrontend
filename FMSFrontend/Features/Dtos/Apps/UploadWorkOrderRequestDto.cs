@@ -30,6 +30,7 @@ namespace FMSFrontend.Features.Dtos.Apps
     public class UploadElectrodeItemDto
     {
         public string electrodeName { get; set; }
+        public string machiningProgram { get; set; } //鋐興需求
         public string measurementProgram { get; set; }
         public string electrodeProgramFolderPath { get; set; }
 
