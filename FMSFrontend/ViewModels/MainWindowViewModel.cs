@@ -344,7 +344,7 @@ namespace FMSFrontend.ViewModels
                 if (storageId == "0")
                     success = await _PlcService.WEMagzineDoorSwitchAsync(0, 1, true);
                 else if (storageId == "1")
-                    await _PlcService.EMagzineDoorSwitchAsync(0, 1, true);
+                    success = await _PlcService.EMagzineDoorSwitchAsync(0, 1, true);
                 if (!success)
                 {
                     new DialogMessageWindow("API 回傳失敗").ShowDialog();
