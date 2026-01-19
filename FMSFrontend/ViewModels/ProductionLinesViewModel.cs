@@ -190,7 +190,7 @@ namespace FMSFrontend.ViewModels
                             if (openMode == MaterialOpenMode.Information)
                                 _windowService.ShowMaterialInformation(model, timelineModels);
                             else
-                                _windowService.ShowElectrode(model, timelineModels);
+                                _windowService.ShowElectrode(model, timelineModels, slot.SlotCode);
 
                             return;
                          //   _windowService.ShowElectrode(MapElectrode(e, slot), timelineModels);
@@ -210,7 +210,7 @@ namespace FMSFrontend.ViewModels
                             if (openMode == MaterialOpenMode.Information)
                                 _windowService.ShowMaterialInformation(model, Enumerable.Empty<TimelineItemModel>());
                             else
-                                _windowService.ShowElectrode(model, Enumerable.Empty<TimelineItemModel>());
+                                _windowService.ShowElectrode(model, Enumerable.Empty<TimelineItemModel>(), slot.SlotCode);
 
                             return;
 
@@ -236,7 +236,7 @@ namespace FMSFrontend.ViewModels
                         if (openMode == MaterialOpenMode.Information)
                             _windowService.ShowMaterialInformation(model, wpTimelineModels);
                         else
-                            _windowService.ShowWorkpiece(model, wpTimelineModels);
+                            _windowService.ShowWorkpiece(model, wpTimelineModels, slot.SlotCode);
 
                         return;
                     }
