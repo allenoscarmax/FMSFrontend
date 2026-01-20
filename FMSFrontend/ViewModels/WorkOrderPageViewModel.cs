@@ -397,11 +397,49 @@ namespace FMSFrontend.ViewModels
                     _WindowService.ShowMessage("找不到工單 ID，無法刪除。");
                     return;
                 }
-                bool ok = await _WorksheetsService.DeleteWorkSheetDataByIdAsync(item.Id);
+                bool ok = false;
+                // 刪除相關電極資料
+                var eleDtos = await _ElectrodeService.GetElectrodeByWorksheetNumberAsync(item.WorksheetNumber, CancellationToken.None);
+                if (eleDtos != null)
+                {
+                    foreach (var ele in eleDtos)
+                    {
+                        if (!string.IsNullOrWhiteSpace(ele._id))
+                        {
+                            ok = await _ElectrodeService.DB_DeleteElectrodeDataByIdAsync(ele._id);
+                            if (!ok)
+                            {
+                                _WindowService.ShowMessage($"刪除工單中的電極失敗：");
+                                return;
+                            }
+
+                        }
+                    }
+                }
+
+                //刪除相關工件資料
+                var wpDtos = await _WorkpieceService.GetWorkpieceByWorksheetNumberAsync(item.WorksheetNumber, CancellationToken.None);
+                if (wpDtos != null)
+                {
+                    ok = await _WorkpieceService.DeleteWorkpieceDataByIdAsync(wpDtos._id);
+                    if (!ok)
+                    {
+                        _WindowService.ShowMessage($"刪除工單中的工件失敗：");
+                        return;
+                    }
+                }
+
+                // 呼叫後端 API 刪除工單
+                ok = await _WorksheetsService.DeleteWorkSheetDataByIdAsync(item.Id);
                 if (ok)
                 {
                     WorkOrderList.Remove(item);
                     _WindowService.ShowMessage("已成功刪除工單。");   // 若 API 呼叫成功，從 UI 清單移除
+                }
+                else
+                {
+                    _WindowService.ShowMessage($"刪除工單失敗：");
+                    return;
                 }
             }
             catch (Exception ex)

@@ -63,7 +63,7 @@
                     </StackPanel>
                 </Button>
 
-                <Button Width="240" Height="78" Background="#0066D9" Foreground="White" FontSize="18" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Effect="{StaticResource ShadowEffect}">
+                <Button Width="240" Height="78" Background="#0066D9" Foreground="White" FontSize="18" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Effect="{StaticResource ShadowEffect}" Command="{Binding ReadMaterialInformationCommand}" >
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="12" SnapsToDevicePixels="True">

@@ -3,7 +3,12 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 using FMSFrontend.Extensions;
+using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
+using FMSFrontend.Models;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views.Windows;
@@ -17,10 +22,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using FMSFrontend.Features.Services;
-using FMSFrontend.Features.Singleton;
-using FMSFrontend.Features.Threading;
-using FMSFrontend.Models;
+
 
 namespace FMSFrontend.ViewModels
 {
@@ -142,7 +144,41 @@ namespace FMSFrontend.ViewModels
             if (IsCustomDateMode) RefreshFetch();
         }
 
+        [RelayCommand]
+        private void ReadMaterialInformation()
+        {
+            // if (!_auth.RequireLogin()) return;
 
+            _rfidUpdater.ReadTagFlag = true;
+            _rfidUpdater.ReadMaterInfoFlag = true;
+            _rfidUpdater.Start();
+            rFIDBindmodel.ReadElectrodeFlag = false;
+            rFIDBindmodel.ReadWorkpieceFlag = false;
+            // 先讓使用者選「電極 / 工件 / 探針」
+            if (!_windowService.ShowMaterialTypeSelectWindow(out MaterialKind kind))
+                return;
+            switch (kind)
+            {
+                case MaterialKind.Electrode:
+                    if (rFIDBindmodel.ReadElectrodeFlag)
+                        _windowService.ShowMaterialInformation(rFIDBindmodel.electrode, rFIDBindmodel.Timeline);
+                    else
+                        ShowWarning("未讀取到電極資料");
+                    break;
+                case MaterialKind.Workpiece:
+                    if (rFIDBindmodel.ReadWorkpieceFlag)
+                        _windowService.ShowMaterialInformation(rFIDBindmodel.workpiece, rFIDBindmodel.Timeline);
+                    else
+                        ShowWarning("未讀取到工件資料");
+                    break;
+                default:
+                    return;
+            }
+            // 視窗關閉後執行原本的後續流程\
+            _rfidUpdater.Stop();
+            _rfidUpdater.ReadTagFlag = false;
+            _rfidUpdater.ReadMaterInfoFlag = false;
+        }
 
         [RelayCommand]
         private void OpenMaterialTypeSelect()
