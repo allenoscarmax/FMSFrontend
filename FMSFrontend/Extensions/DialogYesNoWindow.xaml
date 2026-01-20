@@ -10,7 +10,7 @@
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0">
 
                 <!-- 提示訊息 -->
-                <TextBlock x:Name="MessageText" Text="你確定要執行此操作嗎？" FontSize="24" FontWeight="Bold" Foreground="#222" Margin="0,0,0,40" HorizontalAlignment="Center" />
+                <TextBlock x:Name="MessageText" Text="你確定要執行此操作嗎？" FontSize="14" FontWeight="Bold" Foreground="#222" Margin="0,0,0,40" HorizontalAlignment="Center" />
 
                 <!-- 按鈕區域：水平排列 -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,5">
