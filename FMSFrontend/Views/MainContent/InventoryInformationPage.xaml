@@ -111,11 +111,11 @@
 
                         <!-- 依畫面欄位命名替換你的 Binding -->
                         <DataGrid.Columns>
+                            <DataGridTextColumn Header="儲存區域" Binding="{Binding SlotCode}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                             <DataGridTextColumn Header="名稱" Binding="{Binding Name}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                             <DataGridTextColumn Header="序號" Binding="{Binding TagSerial}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                             <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                             <DataGridTextColumn Header="目前位置" Binding="{Binding Location}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="儲存區域" Binding="{Binding SlotCode}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                             <DataGridTextColumn Header="工單編號" Binding="{Binding Worksheet}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                             <DataGridTextColumn Header="程式名稱" Binding="{Binding Program}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                         </DataGrid.Columns>

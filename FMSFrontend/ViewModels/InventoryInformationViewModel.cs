@@ -101,7 +101,12 @@ namespace FMSFrontend.ViewModels
                         else if (!IsOffShelf && storage.Name.IndexOf("E") == -1) kind = InventoryKind.OnShelfWork;
                         else if (IsOffShelf && storage.Name.IndexOf("W") == -1) kind = InventoryKind.OffShelfElectrode;
                         else if (IsOffShelf && storage.Name.IndexOf("E") == -1) kind = InventoryKind.OffShelfWork;
-
+                        string[] sr = slot.SlotCode.Split(':');
+                        string newSlotCode = sr[0];
+                        for (int i = 1; i < sr.Length; i++)
+                        {
+                            newSlotCode += ":" + sr[i].PadLeft(2, ' ');
+                        }
                         AllItems.Add(new InventoryItem
                         {
                             Kind = kind,
@@ -109,7 +114,7 @@ namespace FMSFrontend.ViewModels
                             TagSerial = slot.Serial,
                             Status = slot.MaterialStatus,
                             Location = slot.Location,
-                            SlotCode = slot.SlotCode,
+                            SlotCode = newSlotCode,
                             Worksheet = slot.Worksheet,
                             Program = slot.Program,
                         });

@@ -33,7 +33,7 @@ namespace FMSFrontend.ViewModels.Windows
         public WorksheetItem? SelectedWorksheetItem { get; private set; }
         public SelectItem? SelectedElectrodeItem { get; private set; }
 
-        private int ElectrodesFilter = 1; //佑義:2 鋐興:1
+        private int ElectrodesFilter = 5; //佑義:2 鋐興:5
         // ------------------------------------------------------------
         // 📦 暫存資料區：在 ViewModel 開頭統一定義
         // ------------------------------------------------------------

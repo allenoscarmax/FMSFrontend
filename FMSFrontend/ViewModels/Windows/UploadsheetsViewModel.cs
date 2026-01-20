@@ -784,8 +784,8 @@ namespace FMSFrontend.ViewModels.Windows
 
         public bool Share => !string.IsNullOrWhiteSpace(ShareWorksheet);
         partial void OnShareWorksheetChanged(string value) => OnPropertyChanged(nameof(Share));
-        // 那一把電極要分享
-        public int ShareElectrodeFrom = 5;  
+        // 鋐興需求: 那一把電極要分享
+        public int ShareElectrodeFrom = 1;   //佑義:2 鋐興:1 
 
         // 根據電極名稱尾碼決定是否可分享 (例如尾碼為 "02")
         public bool CanShare => (!string.IsNullOrWhiteSpace(ElectrodeName) && ElectrodeName.Trim().EndsWith(ShareElectrodeFrom.ToString("D2"), StringComparison.OrdinalIgnoreCase));
