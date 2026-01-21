@@ -367,10 +367,10 @@
 
                                                                 <!-- Page X of Y（置中顯示） -->
                                                                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                                                                    <TextBlock Text="Page" VerticalAlignment="Center" />
-                                                                    <TextBlock Text="{Binding CurrentPage}" FontWeight="Bold" Margin="6,0,6,0" VerticalAlignment="Center" />
-                                                                    <TextBlock Text="of" VerticalAlignment="Center" />
-                                                                    <TextBlock Text="{Binding TotalPages}" FontWeight="Bold" Margin="6,0,0,0" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="Page" FontSize="20" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="{Binding CurrentPage}" FontSize="20" FontWeight="Bold" Margin="6,0,6,0" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="of" FontSize="20" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="{Binding TotalPages}" FontSize="20" FontWeight="Bold" Margin="6,0,0,0" VerticalAlignment="Center" />
                                                                 </StackPanel>
 
                                                                 <!-- 下一頁 -->
