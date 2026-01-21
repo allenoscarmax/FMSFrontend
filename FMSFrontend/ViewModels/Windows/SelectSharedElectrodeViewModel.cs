@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ControlzEx.Standard;
 using FMSFrontend.Extensions;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
@@ -79,8 +80,8 @@ namespace FMSFrontend.ViewModels.Windows
         [RelayCommand]
         private async Task SelectWorkOrderAsync()
         {
-            try
-            {
+            //try
+            //{
                 // 從 electrodeName 萃取工件名稱（第一個 '_' 之前的字串）
                 var workpieceName = ExtractWorkpieceNameFromElectrodeName(_targetElectrodeName);
                 if (string.IsNullOrEmpty(workpieceName))
@@ -105,6 +106,20 @@ namespace FMSFrontend.ViewModels.Windows
 
                 if (items.Count == 0)
                     return;
+                //檢查shared electrode是否已被使用
+                for (int i = 0; i < items.Count;i++)
+                {
+                    var es = await _electrodeService.GetElectrodeByWorksheetNumberAsync(items[i].WorkOrderNo ?? string.Empty) ?? new List<ElectrodeDto>(); // 取得該工單的電極清單
+                    foreach (var e in es)//如果電及已經被共用 移除item
+                    {
+                        if (e.shared)
+                        {
+                            items.RemoveAt(i);
+                            i--;//因為移除一個item 所以index要往前移動一格
+                            break;
+                        }
+                    }
+                }
 
                 // ✅ 改用 WindowService
                 var selected = _windowService.ShowSelectWorksheetWindow(items);
@@ -117,11 +132,11 @@ namespace FMSFrontend.ViewModels.Windows
                 // 清空電極
                 SelectedElectrodeItem = null;
                 SelectedElectrodeNameDisplay = "請選擇電極";
-            }
-            catch
-            {
-                _windowService.ShowMessage("選擇工單失敗");
-            }
+            //}
+            //catch
+           // {
+            //    _windowService.ShowMessage("選擇工單失敗");
+           // }
         }
 
 

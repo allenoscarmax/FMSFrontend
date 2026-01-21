@@ -23,7 +23,7 @@
 
             <!-- 🔠 主標題 -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
-                <materialDesign:PackIcon Kind="NfcVariant" VerticalAlignment="Center" Width="36" Height="36" Margin="0,0,8,0" Foreground="{DynamicResource PrimaryTextBrush}" />
+                <materialDesign:PackIcon Kind="QrCodeScan" VerticalAlignment="Center" Width="24" Height="24" Margin="0,0,8,0" Foreground="{DynamicResource PrimaryTextBrush}" />
                 <TextBlock Text="RFID 燒錄" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
 
@@ -200,7 +200,7 @@
                     </Button>
 
                     <!-- 📑 表格 -->
-                    <Border Grid.Row="2" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,20,0,0">
+                    <Border Grid.Row="2" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,20,0,0">
 
                         <DataGrid ItemsSource="{Binding rFIDBindmodel.BurnHistoryList}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="15" Style="{StaticResource ModernFlatDataGridStyle}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
 

@@ -5,10 +5,10 @@
 	</UserControl.Resources>
 	<Grid>
 		<!-- 陰影層 -->
-		<Border Background="#33000000" CornerRadius="18" Margin="-2,-2,-2,-2"/>
+		<Border Background="#33000000" CornerRadius="18" Margin="0,0,0,-2"/>
 
 		<!-- 外層圓角白底 + 陰影 -->
-		<Border CornerRadius="18" Background="#FFFFFF" BorderBrush="#DDD"  ClipToBounds="True" SnapsToDevicePixels="True">
+        <Border CornerRadius="18" Background="#FFFFFF" Margin="2,2,2,0" BorderBrush="#DDD"  ClipToBounds="True" SnapsToDevicePixels="True">
 			<!-- 用 Grid 分區塊＋裁切 -->
 			<Grid ClipToBounds="True" SnapsToDevicePixels="True">
 				<Grid.RowDefinitions>
@@ -35,53 +35,53 @@
 				</Border>
 
 				<!-- 狀態統計列 -->
-				<Grid Grid.Row="1" FocusVisualStyle="{x:Null}" HorizontalAlignment="Center" Margin="0,20,0,10">
+				<Grid Grid.Row="1" FocusVisualStyle="{x:Null}" HorizontalAlignment="Center" Margin="0,10,0,0">
 					<StackPanel Orientation="Horizontal" Margin="8,0,0,0">
-                        <Border Background="#E6B93E" CornerRadius="4" Margin="0,0,8,0" Height="24" Width="88" HorizontalAlignment="Center">
+                        <Border Background="#E6B93E" CornerRadius="4" Margin="0,0,8,0" Height="Auto" Width="Auto" HorizontalAlignment="Center">
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-								<TextBlock Text="待加工" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
-								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding StorageGroup.WaitingTotal}" d:Text ="12"  Foreground="#222"  FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <TextBlock Text="待加工" FontSize="16" Foreground="White" Margin="10,5,0,5" FontWeight="Bold" VerticalAlignment="Center" />
+								<Border Width="40" Height="30" Background="White" CornerRadius="15" Margin="5,5,10,5" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding StorageGroup.WaitingTotal}" d:Text ="12"  Foreground="#222"  FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
 								</Border>
 							</StackPanel>
 						</Border>
-                        <Border Background="#56C06C" CornerRadius="4" Margin="0,0,8,0" Height="24" Width="80" HorizontalAlignment="Center">
+                        <Border Background="#56C06C" CornerRadius="4" Margin="0,0,8,0" Height="Auto" Width="Auto" HorizontalAlignment="Center">
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-								<TextBlock Text="加工中" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
-								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding StorageGroup.ProcessingTotal}" d:Text="3" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+								<TextBlock Text="加工中" FontSize="16" Foreground="White" Margin="10,5,0,5" FontWeight="Bold" VerticalAlignment="Center" />
+								<Border Width="40" Height="30" Background="White" CornerRadius="15" Margin="5,5,10,5" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding StorageGroup.ProcessingTotal}" d:Text="3" Foreground="#222" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
 								</Border>
 							</StackPanel>
 						</Border>
-                        <Border Background="#C0392B" CornerRadius="4" Margin="0,0,8,0" Height="24" Width="80" HorizontalAlignment="Center">
+                        <Border Background="#C0392B" CornerRadius="4" Margin="0,0,8,0" Height="Auto" Width="Auto" HorizontalAlignment="Center">
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-								<TextBlock Text="異常" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
-								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding StorageGroup.ErrorTotal}" d:Text="4" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+								<TextBlock Text="異常" FontSize="16" Foreground="White" Margin="10,5,0,5" FontWeight="Bold" VerticalAlignment="Center" />
+								<Border Width="40" Height="30" Background="White" CornerRadius="15" Margin="5,5,10,5" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding StorageGroup.ErrorTotal}" d:Text="4" Foreground="#222" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
 								</Border>
 							</StackPanel>
 						</Border>
-                        <Border Background="#2F64CF" CornerRadius="4" Margin="0,0,8,0" Height="24" Width="80" HorizontalAlignment="Center">
+                        <Border Background="#2F64CF" CornerRadius="4" Margin="0,0,8,0" Height="Auto" Width="Auto" HorizontalAlignment="Center">
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-								<TextBlock Text="完成" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
-								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding StorageGroup.CompletedTotal}" d:Text="5" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+								<TextBlock Text="完成" FontSize="16" Foreground="White" Margin="10,5,0,5" FontWeight="Bold" VerticalAlignment="Center" />
+								<Border Width="40" Height="30" Background="White" CornerRadius="15" Margin="5,5,10,5" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding StorageGroup.CompletedTotal}" d:Text="5" Foreground="#222" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
 								</Border>
 							</StackPanel>
 						</Border>
-						<Border Background="#CCCCCC" CornerRadius="4" Margin="0,0,8,0" Height="24" Width="80" HorizontalAlignment="Center">
+                        <Border Background="#CCCCCC" CornerRadius="4" Margin="0,0,8,0" Height="Auto" Width="Auto" HorizontalAlignment="Center">
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-								<TextBlock Text="禁用" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center" />
-								<Border Width="20" Height="16" Background="White" CornerRadius="8" Margin="6,0,0,0" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding StorageGroup.RestrictionTotal}" d:Text="8" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+								<TextBlock Text="禁用" FontSize="16" Foreground="#555" Margin="10,5,0,5" FontWeight="Bold" VerticalAlignment="Center" />
+								<Border Width="40" Height="30" Background="White" CornerRadius="15" Margin="5,5,10,5" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding StorageGroup.RestrictionTotal}" d:Text="8" Foreground="#222" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
 								</Border>
 							</StackPanel>
 						</Border>
-						<Border Background="White" CornerRadius="4" Margin="0,0,8,0" BorderBrush="#CCCCCC" BorderThickness="1" Height="24" Width="80" HorizontalAlignment="Center">
+                        <Border Background="#FFFFFF" CornerRadius="4" Margin="0,0,8,0" Height="Auto" Width="Auto" HorizontalAlignment="Center" BorderBrush="#CCCCCC" BorderThickness="1">
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-								<TextBlock Text="預約" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center"  />
-								<Border Width="20" Height="16" Background="#D6D6D6" CornerRadius="8" Margin="12,0,0,0" VerticalAlignment="Center" >
-                                    <TextBlock Text="{Binding StorageGroup.BookedTotal}" d:Text="9" Foreground="#222" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+								<TextBlock Text="預約" FontSize="16" Foreground="#555" Margin="10,5,0,5" FontWeight="Bold" VerticalAlignment="Center" />
+								<Border Width="40" Height="30" Background="#D6D6D6" CornerRadius="15" Margin="5,5,10,5" VerticalAlignment="Center" >
+                                    <TextBlock Text="{Binding StorageGroup.BookedTotal}" d:Text="9" Foreground="#222" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
 								</Border>
 							</StackPanel>
 						</Border>
@@ -89,7 +89,7 @@
 				</Grid>
 
 				<!-- 多倉位區塊（針對某個 StorageUnit 顯示）-->
-				<Border Grid.Row="2" CornerRadius="12" Background="#FFFFFF" SnapsToDevicePixels="True" ClipToBounds="True" Padding="8">
+				<Border Grid.Row="2" CornerRadius="18" Background="#FFFFFF" SnapsToDevicePixels="True" ClipToBounds="True" Padding="8">
 					<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalAlignment="Center">
                         <ItemsControl ItemsSource="{Binding StorageGroup.Storage}">
 							<ItemsControl.ItemsPanel>

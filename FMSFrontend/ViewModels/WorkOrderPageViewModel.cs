@@ -215,9 +215,10 @@ namespace FMSFrontend.ViewModels
                     if (item != null)
                     {
                         _ = DeleteWorkOrderAsync(item);
+                        
                     }
                 });
-            _ = FetchAndBindByStatusAsync();
+            //_ = FetchAndBindByStatusAsync();
         }
 
         private void ShowWarning(string message)
@@ -446,6 +447,7 @@ namespace FMSFrontend.ViewModels
             {
                 _WindowService.ShowMessage($"刪除工單失敗：{ex.Message}"); // 顯示錯誤資訊但不要讓應用程式崩潰
             }
+            _ = FetchAndBindByStatusAsync();
         }
 
         // ← 新增：分頁索引對應到後端 WorkStatus（請依實際需求調整）

@@ -23,8 +23,8 @@
 
             <!-- Title 區塊（同風格） -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2">
-                <materialDesign:PackIcon Kind="ViewList" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
-                <TextBlock Text="倉儲庫存列表" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                <materialDesign:PackIcon Kind="Storage" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,4,4,0" />
+                <TextBlock Text="倉儲庫存" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" />
             </StackPanel>
 
             <!-- 內容區：依 MachineOverviewPage 的三段式思路，改為 Tab +（可選工具列）+ 主表格 -->
@@ -91,8 +91,8 @@
                 </Grid>
 
                 <!-- 主內容：表格（完全依你提供的樣式與寫法） -->
-                <Border Grid.Row="2" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,0">
-                    <DataGrid  ColumnWidth="SizeToCells" ItemsSource="{Binding InventoryList}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="15" Style="{StaticResource ModernFlatDataGridStyle}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
+                <Border Grid.Row="2" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,0">
+                    <DataGrid  ColumnWidth="SizeToCells" ItemsSource="{Binding InventoryList}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="16" Style="{StaticResource ModernFlatDataGridStyle}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
 
                         <!-- Cell / Row Style：移除邊框與多餘間距 -->
                         <DataGrid.CellStyle>
@@ -111,13 +111,13 @@
 
                         <!-- 依畫面欄位命名替換你的 Binding -->
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="儲存區域" Binding="{Binding SlotCode}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="名稱" Binding="{Binding Name}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="序號" Binding="{Binding TagSerial}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="目前位置" Binding="{Binding Location}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="工單編號" Binding="{Binding Worksheet}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="程式名稱" Binding="{Binding Program}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="倉位編號" Binding="{Binding SlotCode}"  Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="狀態" Binding="{Binding Status}"        Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="名稱" Binding="{Binding Name}"          Width="Auto" MinWidth="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="序號" Binding="{Binding TagSerial}"     Width="Auto" MinWidth="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="目前位置" Binding="{Binding Location}"  Width="Auto" MinWidth="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="工單編號" Binding="{Binding Worksheet}" Width="170" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                            <DataGridTextColumn Header="加工程式" Binding="{Binding Program}"   Width="*" MinWidth="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>

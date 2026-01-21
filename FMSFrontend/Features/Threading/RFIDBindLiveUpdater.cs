@@ -67,7 +67,7 @@ namespace FMSFrontend.Features.Threading
                 {
                     string? TagDto;
                     TagDto = await _svc.Read_Tag_IDAsync(0, ElectrodeTagNumber);
-                    TagDto = "1";
+                    //TagDto = "1";
                     if (!string.IsNullOrEmpty(TagDto))
                     {
                         var eleDtos = await _svc_Electrode.DB_GetElectrodesByTagSerialAsync(TagDto);
@@ -81,7 +81,7 @@ namespace FMSFrontend.Features.Threading
                         }
                     }
                     TagDto = await _svc.Read_Tag_IDAsync(0, WorkpieceTagNumber);
-                    TagDto = "10";
+                    //TagDto = "10";
                     if (!string.IsNullOrEmpty(TagDto))
                     {
                         var WpDto = await _svc_Workpiece.GetWorkpieceByTagSerialAsync(TagDto);

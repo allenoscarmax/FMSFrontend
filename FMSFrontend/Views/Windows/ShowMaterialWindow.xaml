@@ -191,7 +191,7 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- 左卡：物料資訊 -->
-                <Border Grid.Column="0" CornerRadius="10" BorderBrush="#CCCCCC" BorderThickness="1" Background="#FFFFFF">
+                <Border Grid.Column="0" CornerRadius="18" BorderBrush="#CCCCCC" BorderThickness="1" Background="#FFFFFF">
                     <Grid>
                         <!-- 內容：依 DetailViewModel 型別切換不同 UserControl -->
                         <ContentControl Content="{Binding DetailViewModel}">
@@ -214,7 +214,7 @@
                 <Border Grid.Column="1" Background="Transparent" />
 
                 <!-- 右卡：工作列表（時間軸） -->
-                <Border Grid.Column="2" CornerRadius="10" BorderBrush="#CCCCCC" BorderThickness="1" Background="#FFFFFF">
+                <Border Grid.Column="2" CornerRadius="18" BorderBrush="#CCCCCC" BorderThickness="1" Background="#FFFFFF">
                     <Grid>
                         <!-- 關鍵：直接綁 VM 的 Timeline -->
                         <views:MaterialTimelineView ItemsSource="{Binding Timeline}" />

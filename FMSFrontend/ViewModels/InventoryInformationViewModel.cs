@@ -122,9 +122,7 @@ namespace FMSFrontend.ViewModels
                 }
 
             }
-            catch 
-            {
-            }
+            catch { }
         }
         public void OnPageActivated() // 開啟警報視窗
         {
@@ -166,8 +164,8 @@ namespace FMSFrontend.ViewModels
             public string Status { get; set; } = ""; //狀態
             public string Location { get; set; } = ""; //位置編碼
             public string SlotCode { get; set; } = ""; //位置編碼
-            public string Worksheet { get; set; } = ""; //工單
-            public string Program { get; set; } = ""; //加工程式
+            public string Worksheet { get; set; } = ""; //工單編號
+            public string Program { get; set; } = ""; //稱是名稱
 
         }
         public enum InventoryKind

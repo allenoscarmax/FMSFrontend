@@ -58,14 +58,14 @@
 
             <!-- 標題列 -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
-                <materialDesign:PackIcon Kind="History" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
+                <materialDesign:PackIcon Kind="History" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,4,4,0" />
                 <TextBlock Text="操作紀錄" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
 
             <!-- 工具列 -->
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="140" />
                     <ColumnDefinition Width="10" />
                     <ColumnDefinition Width="200" />
                     <ColumnDefinition Width="12" />
@@ -73,22 +73,22 @@
                     <ColumnDefinition Width="12" />
                     <ColumnDefinition Width="200" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="80" />
                     <ColumnDefinition Width="8" />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="80" />
                 </Grid.ColumnDefinitions>
 
                 <!-- 範圍選擇 -->
-                <ComboBox Grid.Column="0" Width="200" ItemsSource="{Binding QuickRanges}" SelectedItem="{Binding SelectedQuickRange}" VerticalAlignment="Center" Style="{StaticResource PillComboBoxStyle}" />
+                <ComboBox Grid.Column="0" Height="32" Width="120" ItemsSource="{Binding QuickRanges}" SelectedItem="{Binding SelectedQuickRange}" VerticalAlignment="Center" Style="{StaticResource PillComboBoxStyle}" />
 
                 <!-- 起始日期 -->
-                <DatePicker Grid.Column="2" SelectedDate="{Binding StartDate}" VerticalAlignment="Center" Style="{StaticResource CustomDatePickerStyle}"/>
+                <DatePicker Grid.Column="2" Height="40"  SelectedDate="{Binding StartDate}" VerticalAlignment="Center" Style="{StaticResource CustomDatePickerStyle}"/>
 
                 <!-- 箭頭 -->
                 <TextBlock Grid.Column="4" Text="→" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" />
 
                 <!-- 結束日期 -->
-                <DatePicker Grid.Column="6" SelectedDate="{Binding EndDate}" VerticalAlignment="Center" Style="{StaticResource CustomDatePickerStyle}"/>
+                <DatePicker Grid.Column="6" Height="40" SelectedDate="{Binding EndDate}" VerticalAlignment="Center" Style="{StaticResource CustomDatePickerStyle}"/>
 
                 <!-- 匯出 -->
                 <Button Grid.Column="8" Command="{Binding ExportCommand}" Background="#1976D2" Foreground="White" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}">
@@ -99,7 +99,7 @@
                 </Button>
 
                 <!-- 清除 -->
-                <Button Grid.Column="10" Command="{Binding ClearCommand}" Background="#6B7280" Foreground="White" Padding="10,0" Margin="0,0,0,0" Cursor="Hand">
+                <Button Grid.Column="10" Command="{Binding ClearCommand}" Background="#6B7280" Foreground="White" Padding="10,0" Margin="0,0,0,0" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <materialDesign:PackIcon Kind="Delete" Width="18" Height="18" Margin="0,0,6,0" />
                         <TextBlock Text="清除" />
@@ -108,7 +108,7 @@
             </Grid>
 
             <!-- 📑 表格（改用與 RFID 相同風格） -->
-            <Border Grid.Row="2" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,20,0,0">
+            <Border Grid.Row="2" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,20,0,0">
 
                 <DataGrid ItemsSource="{Binding OperationRecords}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="15" Style="{StaticResource ModernFlatDataGridStyle}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
 
