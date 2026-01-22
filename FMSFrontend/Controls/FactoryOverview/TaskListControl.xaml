@@ -27,14 +27,14 @@
             </Grid.RowDefinitions>
 
             <!-- 標題列 -->
-            <Border Grid.Row="0" Background="#EEEEEE" CornerRadius="12,12,0,0">
+            <Border Grid.Row="0" Background="#EEEEEE" CornerRadius="18,18,0,0">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0">
                     <materialDesign:PackIcon Kind="ClipboardList" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
                     <TextBlock Text="任務工作條" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" />
                 </StackPanel>
             </Border>
 
-            <Grid Grid.Row="1" Background="White" SnapsToDevicePixels="True" UseLayoutRounding="True">
+            <Grid Grid.Row="1" Margin="4,0,4,5" Background="White" SnapsToDevicePixels="True" UseLayoutRounding="True">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="116*"/>

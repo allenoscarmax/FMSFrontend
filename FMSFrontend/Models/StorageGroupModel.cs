@@ -13,7 +13,7 @@ namespace FMSFrontend.Models
 {
     public enum MaterialType { None, Electrode, Workpiece, Probe }
     public enum ResultStatus { CheckSuccess, Checking, CheckFail } //尚未使用
-    public enum CheckStatus  { Checked, Unchecked } //尚未使用
+    public enum CheckStatus { Checked, Unchecked } //尚未使用
     public partial class StorageGroupModel : ObservableObject
     {
         // 統計
@@ -129,7 +129,7 @@ namespace FMSFrontend.Models
 
         public string SlotCode = "";
         public string Worksheet = "";
-        public string Program = "" ; // 使用程式名稱
+        public string Program = ""; // 使用程式名稱
         public string Location = "";
 
         // 影響 StatusBrush 的來源變更時，主動通知

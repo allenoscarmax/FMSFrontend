@@ -28,7 +28,7 @@ namespace FMSFrontend.ViewModels
 
         // === Singleton ===
         private readonly StorageStore _storageStore;
-        public ObservableCollection<StorageModel>  Storages => _storageStore.StorageGroup.Storage;
+        public ObservableCollection<StorageModel> Storages => _storageStore.StorageGroup.Storage;
         // ==LiveUpdater===
         private readonly StorageLiveUpdater _storageLiveUpdater;
         // 原始資料
@@ -101,7 +101,12 @@ namespace FMSFrontend.ViewModels
                         else if (!IsOffShelf && storage.Name.IndexOf("E") == -1) kind = InventoryKind.OnShelfWork;
                         else if (IsOffShelf && storage.Name.IndexOf("W") == -1) kind = InventoryKind.OffShelfElectrode;
                         else if (IsOffShelf && storage.Name.IndexOf("E") == -1) kind = InventoryKind.OffShelfWork;
-
+                        string[] sr = slot.SlotCode.Split(':');
+                        string newSlotCode = sr[0];
+                        for (int i = 1; i < sr.Length; i++)
+                        {
+                            newSlotCode += ":" + sr[i].PadLeft(2, ' ');
+                        }
                         AllItems.Add(new InventoryItem
                         {
                             Kind = kind,
@@ -109,7 +114,7 @@ namespace FMSFrontend.ViewModels
                             TagSerial = slot.Serial,
                             Status = slot.MaterialStatus,
                             Location = slot.Location,
-                            SlotCode = slot.SlotCode,
+                            SlotCode = newSlotCode,
                             Worksheet = slot.Worksheet,
                             Program = slot.Program,
                         });
@@ -117,17 +122,15 @@ namespace FMSFrontend.ViewModels
                 }
 
             }
-            catch 
-            {
-            }
+            catch { }
         }
         public void OnPageActivated() // 開啟警報視窗
         {
-           
+
         }
         public void OnPageDeactivated() // 關閉警報視窗
         {
-           
+
         }
         private bool FilterRow(object obj)
         {
@@ -161,8 +164,8 @@ namespace FMSFrontend.ViewModels
             public string Status { get; set; } = ""; //狀態
             public string Location { get; set; } = ""; //位置編碼
             public string SlotCode { get; set; } = ""; //位置編碼
-            public string Worksheet { get; set; } = ""; //工單
-            public string Program { get; set; } = ""; //加工程式
+            public string Worksheet { get; set; } = ""; //工單編號
+            public string Program { get; set; } = ""; //稱是名稱
 
         }
         public enum InventoryKind

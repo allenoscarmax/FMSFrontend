@@ -31,7 +31,7 @@
             </Border>
 
             <!-- 2) 主內容：左右兩張卡片（與原視窗綁定完全一致） -->
-            <Grid Grid.Row="1" Margin="10,12,12,5">
+            <Grid Grid.Row="1" Margin="10,12,12,10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="12" />
@@ -39,7 +39,7 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- 左卡：物料資訊（依 VM 類型切換） -->
-                <Border Grid.Column="0" CornerRadius="10" BorderBrush="#CCCCCC" BorderThickness="1" Background="#FFFFFF">
+                <Border Grid.Column="0" CornerRadius="18" BorderBrush="#CCCCCC" BorderThickness="1" Background="#FFFFFF">
                     <Grid>
                         <ContentControl Content="{Binding DetailViewModel}">
                             <ContentControl.Resources>
@@ -61,7 +61,7 @@
                 <Border Grid.Column="1" Background="Transparent" />
 
                 <!-- 右卡：工作列表（時間軸） -->
-                <Border Grid.Column="2" CornerRadius="10" BorderBrush="#CCCCCC" BorderThickness="1" Background="#FFFFFF">
+                <Border Grid.Column="2" CornerRadius="18" BorderBrush="#CCCCCC" BorderThickness="1" Background="#FFFFFF">
                     <Grid>
                         <views:MaterialTimelineView ItemsSource="{Binding Timeline}" />
                     </Grid>

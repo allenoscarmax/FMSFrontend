@@ -3,7 +3,12 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 using FMSFrontend.Extensions;
+using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
+using FMSFrontend.Models;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views.Windows;
@@ -17,10 +22,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using FMSFrontend.Features.Services;
-using FMSFrontend.Features.Singleton;
-using FMSFrontend.Features.Threading;
-using FMSFrontend.Models;
+
 
 namespace FMSFrontend.ViewModels
 {
@@ -32,13 +34,13 @@ namespace FMSFrontend.ViewModels
         private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
         // === Singleton ===
         public RFIDBindStore RfidBindStore { get; }
-        public RFIDBindModel rFIDBindmodel  => RfidBindStore.RfidBind;
-        
+        public RFIDBindModel rFIDBindmodel => RfidBindStore.RfidBind;
+
         // === LiveUpdater ===
         public RFIDBindLiveUpdater _rfidUpdater;
         public RFIDBindPageViewModel(IWindowService windowService, IHttpService httpService,
         IRfidService iRFIDMgmtModuleService, IAuthorizationService auth,
-        RFIDBindStore rfidBindStore, 
+        RFIDBindStore rfidBindStore,
         RFIDBindLiveUpdater rfidUpdater)
         {
             _windowService = windowService;
@@ -54,7 +56,7 @@ namespace FMSFrontend.ViewModels
         }
 
         public List<string> DateFilterOptions { get; set; } = new() { "今天", "過去7天", "自訂" };
-        
+
         private DateTime? lastValidFromDate = DateTime.Today;
         private DateTime? lastValidToDate = DateTime.Today;
 
@@ -62,7 +64,7 @@ namespace FMSFrontend.ViewModels
         private readonly IHttpService _httpService;
 
         public bool IsCustomDateMode => SelectedFilterOption == "自訂";
-       
+
         [ObservableProperty] private string selectedFilterOption = "今天";
         partial void OnSelectedFilterOptionChanged(string value)
         {
@@ -142,7 +144,41 @@ namespace FMSFrontend.ViewModels
             if (IsCustomDateMode) RefreshFetch();
         }
 
+        [RelayCommand]
+        private void ReadMaterialInformation()
+        {
+            // if (!_auth.RequireLogin()) return;
 
+            _rfidUpdater.ReadTagFlag = true;
+            _rfidUpdater.ReadMaterInfoFlag = true;
+            _rfidUpdater.Start();
+            rFIDBindmodel.ReadElectrodeFlag = false;
+            rFIDBindmodel.ReadWorkpieceFlag = false;
+            // 先讓使用者選「電極 / 工件 / 探針」
+            if (!_windowService.ShowMaterialTypeSelectWindow(out MaterialKind kind))
+                return;
+            switch (kind)
+            {
+                case MaterialKind.Electrode:
+                    if (rFIDBindmodel.ReadElectrodeFlag)
+                        _windowService.ShowMaterialInformation(rFIDBindmodel.electrode, rFIDBindmodel.Timeline);
+                    else
+                        ShowWarning("未讀取到電極資料");
+                    break;
+                case MaterialKind.Workpiece:
+                    if (rFIDBindmodel.ReadWorkpieceFlag)
+                        _windowService.ShowMaterialInformation(rFIDBindmodel.workpiece, rFIDBindmodel.Timeline);
+                    else
+                        ShowWarning("未讀取到工件資料");
+                    break;
+                default:
+                    return;
+            }
+            // 視窗關閉後執行原本的後續流程\
+            _rfidUpdater.Stop();
+            _rfidUpdater.ReadTagFlag = false;
+            _rfidUpdater.ReadMaterInfoFlag = false;
+        }
 
         [RelayCommand]
         private void OpenMaterialTypeSelect()
@@ -190,7 +226,7 @@ namespace FMSFrontend.ViewModels
                 bool ok = await _RfidService.DeleteAllRFIDWriteLogDataAsync();
                 if (ok)
                 {
-                   // _windowService.ShowMessage("清除成功");
+                    // _windowService.ShowMessage("清除成功");
                     rFIDBindmodel.BurnHistoryList.Clear(); // 清除本地列表
                     RefreshFetch(); // 重新抓資料
                 }
@@ -215,7 +251,7 @@ namespace FMSFrontend.ViewModels
         // 當頁面卸載時停止
         public void OnPageDeactivated()
         {
-          _rfidUpdater.Stop();
+            _rfidUpdater.Stop();
         }
 
         private void RefreshFetch()
@@ -270,5 +306,4 @@ namespace FMSFrontend.ViewModels
             public string TagSerial { get; set; } = "";
         }
     }
-
 }

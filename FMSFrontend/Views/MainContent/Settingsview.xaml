@@ -9,8 +9,6 @@
 
     <Border Background="{DynamicResource PageViewBrush}">
         <Grid Background="{DynamicResource PageViewBrush}" Margin="16,20,16,18">
-           
-
             <!-- 兩層：1. 標題 2. 內容 -->
             <Grid.RowDefinitions>
                 <RowDefinition Height="40" />
@@ -21,14 +19,14 @@
 
             <!-- 🔠 主標題（Row 0） -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
-                <materialDesign:PackIcon Kind="Cog" VerticalAlignment="Center" Width="36" Height="36" Margin="0,0,8,0" Foreground="{DynamicResource PrimaryTextBrush}" />
+                <materialDesign:PackIcon Kind="Cog" VerticalAlignment="Center" Width="24" Height="24" Margin="0,0,4,0" Foreground="{DynamicResource PrimaryTextBrush}" />
                 <TextBlock Text="系統設定" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
 
             <!-- 內容區（Row 1）：包含 Tab 與對應內容 -->
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="40" />
+                    <RowDefinition Height="50" />
                     <!-- Tabs -->
                     <RowDefinition Height="*" />
                     <!-- 切換內容 -->
@@ -84,7 +82,7 @@
                                                                     <StackPanel Orientation="Horizontal" Margin="20,0,0,0" VerticalAlignment="Center" Visibility="{Binding ShowPasswordPrompt, Converter={StaticResource BooleanToVisibilityConverter}}">
                                                                         <TextBlock FontSize="16" Text="密碼：" VerticalAlignment="Center" FontWeight="Bold" Margin="0,0,8,0" />
                                                                         <PasswordBox x:Name="ExpertPasswordBox" FontSize="16" Width="180" VerticalAlignment="Center" FontWeight="Bold" PasswordChar="*" materialDesign:TextFieldAssist.DecorationVisibility="Hidden" helpers:PasswordBoxAssistant.BindPassword="True" helpers:PasswordBoxAssistant.BoundPassword="{Binding Password, Mode=TwoWay}" />
-                                                                        <Button Content="確認" Width="84" Height="32" VerticalAlignment="Center" Background="#CCCCCC" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding PermissionClickCommand}" />
+                                                                        <Button Content="確認" Width="84" Height="32" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding PermissionClickCommand}" />
                                                                     </StackPanel>
                                                                 </StackPanel>
                                                             </Grid>
@@ -113,7 +111,7 @@
                                                                     <TextBox Width="200" Height="26" VerticalAlignment="Center" FontSize="16"
                                                                              Text="{Binding ServerIp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                                              Foreground="Black" Padding="5,0" Style="{StaticResource UnderlineTextBoxStyle}" />
-                                                                    <Button Content="Save" Width="84" Height="32" VerticalAlignment="Center" Background="#CCCCCC" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding SaveIPCommand}" />
+                                                                    <Button Content="Save" Width="84" Height="32" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding SaveIPCommand}" />
                                                                 </StackPanel>
                                                             </Grid>
                                                         </GroupBox>
@@ -145,22 +143,6 @@
                                                                 <Border Grid.Column="1" Background="Black" />
 
                                                                 <TextBlock Grid.Column="2" Text="注意：點擊還原按鈕以還原系統。此過程將刪除所有材料、表單、日誌和使用情況。" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
-                                                            </Grid>
-                                                        </GroupBox>
-                                                        <!-- 系統備份 -->
-                                                        <GroupBox Header="系統備份" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
-                                                            <Grid>
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="Auto" />
-                                                                    <ColumnDefinition Width="1.5" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                </Grid.ColumnDefinitions>
-
-                                                                <Button Grid.Column="0" Content="備份" Width="84" Height="32" VerticalAlignment="Center" Background="#CCCCCC" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding BackupSystemCommand}" />
-
-                                                                <Border Grid.Column="1" Background="Black" />
-
-                                                                <TextBlock Grid.Column="2" Text="注意：點擊備份資料庫。" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
                                                             </Grid>
                                                         </GroupBox>
 
@@ -247,16 +229,16 @@
                                                         <!-- 主要內容：TabControl -->
                                                         <Grid Grid.Row="1">
                                                             <Grid.RowDefinitions>
-                                                                <RowDefinition Height="40" />
+                                                                <RowDefinition Height="45" />
                                                                 <!-- Tabs -->
                                                                 <RowDefinition Height="*" />
                                                                 <!-- 切換內容 -->
                                                             </Grid.RowDefinitions>
                                                             <!-- Tabs -->
                                                             <TabControl Grid.Row="0" Tag="SubTab" Height="35" Margin="0,8,0,0" Background="Transparent" SelectedIndex="{Binding SelectedSubTabIndexParameter}" Style="{StaticResource FlatTabControlStyle}" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}">
-                                                                <TabItem Header="機台" Tag="#0B65CC" />
-                                                                <TabItem Header="機械手臂" Tag="#0B65CC" />
-                                                                <TabItem Header="設備" Tag="#0B65CC" />
+                                                                <TabItem Header="機台" Tag="#2779A7" />
+                                                                <TabItem Header="機械手臂" Tag="#2779A7" />
+                                                                <TabItem Header="設備" Tag="#2779A7" />
                                                             </TabControl>
                                                             <!-- 外部已經統一套好卡片框 -->
                                                             <Border Grid.Row="1" Background="White" CornerRadius="0,0,10,10" Padding="40,16,40,24" Effect="{StaticResource ShadowEffect}">
@@ -295,7 +277,7 @@
 
                                                                                                             <Border Grid.Column="1" BorderThickness="0,0,0,1" BorderBrush="#222" VerticalAlignment="Center">
                                                                                                                 <TextBox x:Name="SearchBox" BorderThickness="0" Padding="4,4,4,6" FontSize="16" Foreground="#888" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
-                                                                                                                    
+
                                                                                                                 </TextBox>
                                                                                                             </Border>
                                                                                                         </Grid>
@@ -635,8 +617,8 @@
                                                         </Grid>
 
                                                         <!-- 4) 表格 -->
-                                                        <Border Grid.Row="3" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
-                                                            <DataGrid ItemsSource="{Binding WorkerList}" SelectedItem="{Binding SelectedWorker}" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserReorderColumns="False" CanUserResizeColumns="True" IsReadOnly="True" RowHeight="48" ColumnHeaderHeight="36" GridLinesVisibility="Horizontal" BorderThickness="0">
+                                                        <Border Grid.Row="3" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
+                                                            <DataGrid ItemsSource="{Binding WorkerList}" FontSize="16" SelectedItem="{Binding SelectedWorker}" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserReorderColumns="False" CanUserResizeColumns="True" IsReadOnly="True" RowHeight="48" ColumnHeaderHeight="36" GridLinesVisibility="Horizontal" BorderThickness="0">
 
                                                                 <!-- 表頭樣式（灰底、粗體、置中） -->
                                                                 <DataGrid.ColumnHeaderStyle>
@@ -659,7 +641,7 @@
                                                                             <Style TargetType="TextBlock">
                                                                                 <Setter Property="HorizontalAlignment" Value="Center" />
                                                                                 <Setter Property="VerticalAlignment" Value="Center" />
-                                                                                <Setter Property="FontSize" Value="16" />
+                                                                                <Setter Property="FontSize" Value="20" />
                                                                             </Style>
                                                                         </DataGridTextColumn.ElementStyle>
                                                                     </DataGridTextColumn>
@@ -668,7 +650,7 @@
                                                                     <DataGridTemplateColumn Header="Worker Name" Width="3*">
                                                                         <DataGridTemplateColumn.CellTemplate>
                                                                             <DataTemplate>
-                                                                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16">
+                                                                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20">
                                                                                     <TextBlock.Style>
                                                                                         <Style TargetType="TextBlock">
                                                                                             <Setter Property="Text">
@@ -760,25 +742,6 @@
                     </ContentControl>
                 </Border>
             </Grid>
-
-            <!-- Busy Overlay：全畫面鎖定（覆蓋 SettingsView 這一頁） -->
-            <Grid Grid.Row="0" Grid.RowSpan="2" Panel.ZIndex="9999" Background="#80000000" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="True">
-
-                <!-- 置中提示卡 -->
-                <Border Width="420" Padding="24" Background="{DynamicResource PageViewBrush}" CornerRadius="16" HorizontalAlignment="Center" VerticalAlignment="Center" Effect="{StaticResource ShadowEffect}">
-
-                    <StackPanel>
-                        <TextBlock Text="{Binding BusyMessage}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" Margin="0,0,0,16" />
-
-                        <ProgressBar IsIndeterminate="True" Height="10" />
-
-                        <TextBlock Text="請勿關閉程式或中斷電源" Foreground="{DynamicResource PrimaryTextBrush}" Opacity="0.7" Margin="0,12,0,0" TextAlignment="Center" />
-                    </StackPanel>
-
-                </Border>
-            </Grid>
         </Grid>
-        
-        
     </Border>
 </UserControl>

@@ -24,10 +24,10 @@
         </Grid.RowDefinitions>
 
         <!-- 🔠 主標題 -->
-        <DockPanel Grid.Row="0" VerticalAlignment="Center" Margin="10,0,10,0">
+        <DockPanel Grid.Row="0" VerticalAlignment="Center" Margin="10,10,10,0">
             <!-- 你指定要有的圖示（白色 20x20，Dock 左側） -->
-            <materialDesign:PackIcon Kind="ReportProblem" Width="20" Height="20" Margin="5,0" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" />
-            <TextBlock Text="Alarm List" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="6,0,0,0" />
+            <materialDesign:PackIcon Kind="ReportProblem" Width="24" Height="24" Margin="0,1,0,0" Foreground="Black" DockPanel.Dock="Left" VerticalAlignment="Center" />
+            <TextBlock Text="警報資訊" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="6,0,0,0" />
         </DockPanel>
 
 
@@ -48,7 +48,7 @@
             </TabControl>
 
             <!-- 外部已經統一套好卡片框 -->
-            <Border Grid.Row="1" Background="White" CornerRadius="0,0,10,10" Padding="40,16,40,24" Effect="{StaticResource ShadowEffect}">
+            <Border Grid.Row="1" Background="White" CornerRadius="0,0,10,10" Padding="10,10,10,10" Effect="{StaticResource ShadowEffect}">
 
                 <!-- 切換內容區 -->
                 <ContentControl Content="{Binding}">
@@ -63,7 +63,7 @@
                                             <DataTemplate>
                                                 <!-- 外框 -->
                                                 <Border CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,8">
-                                                    <DataGrid ItemsSource="{Binding CurrentAlarms}" IsReadOnly="True" AutoGenerateColumns="False" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="44" RowHeaderWidth="0" HeadersVisibility="Column" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
+                                                    <DataGrid ItemsSource="{Binding CurrentAlarms}" Margin="10,10,10,10" IsReadOnly="True" AutoGenerateColumns="False" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="44" RowHeaderWidth="0" HeadersVisibility="Column" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
                                                         <!-- 套用共用 DataGrid 樣式 -->
                                                         <DataGrid.Style>
                                                             <Style TargetType="DataGrid" BasedOn="{StaticResource ModernFlatDataGridStyle}" />
@@ -116,10 +116,10 @@
                                                         <!-- 欄位 -->
                                                         <DataGrid.Columns>
                                                             <!-- 時間 -->
-                                                            <DataGridTextColumn Header="時間" Width="160" Binding="{Binding Time, StringFormat=\{0:yyyy/MM/dd HH:mm:ss\}}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                            <DataGridTextColumn Header="時間" Width="240" FontSize="20" Binding="{Binding Time, StringFormat=\{0:yyyy/MM/dd HH:mm:ss\}}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
                                                             <!-- 錯誤代碼（膠囊＋圖示，依 Level 變色） -->
-                                                            <DataGridTemplateColumn Header="錯誤代碼" Width="200">
+                                                            <DataGridTemplateColumn Header="錯誤代碼" Width="160">
                                                                 <!-- Header 也放個小圖示 -->
                                                                 <DataGridTemplateColumn.HeaderTemplate>
                                                                     <DataTemplate>
@@ -134,8 +134,8 @@
                                                                     <DataTemplate>
                                                                         <Border x:Name="Chip" CornerRadius="10" Margin="3,3,3,3" Padding="8,4" Background="#F1F1F1">
                                                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                                                <materialDesign:PackIcon x:Name="ChipIcon" Kind="AlertOutline" Width="16" Height="16" Margin="0,0,6,0" />
-                                                                                <TextBlock Text="{Binding Code}" FontSize="16"/>
+                                                                                <materialDesign:PackIcon x:Name="ChipIcon" Kind="AlertOutline" Width="16" Height="16" Margin="0,0,6,0" VerticalAlignment="Center"  />
+                                                                                <TextBlock Text="{Binding Code}" FontSize="18" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                                                             </StackPanel>
                                                                         </Border>
 
@@ -167,7 +167,7 @@
                                                             </DataGridTemplateColumn>
 
                                                             <!-- 訊息內容 -->
-                                                            <DataGridTextColumn Header="訊息內容" Width="*" Binding="{Binding Message}" FontSize="22"/>
+                                                            <DataGridTextColumn Header="訊息內容" Width="*"  Binding="{Binding Message}" FontSize="20" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
                                                             <!-- 若要加來源/機台，取消以下註解
                             <DataGridTextColumn Header="來源/機台"
                                                 Width="180"
@@ -206,7 +206,7 @@
 
                                                             <!-- 左：日期篩選 -->
                                                             <StackPanel Orientation="Horizontal">
-                                                                <ComboBox Width="120" Height="32" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
+                                                                <ComboBox Width="120" Height="32" Margin="10,0,0,0" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
 
                                                                 <!-- 僅在 IsCustomDateMode = true 時顯示 -->
                                                                 <StackPanel Orientation="Horizontal"
@@ -225,24 +225,24 @@
 
                                                             <!-- 右：Export / Remove -->
                                                             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                                                                <Button Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ExportAlarmsCommand}">
+                                                                <Button Style="{StaticResource PrimaryButtonStyle}" Width="120" Command="{Binding ExportAlarmsCommand}">
                                                                     <StackPanel Orientation="Horizontal">
                                                                         <materialDesign:PackIcon Kind="FileExport" Width="18" Height="18" Margin="0,0,6,0" />
-                                                                        <TextBlock Text="Export" />
+                                                                        <TextBlock Text="匯出" />
                                                                     </StackPanel>
                                                                 </Button>
 
-                                                                <Button Style="{StaticResource PrimaryButtonStyle}" Background="#666" Margin="10,0,0,0" Command="{Binding RemoveSelectedAlarmsCommand}">
+                                                                <Button Style="{StaticResource PrimaryButtonStyle}" Width="120" Background="#666" Margin="10,0,10,0" Command="{Binding RemoveSelectedAlarmsCommand}">
                                                                     <StackPanel Orientation="Horizontal">
                                                                         <materialDesign:PackIcon Kind="TrashCanOutline" Width="18" Height="18" Margin="0,0,6,0" />
-                                                                        <TextBlock Text="Remove" />
+                                                                        <TextBlock Text="刪除" />
                                                                     </StackPanel>
                                                                 </Button>
                                                             </StackPanel>
                                                         </Grid>
 
                                                         <!-- 📑 表格 -->
-                                                        <DataGrid Grid.Row="1" ItemsSource="{Binding PagedHistoryAlarms}" SelectedItem="{Binding SelectedHistoryAlarm}" IsReadOnly="True" AutoGenerateColumns="False" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="44" RowHeaderWidth="0" HeadersVisibility="Column" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
+                                                        <DataGrid Grid.Row="1"  Margin="10,10,10,10" ItemsSource="{Binding PagedHistoryAlarms}" SelectedItem="{Binding SelectedHistoryAlarm}" IsReadOnly="True" AutoGenerateColumns="False" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="44" RowHeaderWidth="0" HeadersVisibility="Column" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
                                                             <DataGrid.Style>
                                                                 <Style TargetType="DataGrid" BasedOn="{StaticResource ModernFlatDataGridStyle}" />
                                                             </DataGrid.Style>
@@ -253,6 +253,7 @@
                                                                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#FF111111" />
                                                             </DataGrid.Resources>
 
+                                                            <!-- 與目前警報相同的 Cell/Row 視覺 -->
                                                             <DataGrid.CellStyle>
                                                                 <Style TargetType="DataGridCell">
                                                                     <Setter Property="BorderThickness" Value="0" />
@@ -287,11 +288,11 @@
                                                             </DataGrid.RowStyle>
 
                                                             <DataGrid.Columns>
-                                                                <!-- 時間 -->
-                                                                <DataGridTextColumn Header="時間" Width="160" Binding="{Binding Time, StringFormat=\{0:yyyy/MM/dd HH:mm:ss\}}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <!-- 時間（與目前警報一致的寬度/樣式） -->
+                                                                <DataGridTextColumn Header="時間" Width="240" FontSize="20" Binding="{Binding Time, StringFormat=\{0:yyyy/MM/dd HH:mm:ss\}}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                <!-- 錯誤代碼（膠囊＋圖示） -->
-                                                                <DataGridTemplateColumn Header="錯誤代碼" Width="200">
+                                                                <!-- 錯誤代碼（膠囊＋圖示，樣式與目前警報一致） -->
+                                                                <DataGridTemplateColumn Header="錯誤代碼" Width="160">
                                                                     <DataGridTemplateColumn.HeaderTemplate>
                                                                         <DataTemplate>
                                                                             <StackPanel Orientation="Horizontal">
@@ -305,20 +306,22 @@
                                                                         <DataTemplate>
                                                                             <Border x:Name="Chip" CornerRadius="10" Margin="3,3,3,3" Padding="8,4" Background="#F1F1F1">
                                                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                                                    <materialDesign:PackIcon x:Name="ChipIcon" Kind="AlertOutline" Width="16" Height="16" Margin="0,0,6,0" />
-                                                                                    <TextBlock Text="{Binding Code}" />
+                                                                                    <materialDesign:PackIcon x:Name="ChipIcon" Kind="AlertOutline" Width="16" Height="16" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                                                                    <TextBlock Text="{Binding Code}" FontSize="18" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                                                                 </StackPanel>
                                                                             </Border>
+
+                                                                            <!-- 依 Level 變色/換圖示（與目前警報一致的色彩） -->
                                                                             <DataTemplate.Triggers>
                                                                                 <DataTrigger Binding="{Binding Level}" Value="ALARM">
                                                                                     <Setter TargetName="Chip" Property="Background" Value="#F8D1D1" />
                                                                                     <Setter TargetName="ChipIcon" Property="Kind" Value="AlarmLightOutline" />
-                                                                                    <Setter TargetName="ChipIcon" Property="Foreground" Value="#B00020" />
+                                                                                    <Setter TargetName="ChipIcon" Property="Foreground" Value="#C47F00" />
                                                                                 </DataTrigger>
                                                                                 <DataTrigger Binding="{Binding Level}" Value="HINT">
                                                                                     <Setter TargetName="Chip" Property="Background" Value="#F9E6B0" />
                                                                                     <Setter TargetName="ChipIcon" Property="Kind" Value="AlertCircleOutline" />
-                                                                                    <Setter TargetName="ChipIcon" Property="Foreground" Value="#C47F00" />
+                                                                                    <Setter TargetName="ChipIcon" Property="Foreground" Value="#B00020" />
                                                                                 </DataTrigger>
                                                                                 <DataTrigger Binding="{Binding Level}" Value="INFO">
                                                                                     <Setter TargetName="Chip" Property="Background" Value="#D8ECFF" />
@@ -330,13 +333,13 @@
                                                                     </DataGridTemplateColumn.CellTemplate>
                                                                 </DataGridTemplateColumn>
 
-                                                                <!-- 訊息內容 -->
-                                                                <DataGridTextColumn Header="訊息內容" Width="*" Binding="{Binding Message}" />
+                                                                <!-- 訊息內容（字型/置中樣式與目前警報一致） -->
+                                                                <DataGridTextColumn Header="訊息內容" Width="*" Binding="{Binding Message}" FontSize="20" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                             </DataGrid.Columns>
                                                         </DataGrid>
 
                                                         <!-- 🔢 分頁列（置中，無 Goto） -->
-                                                        <Border Grid.Row="2" Margin="0,10,0,10" Padding="10,6" Background="#F5F5F5" CornerRadius="8">
+                                                        <Border Grid.Row="2" Margin="10,10,10,10" Padding="10,6" Background="#F5F5F5" CornerRadius="8">
                                                             <!-- 讓整組控制項置中 -->
                                                             <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                                                                 <Grid.ColumnDefinitions>
@@ -364,10 +367,10 @@
 
                                                                 <!-- Page X of Y（置中顯示） -->
                                                                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                                                                    <TextBlock Text="Page" VerticalAlignment="Center" />
-                                                                    <TextBlock Text="{Binding CurrentPage}" FontWeight="Bold" Margin="6,0,6,0" VerticalAlignment="Center" />
-                                                                    <TextBlock Text="of" VerticalAlignment="Center" />
-                                                                    <TextBlock Text="{Binding TotalPages}" FontWeight="Bold" Margin="6,0,0,0" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="Page" FontSize="16" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="{Binding CurrentPage}" FontSize="16" FontWeight="Bold" Margin="6,0,6,0" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="of" FontSize="16" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="{Binding TotalPages}" FontSize="16" FontWeight="Bold" Margin="6,0,0,0" VerticalAlignment="Center" />
                                                                 </StackPanel>
 
                                                                 <!-- 下一頁 -->

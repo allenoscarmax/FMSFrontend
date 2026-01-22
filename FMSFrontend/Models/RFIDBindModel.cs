@@ -17,6 +17,12 @@ namespace FMSFrontend.Models
 
         [ObservableProperty] private string tagSerial = ""; //標籤序號
         [ObservableProperty] private Brush tagBrush = LightOff; //標籤狀態
+        //物料讀取
+        public bool ReadElectrodeFlag = false; //是否讀取到電極
+        public bool ReadWorkpieceFlag = false; //是否讀取到工件
+        public ElectrodeModel electrode = new();
+        public WorkpieceModel workpiece = new();
+        public ObservableCollection<TimelineItemModel> Timeline { get; } = new();
 
     }
 

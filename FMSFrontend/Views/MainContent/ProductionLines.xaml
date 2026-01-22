@@ -8,7 +8,7 @@
 
     <UserControl.Resources>
         <conv:StatusToBrushConverter x:Key="StatusToBrushConverter" />
-        
+
 
         <Storyboard x:Key="ShakeRobotStoryboard">
             <DoubleAnimation Storyboard.TargetName="RobotTransform" Storyboard.TargetProperty="X" From="0" To="10" Duration="0:0:0.1" AutoReverse="True" RepeatBehavior="3x" />
@@ -34,10 +34,10 @@
             <!-- 上方：Icon + 標題 -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
                 <!-- MaterialDesign PackIcon -->
-                <materialDesign:PackIcon Kind="Factory" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
+                <materialDesign:PackIcon Kind="Factory" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,4,3,0" />
                 <TextBlock Text="產線總覽" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
-            
+
             <!-- ✅ 中間：內容容器 -->
             <Grid Grid.Row="1" Margin="0 10 0 0">
                 <!-- 等一下這邊我們可以切左右欄位，或再塞 ItemsControl + WrapPanel -->
@@ -46,10 +46,10 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <ContentControl Grid.Column="0" Grid.Row="1" Background="White" Content="{Binding CurrentStorageView}" />
-                <ContentControl Grid.Column="1" Grid.Row="1" Background="White" Content="{Binding CurrentWorkingZoneView}" />
+                <ContentControl Grid.Column="0" Grid.Row="1" Margin="0,0,0,0" Background="White" Content="{Binding CurrentStorageView}" />
+                <ContentControl Grid.Column="1" Grid.Row="1" Margin="10,0,0,0"  Background="White" Content="{Binding CurrentWorkingZoneView}" />
 
-                
+
             </Grid>
 
             <!-- ✅ 下方：機械手臂狀態 -->

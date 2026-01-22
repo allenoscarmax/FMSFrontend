@@ -161,15 +161,15 @@
                                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#FF111111" />
                                 </DataGrid.Resources>
                                 <DataGrid.Columns >
-                                    <DataGridCheckBoxColumn Header="選取" Binding="{Binding IsSelected}" Width="Auto" />
-                                    <DataGridTextColumn Header="名稱" Binding="{Binding ElectrodeName}" Width="*" />
-                                    <DataGridTextColumn Header="壽命" Binding="{Binding LifeTimes}" Width="Auto" />
-                                    <DataGridTextColumn Header="補償" Binding="{Binding OffsetStatus}" Width="Auto" />
-                                    <DataGridTextColumn Header="狀態" Binding="{Binding State}" Width="Auto" />
-                                    <DataGridTextColumn Header="程式" Binding="{Binding MeasurementProgram}" Width="*" />
+                                    <DataGridCheckBoxColumn Header="選取" Binding="{Binding IsSelected}" Width="Auto" MinWidth="40"/>
+                                    <DataGridTextColumn Header="電極名稱" Binding="{Binding ElectrodeName}" Width="*" />
+                                    <DataGridTextColumn Header="壽命" Binding="{Binding LifeTimes}" Width="Auto" MinWidth="50"/>
+                                    <DataGridTextColumn Header="補償" Binding="{Binding OffsetStatus}" Width="Auto" MinWidth="50"/>
+                                    <DataGridTextColumn Header="狀態" Binding="{Binding State}" Width="Auto" MinWidth="50"/>
+                                    <DataGridTextColumn Header="加工程式" Binding="{Binding MeasurementProgram}" Width="*" />
 
                                     <!-- 操作欄：只保留 Share 按鈕，Command 綁到 ViewModel 的 ShareCommand，參數為該列的 ElectrodeItem -->
-                                    <DataGridTemplateColumn Header="分享" Width="100">
+                                    <DataGridTemplateColumn Header="Share電極" Width="100">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0">
@@ -184,8 +184,8 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    <DataGridTextColumn Header="工單" Binding="{Binding ShareWorksheet}" Width="*" />
-                                    <DataGridTextColumn Header="電極" Binding="{Binding ShareElectrode}" Width="*" />
+                                    <DataGridTextColumn Header="Share電極工單" Binding="{Binding ShareWorksheet}" Width="*" />
+                                    <DataGridTextColumn Header="Share電極名稱" Binding="{Binding ShareElectrode}" Width="*" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
@@ -209,7 +209,7 @@
                 </StackPanel>
             </Grid>
         </Grid>
-        
-        
+
+
     </Border>
 </Window>

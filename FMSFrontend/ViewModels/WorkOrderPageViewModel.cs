@@ -211,13 +211,13 @@ namespace FMSFrontend.ViewModels
 
             // 使用非同步方法刪除：保留 RelayCommand，但在內部啟動 async Task
             DeleteCommand = new RelayCommand<WorkOrderData>(item =>
+            {
+                if (item != null)
                 {
-                    if (item != null)
-                    {
-                        _ = DeleteWorkOrderAsync(item);
-                    }
-                });
-            _ = FetchAndBindByStatusAsync();
+                    _ = DeleteWorkOrderAsync(item);
+                }
+            });
+            //_ = FetchAndBindByStatusAsync();
         }
 
         private void ShowWarning(string message)
@@ -461,6 +461,8 @@ namespace FMSFrontend.ViewModels
             {
                 _WindowService.ShowMessage($"刪除工單失敗：{ex.Message}");
             }
+
+            _ = FetchAndBindByStatusAsync();
         }
 
 

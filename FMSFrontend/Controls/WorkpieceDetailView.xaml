@@ -32,7 +32,7 @@
 
     </UserControl.Resources>
 
-    <Border CornerRadius="12" BorderBrush="#000" BorderThickness="1" Background="White">
+    <Border CornerRadius="18" Margin="-1" BorderBrush="#000" BorderThickness="1" Background="White">
         <Grid Cursor="Hand">
             <Grid.RowDefinitions>
                 <RowDefinition Height="44" />
@@ -44,7 +44,7 @@
             </Grid.RowDefinitions>
 
             <!-- 標題列 -->
-            <Border Grid.Row="0" Background="#D3D3D3" CornerRadius="12,12,0,0" BorderBrush="#DDDDDD" BorderThickness="0,0,0,1">
+            <Border Grid.Row="0" Background="#D3D3D3" CornerRadius="18,18,0,0" BorderBrush="#DDDDDD" BorderThickness="0,0,0,1">
                 <Grid>
                     <TextBlock Text="工件資訊" Margin="16,0" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="#111" />
                     <!-- 右上角鎖定膠囊 -->
@@ -81,7 +81,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    
+
                     <!-- 1 -->
                     <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="工件名稱" />
                     <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource ColonText}" />

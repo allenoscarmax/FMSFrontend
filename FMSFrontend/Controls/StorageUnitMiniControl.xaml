@@ -21,6 +21,7 @@
             <Button Grid.Row="0" Grid.Column="0"
                     Background="{Binding LeftTitleBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
                     BorderBrush="{x:Null}"
+                    Foreground="White"
                     Command="{Binding ShowDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                     CommandParameter="{Binding StorageId, RelativeSource={RelativeSource AncestorType=UserControl}}"
                     HorizontalAlignment="Stretch"
@@ -39,6 +40,7 @@
             <Button Grid.Row="1" Grid.Column="0"
                     Background="{Binding RightTitleBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
                     BorderBrush="{x:Null}"
+                    Foreground="White"
                     Command="{Binding ShowDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                     CommandParameter="{Binding StorageId, RelativeSource={RelativeSource AncestorType=UserControl}}"
                     HorizontalAlignment="Stretch"
@@ -67,7 +69,7 @@
             <!-- 下門控制 -->
             <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="3,0">
                 <TextBlock Text="下門" VerticalAlignment="Center" />
-                    <Button Style="{StaticResource RoundedShadowButtonStyle}"
+                <Button Style="{StaticResource RoundedShadowButtonStyle}"
                         Content="開"
                         Width="48"
                         Margin="15,0"

@@ -21,12 +21,12 @@
                 <RowDefinition Height="*" />
                 <!-- 下：主內容（左右分欄） -->
             </Grid.RowDefinitions>
-            
+
 
             <!-- 標題列（僅保留文字，之後可自行加圖示） -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
                 <!-- MaterialDesign PackIcon -->
-                <materialDesign:PackIcon Kind="LanConnect" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
+                <materialDesign:PackIcon Kind="LanConnect" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,4,8,0" />
                 <TextBlock Text="整場總覽" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
 
