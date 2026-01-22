@@ -5,10 +5,10 @@
 	</UserControl.Resources>
 	<Grid>
 		<!-- 陰影層 -->
-		<Border Background="#33000000" CornerRadius="18" Margin="0,0,0,-2"/>
+		<Border Background="#33000000" CornerRadius="18" Margin="-2"/>
 
 		<!-- 外層圓角白底 + 陰影 -->
-        <Border CornerRadius="18" Background="#FFFFFF" Margin="2,2,2,0" BorderBrush="#DDD"  ClipToBounds="True" SnapsToDevicePixels="True">
+        <Border CornerRadius="18" Background="#FFFFFF" Margin="0" BorderBrush="#DDD"  ClipToBounds="True" SnapsToDevicePixels="True">
 			<!-- 用 Grid 分區塊＋裁切 -->
 			<Grid ClipToBounds="True" SnapsToDevicePixels="True">
 				<Grid.RowDefinitions>
