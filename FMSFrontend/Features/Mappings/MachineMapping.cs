@@ -7,6 +7,7 @@ namespace FMSFrontend.Features.Mappings
 {
     public static class MachineMapping
     {
+        private static bool JusticeShortNameFlag = false; //佑義客製需求 20260122
         public static void ApplyMachinesDto(this MachinesDto dto, MachineModel model)
         {
             if (dto == null || model == null) return;
@@ -35,7 +36,7 @@ namespace FMSFrontend.Features.Mappings
             model.WorkpieceShortName = ShortNameConversion(false, dto.workpieceName);   //20260120佑義要求修改電極名稱規則
         }
 
-        private static bool JusticeShortNameFlag = false; //測試用
+
         private static string ShortNameConversion(bool isElectrode, string Name)
         {
             // 電極名稱規則修改為 末三碼-序號+字母 (A,B,C...)，工件名稱規則修改為 末三碼-序號
