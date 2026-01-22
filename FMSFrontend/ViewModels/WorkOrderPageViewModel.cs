@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging; 
-using　CommunityToolkit.Mvvm.Messaging.Messages;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Dtos.Apps;
 using FMSFrontend.Features.Services;
@@ -60,7 +60,7 @@ namespace FMSFrontend.ViewModels
         }
         partial void OnSelectedEDMQueueItemChanged(WorkOrderData? value)
         {
-        //    System.Diagnostics.Debug.WriteLine($"SelectedEDMQueueItemChanged: {(value == null ? "null" : value.WorksheetNumber)}");
+            //    System.Diagnostics.Debug.WriteLine($"SelectedEDMQueueItemChanged: {(value == null ? "null" : value.WorksheetNumber)}");
             ReviseCommand.NotifyCanExecuteChanged();
         }
         private bool CanRevise()
@@ -77,7 +77,7 @@ namespace FMSFrontend.ViewModels
 
         partial void OnEDMSelectedTabChanged(int value)
         {
-           
+
             _ = FetchAndBindByStatusAsync();
         }
         public List<string> DateFilterOptions { get; set; } = new() { "今天", "過去7天", "自訂" };
@@ -211,13 +211,12 @@ namespace FMSFrontend.ViewModels
 
             // 使用非同步方法刪除：保留 RelayCommand，但在內部啟動 async Task
             DeleteCommand = new RelayCommand<WorkOrderData>(item =>
+            {
+                if (item != null)
                 {
-                    if (item != null)
-                    {
-                        _ = DeleteWorkOrderAsync(item);
-                        
-                    }
-                });
+                    _ = DeleteWorkOrderAsync(item);
+                }
+            });
             //_ = FetchAndBindByStatusAsync();
         }
 
@@ -253,7 +252,7 @@ namespace FMSFrontend.ViewModels
                 return;
             }
 
-            var action = _WindowService.ShowReviseWindow();    
+            var action = _WindowService.ShowReviseWindow();
 
             if (action is null or ReviseProcessAction.Cancel) return;
 
@@ -286,7 +285,7 @@ namespace FMSFrontend.ViewModels
         }
 
         // 最小改動：呼叫後端 API 並綁定到對應的 UI 集合（使用 CancellationToken）
-        List<WorksheetsDto> MappedWorksheets(List<WorksheetIncludeTimelineDto> dtos) 
+        List<WorksheetsDto> MappedWorksheets(List<WorksheetIncludeTimelineDto> dtos)
         {
             var result = new List<WorksheetsDto>();
             if (dtos == null || dtos.Count == 0)
@@ -388,67 +387,83 @@ namespace FMSFrontend.ViewModels
         {
             if (!_auth.RequireLogin())
                 return;
+
             try
             {
-                // 要求使用者確認
-                bool yes = _WindowService.ShowYesNoDialog($"確定要刪除工單 {item.WorksheetNumber} 嗎？");
+                bool yes = _WindowService.ShowYesNoDialog(
+                    $"注意：此操作會一併刪除該工單底下已建檔的電極與工件。");
+
                 if (!yes) return;
-                if (string.IsNullOrWhiteSpace(item.Id))
+
+                if (string.IsNullOrWhiteSpace(item.WorksheetNumber))
                 {
-                    _WindowService.ShowMessage("找不到工單 ID，無法刪除。");
+                    _WindowService.ShowMessage("找不到工單號 (WorksheetNumber)，無法刪除關聯資料。");
                     return;
                 }
-                bool ok = false;
-                // 刪除相關電極資料
-                var eleDtos = await _ElectrodeService.GetElectrodeByWorksheetNumberAsync(item.WorksheetNumber, CancellationToken.None);
-                if (eleDtos != null)
-                {
-                    foreach (var ele in eleDtos)
-                    {
-                        if (!string.IsNullOrWhiteSpace(ele._id))
-                        {
-                            ok = await _ElectrodeService.DB_DeleteElectrodeDataByIdAsync(ele._id);
-                            if (!ok)
-                            {
-                                _WindowService.ShowMessage($"刪除工單中的電極失敗：");
-                                return;
-                            }
 
-                        }
-                    }
+                if (string.IsNullOrWhiteSpace(item.Id))
+                {
+                    _WindowService.ShowMessage("找不到工單 ID，無法刪除工單。");
+                    return;
                 }
 
-                //刪除相關工件資料
-                var wpDtos = await _WorkpieceService.GetWorkpieceByWorksheetNumberAsync(item.WorksheetNumber, CancellationToken.None);
-                if (wpDtos != null)
+                // 1) 先抓出關聯資料
+                var workpieces = await _WorkpieceService.GetWorkpieceByWorksheetNumberAsync(item.WorksheetNumber);
+                var electrodes = await _ElectrodeService.GetElectrodeByWorksheetNumberAsync(item.WorksheetNumber);
+
+                // 2) 先刪工件
+                if (workpieces != null)
                 {
-                    ok = await _WorkpieceService.DeleteWorkpieceDataByIdAsync(wpDtos._id);
+
+                    if (string.IsNullOrWhiteSpace(workpieces._id))
+                    {
+                        _WindowService.ShowMessage($"刪除工件失敗：{workpieces.workpieceName}（已中止刪除工單）");
+                        return;
+                    }
+
+                    bool ok = await _WorkpieceService.DeleteWorkpieceDataByIdAsync(workpieces._id);
                     if (!ok)
                     {
-                        _WindowService.ShowMessage($"刪除工單中的工件失敗：");
+                        _WindowService.ShowMessage($"刪除工件失敗：{workpieces.workpieceName}（已中止刪除工單）");
                         return;
                     }
                 }
 
-                // 呼叫後端 API 刪除工單
-                ok = await _WorksheetsService.DeleteWorkSheetDataByIdAsync(item.Id);
-                if (ok)
+                // 3) 再刪電極
+                if (electrodes != null && electrodes.Count > 0)
                 {
-                    WorkOrderList.Remove(item);
-                    _WindowService.ShowMessage("已成功刪除工單。");   // 若 API 呼叫成功，從 UI 清單移除
+                    foreach (var el in electrodes)
+                    {
+                        if (string.IsNullOrWhiteSpace(el._id)) continue;
+
+                        bool ok = await _ElectrodeService.DB_DeleteElectrodeDataByIdAsync(el._id);
+                        if (!ok)
+                        {
+                            _WindowService.ShowMessage($"刪除電極失敗：{el.electrodeName}（已中止刪除工單）");
+                            return;
+                        }
+                    }
                 }
-                else
+
+                // 4) 最後刪工單
+                bool wsOk = await _WorksheetsService.DeleteWorkSheetDataByIdAsync(item.Id);
+                if (!wsOk)
                 {
-                    _WindowService.ShowMessage($"刪除工單失敗：");
+                    _WindowService.ShowMessage($"刪除工單失敗（工單：{item.WorksheetNumber}）。");
                     return;
                 }
+
+                WorkOrderList.Remove(item);
+                _WindowService.ShowMessage("已成功刪除工單與關聯的電極/工件。");
             }
             catch (Exception ex)
             {
-                _WindowService.ShowMessage($"刪除工單失敗：{ex.Message}"); // 顯示錯誤資訊但不要讓應用程式崩潰
+                _WindowService.ShowMessage($"刪除工單失敗：{ex.Message}");
             }
+
             _ = FetchAndBindByStatusAsync();
         }
+
 
         // ← 新增：分頁索引對應到後端 WorkStatus（請依實際需求調整）
         private static string MapWorkStatusForParameterTab(int index) => index switch
@@ -545,7 +560,7 @@ namespace FMSFrontend.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public class EDMDetail 
+    public class EDMDetail
     {
         public string ElectrodeName { get; set; } = "";
         public string LabelSerial { get; set; } = "";
