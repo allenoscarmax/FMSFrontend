@@ -3,7 +3,7 @@
         <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
     </Window.Resources>
     <Grid Background="Transparent" Margin="20">
-        <Border Background="#F8F5EE" CornerRadius="12" Effect="{StaticResource ShadowEffect}" Padding="30">
+        <Border Background="#F8F5EE" CornerRadius="12" Effect="{StaticResource ShadowEffect}" Padding="3">
 
             <Grid>
                 <Grid.RowDefinitions>
@@ -11,20 +11,25 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <!-- 文字區 -->
-                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-
-                    <!-- ⭐ 這一層負責「視覺置中」 -->
-                    <Grid HorizontalAlignment="Center" MaxWidth="320">
-
-                        <!-- ⭐ 文字本身左對齊 -->
-                        <TextBlock x:Name="MessageText" FontSize="16" FontWeight="SemiBold" Foreground="#222" TextWrapping="Wrap" TextTrimming="None" TextAlignment="Left" />
-                    </Grid>
-
+                <!-- 文字區：與 Yes/No 一致，支援自動換行與滾動 -->
+                <ScrollViewer Grid.Row="0"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled"
+                              Margin="10"
+                              MaxHeight="120">
+                    <TextBlock x:Name="MessageText"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="#222"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Stretch"
+                               TextTrimming="None" />
                 </ScrollViewer>
 
                 <!-- 按鈕區：永遠固定在底部 -->
-                <Button Grid.Row="1" Width="120" Height="42" Content="確定" Foreground="White" Background="#2779A7" BorderBrush="{x:Null}" FontSize="16" FontWeight="SemiBold" Cursor="Hand" Click="Close_Click" IsDefault="True" HorizontalAlignment="Center">
+                <Button Grid.Row="1" Width="120" Height="42" Margin="0,0,0,10" Content="確定" Foreground="White" Background="#2779A7" BorderBrush="{x:Null}" FontSize="16" FontWeight="SemiBold" Cursor="Hand" Click="Close_Click" IsDefault="True" HorizontalAlignment="Center">
                     <!-- 你的 Template 原封不動貼回來 -->
                     <Button.Template>
                         <ControlTemplate TargetType="Button">

@@ -64,7 +64,7 @@
 						</Grid.RowDefinitions>
 						<!-- 區塊標題 -->
 						<Border Grid.Row="0"  Background="#444" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
-							<TextBlock Text="機台資訊區" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+							<TextBlock Text="資訊區" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
 						</Border>
 						<Border Grid.Row="1"  Background="#FFFFFF" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
 							<Grid>
@@ -167,7 +167,7 @@
 						</Grid.RowDefinitions>
 						<!-- 區塊標題 -->
 						<Border Grid.Row="0"  Background="#444" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
-							<TextBlock Text="機台資訊區" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+							<TextBlock Text="控制區" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
 						</Border>
 						<Border Grid.Row="1"  Background="#FFFFFF" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
                             <Grid>
