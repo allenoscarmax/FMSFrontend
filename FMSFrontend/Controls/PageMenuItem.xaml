@@ -45,13 +45,18 @@
 
                             <materialDesign:PackIcon x:Name="IconElement" Grid.Row="0" Kind="{Binding Icon, ElementName=root}" Width="44" Height="44" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" ClipToBounds="True" />
 
-                            <TextBlock x:Name="TextElement" Grid.Row="1" Text="{Binding Label, ElementName=root}" FontSize="14" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0" ClipToBounds="True" />
+                            <TextBlock x:Name="TextElement" Grid.Row="1" Text="{Binding Label, ElementName=root}" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0" ClipToBounds="True" />
                         </Grid>
                         <!-- 滑鼠高光效果層（有導角） -->
                         <Border x:Name="HoverHighlight" Background="Transparent" CornerRadius="30" BorderThickness="0" />
                     </Grid>
                 </Border>
                 <ControlTemplate.Triggers>
+                    <!-- 選取狀態 -->
+                    <DataTrigger Binding="{Binding IsSelected, ElementName=root}" Value="True">
+                        <Setter TargetName="IconElement" Property="Foreground" Value="#2779A7" />
+                        <Setter TargetName="TextElement" Property="Foreground" Value="#2779A7" />
+                    </DataTrigger>
                     <!-- 滑鼠移入 -->
                     <Trigger Property="IsMouseOver" Value="True">
                         <Setter TargetName="HoverHighlight" Property="Background" Value="#33FFFFFF"/>
@@ -65,7 +70,7 @@
                     </Trigger>
                 </ControlTemplate.Triggers>
             </ControlTemplate>
-            
+
         </Button.Template>
     </Button>
 </UserControl>

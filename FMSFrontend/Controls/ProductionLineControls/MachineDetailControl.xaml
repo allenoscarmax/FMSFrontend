@@ -2,7 +2,7 @@
 
     <Grid>
         <!-- 陰影層 -->
-        <Border Background="#33000000" CornerRadius="18" Margin="-2" />
+        <Border Background="#33000000" CornerRadius="18" Margin="0" />
         <Border CornerRadius="18" Background="#FFFFFF" BorderBrush="#DDD" ClipToBounds="True" SnapsToDevicePixels="True" />
 
         <Grid ClipToBounds="True" SnapsToDevicePixels="True">
@@ -12,7 +12,7 @@
             </Grid.RowDefinitions>
 
             <!-- ✅ 標題列 -->
-            <Border Grid.Row="0" CornerRadius="18,18,0,0" Background="#EEEEEE" SnapsToDevicePixels="True" ClipToBounds="True">
+            <Border Grid.Row="0" CornerRadius="18,18,0,0" Margin="2" Background="#EEEEEE" SnapsToDevicePixels="True" ClipToBounds="True">
                 <Grid Height="40">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />

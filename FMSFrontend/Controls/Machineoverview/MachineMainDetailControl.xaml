@@ -2,7 +2,7 @@
     <UserControl.Resources>
         <selectors:TabItemBackgroundSelector x:Key="TabtemColorSelector" />
     </UserControl.Resources>
-    <Border BorderBrush="#000000" BorderThickness="1" CornerRadius="6">
+    <Border BorderBrush="#000000" BorderThickness="1" CornerRadius="0">
         <Grid Background="{DynamicResource PageViewBrush}" Loaded="ToggleRoot_Loaded">
 
             <!-- 🧩 頂層切 2 Row：標題 + 內容 -->

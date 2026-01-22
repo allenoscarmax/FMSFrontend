@@ -24,7 +24,7 @@
 
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0">
                         <materialDesign:PackIcon Kind="DatabaseImport" Width="24" Height="24" Margin="0,0,8,0" Foreground="White" />
-                        <TextBlock Text="物料燒錄" FontSize="22" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
+                        <TextBlock Text="物料選擇" FontSize="22" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
                     </StackPanel>
 
                     <!-- 關閉按鈕 -->

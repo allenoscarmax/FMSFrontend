@@ -20,10 +20,10 @@
 
     <Grid>
         <!-- 陰影層 -->
-        <Border Background="#33000000" CornerRadius="18" Margin="2,-2,-2,-2" />
+        <Border Background="#33000000" CornerRadius="18" Margin="0,0,0,-2" />
 
         <!-- 外層圓角白底 + 陰影 -->
-        <Border CornerRadius="18" Background="#FFFFFF" BorderBrush="#DDD" ClipToBounds="True" SnapsToDevicePixels="True">
+        <Border CornerRadius="18" Background="#FFFFFF" Margin="2,2,2,0" BorderBrush="#DDD" ClipToBounds="True" SnapsToDevicePixels="True">
 
             <Grid ClipToBounds="True">
                 <Grid.RowDefinitions>
@@ -68,7 +68,7 @@
                         <!-- Tabs -->
                         <TabControl Grid.Column="1" SelectedIndex="{Binding SelectedTabIndex}" Style="{StaticResource FlatTabControlStyle}" Height="40" Padding="0" Margin="0" Background="Transparent" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}">
 
-                            <TabItem Header="電極" Tag="#3A77B3" />
+                            <TabItem Header="電極" Tag="#2779A7"/>
                             <TabItem Header="工件" Tag="#E08E45" />
                         </TabControl>
 
@@ -90,12 +90,12 @@
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="84*" />
-                            <ColumnDefinition Width="737*"/>
+                            <ColumnDefinition Width="0" />
+                            <ColumnDefinition Width="800"/>
                         </Grid.ColumnDefinitions>
 
                         <!-- 膠囊樣式（左側貼齊，右側圓角） -->
-                        <Border d:Background="#2779A7" Background="{Binding SelectStorage.KindBrush}" Height="40" CornerRadius="0,20,20,0" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,0" Width="172">
+                        <Border d:Background="#2779A7" Background="{Binding SelectStorage.KindBrush}" Height="40" CornerRadius="0,20,20,0" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,0" Width="150">
                             <TextBlock Text="{Binding SelectStorage.Title}" d:Text="ES1" Foreground="White" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" />
                         </Border>
 
@@ -107,9 +107,9 @@
                                     <!--待加工-->
                                     <Border Name ="BorderWaiting" Background="#E6B93E" CornerRadius="6" Margin="4,0" Padding="12,4">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="待加工" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding SelectStorage.WaitingCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            <TextBlock Text="待加工" FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
+                                            <Border Width="30" Height="30" Background="White" CornerRadius="15" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding SelectStorage.WaitingCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
@@ -117,19 +117,19 @@
                                     <!--加工中-->
                                     <Border  Name ="BorderProcessing" Background="#56C06C" CornerRadius="6" Margin="4,0" Padding="12,4">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="加工中" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding SelectStorage.ProcessingCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            <TextBlock Text="加工中" FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
+                                            <Border Width="30" Height="30" Background="White" CornerRadius="15" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding SelectStorage.ProcessingCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
 
                                     <!--異常-->
-                                    <Border Name ="BorderError" Background="#C0392B" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                    <Border Name ="BorderError" Background="#C0392B" CornerRadius="6" Margin="4,0" Padding="12,4" >
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="異常" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding SelectStorage.ErrorCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            <TextBlock Text="異常"  FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
+                                            <Border Width="30" Height="30" Background="White" CornerRadius="15" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding SelectStorage.ErrorCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
@@ -137,9 +137,9 @@
                                     <!--完成-->
                                     <Border Name ="BorderCompleted" Background="#2F64CF" CornerRadius="6" Margin="4,0" Padding="12,4">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="完成" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding SelectStorage.CompletedCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            <TextBlock Text="完成" FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
+                                            <Border Width="30" Height="30" Background="White" CornerRadius="15" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding SelectStorage.CompletedCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
@@ -147,9 +147,9 @@
                                     <!--禁用-->
                                     <Border Background="#CCCCCC" CornerRadius="6" Margin="4,0" Padding="12,4">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="禁用" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <Border Width="24" Height="24" Background="White" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding SelectStorage.RestrictionCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            <TextBlock Text="禁用"  FontSize ="16" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center" />
+                                            <Border Width="30" Height="30" Background="White" CornerRadius="15" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding SelectStorage.RestrictionCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
@@ -157,9 +157,9 @@
                                     <!--預約-->
                                     <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="6" Margin="4,0" Padding="12,4">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="預約" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <Border Width="24" Height="24" Background="#D6D6D6" CornerRadius="12" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding SelectStorage.BookedCount}" Foreground="Black" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            <TextBlock Text="預約" FontSize ="16" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center" />
+                                            <Border Width="30" Height="30" Background="#D6D6D6" CornerRadius="15" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding SelectStorage.BookedCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
@@ -276,7 +276,7 @@
                         </Button>
 
                         <!-- 頁碼顯示 -->
-                        <TextBlock Grid.Column="1" Text="{Binding PageInfo}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1" FontSize="20" Text="{Binding PageInfo}" HorizontalAlignment="Center" VerticalAlignment="Center" />
 
                         <!-- 下一頁按鈕 -->
                         <Button Grid.Column="2" Width="60" Height="32" Background="White" BorderBrush="#CCC" Command="{Binding NextPageCommand}" Margin="8,0,0,0">

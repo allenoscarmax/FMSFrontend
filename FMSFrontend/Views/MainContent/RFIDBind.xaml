@@ -23,7 +23,7 @@
 
             <!-- 🔠 主標題 -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
-                <materialDesign:PackIcon Kind="NfcVariant" VerticalAlignment="Center" Width="36" Height="36" Margin="0,0,8,0" Foreground="{DynamicResource PrimaryTextBrush}" />
+                <materialDesign:PackIcon Kind="QrCodeScan" VerticalAlignment="Center" Width="24" Height="24" Margin="0,0,8,0" Foreground="{DynamicResource PrimaryTextBrush}" />
                 <TextBlock Text="RFID 燒錄" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
 
@@ -63,7 +63,7 @@
                     </StackPanel>
                 </Button>
 
-                <Button Width="240" Height="78" Background="#0066D9" Foreground="White" FontSize="18" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Effect="{StaticResource ShadowEffect}">
+                <Button Width="240" Height="78" Background="#0066D9" Foreground="White" FontSize="18" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Effect="{StaticResource ShadowEffect}" Command="{Binding ReadMaterialInformationCommand}" >
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="12" SnapsToDevicePixels="True">
@@ -133,7 +133,7 @@
                                     </Style>
                                 </DatePicker.CalendarStyle>
 
-                                
+
                             </DatePicker>
                             <TextBlock Name="ttb_DayPicker" Text="→" FontSize="20" VerticalAlignment="Center" Margin="12,0" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVis}}" />
                             <DatePicker Name="DayPicker2" SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" Width="200" Height="32" Style="{StaticResource CustomDatePickerStyle}" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVis}}">
@@ -200,9 +200,14 @@
                     </Button>
 
                     <!-- 📑 表格 -->
-                    <Border Grid.Row="2" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,20,0,0">
+                    <Border Grid.Row="2" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,10,0,0">
 
-                        <DataGrid ItemsSource="{Binding rFIDBindmodel.BurnHistoryList}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="15" Style="{StaticResource ModernFlatDataGridStyle}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
+                        <DataGrid ItemsSource="{Binding rFIDBindmodel.BurnHistoryList}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="15" Style="{StaticResource ModernFlatDataGridStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource CompactDataGridColumnHeaderStyle}">
+                                    <Setter Property="FontSize" Value="20" />
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
 
                             <!-- 移除每個儲存格的邊框 -->
                             <DataGrid.CellStyle>
@@ -227,7 +232,7 @@
                                 <DataGridTextColumn Header="時間" Binding="{Binding Time}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                 <DataGridTextColumn Header="物料種類" Binding="{Binding MaterialType}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                 <DataGridTextColumn Header="Serial No." Binding="{Binding SerialNo}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                <DataGridTextColumn Header="Tag Serial" Binding="{Binding TagSerial}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                <DataGridTextColumn Header="標籤序號" Binding="{Binding TagSerial}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                             </DataGrid.Columns>
                         </DataGrid>
 
