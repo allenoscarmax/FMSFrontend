@@ -12,15 +12,15 @@
 
             <controls:PageMenuItem Icon="ViewDashboard" Label="設備總覽" Command="{Binding GoToMachineOverviewCommand}" PageKey="MachineOverview" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
 
-            <controls:PageMenuItem Icon="ClipboardList" Label="工單派工" Command="{Binding GoToWorkOrderCommand}" PageKey="WorkOrder" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
+            <controls:PageMenuItem Icon="ClipboardList" Label="工單管理" Command="{Binding GoToWorkOrderCommand}" PageKey="WorkOrder" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
 
-            <controls:PageMenuItem Icon="QrCodeScan" Label="燒錄裝夾" Command="{Binding GoToRFIDBindCommand}" PageKey="RFIDBind" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
+            <controls:PageMenuItem Icon="QrCodeScan" Label="RFID燒錄" Command="{Binding GoToRFIDBindCommand}" PageKey="RFIDBind" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
 
-            <controls:PageMenuItem Icon="History" Label="操作歷程" Command="{Binding GoToOperationHistoryCommand}" PageKey="OperationHistory" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
+            <controls:PageMenuItem Icon="History" Label="操作紀錄" Command="{Binding GoToOperationHistoryCommand}" PageKey="OperationHistory" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
 
-            <controls:PageMenuItem Icon="Storage" Label="庫存資訊" Command="{Binding GoToMaterialCommand}" PageKey="Material" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
+            <controls:PageMenuItem Icon="Storage" Label="倉儲庫存" Command="{Binding GoToMaterialCommand}" PageKey="Material" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
 
-            <controls:PageMenuItem Icon="Cog" Label="設定" Command="{Binding GoToSettingsViewCommand}" PageKey="SettingsView" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
+            <controls:PageMenuItem Icon="Cog" Label="系統設定" Command="{Binding GoToSettingsViewCommand}" PageKey="SettingsView" CurrentPageKey="{Binding CurrentPageKey, ElementName=MenuBarRoot}" />
         </UniformGrid>
 
         <!-- 展開收合按鈕 -->

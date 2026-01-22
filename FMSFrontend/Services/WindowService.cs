@@ -183,6 +183,7 @@ namespace FMSFrontend.Services
             _vm!.Kind = MaterialKind.None;
             _vm.SlotCode = slot.SlotCode;
             _vm.IsDisabled = slot.StorageRestriction;
+            _vm.CurrentStorageState = slot.StorageStatus; // ★新增：Booked/Vacant/Occupy
             _vm.DetailViewModel = new EmptyMaterialDetailViewModel();
             _vm.Timeline.Clear();
 

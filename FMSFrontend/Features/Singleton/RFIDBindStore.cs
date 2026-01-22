@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media.Converters;
-
 namespace FMSFrontend.Features.Singleton
 {
     public partial class RFIDBindStore : ObservableObject
@@ -36,6 +35,25 @@ namespace FMSFrontend.Features.Singleton
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply); //如果不是UI執行緒就用Dispatcher.Invoke切換到UI執行緒
             else apply();
         }
+        
+        public void ApplyEleDto(ElectrodeDto dto)
+        {
+            var disp = Application.Current?.Dispatcher; //這樣才能在非UI執行緒更新UI綁定的屬性
 
+            void apply() => dto.ApplyEleDto(RfidBind); //利用擴充方法進行映射
+
+            if (disp != null && !disp.CheckAccess()) disp.Invoke(apply); //如果不是UI執行緒就用Dispatcher.Invoke切換到UI執行緒
+            else apply();
+        }
+
+        public void ApplyWpDto(WorkpieceDto dto)
+        {
+            var disp = Application.Current?.Dispatcher; //這樣才能在非UI執行緒更新UI綁定的屬性
+            void apply() => dto.ApplyWpDto(RfidBind); //利用擴充方法進行映射
+
+            if (disp != null && !disp.CheckAccess()) disp.Invoke(apply); //如果不是UI執行緒就用Dispatcher.Invoke切換到UI執行緒
+            else apply();
+        }
+        
     }
 }

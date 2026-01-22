@@ -21,10 +21,11 @@ using System.Windows.Data;
 using System.Collections.Generic;
 using System.Windows.Media.Animation;
 using System.Security;
+using System.Windows.Navigation;
 
 namespace FMSFrontend.ViewModels
 {
-    
+
     public partial class SettingsPageViewModel : ObservableObject
     {
 
@@ -42,7 +43,7 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private int hour = 9;   // 0~23
         [ObservableProperty] private int minute = 41;  // 0~59
         [ObservableProperty] private bool isPm = false;
-       
+
         // ===== 開窗指令 ── 綁到你的 Button =====
         public IRelayCommand OpenSetPeriodDialogCommand { get; }
 
@@ -54,9 +55,10 @@ namespace FMSFrontend.ViewModels
         private readonly IDevicesService _devicesService;
         private readonly IWorkerService _workerService;
         private readonly IAppointmentMaintenanceService _appointmentMaintenanceService;
+        private readonly IMongoDBService _mongoDBService;
 
         public SettingsPageViewModel(IWindowService windowService, IHttpService httpService, IMachinesService machinesService, IRobotService robotService,
-            IDevicesService devicesService, IWorkerService workerService, IAppointmentMaintenanceService appointmentMaintenanceService
+            IDevicesService devicesService, IWorkerService workerService, IAppointmentMaintenanceService appointmentMaintenanceService, IMongoDBService mongoDBService
             )
         {
             _windowService = windowService;
@@ -67,6 +69,7 @@ namespace FMSFrontend.ViewModels
             _devicesService = devicesService;
             _workerService = workerService;
             _appointmentMaintenanceService = appointmentMaintenanceService;
+            _mongoDBService = mongoDBService;
 
 
             OpenSetPeriodDialogCommand = new RelayCommand(OpenPeriodDialog);
@@ -175,7 +178,7 @@ namespace FMSFrontend.ViewModels
                     break;
             }
         }
-        
+
         private async Task MachinesRefresh() //更新Machine資訊
         {
             try
@@ -187,7 +190,7 @@ namespace FMSFrontend.ViewModels
                     MachineList.Add(
                     new MachineInfo
                     {
-                        MachineId = dto._id, 
+                        MachineId = dto._id,
                         MachineNo = dto.machineNumber.ToString(),
                         MachineName = dto.machineName,
                         MachineType = dto.machineCode,
@@ -196,7 +199,7 @@ namespace FMSFrontend.ViewModels
                         Owner = dto.setupUser
                     });
                 }
-               
+
             }
             catch
             {
@@ -221,7 +224,7 @@ namespace FMSFrontend.ViewModels
                         Owner = dto.setupUser
                     });
                 }
-               
+
             }
             catch { }
         }
@@ -244,7 +247,7 @@ namespace FMSFrontend.ViewModels
                         Owner = dto.SetupUser
                     });
                 }
-               
+
             }
             catch { }
         }
@@ -309,14 +312,14 @@ namespace FMSFrontend.ViewModels
 
                     dto.ip = newIp;
                     dto.port = newPort;
-                    
+
                     bool ok = await _machinesService.UpdateMachinesDataAsync(dto);
                     if (!ok)
                     {
                         _windowService.ShowMessage("機台更新失敗，請稍後再試");
                         return;
                     }
-                    
+
                     StatusMessage = "✅ 機台參數已更新";
                 }
                 catch
@@ -361,14 +364,14 @@ namespace FMSFrontend.ViewModels
                 }
 
                 dto.robot_IP = newIp;
-                
+
                 bool ok = await _robotService.DB_UpdateRobotDataAsync(dto);
                 if (!ok)
                 {
                     _windowService.ShowMessage("機械手臂更新失敗，請稍後再試");
                     return;
                 }
-                
+
                 StatusMessage = "✅ 機械手臂參數已更新";
 
                 // 重新載入機械手臂列表
@@ -498,7 +501,7 @@ namespace FMSFrontend.ViewModels
         }
 
         [RelayCommand]
-        private async Task RemoveWorker() 
+        private async Task RemoveWorker()
         {
             try
             {
@@ -547,7 +550,33 @@ namespace FMSFrontend.ViewModels
             }
             catch { }
         }
-        
+
+        [ObservableProperty] private bool isBusy;
+        [ObservableProperty] private string busyMessage = "處理中...";
+        private bool CanBackupSystem() => !IsBusy;
+
+        [RelayCommand(CanExecute = nameof(CanBackupSystem))]
+        private async Task BackupSystem()
+        {
+            IsBusy = true;
+            BusyMessage = "系統備份中，請稍候...";
+            try
+            {
+                var ok = await _mongoDBService.BackupDatabaseAsync();
+
+                _windowService.ShowMessage(ok ? "系統備份成功" : "系統備份失敗");
+            }
+            catch (Exception ex)
+            {
+                _windowService.ShowMessage($"系統備份發生例外：{ex.Message}");
+                // 建議也寫 log
+            }
+            finally
+            {
+                IsBusy = false;
+                BackupSystemCommand.NotifyCanExecuteChanged();
+            }
+        }
 
         // === 設定屬性 ===
         [ObservableProperty]
@@ -644,7 +673,7 @@ namespace FMSFrontend.ViewModels
         }
 
         // 3) 搜尋文字（即時過濾）
-        private string _deviceSearchText ="";
+        private string _deviceSearchText = "";
         public string DeviceSearchText
         {
             get => _deviceSearchText;
@@ -681,7 +710,7 @@ namespace FMSFrontend.ViewModels
                 Minute = vm.Minute;
                 PeriodDisplay = BuildPeriodDisplay(SelectedMode, Weekly.ToArray(), Monthly.ToArray(), Hour, Minute);
             }
-             _ = UpdataPeriod();
+            _ = UpdataPeriod();
         }
         private async Task UpdataPeriod()
         {
@@ -702,12 +731,12 @@ namespace FMSFrontend.ViewModels
                     {
                         dtos[0].DayValues = Weekly.ToList();
                     }
-                    else if(SelectedMode == ScheduleMode.Monthly)
+                    else if (SelectedMode == ScheduleMode.Monthly)
                     {
                         dtos[0].DayValues = Monthly.ToList();
                     }
                     dtos[0].Hour = Hour;
-                    dtos[0].Minute = Minute;    
+                    dtos[0].Minute = Minute;
                 }
                 bool ok = await _appointmentMaintenanceService.UpdateAppointmentMaintenanceAsync(dtos[0]);
                 if (!ok)
@@ -806,26 +835,26 @@ namespace FMSFrontend.ViewModels
         private void SaveIP()
         {
             var ip = (ServerIp ?? string.Empty).Trim();
-            if (!(IPAddress.TryParse(ip, out _) || ip =="localhost"))
+            if (!(IPAddress.TryParse(ip, out _) || ip == "localhost"))
             {
                 StatusMessage = "❌ IP 位址格式不正確";
                 _windowService.ShowMessage("IP 位址格式不正確，請輸入有效的 IPv4，例如：192.168.1.100");
                 return;
             }
-          //  try
-          //  {
-                _httpService.UpdateServerIp(ip);
-                StatusMessage = "🤖 設定IP OK";
-                _windowService.ShowMessage($"已設定 IP：{ip}");
-                INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-                ini.Write("Prarm", "IP", ip);
-          /*  }
-            catch (Exception ex)
-            {
-                StatusMessage = "❌ 設定 IP 失敗";
-                _windowService.ShowMessage($"設定 IP 失敗：{ex.Message}");
-            }
-          */
+            //  try
+            //  {
+            _httpService.UpdateServerIp(ip);
+            StatusMessage = "🤖 設定IP OK";
+            _windowService.ShowMessage($"已設定 IP：{ip}");
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            ini.Write("Prarm", "IP", ip);
+            /*  }
+              catch (Exception ex)
+              {
+                  StatusMessage = "❌ 設定 IP 失敗";
+                  _windowService.ShowMessage($"設定 IP 失敗：{ex.Message}");
+              }
+            */
         }
         private bool FilterWorker(object obj)
         {
@@ -881,7 +910,7 @@ namespace FMSFrontend.ViewModels
                 || d.Port.ToString().Contains(q, cmp);
         }
 
-       
+
 
         public class MachineInfo
         {
@@ -975,7 +1004,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void ForceLubrication()
         {
-            
+
 
 
         }

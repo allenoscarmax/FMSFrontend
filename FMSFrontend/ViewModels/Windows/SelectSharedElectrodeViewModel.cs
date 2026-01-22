@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ControlzEx.Standard;
 using FMSFrontend.Extensions;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
@@ -33,7 +34,7 @@ namespace FMSFrontend.ViewModels.Windows
         public WorksheetItem? SelectedWorksheetItem { get; private set; }
         public SelectItem? SelectedElectrodeItem { get; private set; }
 
-        private int ElectrodesFilter = 1; //佑義:2 鋐興:1
+        private int ElectrodesFilter = 5; //佑義:2 鋐興:5
         // ------------------------------------------------------------
         // 📦 暫存資料區：在 ViewModel 開頭統一定義
         // ------------------------------------------------------------
@@ -105,6 +106,20 @@ namespace FMSFrontend.ViewModels.Windows
 
                 if (items.Count == 0)
                     return;
+                //檢查shared electrode是否已被使用
+                for (int i = 0; i < items.Count;i++)
+                {
+                    var es = await _electrodeService.GetElectrodeByWorksheetNumberAsync(items[i].WorkOrderNo ?? string.Empty) ?? new List<ElectrodeDto>(); // 取得該工單的電極清單
+                    foreach (var e in es)//如果電及已經被共用 移除item
+                    {
+                        if (e.shared)
+                        {
+                            items.RemoveAt(i);
+                            i--;//因為移除一個item 所以index要往前移動一格
+                            break;
+                        }
+                    }
+                }
 
                 // ✅ 改用 WindowService
                 var selected = _windowService.ShowSelectWorksheetWindow(items);

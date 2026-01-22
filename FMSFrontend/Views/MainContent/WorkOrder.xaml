@@ -45,14 +45,19 @@
         </Style>
 
         <DataTemplate x:Key="EDMRowDetailsTemplate">
-            <StackPanel DataContext="{Binding Item, RelativeSource={RelativeSource AncestorType=DataGridRow}}" Margin="20,2,20,2" Background="#F9F9F9">
+            <StackPanel DataContext="{Binding Item, RelativeSource={RelativeSource AncestorType=DataGridRow}}" Margin="0,2,0,2" Background="#DDDDDD">
 
                 <StackPanel Orientation="Horizontal" Margin="0,20,0,20" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding EDMStageDisplay}" FontSize="18" FontWeight="Bold" Foreground="#333" Margin="0,0,8,0" />
+                    <TextBlock Text="{Binding EDMStageDisplay}" FontSize="18" FontWeight="Bold" Foreground="#333" Margin="50,0,8,0" />
                     <ProgressBar Value="{Binding EDMStageProgress, Mode=OneWay}" Height="8" Width="200" />
                 </StackPanel>
 
-                <DataGrid IsReadOnly="True" ItemsSource="{Binding EDMDetails}" Style="{StaticResource ModernFlatDataGridStyle}" AutoGenerateColumns="False" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" FontSize="14" Margin="0">
+                <DataGrid IsReadOnly="True" ItemsSource="{Binding EDMDetails}" Margin="40,0,40,20" Style="{StaticResource ModernFlatDataGridStyle}" AutoGenerateColumns="False" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" FontSize="14" >
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource CompactDataGridColumnHeaderStyle}">
+                            <Setter Property="FontWeight" Value="Normal" />
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
                             <Setter Property="MinHeight" Value="40" />
@@ -92,7 +97,7 @@
 
             <!-- 標題列 -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <materialDesign:PackIcon Kind="ClipboardListOutline" VerticalAlignment="Center" Width="36" Height="36" Margin="0,0,8,0" Foreground="{DynamicResource PrimaryTextBrush}" />
+                <materialDesign:PackIcon Kind="ClipboardListOutline" VerticalAlignment="Center" Width="24" Height="24" Margin="0,0,4,0" Foreground="{DynamicResource PrimaryTextBrush}" />
                 <TextBlock Text="工單管理" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
 
@@ -135,7 +140,7 @@
                                                         </Button>
 
                                                         <!-- 外框 -->
-                                                        <Border Grid.Row="1" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,8">
+                                                        <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,8">
                                                             <Grid>
                                                                 <DataGrid Name="NewWorkDataGrid" behaviors:RowDetailsToggleBehavior.IsEnabled="True" behaviors:RowDetailsToggleBehavior.KeepSelection="False" behaviors:RowDetailsToggleBehavior.ToggleOnRowClick="True" behaviors:ExclusiveSelectionBehavior.Group="WorkOrderSelection" SelectionMode="Single" SelectionUnit="FullRow" ItemsSource="{Binding WorkOrderList}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" IsReadOnly="True" AutoGenerateColumns="False" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" RowHeight="44">
                                                                     <DataGrid.Style>
@@ -217,13 +222,18 @@
 
                                                                     <DataGrid.RowDetailsTemplate>
                                                                         <DataTemplate>
-                                                                            <StackPanel Margin="20,2,20,2" Background="#F9F9F9">
-                                                                                <StackPanel DataContext="{Binding Item, RelativeSource={RelativeSource AncestorType=DataGridRow}}" Orientation="Horizontal" Margin="0,20,0,20" VerticalAlignment="Center">
-                                                                                    <TextBlock Text="{Binding EDMStageDisplay}" FontSize="18" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                                            <StackPanel Margin="0,2,0,2" Background="#DDDDDD">
+                                                                                <StackPanel DataContext="{Binding Item, RelativeSource={RelativeSource AncestorType=DataGridRow}}" Orientation="Horizontal" Margin="0,20,0,10" VerticalAlignment="Center">
+                                                                                    <TextBlock Text="{Binding EDMStageDisplay}" FontSize="18" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" Margin="50,0,8,0" />
                                                                                     <ProgressBar Value="{Binding EDMStageProgress, Mode=OneWay}" Height="8" Width="200" VerticalAlignment="Center" />
                                                                                 </StackPanel>
 
-                                                                                <DataGrid IsReadOnly="True" ItemsSource="{Binding EDMDetails}" Style="{StaticResource ModernFlatDataGridStyle}" AutoGenerateColumns="False" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" FontSize="14" Margin="0">
+                                                                                <DataGrid IsReadOnly="True" Margin="40,0,40,20" ItemsSource="{Binding EDMDetails}" Style="{StaticResource ModernFlatDataGridStyle}" AutoGenerateColumns="False" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" FontSize="14" >
+                                                                                    <DataGrid.ColumnHeaderStyle>
+                                                                                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource CompactDataGridColumnHeaderStyle}">
+                                                                                            <Setter Property="FontWeight" Value="Normal" />
+                                                                                        </Style>
+                                                                                    </DataGrid.ColumnHeaderStyle>
                                                                                     <DataGrid.RowStyle>
                                                                                         <Style TargetType="DataGridRow">
                                                                                             <Setter Property="MinHeight" Value="40" />
@@ -248,10 +258,10 @@
                                                                                                 </Style>
                                                                                             </DataGridCheckBoxColumn.ElementStyle>
                                                                                         </DataGridCheckBoxColumn>
-                                                                                        <DataGridTextColumn Header="加工程式" Binding="{Binding EDMProgram}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                        <DataGridTextColumn Header="Offset" Binding="{Binding Offset}" Width="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                        <DataGridTextColumn Header="Share" Binding="{Binding IsShare}" Width="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                        <DataGridTextColumn Header="Share電極" Binding="{Binding ShareElectrode}" Width="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Header="加工程式" Binding="{Binding EDMProgram}" Width="Auto" MinWidth="150" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Header="補償" Binding="{Binding Offset}" Width="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Header="是否Share電極" Binding="{Binding IsShare}" Width="130" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Header="Share電極名稱" Binding="{Binding ShareElectrode}" Width="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                                                     </DataGrid.Columns>
                                                                                 </DataGrid>
                                                                             </StackPanel>
@@ -280,7 +290,7 @@
 
                                                     <!-- EDM 子頁籤 -->
                                                     <TabControl Grid.Row="0" Tag="SubTab" SelectedIndex="{Binding EDMSelectedTab}" Style="{StaticResource FlatTabControlStyle}" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}" Height="40" Margin="0,0,0,8" Background="Transparent">
-                                                        <TabItem Header="Preparing" Tag="#2779A7" />
+                                                        <TabItem Header="Waiting" Tag="#2779A7" />
                                                         <TabItem Header="Queueing" Tag="#2779A7" />
                                                         <TabItem Header="Processing" Tag="#2779A7" />
                                                         <TabItem Header="Completed" Tag="#2779A7" />
@@ -292,7 +302,7 @@
                                                             <Style TargetType="ContentControl">
                                                                 <Style.Triggers>
 
-                                                                    <!-- Preparing -->
+                                                                    <!-- Waiting -->
                                                                     <DataTrigger Binding="{Binding EDMSelectedTab}" Value="0">
                                                                         <Setter Property="ContentTemplate">
                                                                             <Setter.Value>
@@ -311,8 +321,8 @@
                                                                                             </StackPanel>
 
                                                                                             <!-- 表格 -->
-                                                                                            <Border Grid.Row="1" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
-                                                                                                <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource EDMWorkOrderGridStyle}" RowDetailsTemplate="{StaticResource EDMRowDetailsTemplate}">
+                                                                                            <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
+                                                                                                <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}"  behaviors:RowDetailsToggleBehavior.KeepSelection="False" behaviors:RowDetailsToggleBehavior.ToggleOnRowClick="True"  SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource EDMWorkOrderGridStyle}" RowDetailsTemplate="{StaticResource EDMRowDetailsTemplate}">
                                                                                                     <DataGrid.Columns>
                                                                                                         <!-- 第 0 欄：展開箭頭 -->
                                                                                                         <DataGridTemplateColumn Width="40">
@@ -336,9 +346,9 @@
 
                                                                                                         <DataGridTextColumn Header="工單編號" FontSize="18" Binding="{Binding WorksheetNumber}" Width="220" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="零件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Header="工件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTemplateColumn Header="放電狀態" Width="180">
+                                                                                                        <DataGridTemplateColumn Header="狀態" Width="180">
                                                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                                                 <DataTemplate>
                                                                                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -381,7 +391,7 @@
                                                                                             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10" />
 
                                                                                             <!-- 表格 -->
-                                                                                            <Border Grid.Row="1" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
+                                                                                            <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
                                                                                                 <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" behaviors:RowDetailsToggleBehavior.KeepSelection="False" behaviors:RowDetailsToggleBehavior.ToggleOnRowClick="True" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource EDMWorkOrderGridStyle}" RowDetailsTemplate="{StaticResource EDMRowDetailsTemplate}">
                                                                                                     <DataGrid.Columns>
                                                                                                         <!-- 第 0 欄：展開箭頭 -->
@@ -406,9 +416,9 @@
 
                                                                                                         <DataGridTextColumn Header="工單編號" FontSize="18" Binding="{Binding WorksheetNumber}" Width="220" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="零件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Header="工件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTemplateColumn Header="放電狀態" Width="180">
+                                                                                                        <DataGridTemplateColumn Header="狀態" Width="180">
                                                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                                                 <DataTemplate>
                                                                                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -454,8 +464,8 @@
                                                                                             </StackPanel>
 
                                                                                             <!-- 表格 -->
-                                                                                            <Border Grid.Row="1" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
-                                                                                                <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" behaviors:RowDetailsToggleBehavior.KeepSelection="True" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource EDMWorkOrderGridStyle}" RowDetailsTemplate="{StaticResource EDMRowDetailsTemplate}">
+                                                                                            <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
+                                                                                                <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" behaviors:RowDetailsToggleBehavior.KeepSelection="False" behaviors:RowDetailsToggleBehavior.ToggleOnRowClick="True"  SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource EDMWorkOrderGridStyle}" RowDetailsTemplate="{StaticResource EDMRowDetailsTemplate}">
                                                                                                     <DataGrid.Columns>
                                                                                                         <!-- 第 0 欄：展開箭頭 -->
                                                                                                         <DataGridTemplateColumn Width="40">
@@ -479,9 +489,9 @@
 
                                                                                                         <DataGridTextColumn Header="工單編號" FontSize="18" Binding="{Binding WorksheetNumber}" Width="220" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="零件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Header="工件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTemplateColumn Header="放電狀態" Width="180">
+                                                                                                        <DataGridTemplateColumn Header="狀態" Width="180">
                                                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                                                 <DataTemplate>
                                                                                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -530,7 +540,7 @@
                                                                                             </StackPanel>
 
                                                                                             <!-- 表格 -->
-                                                                                            <Border Grid.Row="1" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
+                                                                                            <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
                                                                                                 <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" behaviors:RowDetailsToggleBehavior.KeepSelection="False" behaviors:RowDetailsToggleBehavior.ToggleOnRowClick="True"  SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource EDMWorkOrderGridStyle}" RowDetailsTemplate="{StaticResource EDMRowDetailsTemplate}">
                                                                                                     <DataGrid.Columns>
                                                                                                         <!-- 第 0 欄：展開箭頭 -->
@@ -555,9 +565,9 @@
 
                                                                                                         <DataGridTextColumn Header="工單編號" FontSize="18" Binding="{Binding WorksheetNumber}" Width="220" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="零件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Header="工件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTemplateColumn Header="放電狀態" Width="180">
+                                                                                                        <DataGridTemplateColumn Header="狀態" Width="180">
                                                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                                                 <DataTemplate>
                                                                                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -605,8 +615,8 @@
                                             <DataTemplate>
                                                 <Grid>
                                                     <!-- 外框 -->
-                                                    <Border Grid.Row="1" CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,8">
-                                                        <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" behaviors:RowDetailsToggleBehavior.KeepSelection="False" behaviors:RowDetailsToggleBehavior.ToggleOnRowClick="True"  SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource EDMWorkOrderGridStyle}" RowDetailsTemplate="{StaticResource EDMRowDetailsTemplate}">
+                                                    <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,8">
+                                                        <DataGrid ItemsSource="{Binding FailureWorkOrders}" SelectedItem="{Binding SelectedEDMQueueItem}" behaviors:RowDetailsToggleBehavior.KeepSelection="False" behaviors:RowDetailsToggleBehavior.ToggleOnRowClick="True"  SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource EDMWorkOrderGridStyle}" RowDetailsTemplate="{StaticResource EDMRowDetailsTemplate}">
                                                             <DataGrid.Columns>
                                                                 <!-- 第 0 欄：展開箭頭 -->
                                                                 <DataGridTemplateColumn Width="40">
@@ -630,9 +640,9 @@
 
                                                                 <DataGridTextColumn Header="工單編號" FontSize="18" Binding="{Binding WorksheetNumber}" Width="220" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                <DataGridTextColumn Header="零件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Header="工件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                <DataGridTemplateColumn Header="放電狀態" Width="180">
+                                                                <DataGridTemplateColumn Header="狀態" Width="180">
                                                                     <DataGridTemplateColumn.CellTemplate>
                                                                         <DataTemplate>
                                                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">

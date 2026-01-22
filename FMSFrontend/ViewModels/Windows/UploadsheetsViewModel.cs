@@ -4,6 +4,7 @@ using FMSFrontend.Extensions;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Dtos.Apps;
 using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,22 +26,50 @@ namespace FMSFrontend.ViewModels.Windows
         private readonly IWorkpieceService  _workpieceService;
         private readonly IWorksheetsService _worksheetsService;
         private readonly IWorksheetAppService _worksheetAppService;
+        private readonly IMachinesService _machinesService;
 
         public UploadSheetViewModel(
             IWindowService windowService,
             IElectrodeService electrodeService,
             IWorkpieceService workpieceService,
             IWorksheetsService worksheetsService,
-            IWorksheetAppService worksheetAppService)
+            IWorksheetAppService worksheetAppService,
+            IMachinesService machinesService)
         {
             _windowService = windowService;
             _worksheetsService = worksheetsService;
             _electrodeService = electrodeService;
             _workpieceService = workpieceService;
             _worksheetAppService = worksheetAppService;
-
+            _machinesService = machinesService;
+            _ = GetMachineList();
         }
+        private async Task GetMachineList()
+        {
+            try
+            {
+                var machines = await _machinesService.GetAllMachinesAsync();
 
+                var list = new ObservableCollection<string> { "Unset" };
+
+                if (machines != null)
+                {
+                    foreach (var machine in machines)
+                    {
+                        var name = machine?.machineName;
+                        if (!string.IsNullOrWhiteSpace(name) && !list.Contains(name))
+                            list.Add(name);
+                    }
+                }
+
+                // Use the generated property to raise notifications
+                AvailableEdms = list;
+            }
+            catch
+            {
+                AvailableEdms = new ObservableCollection<string> { "Unset" };
+            }
+        }
         [ObservableProperty]
         private string selectedWorkCsvPath = "尚未選擇檔案";
 
@@ -57,10 +86,8 @@ namespace FMSFrontend.ViewModels.Windows
 
         // ▼ 下拉選單：機台
         [ObservableProperty]
-        private ObservableCollection<string> availableEdms = new()
-        {
-            "Unset","EDM1","EDM2","EDM3"
-        };
+        private ObservableCollection<string> availableEdms = new();
+
 
         [ObservableProperty]
         private string selectedEdm = "Unset";
@@ -784,8 +811,8 @@ namespace FMSFrontend.ViewModels.Windows
 
         public bool Share => !string.IsNullOrWhiteSpace(ShareWorksheet);
         partial void OnShareWorksheetChanged(string value) => OnPropertyChanged(nameof(Share));
-        // 那一把電極要分享
-        public int ShareElectrodeFrom = 5;  
+        // 鋐興需求: 那一把電極要分享
+        public int ShareElectrodeFrom = 1;   //佑義:1 鋐興:1 
 
         // 根據電極名稱尾碼決定是否可分享 (例如尾碼為 "02")
         public bool CanShare => (!string.IsNullOrWhiteSpace(ElectrodeName) && ElectrodeName.Trim().EndsWith(ShareElectrodeFrom.ToString("D2"), StringComparison.OrdinalIgnoreCase));

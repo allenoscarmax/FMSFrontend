@@ -1,4 +1,8 @@
-﻿<Window x:Name="Root" x:Class="FMSFrontend.Views.Windows.ShowMaterialWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vm="clr-namespace:FMSFrontend.ViewModels" xmlns:views="clr-namespace:FMSFrontend.Controls" mc:Ignorable="d" Title="倉位資訊" Width="1060" Height="700" WindowStartupLocation="CenterOwner" Background="Transparent" AllowsTransparency="True" WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+﻿<Window x:Name="Root" x:Class="FMSFrontend.Views.Windows.ShowMaterialWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vm="clr-namespace:FMSFrontend.ViewModels" xmlns:views="clr-namespace:FMSFrontend.Controls" xmlns:local="clr-namespace:FMSFrontend.Converters" mc:Ignorable="d" Title="倉位資訊" Width="1060" Height="700" WindowStartupLocation="CenterOwner" Background="Transparent" AllowsTransparency="True" WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Window.Resources>
+        <local:InverseBoolConverter x:Key="InverseBoolConverter" />
+    </Window.Resources>
 
     <!-- 外框：白底 + 圓角 + 陰影 + 16px 內距 -->
     <Border CornerRadius="10" Background="#FFFFFF">
@@ -54,11 +58,11 @@
 
                 <!-- 右：解除預約 / 禁用 -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,10,0">
-                    <!--
+
                     <Button  Name ="CancelBook" Command="{Binding CancelBookStorageCommand}" Content="解除預約" Padding="16,8" Style="{StaticResource PrimaryButtonStyle}" Background="#E58C2C" Foreground="White" BorderBrush="#E58C2C" BorderThickness="1" FontWeight="Bold" Cursor="Hand" Margin="0,0,10,0" />
-                    -->
+
                     <!-- 滑動開關版本：IsChecked=False=禁用(左)；IsChecked=True=啟用(右) -->
-                    <ToggleButton x:Name="DisableToggle" Cursor="Hand" HorizontalAlignment="Left" ToolTip="禁用 / 啟用" Command="{Binding UpdataStorageCommand}" IsChecked="{Binding IsDisabled, Mode=TwoWay}">
+                    <ToggleButton x:Name="DisableToggle" Cursor="Hand" HorizontalAlignment="Left" ToolTip="禁用 / 啟用" Command="{Binding UpdataStorageCommand}" IsChecked="{Binding IsDisabled, Mode=TwoWay, Converter={StaticResource InverseBoolConverter}}">
                         <ToggleButton.Style>
                             <Style TargetType="{x:Type ToggleButton}">
                                 <!-- 尺寸統一交由模板控制 -->
@@ -187,7 +191,7 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- 左卡：物料資訊 -->
-                <Border Grid.Column="0" CornerRadius="10" BorderBrush="#CCCCCC" BorderThickness="1" Background="#FFFFFF">
+                <Border Grid.Column="0" CornerRadius="18" BorderBrush="#CCCCCC" BorderThickness="1" Background="#FFFFFF">
                     <Grid>
                         <!-- 內容：依 DetailViewModel 型別切換不同 UserControl -->
                         <ContentControl Content="{Binding DetailViewModel}">
@@ -210,7 +214,7 @@
                 <Border Grid.Column="1" Background="Transparent" />
 
                 <!-- 右卡：工作列表（時間軸） -->
-                <Border Grid.Column="2" CornerRadius="10" BorderBrush="#CCCCCC" BorderThickness="1" Background="#FFFFFF">
+                <Border Grid.Column="2" CornerRadius="18" BorderBrush="#CCCCCC" BorderThickness="1" Background="#FFFFFF">
                     <Grid>
                         <!-- 關鍵：直接綁 VM 的 Timeline -->
                         <views:MaterialTimelineView ItemsSource="{Binding Timeline}" />
