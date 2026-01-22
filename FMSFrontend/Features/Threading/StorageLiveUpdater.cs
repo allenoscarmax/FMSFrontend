@@ -61,8 +61,8 @@ namespace FMSFrontend.Features.Threading
         }
         public async Task<bool> UpdateStatusAsync()
         {
-           // try
-           // {
+            try
+            {
                 var storage = await _svc_Storage.GetAllStorageAsync();
                 if (storage == null) return false;
                 _store.ApplyStorageDto(storage);
@@ -121,11 +121,11 @@ namespace FMSFrontend.Features.Threading
                 _store.ApplyStatusCount();
                 _store.ApplySelectStorage(SelectTitle);
                 return true;
-          //  }
-          //  catch 
-          //  {
-          //      return false;
-          //  }
+            }
+            catch 
+            {
+                return false;
+            }
         }
         /*
         public async Task<bool> UpdateProductionLinesPageStatusAsync()
