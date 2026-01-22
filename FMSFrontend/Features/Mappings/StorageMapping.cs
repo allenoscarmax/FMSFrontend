@@ -7,7 +7,7 @@ namespace FMSFrontend.Features.Mappings
 {
     public static class StorageMapping
     {
-       
+        private static bool JusticeShortNameFlag = false; //佑義客製需求 20260122
         public static void ApplyStorageDto(this List<StorageDto> dtos, ObservableCollection<StorageModel>  models)
         {
             if (dtos == null || models == null) return;
@@ -113,31 +113,42 @@ namespace FMSFrontend.Features.Mappings
 
 
         }
+        
         private static string ShortNameConversion(bool isElectrode, string Name)
         {
             // 電極名稱規則修改為 末三碼-序號+字母 (A,B,C...)，工件名稱規則修改為 末三碼-序號
             try
             {
-                var parts = Name.Split('-');
-                //顯示末三碼,不足三碼顯示全部
-                var mainNo = parts[0].Length >= 3 ? parts[0].Substring(parts[0].Length - 3) : parts[0];
-                //取得會最尾巴位文字
-                var seqNo = parts.Length > 1 ? parts[parts.Length - 1] : "";
-                int n = 0;
-                if (isElectrode)
+                if (JusticeShortNameFlag) //佑義客制規則
                 {
-                    if (int.TryParse(seqNo, out n))
+                    var parts = Name.Split('-');
+                    //顯示末三碼,不足三碼顯示全部
+                    var mainNo = parts[0].Length >= 3 ? parts[0].Substring(parts[0].Length - 3) : parts[0];
+                    //取得會最尾巴位文字
+                    var seqNo = parts.Length > 1 ? parts[parts.Length - 1] : "";
+                    int n = 0;
+                    if (isElectrode)
                     {
-                        return $"{mainNo}-{seqNo}{(char)('A' + int.Parse(seqNo) - 1)}";
+                        if (int.TryParse(seqNo, out n))
+                        {
+                            return $"{mainNo}-{seqNo}{(char)('A' + int.Parse(seqNo) - 1)}";
+                        }
+                        else
+                        {
+                            return $"{mainNo}-{seqNo}";
+                        }
                     }
                     else
                     {
                         return $"{mainNo}-{seqNo}";
                     }
                 }
-                else
+                else //一般規則
                 {
-                    return $"{mainNo}-{seqNo}";
+                    if (isElectrode)
+                        return Regex.Match(Name, @"_(\d+-[A-Za-z0-9]+)").Groups[1].Value;
+                    else
+                        return Regex.Match(Name, @"-(\d+_\d+-[A-Za-z]+)$").Groups[1].Value;
                 }
             }
             catch { }
