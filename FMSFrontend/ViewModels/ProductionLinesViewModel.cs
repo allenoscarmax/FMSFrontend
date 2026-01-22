@@ -72,8 +72,8 @@ namespace FMSFrontend.ViewModels
             get => _currentWorkingZoneView;
             set => SetProperty(ref _currentWorkingZoneView, value);
         }
-        
-        public ProductionLinesViewModel(IWindowService windowService, 
+
+        public ProductionLinesViewModel(IWindowService windowService,
             IHttpService httpService,
             IStorageService storageService,
             IElectrodeService electrodeService,
@@ -81,11 +81,11 @@ namespace FMSFrontend.ViewModels
             IProbeService probeService,
             IMachinesService machinesService,
             IWorksheetsService worksheetsService,
-            StorageStore storageStore, 
-            MachineStore machineStore, 
+            StorageStore storageStore,
+            MachineStore machineStore,
             RobotStore robotStore,
-            StorageLiveUpdater storageLiveUpdater, 
-            MachineLiveUpdater machineLiveUpdater) 
+            StorageLiveUpdater storageLiveUpdater,
+            MachineLiveUpdater machineLiveUpdater)
         {
             _windowService = windowService;
             _httpService = httpService;
@@ -136,7 +136,7 @@ namespace FMSFrontend.ViewModels
             Running,
             Alarm
         }
-        
+
         //開啟工件或電極視窗
         public Task OpenMaterialInformationBySerialAsync(string serial, MaterialType kind)
         {
@@ -190,10 +190,10 @@ namespace FMSFrontend.ViewModels
                             if (openMode == MaterialOpenMode.Information)
                                 _windowService.ShowMaterialInformation(model, timelineModels);
                             else
-                                _windowService.ShowElectrode(model, timelineModels);
+                                _windowService.ShowElectrode(model, timelineModels, slot.SlotCode);
 
                             return;
-                         //   _windowService.ShowElectrode(MapElectrode(e, slot), timelineModels);
+                            //   _windowService.ShowElectrode(MapElectrode(e, slot), timelineModels);
                         }
                         else
                         {
@@ -210,11 +210,11 @@ namespace FMSFrontend.ViewModels
                             if (openMode == MaterialOpenMode.Information)
                                 _windowService.ShowMaterialInformation(model, Enumerable.Empty<TimelineItemModel>());
                             else
-                                _windowService.ShowElectrode(model, Enumerable.Empty<TimelineItemModel>());
+                                _windowService.ShowElectrode(model, Enumerable.Empty<TimelineItemModel>(), slot.SlotCode);
 
                             return;
 
-                          //  _windowService.ShowElectrode(MapProbe(prrobe, slot), new List<TimelineItemModel>(), slot.SlotCode);
+                            //  _windowService.ShowElectrode(MapProbe(prrobe, slot), new List<TimelineItemModel>(), slot.SlotCode);
                         }
                         else // 皆非 則顯示空資料
                         {
@@ -229,14 +229,14 @@ namespace FMSFrontend.ViewModels
                     {
                         List<WpTimelineDto>? wpTimelineDto = await _WorkpieceService.GetWorkpieceTimelineByWorkpieceIdAsync(wp._id);
                         var wpTimelineModels = wpTimelineDto?.Select(MapWorkpieceTimeline).ToList() ?? new List<TimelineItemModel>();
-                      //  _windowService.ShowWorkpiece(MapWorkpiece(wp, slot), wpTimelineModels);
+                        //  _windowService.ShowWorkpiece(MapWorkpiece(wp, slot), wpTimelineModels);
 
                         var model = MapWorkpiece(wp, slot);
 
                         if (openMode == MaterialOpenMode.Information)
                             _windowService.ShowMaterialInformation(model, wpTimelineModels);
                         else
-                            _windowService.ShowWorkpiece(model, wpTimelineModels);
+                            _windowService.ShowWorkpiece(model, wpTimelineModels, slot.SlotCode);
 
                         return;
                     }
@@ -316,7 +316,7 @@ namespace FMSFrontend.ViewModels
             return new TimelineItemModel
             {
                 Time = dto?.timeStamp ?? DateTime.MinValue,
-                WorkCommand = dto?.workCommand?? "",
+                WorkCommand = dto?.workCommand ?? "",
                 Status = "", //待定義
             };
         }

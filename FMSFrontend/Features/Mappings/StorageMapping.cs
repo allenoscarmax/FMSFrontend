@@ -7,7 +7,7 @@ namespace FMSFrontend.Features.Mappings
 {
     public static class StorageMapping
     {
-        private static bool JusticeShortNameFlag = false; //佑義客製需求 20260122
+        private static bool JusticeShortNameFlag = true; //佑義客製需求 20260122
         public static void ApplyStorageDto(this List<StorageDto> dtos, ObservableCollection<StorageModel> models)
         {
             if (dtos == null || models == null) return;
