@@ -80,8 +80,8 @@ namespace FMSFrontend.ViewModels.Windows
         [RelayCommand]
         private async Task SelectWorkOrderAsync()
         {
-            //try
-            //{
+            try
+            {
                 // 從 electrodeName 萃取工件名稱（第一個 '_' 之前的字串）
                 var workpieceName = ExtractWorkpieceNameFromElectrodeName(_targetElectrodeName);
                 if (string.IsNullOrEmpty(workpieceName))
@@ -132,11 +132,11 @@ namespace FMSFrontend.ViewModels.Windows
                 // 清空電極
                 SelectedElectrodeItem = null;
                 SelectedElectrodeNameDisplay = "請選擇電極";
-            //}
-            //catch
-           // {
-            //    _windowService.ShowMessage("選擇工單失敗");
-           // }
+            }
+            catch
+            {
+                _windowService.ShowMessage("選擇工單失敗");
+            }
         }
 
 

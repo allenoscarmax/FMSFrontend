@@ -228,14 +228,14 @@
                                                                 <Button Style="{StaticResource PrimaryButtonStyle}" Width="120" Command="{Binding ExportAlarmsCommand}">
                                                                     <StackPanel Orientation="Horizontal">
                                                                         <materialDesign:PackIcon Kind="FileExport" Width="18" Height="18" Margin="0,0,6,0" />
-                                                                        <TextBlock Text="Export" />
+                                                                        <TextBlock Text="匯出" />
                                                                     </StackPanel>
                                                                 </Button>
 
                                                                 <Button Style="{StaticResource PrimaryButtonStyle}" Width="120" Background="#666" Margin="10,0,10,0" Command="{Binding RemoveSelectedAlarmsCommand}">
                                                                     <StackPanel Orientation="Horizontal">
                                                                         <materialDesign:PackIcon Kind="TrashCanOutline" Width="18" Height="18" Margin="0,0,6,0" />
-                                                                        <TextBlock Text="Remove" />
+                                                                        <TextBlock Text="刪除" />
                                                                     </StackPanel>
                                                                 </Button>
                                                             </StackPanel>

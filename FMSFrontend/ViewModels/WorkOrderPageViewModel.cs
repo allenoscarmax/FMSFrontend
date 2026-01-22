@@ -391,6 +391,7 @@ namespace FMSFrontend.ViewModels
             try
             {
                 bool yes = _WindowService.ShowYesNoDialog(
+                    $"確定要刪除工單 {item.WorksheetNumber} 嗎？\n" +
                     $"注意：此操作會一併刪除該工單底下已建檔的電極與工件。");
 
                 if (!yes) return;

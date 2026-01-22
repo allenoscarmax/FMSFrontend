@@ -34,13 +34,13 @@ namespace FMSFrontend.ViewModels
         private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
         // === Singleton ===
         public RFIDBindStore RfidBindStore { get; }
-        public RFIDBindModel rFIDBindmodel  => RfidBindStore.RfidBind;
-        
+        public RFIDBindModel rFIDBindmodel => RfidBindStore.RfidBind;
+
         // === LiveUpdater ===
         public RFIDBindLiveUpdater _rfidUpdater;
         public RFIDBindPageViewModel(IWindowService windowService, IHttpService httpService,
         IRfidService iRFIDMgmtModuleService, IAuthorizationService auth,
-        RFIDBindStore rfidBindStore, 
+        RFIDBindStore rfidBindStore,
         RFIDBindLiveUpdater rfidUpdater)
         {
             _windowService = windowService;
@@ -56,7 +56,7 @@ namespace FMSFrontend.ViewModels
         }
 
         public List<string> DateFilterOptions { get; set; } = new() { "今天", "過去7天", "自訂" };
-        
+
         private DateTime? lastValidFromDate = DateTime.Today;
         private DateTime? lastValidToDate = DateTime.Today;
 
@@ -64,7 +64,7 @@ namespace FMSFrontend.ViewModels
         private readonly IHttpService _httpService;
 
         public bool IsCustomDateMode => SelectedFilterOption == "自訂";
-       
+
         [ObservableProperty] private string selectedFilterOption = "今天";
         partial void OnSelectedFilterOptionChanged(string value)
         {
@@ -226,7 +226,7 @@ namespace FMSFrontend.ViewModels
                 bool ok = await _RfidService.DeleteAllRFIDWriteLogDataAsync();
                 if (ok)
                 {
-                   // _windowService.ShowMessage("清除成功");
+                    // _windowService.ShowMessage("清除成功");
                     rFIDBindmodel.BurnHistoryList.Clear(); // 清除本地列表
                     RefreshFetch(); // 重新抓資料
                 }
@@ -251,7 +251,7 @@ namespace FMSFrontend.ViewModels
         // 當頁面卸載時停止
         public void OnPageDeactivated()
         {
-          _rfidUpdater.Stop();
+            _rfidUpdater.Stop();
         }
 
         private void RefreshFetch()
@@ -306,5 +306,4 @@ namespace FMSFrontend.ViewModels
             public string TagSerial { get; set; } = "";
         }
     }
-
 }
