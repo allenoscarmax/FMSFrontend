@@ -41,7 +41,7 @@ namespace FMSFrontend.Interfaces
         void ShowRobotWindow();
 
         ReviseProcessAction? ShowReviseWindow();
-        WorkerEditResult? ShowAddWorkerWindow(List<LoginInfo> existingWorkers, string selectedName);
+        WorkerEditResult? ShowAddWorkerWindow(List<LoginInfo> existingWorkers, string selectedNumber, string selectedName);
 
         // 保留舊版無回傳功能
         void ShowSelectSharedElectrodeWindow(string targetWorkpieceName);

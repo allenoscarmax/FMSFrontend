@@ -431,7 +431,7 @@ namespace FMSFrontend.ViewModels
 
                 var loginDatas = dtos.Select(dto => new LoginInfo
                 {
-                    Name = dto.WorkerNumber,
+                    Name = dto.WorkerName,
                     Password = dto.Password
                 }).ToList();
 

@@ -70,7 +70,7 @@
 
                         <!-- 下拉清單 -->
                         <Popup x:Name="PART_Popup" Placement="Bottom" AllowsTransparency="True" Focusable="False" IsOpen="{TemplateBinding IsDropDownOpen}" PopupAnimation="Slide">
-                            <Border Margin="0,6,0,0" Background="White" BorderBrush="#CCC" BorderThickness="1" CornerRadius="10" SnapsToDevicePixels="True">
+                            <Border Margin="0,6,0,0" Background="White" BorderBrush="#CCC" BorderThickness="1" CornerRadius="10" SnapsToDevicePixels="True" Width="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
                                 <ScrollViewer CanContentScroll="True" Padding="4">
                                     <ItemsPresenter />
                                 </ScrollViewer>
