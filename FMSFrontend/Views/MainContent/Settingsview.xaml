@@ -636,7 +636,7 @@
                                                                 <!-- 欄位 -->
                                                                 <DataGrid.Columns>
                                                                     <!-- Worker Number -->
-                                                                    <DataGridTextColumn Header="Worker Number" Binding="{Binding WorkerNumber}" Width="2*">
+                                                                    <DataGridTextColumn Header="工號" Binding="{Binding WorkerNumber}" Width="2*">
                                                                         <DataGridTextColumn.ElementStyle>
                                                                             <Style TargetType="TextBlock">
                                                                                 <Setter Property="HorizontalAlignment" Value="Center" />
@@ -647,7 +647,7 @@
                                                                     </DataGridTextColumn>
 
                                                                     <!-- Worker Name：若為 null/空字串顯示 ?? -->
-                                                                    <DataGridTemplateColumn Header="Worker Name" Width="3*">
+                                                                    <DataGridTemplateColumn Header="使用者" Width="3*">
                                                                         <DataGridTemplateColumn.CellTemplate>
                                                                             <DataTemplate>
                                                                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20">

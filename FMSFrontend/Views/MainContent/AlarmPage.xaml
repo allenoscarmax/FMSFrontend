@@ -12,8 +12,6 @@
             <Setter Property="Padding" Value="6,2" />
             <Setter Property="Background" Value="#F1F1F1" />
         </Style>
-
-        <!-- 新增：Bool -> Visibility 轉換 -->
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
 
@@ -207,19 +205,10 @@
                                                             <!-- 左：日期篩選 -->
                                                             <StackPanel Orientation="Horizontal">
                                                                 <ComboBox Width="120" Height="32" Margin="10,0,0,0" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
-
-                                                                <!-- 僅在 IsCustomDateMode = true 時顯示 -->
-                                                                <StackPanel Orientation="Horizontal"
-                                                                            Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                                    <DatePicker Width="180" Height="32" Margin="8,0,0,0"
-                                                                                SelectedDate="{Binding FromDate}"
-                                                                                IsEnabled="{Binding IsCustomDateMode}"
-                                                                                Style="{StaticResource CustomDatePickerStyle}" />
+                                                                <StackPanel Orientation="Horizontal" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                                    <DatePicker Width="180" Height="32" Margin="8,0,0,0" SelectedDate="{Binding FromDate}"  IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}" />
                                                                     <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
-                                                                    <DatePicker Width="180" Height="32"
-                                                                                SelectedDate="{Binding ToDate}"
-                                                                                IsEnabled="{Binding IsCustomDateMode}"
-                                                                                Style="{StaticResource CustomDatePickerStyle}" />
+                                                                    <DatePicker Width="180" Height="32" SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}" />
                                                                 </StackPanel>
                                                             </StackPanel>
 

@@ -431,10 +431,10 @@ namespace FMSFrontend.ViewModels
         private async Task AddWorker() // 新增使用者
         {
             var existingWorkers = WorkerList
-                .Select(w => new LoginInfo { Name = w.WorkerNumber, Password = w.Psssword })
+                .Select(w => new LoginInfo { Number = w.WorkerNumber,  Name = w.WorkerName, Password = w.Psssword })
                 .ToList();
 
-            var result = _windowService.ShowAddWorkerWindow(existingWorkers, selectedName: string.Empty);
+            var result = _windowService.ShowAddWorkerWindow(existingWorkers, "","");
             if (result == null)
                 return;
 
@@ -442,7 +442,7 @@ namespace FMSFrontend.ViewModels
             {
                 bool ok = await _workerService.InsertNewWorkerDataAsync(new WorkerDto
                 {
-                    WorkerNumber = result!.Name,      // result 不為 null 才會走到這裡，所以直接用
+                    WorkerNumber = result.Number,    
                     WorkerName = result.Name,
                     Password = result.Password
                 });
@@ -473,7 +473,7 @@ namespace FMSFrontend.ViewModels
                 return;
             }
 
-            var result = _windowService.ShowAddWorkerWindow(existingWorkers, SelectedWorker.WorkerNumber);
+            var result = _windowService.ShowAddWorkerWindow(existingWorkers, SelectedWorker.WorkerNumber, SelectedWorker.WorkerName);
             if (result == null)
                 return;
 
@@ -482,7 +482,7 @@ namespace FMSFrontend.ViewModels
                 bool ok = await _workerService.UpdateWorkerDataAsync(new WorkerDto
                 {
                     Id = SelectedWorker.Id,
-                    WorkerNumber = result!.Name,      // result 不為 null 才會走到這裡，所以直接用
+                    WorkerNumber = result.Number,     
                     WorkerName = result.Name,
                     Password = result.Password
                 });

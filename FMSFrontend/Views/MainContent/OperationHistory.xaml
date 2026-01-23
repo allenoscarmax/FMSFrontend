@@ -43,6 +43,7 @@
             <Setter Property="Foreground" Value="#1F2937" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
         </Style>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
 
     <Border Background="{DynamicResource PageViewBrush}">
@@ -65,33 +66,23 @@
             <!-- 工具列 -->
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="140" />
-                    <ColumnDefinition Width="10" />
-                    <ColumnDefinition Width="200" />
-                    <ColumnDefinition Width="12" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="12" />
-                    <ColumnDefinition Width="200" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="80" />
-                    <ColumnDefinition Width="8" />
-                    <ColumnDefinition Width="80" />
+                    <ColumnDefinition Width="90" />
+                    <ColumnDefinition Width="90" />
                 </Grid.ColumnDefinitions>
 
-                <!-- 範圍選擇 -->
-                <ComboBox Grid.Column="0" Height="32" Width="120" ItemsSource="{Binding QuickRanges}" SelectedItem="{Binding SelectedQuickRange}" VerticalAlignment="Center" Style="{StaticResource PillComboBoxStyle}" />
-
-                <!-- 起始日期 -->
-                <DatePicker Grid.Column="2" Height="40"  SelectedDate="{Binding StartDate}" VerticalAlignment="Center" Style="{StaticResource CustomDatePickerStyle}"/>
-
-                <!-- 箭頭 -->
-                <TextBlock Grid.Column="4" Text="→" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" />
-
-                <!-- 結束日期 -->
-                <DatePicker Grid.Column="6" Height="40" SelectedDate="{Binding EndDate}" VerticalAlignment="Center" Style="{StaticResource CustomDatePickerStyle}"/>
-
+                <!-- 選擇日期 -->
+                <StackPanel  Grid.Column="0" Orientation="Horizontal">
+                    <ComboBox Width="120" Height="32" Margin="10,0,0,0" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <DatePicker Width="180" Height="32" Margin="8,0,0,0" SelectedDate="{Binding FromDate}"  IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}" />
+                        <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
+                        <DatePicker Width="180" Height="32" SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}" />
+                    </StackPanel>
+                </StackPanel>
+                
                 <!-- 匯出 -->
-                <Button Grid.Column="8" Command="{Binding ExportCommand}" Background="#1976D2" Foreground="White" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}">
+                <Button Grid.Column="1" Margin="5,0" Command="{Binding ExportCommand}" Background="#1976D2" Foreground="White" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <materialDesign:PackIcon Kind="Export" Width="18" Height="18" Margin="0,0,6,0" />
                         <TextBlock Text="匯出" />
@@ -99,7 +90,7 @@
                 </Button>
 
                 <!-- 清除 -->
-                <Button Grid.Column="10" Command="{Binding ClearCommand}" Background="#6B7280" Foreground="White" Padding="10,0" Margin="0,0,0,0" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}">
+                <Button Grid.Column="2"  Margin="5,0" Command="{Binding ClearCommand}" Background="#6B7280" Foreground="White" Padding="10,0" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <materialDesign:PackIcon Kind="Delete" Width="18" Height="18" Margin="0,0,6,0" />
                         <TextBlock Text="清除" />

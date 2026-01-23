@@ -347,20 +347,20 @@ namespace FMSFrontend.Services
             foreach (var it in timeline)
                 dst.Add(new TimelineItemViewModel(it));
         }
-        
-        public WorkerEditResult? ShowAddWorkerWindow(List<LoginInfo> existingWorkers, string selectedName)
+
+        public WorkerEditResult? ShowAddWorkerWindow(List<LoginInfo> existingWorkers, string selectedNumber , string selectedName)
         {
             var window = _provider.GetRequiredService<AddWorrkerWindow>();
 
             if (window.DataContext is not AddWorkerViewModel vm)
                 throw new InvalidOperationException("AddWorrkerWindow 的 DataContext 應該是 AddWorkerViewModel");
 
-            vm.Initialize(existingWorkers, selectedName);
+            vm.Initialize(existingWorkers, selectedNumber, selectedName);
 
             bool? result = window.ShowDialog();
-            if (result == true && !string.IsNullOrWhiteSpace(vm.Name))
+            if (result == true && !string.IsNullOrWhiteSpace(vm.WorkerNumber) && !string.IsNullOrWhiteSpace(vm.WorkerName))
             {
-                return new WorkerEditResult(vm.Name, vm.Password);
+                return new WorkerEditResult(vm.WorkerNumber, vm.WorkerName, vm.Password);
             }
 
             return null;
@@ -505,6 +505,6 @@ namespace FMSFrontend.Services
     {
         public UploadSheetsClosedMessage(bool value) : base(value) { }
     }
-    public record WorkerEditResult(string Name, string Password);
+    public record WorkerEditResult(string Number,string Name, string Password);
 
 }
