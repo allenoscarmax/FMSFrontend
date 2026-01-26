@@ -2,7 +2,7 @@
 using FMSFrontend.Controls.FactoryOverview;
 using FMSFrontend.Extensions;
 using FMSFrontend.Features.Services;
-using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
+//using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Helpers;
@@ -69,7 +69,6 @@ namespace FMSFrontend
             services.AddSingleton<IWorkerService, WorkerService>();
             services.AddSingleton<IAppointmentMaintenanceService, AppointmentMaintenanceService>();
             services.AddSingleton<ICommandScheduleService, CommandScheduleService>();
-            services.AddSingleton<IMachinesService, MachinesService>();
             services.AddSingleton<IAlarmService, AlarmService>();
             services.AddSingleton<IWorksheetAppService, WorksheetAppService>();
 
@@ -156,23 +155,20 @@ namespace FMSFrontend
 
             services.AddTransient<TaskListViewModel>();
             services.AddTransient<FactoryLayoutViewModel>();
-            services.AddTransient<FactoryOverviewPageViewModel>();
-
-            services.AddTransient<MachineStationViewModel>();
             services.AddTransient<SelectWorksheetWindowViewModel>();
             services.AddTransient<SelectItemWindowViewModel>();
-
 
             //Windows
             services.AddTransient<SelectSharedElectrodeViewModel>();
             services.AddTransient<UploadSheetViewModel>();
-            services.AddTransient<ProbePairViewModel>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<ShutdownWindowViewModel>();
             services.AddTransient<AddWorkerViewModel>();
             services.AddTransient<ShowMachineWindowViewModel>();
             services.AddTransient<ShowRobotViewModel>();
             services.AddTransient<ReviseProcessViewModel>();
+
+
         }
         private void RegisterViews(IServiceCollection services)
         {
@@ -189,7 +185,8 @@ namespace FMSFrontend
             services.AddTransient<WorkOrder>();
             services.AddTransient<MachineMainDetailControl>();
             services.AddTransient<TaskListControl>();
-            services.AddTransient<FactoryOverviewPage>();
+            services.AddTransient<FactoryLayoutCanvasControl>();
+            services.AddTransient<TaskListControl>();
         }
 
         private void RegisterWindows(IServiceCollection services)

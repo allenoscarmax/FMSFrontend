@@ -10,38 +10,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace FMSFrontend.ViewModels
 {
     public class FactoryOverviewPageViewModel
     {
-
-        private readonly ICommandScheduleService _commandScheduleService;
-        // === Singleton ===
-        private readonly CommandScheduleStore CommandScheduleStore;
         // ==LiveUpdater===
         public CommandScheduleLiveUpdater _commandScheduleLiveUpdater;
 
         public object FactoryLayoutContent { get; }
         public object TaskListContent { get; } = new(); // 右側先佔位
 
-        public FactoryOverviewPageViewModel(IHttpService httpService,
-            CommandScheduleStore commandScheduleStore,
-            CommandScheduleLiveUpdater commandScheduleUpdater)
+        public FactoryOverviewPageViewModel(
+            CommandScheduleLiveUpdater commandScheduleLiveUpdater,
+            FactoryLayoutCanvasControl layoutControl,
+            FactoryLayoutViewModel factoryLayoutViewModel,
+            TaskListControl taskListControl,
+            TaskListViewModel taskListViewModel)
         {
-            _commandScheduleService = new CommandScheduleService(httpService);
-            CommandScheduleStore = commandScheduleStore;
-            _commandScheduleLiveUpdater = commandScheduleUpdater;
-
-            var layout = new FactoryLayoutCanvasControl
-            {
-                DataContext = new FactoryLayoutViewModel(httpService, CommandScheduleStore)
-            };
-            var taskListControl = new TaskListControl(_commandScheduleService, commandScheduleStore);
-            taskListControl.DataContext = new TaskListViewModel(_commandScheduleService, commandScheduleStore);
-
-            FactoryLayoutContent = layout; //加入畫面
+            _commandScheduleLiveUpdater = commandScheduleLiveUpdater;
+            layoutControl.DataContext = factoryLayoutViewModel;
+            taskListControl.DataContext = taskListViewModel;
+            FactoryLayoutContent = layoutControl;
             TaskListContent = taskListControl;
         }
         public void OnPageActivated()
@@ -51,6 +43,11 @@ namespace FMSFrontend.ViewModels
         public void OnPageDeactivated()
         {
             _commandScheduleLiveUpdater.Stop();
+            // 避免 Store 訂閱造成 memory leak：Page 關閉時把子 VM Dispose 掉
+            if (FactoryLayoutContent is FrameworkElement fe1 && fe1.DataContext is IDisposable d1) 
+                d1.Dispose();
+            if (TaskListContent is FrameworkElement fe2 && fe2.DataContext is IDisposable d2) 
+                d2.Dispose();
         }
     }
 }

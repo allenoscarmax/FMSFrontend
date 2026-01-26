@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
-using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Models;
@@ -130,12 +129,16 @@ namespace FMSFrontend.ViewModels.Factory
         /// </summary>
 
 
-        public FactoryLayoutViewModel(IHttpService httpService, CommandScheduleStore commandScheduleStore)
+        public FactoryLayoutViewModel(IHttpService httpService, 
+            IMachinesService machinesService,
+            IStorageService storageService,
+            IRobotService robotService,
+            CommandScheduleStore commandScheduleStore)
         {
             _httpService = httpService;
-            _machinesService = new MachinesService(_httpService);
-            _storageService = new StorageService(_httpService);
-            _robotService = new RobotService(_httpService);
+            _machinesService = machinesService;
+            _storageService = storageService;
+            _robotService = robotService;
             _commandSchedulesStore = commandScheduleStore;
             UpdateHighlight(); // 初始化一次
             _commandSchedulesStore.CommandSchedules.PropertyChanged += (_, __) => RefreshFromStore();
