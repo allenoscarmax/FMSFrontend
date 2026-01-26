@@ -33,7 +33,7 @@
 
                     <!-- 右側按鈕：刷新 + 自動更新 -->
                     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Command="{Binding ResetClickCommand}" Grid.Row="0" HorizontalAlignment="Left" Margin="10,5,10,5" Background="#0070E0" Foreground="White" FontWeight="Bold" Cursor="Hand" BorderThickness="0" Style="{StaticResource  PrimaryButtonStyle}" Width="100" Height="37">
+                        <Button Command="{Binding ResetClickCommand}" Grid.Row="0" HorizontalAlignment="Left" Margin="10,5,10,5" Background="#0070E0" Foreground="White" FontWeight="Bold" Cursor="Hand" BorderThickness="0" Style="{StaticResource  PrimaryButtonStyle}" Width="120" Height="37">
                             <Border CornerRadius="8" Background="Transparent">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="重置" FontSize="18" VerticalAlignment="Center" />

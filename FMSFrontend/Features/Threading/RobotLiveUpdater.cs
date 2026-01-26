@@ -65,7 +65,7 @@ namespace FMSFrontend.Features.Threading
                         {
                             _store.Robot.MaterialName = ((ElectrodeDto)(e.First())).electrodeName;
                             _store.Robot.MaterialShortName =
-    "電極 : " + (_store.Robot.MaterialName ?? "").PadLeft(7)[^7..];
+                            "電極 : " + (_store.Robot.MaterialName ?? "").PadLeft(7)[^7..];
                             _store.Robot.MaterialKind = "Electrode";
                             return;
                         }
@@ -74,7 +74,7 @@ namespace FMSFrontend.Features.Threading
                         {
                             _store.Robot.MaterialName = ((WorkpieceDto)w).workpieceName;
                             _store.Robot.MaterialShortName =
-    "工件 : " + (_store.Robot.MaterialName ?? "").PadLeft(7)[^7..];
+                            "工件 : " + (_store.Robot.MaterialName ?? "").PadLeft(7)[^7..];
                             _store.Robot.MaterialKind = "Workpiece";
                             return;
                         }

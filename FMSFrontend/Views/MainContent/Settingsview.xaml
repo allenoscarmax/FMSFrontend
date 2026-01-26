@@ -82,7 +82,7 @@
                                                                     <StackPanel Orientation="Horizontal" Margin="20,0,0,0" VerticalAlignment="Center" Visibility="{Binding ShowPasswordPrompt, Converter={StaticResource BooleanToVisibilityConverter}}">
                                                                         <TextBlock FontSize="16" Text="密碼：" VerticalAlignment="Center" FontWeight="Bold" Margin="0,0,8,0" />
                                                                         <PasswordBox x:Name="ExpertPasswordBox" FontSize="16" Width="180" VerticalAlignment="Center" FontWeight="Bold" PasswordChar="*" materialDesign:TextFieldAssist.DecorationVisibility="Hidden" helpers:PasswordBoxAssistant.BindPassword="True" helpers:PasswordBoxAssistant.BoundPassword="{Binding Password, Mode=TwoWay}" />
-                                                                        <Button Content="確認" Width="84" Height="32" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding PermissionClickCommand}" />
+                                                                        <Button Content="確認" Width="120" Height="40" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding PermissionClickCommand}" />
                                                                     </StackPanel>
                                                                 </StackPanel>
                                                             </Grid>
@@ -111,7 +111,7 @@
                                                                     <TextBox Width="200" Height="26" VerticalAlignment="Center" FontSize="16"
                                                                              Text="{Binding ServerIp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                                              Foreground="Black" Padding="5,0" Style="{StaticResource UnderlineTextBoxStyle}" />
-                                                                    <Button Content="Save" Width="84" Height="32" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding SaveIPCommand}" />
+                                                                    <Button Content="確認" Width="120" Height="40" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding SaveIPCommand}" />
                                                                 </StackPanel>
                                                             </Grid>
                                                         </GroupBox>
@@ -138,7 +138,7 @@
                                                                     <ColumnDefinition Width="*" />
                                                                 </Grid.ColumnDefinitions>
 
-                                                                <Button Grid.Column="0" Content="還原" Width="84" Height="32" VerticalAlignment="Center" Background="#CCCCCC" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding RestoreSystemCommand}" />
+                                                                <Button Grid.Column="0" Content="還原" Width="120" Height="40" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding RestoreSystemCommand}" />
 
                                                                 <Border Grid.Column="1" Background="Black" />
 
@@ -155,7 +155,7 @@
                                                                     <ColumnDefinition Width="*" />
                                                                 </Grid.ColumnDefinitions>
 
-                                                                <Button Grid.Column="0" Content="重置" Width="84" Height="32" VerticalAlignment="Center" Background="#CCCCCC" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding ResetLogsCommand}" />
+                                                                <Button Grid.Column="0" Content="重置" Width="120" Height="40" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding ResetLogsCommand}" />
 
                                                                 <Border Grid.Column="1" Background="Black" />
 
@@ -190,7 +190,7 @@
                                                                     <ColumnDefinition Width="*" />
                                                                 </Grid.ColumnDefinitions>
 
-                                                                <Button Grid.Column="0" Content="設置完成" Width="84" Height="32" VerticalAlignment="Center" Background="#CCCCCC" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding CompleteRobotMaintenanceCommand}" />
+                                                                <Button Grid.Column="0" Content="設置完成" Width="120" Height="40" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding CompleteRobotMaintenanceCommand}" />
 
                                                                 <Border Grid.Column="1" Background="Black" />
 
@@ -723,10 +723,10 @@
                                                                 <!-- 🔘 按鈕區 -->
                                                                 <StackPanel Grid.Row="2" Orientation="Horizontal">
                                                                     <!-- 左灰：設定週期 -->
-                                                                    <Button Content="設定週期" Width="96" Height="32" Margin="0,0,12,0" Background="#CCCCCC" Foreground="Black" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding OpenSetPeriodDialogCommand}" />
+                                                                    <Button Content="設定週期" Width="120" Height="40" Margin="0,0,12,0" Background="#CCCCCC" Foreground="Black" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding OpenSetPeriodDialogCommand}" />
 
                                                                     <!-- 右藍：強制潤滑 -->
-                                                                    <Button Content="強制潤滑" Width="96" Height="32" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ForceLubricationCommand}" />
+                                                                    <Button Content="強制潤滑" Width="120" Height="40" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ForceLubricationCommand}" />
                                                                 </StackPanel>
                                                             </Grid>
                                                         </GroupBox>

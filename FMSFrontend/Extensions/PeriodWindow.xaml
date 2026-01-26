@@ -316,9 +316,9 @@
                             </Style>
                         </Border.Style>
                         <DockPanel>
-                            <ComboBox Width="56" ItemsSource="{Binding Hours}" SelectedItem="{Binding Hour}" FontSize="18" BorderThickness="0" Background="Transparent" />
+                            <ComboBox Width="56" ItemsSource="{Binding Hours}"  VerticalAlignment="Center" SelectedItem="{Binding Hour}" FontSize="18" BorderThickness="0" Background="Transparent" />
                             <TextBlock Text="：" FontSize="18" Margin="4,0" VerticalAlignment="Center" />
-                            <ComboBox Width="56" ItemsSource="{Binding Minutes}" SelectedItem="{Binding Minute}" FontSize="18" BorderThickness="0" Background="Transparent" />
+                            <ComboBox Width="56" ItemsSource="{Binding Minutes}"   VerticalAlignment="Center" SelectedItem="{Binding Minute}" FontSize="18" BorderThickness="0" Background="Transparent" />
                         </DockPanel>
                     </Border>
 

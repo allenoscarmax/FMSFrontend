@@ -460,7 +460,7 @@
 
                                                                                             <!-- 上方按鈕區 -->
                                                                                             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                                                                                                <Button Content="Revise" Width="80" Height="36" Background="#0070E0" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ReviseCommand}" />
+                                                                                                <Button Content="Revise" Width="120" Height="40" Background="#0070E0" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ReviseCommand}" />
                                                                                             </StackPanel>
 
                                                                                             <!-- 表格 -->
