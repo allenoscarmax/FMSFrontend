@@ -18,12 +18,12 @@ namespace FMSFrontend.Services
     {
         private readonly UserSession _userSession;
         private readonly IWindowService _windowService;
-        private readonly IOperationService _operationService;
+        private readonly IOperationMessageLogService _operationService;
 
         public AuthorizationService(
             UserSession userSession,
             IWindowService windowService,
-            IOperationService operationService)
+            IOperationMessageLogService operationService)
         {
             _userSession = userSession;
             _windowService = windowService;
@@ -33,7 +33,7 @@ namespace FMSFrontend.Services
         {
             if (_userSession.IsLoggedIn)
             {
-                _operationService.WriteAsync(Message, _userSession.UserName); // 記錄操作
+              //  _operationService.WriteAsync(Message, _userSession.UserName); // 記錄操作
                 return true;
             }
             _windowService.ShowMessage("請先登入");

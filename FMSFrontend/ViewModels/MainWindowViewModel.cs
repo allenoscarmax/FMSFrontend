@@ -39,7 +39,7 @@ namespace FMSFrontend.ViewModels
         private readonly IAlarmService _alarmService;
         private readonly IPlcService _PlcService;
         private readonly IAuthorizationService _auth;
-        private readonly IOperationService _operationService;
+        private readonly IOperationMessageLogService _operationService;
 
         public GlobalProperties _globalProperties { get; }
         public AlarmPageViewModel AlarmVM { get; }
@@ -125,7 +125,7 @@ namespace FMSFrontend.ViewModels
             IWorkerService workerService,
             IWindowService windowService,
             IAuthorizationService auth,
-            IOperationService operationService,
+            IOperationMessageLogService operationService,
             AlarmPageViewModel alarmVM, 
             RobotStore store, 
             PlcStore plcStore,
@@ -583,7 +583,7 @@ namespace FMSFrontend.ViewModels
             if (!_auth.RequireLogin())
                 return;
 
-            _ = _operationService.WriteAsync("Reset Robot", _userSession.UserName);
+         //   _ = _operationService.WriteAsync("Reset Robot", _userSession.UserName);
             
             if (!Robot.IsRobotConnected)
             {
