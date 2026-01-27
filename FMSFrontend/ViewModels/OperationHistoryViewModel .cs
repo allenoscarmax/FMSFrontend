@@ -1,6 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Dtos;
 using FMSFrontend.Interfaces;
+using FMSFrontend.Models;
+using FMSFrontend.Services;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -9,6 +13,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Windows.Data;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -21,8 +26,9 @@ namespace FMSFrontend.ViewModels
         // 內部完整資料集
         private readonly ObservableCollection<OperationRecord> _allRecords = new();
         private readonly IWindowService _windowService;
+        private readonly IOperationService _operationService;
 
-        public OperationHistoryViewModel(IWindowService windowService)
+        public OperationHistoryViewModel(IWindowService windowService, IOperationService operationService )
         {
             _windowService = windowService;
 
@@ -32,9 +38,43 @@ namespace FMSFrontend.ViewModels
             // 準備 View + 篩選器
             OperationRecords = CollectionViewSource.GetDefaultView(_allRecords);
             OperationRecords.Filter = FilterByDate;
-
+            _operationService = operationService;
+            _ = Refresh();
         }
+        private async Task Refresh() //讀取記錄檔案
+        {
+            try
+            {
+                if (FromDate is null || ToDate is null)
+                    return;
 
+                var from = FromDate.Value.Date;
+                var to = ToDate.Value.Date.AddDays(1).AddTicks(-1); // 包含當天整日
+
+                var dtos = await _operationService.ReadAsync(from, to);
+
+                _allRecords.Clear();
+                if (dtos != null)
+                {
+                    foreach (var dto in dtos)
+                    {
+                        if (dto.Time is null) continue;
+                        _allRecords.Add(new OperationRecord
+                        {
+                            Time = dto.Time.Value,
+                            User = dto.Operation ?? string.Empty,
+                            Message = dto.worksheetDone ?? string.Empty
+                        });
+                    }
+                }
+
+                RefreshFilter();
+            }
+            catch (Exception ex)
+            {
+                _windowService.ShowMessage($"讀取操作紀錄失敗：{ex.Message}");
+            }
+        }
         #region 日期篩選
         // ===== 日期篩選 =====
         public ObservableCollection<string> DateFilterOptions { get; } = new() { "今天", "前7天", "自訂" };
@@ -48,7 +88,7 @@ namespace FMSFrontend.ViewModels
         {
             IsCustomDateMode = value == "自訂";
             ApplyDateFilter(); //設定日期
-            RefreshFilter();
+            _ = Refresh();
         }
         private void ApplyDateFilter()
         {
@@ -91,7 +131,7 @@ namespace FMSFrontend.ViewModels
             {
                 _updatingDate = false;
             }
-            RefreshFilter();
+            _ = Refresh();
         }
         partial void OnToDateChanged(DateTime? value) //結束日期變更
         {
@@ -117,7 +157,7 @@ namespace FMSFrontend.ViewModels
             {
                 _updatingDate = false;
             }
-            RefreshFilter();
+            _ = Refresh();
         }
         private void RefreshFilter() => OperationRecords?.Refresh();
         private bool FilterByDate(object obj)

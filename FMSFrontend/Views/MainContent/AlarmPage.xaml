@@ -122,7 +122,7 @@
                                                                 <DataGridTemplateColumn.HeaderTemplate>
                                                                     <DataTemplate>
                                                                         <StackPanel Orientation="Horizontal">
-                                                                            <materialDesign:PackIcon Kind="AlarmLightOutline" Width="16" Height="16" Margin="0,0,6,0" />
+                                                                            <materialDesign:PackIcon Kind="AlarmLightOutline" Width="16" Height="16" Margin="0,3,6,0" />
                                                                             <TextBlock Text="錯誤代碼" />
                                                                         </StackPanel>
                                                                     </DataTemplate>
@@ -187,7 +187,7 @@
                                                 <Border CornerRadius="10" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,8">
                                                     <Grid>
                                                         <Grid.RowDefinitions>
-                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="53" />
                                                             <!-- 工具列 -->
                                                             <RowDefinition Height="*" />
                                                             <!-- 表格 -->
@@ -196,7 +196,7 @@
                                                         </Grid.RowDefinitions>
 
                                                         <!-- 🔧 工具列 -->
-                                                        <Grid Grid.Row="0" Margin="0,10,0,12">
+                                                        <Grid Grid.Row="0" Margin="0,10,0,3">
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition Width="*" />
                                                                 <ColumnDefinition Width="Auto" />
@@ -216,12 +216,12 @@
                                                             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                                                                 <Button Style="{StaticResource PrimaryButtonStyle}" Width="120" Command="{Binding ExportAlarmsCommand}">
                                                                     <StackPanel Orientation="Horizontal">
-                                                                        <materialDesign:PackIcon Kind="FileExport" Width="18" Height="18" Margin="0,0,6,0" />
+                                                                        <materialDesign:PackIcon Kind="Export" Width="18" Height="18" Margin="0,0,6,0" />
                                                                         <TextBlock Text="匯出" />
                                                                     </StackPanel>
                                                                 </Button>
 
-                                                                <Button Style="{StaticResource PrimaryButtonStyle}" Width="120" Background="#666" Margin="10,0,10,0" Command="{Binding RemoveSelectedAlarmsCommand}">
+                                                                <Button Style="{StaticResource PrimaryButtonStyle}" Width="120" Background="#444444" Margin="10,0,10,0" Command="{Binding RemoveSelectedAlarmsCommand}">
                                                                     <StackPanel Orientation="Horizontal">
                                                                         <materialDesign:PackIcon Kind="TrashCanOutline" Width="18" Height="18" Margin="0,0,6,0" />
                                                                         <TextBlock Text="刪除" />
@@ -285,7 +285,7 @@
                                                                     <DataGridTemplateColumn.HeaderTemplate>
                                                                         <DataTemplate>
                                                                             <StackPanel Orientation="Horizontal">
-                                                                                <materialDesign:PackIcon Kind="AlarmLightOutline" Width="16" Height="16" Margin="0,0,6,0" />
+                                                                                <materialDesign:PackIcon Kind="AlarmLightOutline" Width="16" Height="16" Margin="0,3,6,0" />
                                                                                 <TextBlock Text="錯誤代碼" />
                                                                             </StackPanel>
                                                                         </DataTemplate>

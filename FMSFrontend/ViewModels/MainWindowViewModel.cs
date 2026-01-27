@@ -39,7 +39,7 @@ namespace FMSFrontend.ViewModels
         private readonly IAlarmService _alarmService;
         private readonly IPlcService _PlcService;
         private readonly IAuthorizationService _auth;
-
+        private readonly IOperationService _operationService;
 
         public GlobalProperties _globalProperties { get; }
         public AlarmPageViewModel AlarmVM { get; }
@@ -95,7 +95,7 @@ namespace FMSFrontend.ViewModels
         
         public PlcStore PlcStore { get; }
         public MagazinePara MagazinePara => PlcStore.MagazinePara;
-            private readonly UserSession _userSession;
+        private readonly UserSession _userSession;
         public UserSession UserSession => _userSession;
 
 
@@ -125,6 +125,7 @@ namespace FMSFrontend.ViewModels
             IWorkerService workerService,
             IWindowService windowService,
             IAuthorizationService auth,
+            IOperationService operationService,
             AlarmPageViewModel alarmVM, 
             RobotStore store, 
             PlcStore plcStore,
@@ -139,7 +140,7 @@ namespace FMSFrontend.ViewModels
             _workerService = workerService;
             _windowService = windowService;
             _auth = auth;
-
+            _operationService = operationService;
             RobotStore = store;
             PlcStore = plcStore;
             AlarmStore = alarmStore;
@@ -581,6 +582,9 @@ namespace FMSFrontend.ViewModels
         {
             if (!_auth.RequireLogin())
                 return;
+
+            _ = _operationService.WriteAsync("Reset Robot", _userSession.UserName);
+            
             if (!Robot.IsRobotConnected)
             {
                 _windowService.ShowMessage("機器人未連線，無法執行");

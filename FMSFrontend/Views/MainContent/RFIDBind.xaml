@@ -128,7 +128,7 @@
 
                     </StackPanel>
                     <!-- 清除按鈕 -->
-                    <Button Grid.Row="1" HorizontalAlignment="Right" Width="140" Height="36" Background="#444" Foreground="White" FontSize="16" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand" Effect="{StaticResource ShadowEffect}" Command="{Binding ClearCommand}">
+                    <Button Grid.Row="1" HorizontalAlignment="Right" Width="120" Height="40" Background="#444" Foreground="White" FontSize="16" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand" Effect="{StaticResource ShadowEffect}" Command="{Binding ClearCommand}">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="12" SnapsToDevicePixels="True">

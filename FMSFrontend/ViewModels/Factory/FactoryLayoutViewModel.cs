@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
-using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Models;
@@ -17,6 +16,8 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace FMSFrontend.ViewModels.Factory
@@ -29,10 +30,8 @@ namespace FMSFrontend.ViewModels.Factory
         private readonly IStorageService _storageService;
         private readonly IRobotService _robotService;
         // === Singleton ===
-        private readonly CommandScheduleStore _commandSchedulesStore;
-        public ObservableCollection<CommandScheduleModel> commandSchedules
-            => _commandSchedulesStore.CommandSchedules.CommandSchedules;
-
+        public RobotStore RobotStore { get; }
+        public Robot Robot => RobotStore.Robot;
         public ObservableCollection<MachineNode> Machines { get; } = new();
         private static string Pack(string rel) => $"/FMSFrontend;component/{rel}";
 
@@ -104,9 +103,15 @@ namespace FMSFrontend.ViewModels.Factory
 
             var targetY = robot.Y; // 預設不動 Y
             var track = Find(TrackId);
-            if (track != null && robot.Height > 0)
-                targetY = track.Y - 160;
-
+            if (track != null)
+            {
+                if (robot.Height > 0)
+                    targetY = track.Y - 160;
+                if (track.Width + track.X < targetX)
+                    targetX = track.Width + track.X - 85;
+                if (targetX < track.X)
+                    targetX = track.X - 20;
+            }
             // 🔔 通知 View（UserControl）去做動畫
             RobotMoveRequested?.Invoke(robot, targetX, targetY);
         }
@@ -130,21 +135,35 @@ namespace FMSFrontend.ViewModels.Factory
         /// </summary>
 
 
-        public FactoryLayoutViewModel(IHttpService httpService, CommandScheduleStore commandScheduleStore)
+        public FactoryLayoutViewModel(IHttpService httpService, 
+            IMachinesService machinesService,
+            IStorageService storageService,
+            IRobotService robotService,
+            RobotStore robotStore)
         {
             _httpService = httpService;
-            _machinesService = new MachinesService(_httpService);
-            _storageService = new StorageService(_httpService);
-            _robotService = new RobotService(_httpService);
-            _commandSchedulesStore = commandScheduleStore;
+            _machinesService = machinesService;
+            _storageService = storageService;
+            _robotService = robotService;
+            RobotStore = robotStore;
             UpdateHighlight(); // 初始化一次
-            _commandSchedulesStore.CommandSchedules.PropertyChanged += (_, __) => RefreshFromStore();
+            Robot.PropertyChanged += RobotOnPropertyChanged;
+        }
+        private void RobotOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Robot.CurrentLocation))
+            {
+                RefreshFromStore();
+            }
         }
         void RefreshFromStore()
         {
-            var sorted = commandSchedules.OrderBy(x => x.Priority).ToList();
-            if (sorted != null && sorted.Count > 0)
-                SetRobotAt(sorted[0].EndPoint);
+            //var pos = Robot.CurrentLocation;
+            // 找出對應 Machine（Id 要是 EDM1 / EDM2 / EDM3 / EW1 / ASE1）
+            //var target = Machines.FirstOrDefault(m => string.Equals(m.Id, pos, StringComparison.OrdinalIgnoreCase));
+            //if (string.IsNullOrWhiteSpace(pos) )return;
+            // 呼叫移動函式
+            SetRobotAt(Robot.CurrentLocation);
         }
         public async Task SaveLayoutAsync(string path)
         {
@@ -195,19 +214,21 @@ namespace FMSFrontend.ViewModels.Factory
             //第三排 倉儲 與工作站(與倉儲同)
             int StorageH = 140; //每個倉儲圖片高度
             int StorageY = 500;   //每個倉儲圖片高度
-
+            double Width = 150;
             //讀取機台資料
             List<MachinesDto> dtos = await _machinesService.GetAllMachinesAsync() ?? [];
             for (int i = 0; i < dtos.Count; i++)
             {
                 var dto = dtos[i];
+                Width = WinWidth / dtos.Count - MarginW;
+                Width = Width > 150 ? 150 : Width;
                 Machines.Add(new MachineNode
                 {
                     Id = dto.machineName,
                     DisplayName = dto.machineName,
-                    X = X_str + WinWidth / dtos.Count * i,
+                    X = X_str + WinWidth / dtos.Count * (i + 0.5) - Width * 0.5,
                     Y = MachY,
-                    Width = WinWidth / dtos.Count - MarginW,
+                    Width = Width,
                     Height = MachH,
                     IconPath = Pack($"Image/MachineIcons/EDM.png")
                 });
@@ -278,10 +299,12 @@ namespace FMSFrontend.ViewModels.Factory
                 StorageCnt++;
             }
             //計算寬度
+            Width = WinWidth / StorageCnt - MarginW;
+            Width = Width > 150 ? 150 : Width;
             for (int i = 0; i < StorageCnt; i++)
             {
-                Machines[Machines.Count - StorageCnt + i].X = X_str + WinWidth / StorageCnt * i;
-                Machines[Machines.Count - StorageCnt + i].Width = WinWidth / StorageCnt - MarginW;
+                Machines[Machines.Count - StorageCnt + i].X = X_str + WinWidth / dtos.Count * (i + 0.5) - Width * 0.5;
+                Machines[Machines.Count - StorageCnt + i].Width = Width;
                 //  Machines[Machines.Count - StorageCnt + i].Height = WinWidth / StorageCnt - MarginW;
             }
 
@@ -294,7 +317,7 @@ namespace FMSFrontend.ViewModels.Factory
                 {
                     Id = "ROBOT",
                     DisplayName = "ROBOT",
-                    X = X_str,
+                    X = X_str+ WinWidth*0.5 - RobotW*0.5,
                     Y = TrackY - 160,
                     Width = RobotW,
                     Height = RobotH,
@@ -304,12 +327,17 @@ namespace FMSFrontend.ViewModels.Factory
                 {
                     Id = "Track",
                     DisplayName = "",
-                    X = X_str,
+                    X = 150,
                     Y = TrackY,
-                    Width = WinWidth,
+                    Width = WinWidth - 300,
                     Height = TrackH,
                     IconPath = Pack($"Image/MachineIcons/long-track.png")
                 });
+            }
+            foreach (var a in Machines)
+            {
+                if(a.Id == "Track") a.Stretch = Stretch.Uniform;
+                else a.Stretch = Stretch.Uniform;
             }
         }
         [RelayCommand]
@@ -350,6 +378,7 @@ namespace FMSFrontend.ViewModels.Factory
         public double Width { get; set; } = 120;
         public double Height { get; set; } = 120;
         public string? IconPath { get; set; }   // 直接用字串即可
+        public Stretch Stretch { get; set; }
 
         private double x;
         public double X { get => x; set { x = value; OnPropertyChanged(); } }

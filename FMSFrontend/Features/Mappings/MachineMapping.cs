@@ -71,7 +71,8 @@ namespace FMSFrontend.Features.Mappings
                     if (isElectrode)
                         return Regex.Match(Name, @"_(\d+-[A-Za-z0-9]+)").Groups[1].Value;
                     else
-                        return Regex.Match(Name, @"-(\d+_\d+-[A-Za-z]+)$").Groups[1].Value;
+                        // return Regex.Match(Name, @"-(\d+_\d+-[A-Za-z]+)$").Groups[1].Value;
+                        return Name;
                 }
             }
             catch { }

@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
-using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
@@ -137,7 +136,9 @@ namespace FMSFrontend.ViewModels.Windows
                 {
                     var ok = await _workpieceService.SetWorkpieceRestrictionByTagSerialAsync(w.SerialCode, IsLocked);
                 }
-                catch { }
+                catch {
+                    _windowService.ShowMessage("失敗");
+                }
             }
         }
 
