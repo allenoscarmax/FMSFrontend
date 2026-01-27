@@ -136,7 +136,9 @@ namespace FMSFrontend.ViewModels.Windows
                 {
                     var ok = await _workpieceService.SetWorkpieceRestrictionByTagSerialAsync(w.SerialCode, IsLocked);
                 }
-                catch { }
+                catch {
+                    _windowService.ShowMessage("失敗");
+                }
             }
         }
 

@@ -71,8 +71,8 @@ namespace FMSFrontend
             services.AddSingleton<ICommandScheduleService, CommandScheduleService>();
             services.AddSingleton<IAlarmService, AlarmService>();
             services.AddSingleton<IWorksheetAppService, WorksheetAppService>();
-
             services.AddSingleton<IAuthorizationService, AuthorizationService>();
+            services.AddSingleton<IOperationService, OperationService>();
 
 
             // === Singleton ===

@@ -302,7 +302,7 @@ namespace FMSFrontend.ViewModels
                 Status = db.status ?? "",
                 BatchNo = "",
                 PartName = "",
-                SerialCode = "",
+                SerialCode = db.tagSerial,
                 RouteNo = "",
                 WorkRestriction = db?.restriction ?? false,
                 StorageRestriction = slot.StorageRestriction

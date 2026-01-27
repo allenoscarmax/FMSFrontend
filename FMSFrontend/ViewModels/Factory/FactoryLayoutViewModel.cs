@@ -214,19 +214,21 @@ namespace FMSFrontend.ViewModels.Factory
             //第三排 倉儲 與工作站(與倉儲同)
             int StorageH = 140; //每個倉儲圖片高度
             int StorageY = 500;   //每個倉儲圖片高度
-
+            double Width = 150;
             //讀取機台資料
             List<MachinesDto> dtos = await _machinesService.GetAllMachinesAsync() ?? [];
             for (int i = 0; i < dtos.Count; i++)
             {
                 var dto = dtos[i];
+                Width = WinWidth / dtos.Count - MarginW;
+                Width = Width > 150 ? 150 : Width;
                 Machines.Add(new MachineNode
                 {
                     Id = dto.machineName,
                     DisplayName = dto.machineName,
-                    X = X_str + WinWidth / dtos.Count * i,
+                    X = X_str + WinWidth / dtos.Count * (i + 0.5) - Width * 0.5,
                     Y = MachY,
-                    Width = WinWidth / dtos.Count - MarginW,
+                    Width = Width,
                     Height = MachH,
                     IconPath = Pack($"Image/MachineIcons/EDM.png")
                 });
@@ -297,10 +299,12 @@ namespace FMSFrontend.ViewModels.Factory
                 StorageCnt++;
             }
             //計算寬度
+            Width = WinWidth / StorageCnt - MarginW;
+            Width = Width > 150 ? 150 : Width;
             for (int i = 0; i < StorageCnt; i++)
             {
-                Machines[Machines.Count - StorageCnt + i].X = X_str + WinWidth / StorageCnt * i;
-                Machines[Machines.Count - StorageCnt + i].Width = WinWidth / StorageCnt - MarginW;
+                Machines[Machines.Count - StorageCnt + i].X = X_str + WinWidth / dtos.Count * (i + 0.5) - Width * 0.5;
+                Machines[Machines.Count - StorageCnt + i].Width = Width;
                 //  Machines[Machines.Count - StorageCnt + i].Height = WinWidth / StorageCnt - MarginW;
             }
 
@@ -313,7 +317,7 @@ namespace FMSFrontend.ViewModels.Factory
                 {
                     Id = "ROBOT",
                     DisplayName = "ROBOT",
-                    X = X_str,
+                    X = X_str+ WinWidth*0.5 - RobotW*0.5,
                     Y = TrackY - 160,
                     Width = RobotW,
                     Height = RobotH,
@@ -323,9 +327,9 @@ namespace FMSFrontend.ViewModels.Factory
                 {
                     Id = "Track",
                     DisplayName = "",
-                    X = X_str,
+                    X = 150,
                     Y = TrackY,
-                    Width = WinWidth - 250,
+                    Width = WinWidth - 300,
                     Height = TrackH,
                     IconPath = Pack($"Image/MachineIcons/long-track.png")
                 });
