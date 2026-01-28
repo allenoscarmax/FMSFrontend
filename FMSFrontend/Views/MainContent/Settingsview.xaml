@@ -140,7 +140,22 @@
                                                                 <TextBlock Grid.Column="2" Text="注意：點擊還原按鈕以還原系統。此過程將刪除所有材料、表單、日誌和使用情況。" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
                                                             </Grid>
                                                         </GroupBox>
+                                                        <!-- 系統備份 -->
+                                                        <GroupBox Header="系統備份" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="1.5" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                </Grid.ColumnDefinitions>
 
+                                                                <Button Grid.Column="0" Content="備份" Width="84" Height="32"  FontSize="20" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding BackupSystemCommand}" />
+
+                                                                <Border Grid.Column="1" Background="Black" />
+
+                                                                <TextBlock Grid.Column="2" Text="注意：點擊備份資料庫。"  FontSize="20" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
+                                                            </Grid>
+                                                        </GroupBox>
                                                         <!-- 日誌重置 -->
                                                         <!--
                                                         <GroupBox Header="日誌重置" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
