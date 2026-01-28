@@ -88,7 +88,7 @@
                                                             </Grid>
                                                         </GroupBox>
 
-                                                       
+
 
                                                     </StackPanel>
                                                 </DataTemplate>
@@ -285,7 +285,7 @@
 
                                                                                                             <Border Grid.Column="1" BorderThickness="0,0,0,1" BorderBrush="#222" VerticalAlignment="Center">
                                                                                                                 <TextBox x:Name="SearchBox" BorderThickness="0" Padding="4,4,4,6" FontSize="16" Foreground="#888" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
-                                                                                                                    
+
                                                                                                                 </TextBox>
                                                                                                             </Border>
                                                                                                         </Grid>
@@ -712,7 +712,7 @@
                                                                     <TextBlock Text="{Binding LastLubricationTimeDisplay}" d:Text="1993/04/06" FontSize="16" Margin="8,0,0,0" Foreground="{DynamicResource PrimaryTextBrush}" />
                                                                 </StackPanel>
                                                                 -->
-                                                                
+
                                                                 <!-- 🔁 潤滑週期（左側標籤 + 底線文字顯示） -->
                                                                 <Grid Grid.Row="1" Margin="0,0,0,16" VerticalAlignment="Center">
                                                                     <Grid.ColumnDefinitions>
@@ -752,6 +752,23 @@
                     </ContentControl>
                 </Border>
             </Grid>
+            <!-- Busy Overlay：全畫面鎖定（覆蓋 SettingsView 這一頁） -->
+            <Grid Grid.Row="0" Grid.RowSpan="2" Panel.ZIndex="9999" Background="#80000000" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="True">
+
+                <!-- 置中提示卡 -->
+                <Border Width="420" Padding="24" Background="{DynamicResource PageViewBrush}" CornerRadius="16" HorizontalAlignment="Center" VerticalAlignment="Center" Effect="{StaticResource ShadowEffect}">
+
+                    <StackPanel>
+                        <TextBlock Text="{Binding BusyMessage}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" Margin="0,0,0,16" />
+
+                        <ProgressBar IsIndeterminate="True" Height="10" />
+
+                        <TextBlock Text="請勿關閉程式或中斷電源" Foreground="{DynamicResource PrimaryTextBrush}" Opacity="0.7" Margin="0,12,0,0" TextAlignment="Center" />
+                    </StackPanel>
+
+                </Border>
+            </Grid>
         </Grid>
+
     </Border>
 </UserControl>

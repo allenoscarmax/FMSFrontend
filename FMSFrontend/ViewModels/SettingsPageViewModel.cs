@@ -576,14 +576,15 @@ namespace FMSFrontend.ViewModels
         [RelayCommand(CanExecute = nameof(CanBackupSystem))]
         private async Task BackupSystem()
         {
+            if (!_authorizationService.RequireLoginAndWriteOperation(29))
+            {
+                return;
+            }
             IsBusy = true;
             BusyMessage = "系統備份中，請稍候...";
             try
             {
-                if (!_authorizationService.RequireLoginAndWriteOperation(20))
-                {
-                    return;
-                } 
+ 
                 var ok = await _mongoDBService.BackupDatabaseAsync();
 
                 _windowService.ShowMessage(ok ? "系統備份成功" : "系統備份失敗");
@@ -772,8 +773,15 @@ namespace FMSFrontend.ViewModels
                         _windowService.ShowMessage("潤滑週期更新失敗，請稍後再試");
                     }
                 }
+                else 
+                {
+                    _windowService.ShowMessage("無潤滑資料");
+                }
             }
-            catch { }
+            catch 
+            {
+                _windowService.ShowMessage("例外狀況");
+            }
         }
         private static string BuildPeriodDisplay(ScheduleMode mode, int[] weekly, int[] monthly, int hour, int minute)
         {
@@ -828,27 +836,11 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void RestoreSystem()
         {
+            if (!_authorizationService.RequireLoginAndWriteOperation(20))
+                return;
             // TODO: 加入系統還原邏輯，例如清除資料、表單、日誌等
             StatusMessage = "⚠️ 系統已還原，所有資料已清除";
             _windowService.ShowMessage("系統還原完成");
-        }
-
-        // === 日誌重置 ===
-        [RelayCommand]
-        private void ResetLogs()
-        {
-            // TODO: 加入清除日誌邏輯
-            StatusMessage = "🗑️ 系統日誌已清除";
-            _windowService.ShowMessage("日誌重置完成");
-        }
-
-        // === 密碼重置 ===
-        [RelayCommand]
-        private void ResetPassword()
-        {
-            // TODO: 加入密碼重置邏輯
-            StatusMessage = "🔐 權限密碼已重置";
-            _windowService.ShowMessage("密碼重置完成");
         }
 
         // === 機械手臂維護完成 ===
