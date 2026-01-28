@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Windows.Media.Animation;
 using System.Security;
 using System.Windows.Navigation;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace FMSFrontend.ViewModels
 {
@@ -34,9 +35,10 @@ namespace FMSFrontend.ViewModels
 
         // 新增：綁定系統 IP 的輸入欄位
         [ObservableProperty] private string serverIp = string.Empty;
-
+        [ObservableProperty] private string robotMaintenanceMsg = "";
         // ===== 目前的設定（當作下一次開窗的初始值）=====
         [ObservableProperty] private ScheduleMode selectedMode = ScheduleMode.None;
+
         public ObservableCollection<int> Weekly { get; } = new();   // 1~7、可負數
         public ObservableCollection<int> Monthly { get; } = new();   // 1~31、0=last、可負數
         [ObservableProperty] private int hour = 9;   // 0~23
@@ -55,9 +57,16 @@ namespace FMSFrontend.ViewModels
         private readonly IWorkerService _workerService;
         private readonly IAppointmentMaintenanceService _appointmentMaintenanceService;
         private readonly IMongoDBService _mongoDBService;
-
-        public SettingsPageViewModel(IWindowService windowService, IHttpService httpService, IMachinesService machinesService, IRobotService robotService,
-            IDevicesService devicesService, IWorkerService workerService, IAppointmentMaintenanceService appointmentMaintenanceService, IMongoDBService mongoDBService
+        private  readonly IAuthorizationService _authorizationService;
+        public SettingsPageViewModel(IWindowService windowService,
+            IHttpService httpService,
+            IMachinesService machinesService,
+            IRobotService robotService,
+            IDevicesService devicesService,
+            IWorkerService workerService,
+            IAppointmentMaintenanceService appointmentMaintenanceService,
+            IMongoDBService mongoDBService,
+            IAuthorizationService authorizationService
             )
         {
             _windowService = windowService;
@@ -69,7 +78,7 @@ namespace FMSFrontend.ViewModels
             _workerService = workerService;
             _appointmentMaintenanceService = appointmentMaintenanceService;
             _mongoDBService = mongoDBService;
-
+            _authorizationService = authorizationService;
 
             OpenSetPeriodDialogCommand = new RelayCommand(OpenPeriodDialog);
 
@@ -123,6 +132,8 @@ namespace FMSFrontend.ViewModels
 
             _workerListView = CollectionViewSource.GetDefaultView(WorkerList);
             _workerListView.Filter = FilterWorker;
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            RobotMaintenanceMsg = "上次日期" + ini.Read("Prarm", "RobotMaintenanceMsg");
         }
         // 這就是缺少的屬性，用來綁定 Tab 切換
         [ObservableProperty] private int selectedTabIndexParameter;
@@ -246,7 +257,6 @@ namespace FMSFrontend.ViewModels
                         Owner = dto.SetupUser
                     });
                 }
-
             }
             catch { }
         }
@@ -311,7 +321,8 @@ namespace FMSFrontend.ViewModels
 
                     dto.ip = newIp;
                     dto.port = newPort;
-
+                    if (!_authorizationService.RequireLoginAndWriteOperation(22))
+                        return;
                     bool ok = await _machinesService.UpdateMachinesDataAsync(dto);
                     if (!ok)
                     {
@@ -363,7 +374,9 @@ namespace FMSFrontend.ViewModels
                 }
 
                 dto.robot_IP = newIp;
-
+                if (!_authorizationService.RequireLoginAndWriteOperation(23))
+                    return;
+                
                 bool ok = await _robotService.DB_UpdateRobotDataAsync(dto);
                 if (!ok)
                 {
@@ -412,14 +425,15 @@ namespace FMSFrontend.ViewModels
 
                 dto.DeviceIP = newIp;
                 dto.DevicePort = newPort;
-                /*
+                if (!_authorizationService.RequireLoginAndWriteOperation(24))
+                    return;
                 bool ok = await _devicesService.UpdateDeviceDataAsync(dto);
                 if (!ok)
                 {
                     _windowService.ShowMessage("裝置更新失敗，請稍後再試");
                     return;
                 }
-                */
+                
                 StatusMessage = "✅ 裝置參數已更新";
 
                 // 重新載入裝置列表
@@ -439,6 +453,7 @@ namespace FMSFrontend.ViewModels
 
             try
             {
+                _authorizationService.WriteOperation(25);
                 bool ok = await _workerService.InsertNewWorkerDataAsync(new WorkerDto
                 {
                     WorkerNumber = result.Number,    
@@ -478,6 +493,8 @@ namespace FMSFrontend.ViewModels
 
             try
             {
+                if (!_authorizationService.RequireLoginAndWriteOperation(25))
+                    return;
                 bool ok = await _workerService.UpdateWorkerDataAsync(new WorkerDto
                 {
                     Id = SelectedWorker.Id,
@@ -509,6 +526,8 @@ namespace FMSFrontend.ViewModels
                     _windowService.ShowMessage("請選擇要刪除的使用者");
                     return;
                 }
+                if (!_authorizationService.RequireLoginAndWriteOperation(26))
+                    return;
                 bool ok = await _workerService.DeleteWorkerDataByIdAsync(SelectedWorker.Id);
                 if (!ok)
                 {
@@ -561,6 +580,10 @@ namespace FMSFrontend.ViewModels
             BusyMessage = "系統備份中，請稍候...";
             try
             {
+                if (!_authorizationService.RequireLoginAndWriteOperation(20))
+                {
+                    return;
+                } 
                 var ok = await _mongoDBService.BackupDatabaseAsync();
 
                 _windowService.ShowMessage(ok ? "系統備份成功" : "系統備份失敗");
@@ -685,6 +708,8 @@ namespace FMSFrontend.ViewModels
 
         private void OpenPeriodDialog()
         {
+            if (!_authorizationService.RequireLogin()) 
+                return;
             var win = new PeriodWindow
             {
                 Owner = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
@@ -716,31 +741,36 @@ namespace FMSFrontend.ViewModels
             try
             {
                 List<AppointmentMaintenanceDto> dtos = await _appointmentMaintenanceService.GetAllAppointmentMaintenanceAsync() ?? new List<AppointmentMaintenanceDto>();
-                dtos[0].IsEnabled = SelectedMode != ScheduleMode.None;
-                if (SelectedMode != ScheduleMode.None)
+                if (dtos.Count > 0)
                 {
-                    dtos[0].Type = SelectedMode switch
+                    dtos[0].IsEnabled = SelectedMode != ScheduleMode.None;
+                    if (SelectedMode != ScheduleMode.None)
                     {
-                        ScheduleMode.Daily => "daily",
-                        ScheduleMode.Weekly => "weekly",
-                        ScheduleMode.Monthly => "monthly",
-                        _ => string.Empty
-                    };
-                    if (SelectedMode == ScheduleMode.Weekly)
-                    {
-                        dtos[0].DayValues = Weekly.ToList();
+                        dtos[0].Type = SelectedMode switch
+                        {
+                            ScheduleMode.Daily => "daily",
+                            ScheduleMode.Weekly => "weekly",
+                            ScheduleMode.Monthly => "monthly",
+                            _ => string.Empty
+                        };
+                        if (SelectedMode == ScheduleMode.Weekly)
+                        {
+                            dtos[0].DayValues = Weekly.ToList();
+                        }
+                        else if (SelectedMode == ScheduleMode.Monthly)
+                        {
+                            dtos[0].DayValues = Monthly.ToList();
+                        }
+                        dtos[0].Hour = Hour;
+                        dtos[0].Minute = Minute;
                     }
-                    else if (SelectedMode == ScheduleMode.Monthly)
+                    if (!_authorizationService.RequireLoginAndWriteOperation(27))
+                        return;
+                    bool ok = await _appointmentMaintenanceService.UpdateAppointmentMaintenanceAsync(dtos[0]);
+                    if (!ok)
                     {
-                        dtos[0].DayValues = Monthly.ToList();
+                        _windowService.ShowMessage("潤滑週期更新失敗，請稍後再試");
                     }
-                    dtos[0].Hour = Hour;
-                    dtos[0].Minute = Minute;
-                }
-                bool ok = await _appointmentMaintenanceService.UpdateAppointmentMaintenanceAsync(dtos[0]);
-                if (!ok)
-                {
-                    _windowService.ShowMessage("潤滑週期更新失敗，請稍後再試");
                 }
             }
             catch { }
@@ -825,7 +855,12 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void CompleteRobotMaintenance()
         {
-            // TODO: 加入維護完成標記邏輯
+            if (!_authorizationService.RequireLoginAndWriteOperation(21))
+                return;
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            var today = DateTime.Today.ToString("yyyy/MM/dd");
+            ini.Write("Prarm", "RobotMaintenanceMsg", today);
+            RobotMaintenanceMsg = "上次維護時間: " + today;
             StatusMessage = "🤖 機械手臂維護已標記為完成";
             _windowService.ShowMessage("維護狀態已更新");
         }
@@ -1003,9 +1038,9 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void ForceLubrication()
         {
-
-
-
+            if (!_authorizationService.RequireLoginAndWriteOperation(28))
+                return;
+            //待增加
         }
 
 

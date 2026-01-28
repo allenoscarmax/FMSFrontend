@@ -187,6 +187,8 @@ namespace FMSFrontend
             services.AddTransient<TaskListControl>();
             services.AddTransient<FactoryLayoutCanvasControl>();
             services.AddTransient<TaskListControl>();
+            services.AddTransient<StorageUnitMiniControlPage>();
+            services.AddTransient<StorageUnitControlPage>();
         }
 
         private void RegisterWindows(IServiceCollection services)

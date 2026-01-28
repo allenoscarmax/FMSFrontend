@@ -218,7 +218,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void OpenUploadSheet()
         {
-            if (!_auth.RequireLoginAndWriteOperation(""))
+            if (!_auth.RequireLoginAndWriteOperation(15))
                 return;
 
             _WindowService.ShowUploadSheetWindow();

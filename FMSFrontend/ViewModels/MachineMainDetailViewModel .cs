@@ -6,6 +6,7 @@ using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
+using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Factory;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
@@ -28,7 +29,7 @@ namespace FMSFrontend.ViewModels
         private readonly IWindowService _windowService;
         private readonly IWorksheetsService _worksheetService;
         private readonly IMachinesService _machinesService;
-
+        private readonly IAuthorizationService _authorizationService;
         // === Singleton ===
         private readonly MachineStore _machineStore;
         public ObservableCollection<MachineModel> AllMachines => _machineStore.Machines;
@@ -53,10 +54,13 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
+               
                 var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
                 if (edm != null)
                 {
                     bool canctrl = !edm.OscarEdm.CanControl;
+                    if (!_authorizationService.RequireLoginAndWriteOperation(18, " " + edm.MachineName + ": " + canctrl))
+                        return;
                     await _machinesService.SetMachineCanControlAsync(edm.MachineNumber - 1, canctrl);
                     canctrlDelay = 5;
                 }
@@ -70,10 +74,13 @@ namespace FMSFrontend.ViewModels
             {
                 var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
                 if (edm != null)
+                {
+                    if (!_authorizationService.RequireLoginAndWriteOperation(19, ": " + edm.MachineName)) 
+                        return;
                     await _machinesService.ResetDispatchErrorMessageAsync(edm.MachineNumber - 1);
+                }
             }
             catch { }
-                
         }
         //[ObservableProperty] private MachineOverviewCard selectedMachine;
         [ObservableProperty] private int machineInfoTabControlSelectedIndex; //機台資訊TabControl選擇索引 
@@ -214,8 +221,7 @@ namespace FMSFrontend.ViewModels
             _machineStore = parent._machineStore;
             _worksheetService = parent._worksheetsService;
             _machinesService = parent._machinesService;
-
-           
+            _authorizationService = parent._authorizationService;
 
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
             _timer.Tick += (_, __) => RefreshFromStore();

@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
+using FMSFrontend.Services;
+
 
 
 
@@ -24,6 +26,7 @@ namespace FMSFrontend.ViewModels.Windows
         public readonly IWindowService _windowService;
         private readonly IWorksheetsService _worksheetsService;
         private readonly IMachinesService _machinesService;
+        private readonly IAuthorizationService _authorizationService;
 
         [ObservableProperty] private string deviceName = "設備名稱";
         [ObservableProperty] private MachineInfo info = new();
@@ -31,11 +34,13 @@ namespace FMSFrontend.ViewModels.Windows
         public ShowMachineWindowViewModel(
         IWindowService windowService,
         IWorksheetsService worksheetsService,
-        IMachinesService machinesService)
+        IMachinesService machinesService,
+        IAuthorizationService authorizationService)
         {
             _windowService = windowService;
             _worksheetsService = worksheetsService;
             _machinesService = machinesService;
+            _authorizationService = authorizationService;
         }
         /// <summary>
         /// 由 WindowService / 呼叫端注入哪一台機台的卡片。
@@ -172,6 +177,10 @@ namespace FMSFrontend.ViewModels.Windows
         {
             try
             {
+                if (!_authorizationService.RequireLoginAndWriteOperation(16))
+                {
+                    return;
+                }
                 List<MachinesDto> dtos = await _machinesService.GetAllMachinesAsync() ?? new();
                 MachinesDto dto = dtos.FirstOrDefault(x => x.machineName == DeviceName)!;
                 dto.onDeckElectrodeSerial = "";
@@ -185,6 +194,10 @@ namespace FMSFrontend.ViewModels.Windows
         {
             try
             {
+                if (!_authorizationService.RequireLoginAndWriteOperation(17))
+                {
+                    return;
+                }
                 List<MachinesDto> dtos = await _machinesService.GetAllMachinesAsync() ?? new();
                 MachinesDto dto = dtos.FirstOrDefault(x => x.machineName == DeviceName)!;
                 dto.onDeckWorkpieceSerial = "";

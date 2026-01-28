@@ -22,6 +22,7 @@ namespace FMSFrontend.ViewModels
     {
         private readonly IWindowService _windowService;
         private readonly IAlarmService _alarmService;
+        private readonly IAuthorizationService _auth;
         public AlarmStore AlarmStore { get; }
         public AlarmGroupModel AlarmGroup => AlarmStore.AlarmGroup;
 
@@ -92,16 +93,18 @@ namespace FMSFrontend.ViewModels
 
         // ===================== End Pagination =====================
 
-        public AlarmPageViewModel(IWindowService windowService, IAlarmService alarmService, AlarmStore alarmStore)
+        public AlarmPageViewModel(IWindowService windowService, 
+            IAlarmService alarmService,
+            IAuthorizationService authorizationService, 
+            AlarmStore alarmStore)
         {
             _windowService = windowService;
             _alarmService = alarmService;
-            AlarmStore = alarmStore;
 
+            AlarmStore = alarmStore;
+            _auth = authorizationService;
 
             AlarmStore.AlarmGroup.PropertyChanged += (_, __) => RefreshFromStore();
-
-            selectedFilterOption = DateFilterOptions.FirstOrDefault(); // 預設第一個
 
             // ---- Demo：目前警報 ----
             //CurrentAlarms.Add(new AlarmItem { Time = DateTime.Parse("2025/06/23 16:19:19"), Code = "HINT_007", Message = "!", Level = "HINT", Source = "EDM02S" });
@@ -189,7 +192,7 @@ namespace FMSFrontend.ViewModels
 
         // ====== 日期篩選 ======
         private bool _updatingDate;
-        partial void OnSelectedFilterOptionChanged(string? value) //選擇 今日、7日 或 自訂
+        partial void OnSelectedFilterOptionChanged(string value) //選擇 今日、7日 或 自訂
         {
             IsCustomDateMode = value == "自訂";
             ApplyDateFilter(); //設定日期
@@ -285,6 +288,8 @@ namespace FMSFrontend.ViewModels
             if (!confirm) return;
             if (FromDate != null && ToDate != null)
             {
+                if (!_auth.RequireLoginAndWriteOperation(11))
+                    return;
                 bool ok = await _alarmService.RemoveErrorMessageLogByDateTimeAsync(FromDate.Value, ToDate.Value);
                 if (!ok)
                 {
