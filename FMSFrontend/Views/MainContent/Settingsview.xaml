@@ -149,11 +149,11 @@
                                                                     <ColumnDefinition Width="*" />
                                                                 </Grid.ColumnDefinitions>
 
-                                                                <Button Grid.Column="0" Content="備份" Width="84" Height="32"  FontSize="20" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding BackupSystemCommand}" />
+                                                                <Button Grid.Column="0" Content="備份" Width="120" Height="40"  FontSize="20" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding BackupSystemCommand}" />
 
                                                                 <Border Grid.Column="1" Background="Black" />
 
-                                                                <TextBlock Grid.Column="2" Text="注意：點擊備份資料庫。"  FontSize="20" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
+                                                                <TextBlock Grid.Column="2" Text="注意：點擊備份資料庫。" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
                                                             </Grid>
                                                         </GroupBox>
                                                         <!-- 日誌重置 -->
