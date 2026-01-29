@@ -7,12 +7,16 @@ using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
+using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Windows.Data;
+using static FMSFrontend.ViewModels.OperationHistoryViewModel;
 using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 
 namespace FMSFrontend.ViewModels
@@ -22,6 +26,7 @@ namespace FMSFrontend.ViewModels
     {
         private readonly IWindowService _windowService;
         private readonly IAlarmService _alarmService;
+        private readonly IAuthorizationService _auth;
         public AlarmStore AlarmStore { get; }
         public AlarmGroupModel AlarmGroup => AlarmStore.AlarmGroup;
 
@@ -36,17 +41,11 @@ namespace FMSFrontend.ViewModels
         private int selectedTabIndexParameter = 0; // 預設選「目前警報」
 
         // ===== 日期篩選 =====
-        public ObservableCollection<string> DateFilterOptions { get; } =
-            new() { "今天", "前7天", "自訂" };
-
-        [ObservableProperty] private string? selectedFilterOption = "今天";
-        [ObservableProperty] private DateTime? fromDate = DateTime.Today;  // DatePicker 友善
+        public ObservableCollection<string> DateFilterOptions { get; } = new() { "今天", "前7天", "自訂" };
+        [ObservableProperty] private string selectedFilterOption = "今天";
+        [ObservableProperty] private DateTime? fromDate = DateTime.Today;
         [ObservableProperty] private DateTime? toDate = DateTime.Today;
         [ObservableProperty] private bool isCustomDateMode;
-
-        private DateTime? _lastValidFromDate = DateTime.Today;
-        private DateTime? _lastValidToDate = DateTime.Today;
-
         // ===== 資料來源 =====
         public ObservableCollection<AlarmItem> CurrentAlarms { get; } = new();
         public ObservableCollection<AlarmItem> HistoryAlarms { get; } = new();
@@ -98,16 +97,18 @@ namespace FMSFrontend.ViewModels
 
         // ===================== End Pagination =====================
 
-        public AlarmPageViewModel(IWindowService windowService, IAlarmService alarmService, AlarmStore alarmStore)
+        public AlarmPageViewModel(IWindowService windowService,
+            IAlarmService alarmService,
+            IAuthorizationService authorizationService,
+            AlarmStore alarmStore)
         {
             _windowService = windowService;
             _alarmService = alarmService;
-            AlarmStore = alarmStore;
 
+            AlarmStore = alarmStore;
+            _auth = authorizationService;
 
             AlarmStore.AlarmGroup.PropertyChanged += (_, __) => RefreshFromStore();
-
-            selectedFilterOption = DateFilterOptions.FirstOrDefault(); // 預設第一個
 
             // ---- Demo：目前警報 ----
             //CurrentAlarms.Add(new AlarmItem { Time = DateTime.Parse("2025/06/23 16:19:19"), Code = "HINT_007", Message = "!", Level = "HINT", Source = "EDM02S" });
@@ -122,7 +123,7 @@ namespace FMSFrontend.ViewModels
             HistoryAlarms.CollectionChanged += (_, __) => ApplyFilter();
 
             // 預設區間 + 初次過濾/分頁
-            ApplyDatePreset();
+            ApplyDateFilter();
             ApplyFilter();
 
 
@@ -141,7 +142,7 @@ namespace FMSFrontend.ViewModels
         }
         void RefreshFromStore() // 從 AlarmStore 更新目前警報
         {
-            
+
             if (SelectedTabIndexParameter == 0)
             {
                 for (int i = 0; i < AlarmGroup.AlarmModels.Count; i++)
@@ -173,86 +174,166 @@ namespace FMSFrontend.ViewModels
             try
             {
                 if (FromDate == null || ToDate == null) return;
-                
-              List<ErrorMessageLogDto> dtos = await _alarmService.GetErrorMessageLogByDateTimeAsync(FromDate.Value, ToDate.Value.AddDays(1))
-                 ?? new List<ErrorMessageLogDto>();
-              HistoryAlarms.Clear();
-              foreach (var dto in dtos)
-              {
-                  HistoryAlarms.Add(new AlarmItem
-                  {
-                      Time = dto.TimeStamp,
-                      Code = dto.ErrorCode,
-                      Message = dto.MessageCn,
-                      Level = GetLevel(dto.ErrorCode),
-                      Source = ""
-                  });
-              }
-              
+
+                List<ErrorMessageLogDto> dtos = await _alarmService.GetErrorMessageLogByDateTimeAsync(FromDate.Value, ToDate.Value.AddDays(1))
+                   ?? new List<ErrorMessageLogDto>();
+                HistoryAlarms.Clear();
+                foreach (var dto in dtos)
+                {
+                    HistoryAlarms.Add(new AlarmItem
+                    {
+                        Time = dto.TimeStamp,
+                        Code = dto.ErrorCode,
+                        Message = dto.MessageCn,
+                        Level = GetLevel(dto.ErrorCode),
+                        Source = ""
+                    });
+                }
+
             }
             catch { }
         }
 
-        // ====== 事件：選單/日期變更 ======
-        partial void OnSelectedFilterOptionChanged(string? value)
+        // ====== 日期篩選 ======
+        private bool _updatingDate;
+        partial void OnSelectedFilterOptionChanged(string value) //選擇 今日、7日 或 自訂
         {
             IsCustomDateMode = value == "自訂";
-            ApplyDatePreset();
+            ApplyDateFilter(); //設定日期
             ApplyFilter();
             _ = RefreshFromDate();
         }
-
-        partial void OnFromDateChanged(DateTime? value)
+        private void ApplyDateFilter()
         {
-            if (value == null || ToDate == null) { _lastValidFromDate = value; return; }
-
-            if (value > ToDate)
+            _updatingDate = true;
+            switch (SelectedFilterOption)
             {
-                _windowService.ShowMessage("開始日期不能大於結束日期");
-                FromDate = _lastValidFromDate;
-                return;
+                case "今天":
+                    FromDate = DateTime.Today; ToDate = DateTime.Today; break;
+                case "前7天":
+                    FromDate = DateTime.Today.AddDays(-6); ToDate = DateTime.Today; break;
+                case "自訂":
+                    FromDate = DateTime.Today.AddMonths(-1); ToDate = DateTime.Today; break;
+                default: break; // 保留使用者輸入
             }
-            if ((ToDate - value)?.TotalDays > 31)
-            {
-                _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
-                FromDate = _lastValidFromDate;
-                return;
-            }
-
-            _lastValidFromDate = value;
-            ApplyFilter();
-           _ = RefreshFromDate();
+            _updatingDate = false;
         }
-
-        partial void OnToDateChanged(DateTime? value)
+        partial void OnFromDateChanged(DateTime? value) //開始日期變更
         {
-            if (value == null || FromDate == null) { _lastValidToDate = value; return; }
-
-            if (value < FromDate)
+            if (_updatingDate || value == null || ToDate == null) return;
+            _updatingDate = true;
+            try
             {
-                _windowService.ShowMessage("結束日期不能小於開始日期");
-                ToDate = _lastValidToDate;
-                return;
+                var today = DateTime.Today;
+                var from = value.Value.Date;
+                var to = ToDate.Value.Date;
+                //日期邏輯判斷
+                if (from > today) from = today;         // 封頂今天
+                if (to > today) to = today;             // 封頂今天
+                if (from > to) to = from.AddMonths(1);  // 如果開始日大於結束日，調整結束日為開始日加一個月
+                if (to > from.AddMonths(1))             // 一個月範圍限制
+                {
+                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    to = from.AddMonths(1);
+                }
+                if (to > today) to = today; // 避免被 AddMonths 推到未來
+                FromDate = from;
+                ToDate = to;
             }
-            if ((value - FromDate)?.TotalDays > 31)
+            finally
             {
-                _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
-                ToDate = _lastValidToDate;
-                return;
+                _updatingDate = false;
             }
-
-            _lastValidToDate = value;
+            ApplyFilter();
+            _ = RefreshFromDate();
+        }
+        partial void OnToDateChanged(DateTime? value) //結束日期變更
+        {
+            if (_updatingDate || value == null || FromDate == null) return;
+            _updatingDate = true;
+            try
+            {
+                var today = DateTime.Today;
+                var to = value.Value.Date;
+                var from = FromDate.Value.Date;
+                if (to > today) to = today; // 封頂今天（結束日不能超過今天）
+                if (to < from) from = to.AddMonths(-1); // 如果結束日小於開始日，調整開始日為結束日減一個月
+                if (from < to.AddMonths(-1)) // 一個月範圍限制
+                {
+                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    from = to.AddMonths(-1);
+                }
+                if (from > today) from = today; // 避免 from 被推到未來（理論上不會，但保險）
+                FromDate = from;
+                ToDate = to;
+            }
+            finally
+            {
+                _updatingDate = false;
+            }
             ApplyFilter();
             _ = RefreshFromDate();
         }
 
         // ====== Commands（仍可用） ======
+        /*[RelayCommand]
+
+       private void ExportAlarms()
+       {
+           // 以 _historyView 的目前過濾結果計數
+           var count = _historyView.Cast<AlarmItem>().Count();
+           _windowService.ShowMessage($"已匯出 {count} 筆歷史警報（示意）");
+       }*/
         [RelayCommand]
+
         private void ExportAlarms()
         {
-            // 以 _historyView 的目前過濾結果計數
-            var count = _historyView.Cast<AlarmItem>().Count();
-            _windowService.ShowMessage($"已匯出 {count} 筆歷史警報（示意）");
+            // 匯出目前「篩選後」的資料
+            var rows = _historyView.Cast<AlarmItem>().ToList();
+            if (rows.Count == 0)
+            {
+                _windowService.ShowMessage("目前沒有可匯出的資料。");
+                return;
+            }
+
+            var dlg = new SaveFileDialog
+            {
+                Title = "匯出檔案",
+                Filter = "CSV 檔 (*.csv)|*.csv",
+                FileName = $"AlarmHistory_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+            };
+
+            if (dlg.ShowDialog() == true)
+            {
+                try
+                {
+                    using var sw = new StreamWriter(dlg.FileName, false, System.Text.Encoding.UTF8);
+                    // 讀取 標題列 然後寫入 
+                    // 寫入正確的標頭
+                    sw.WriteLine("時間,錯誤代碼,訊息內容");
+
+                    foreach (var r in rows)
+                    {
+                        // CSV 簡單轉義（用雙引號包起來）
+                        string t = r.Time.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+                        string code = CsvEscape(r.Code);
+                        string message = CsvEscape(r.Message);
+                        sw.WriteLine($"\"{t}\",\"{code}\",\"{message}\"");
+                    }
+
+                    _windowService.ShowMessage("匯出完成。");
+                }
+                catch (Exception ex)
+                {
+                    _windowService.ShowMessage($"匯出失敗：{ex.Message}");
+                }
+            }
+        }
+
+        private static string CsvEscape(string? s)
+        {
+            if (string.IsNullOrEmpty(s)) return string.Empty;
+            return s.Replace("\"", "\"\"");
         }
 
         [RelayCommand]
@@ -263,6 +344,8 @@ namespace FMSFrontend.ViewModels
             if (!confirm) return;
             if (FromDate != null && ToDate != null)
             {
+                if (!_auth.RequireLoginAndWriteOperation(11))
+                    return;
                 bool ok = await _alarmService.RemoveErrorMessageLogByDateTimeAsync(FromDate.Value, ToDate.Value);
                 if (!ok)
                 {
@@ -284,20 +367,7 @@ namespace FMSFrontend.ViewModels
         }
 
         // ====== Helpers ======
-        private void ApplyDatePreset()
-        {
-            switch (SelectedFilterOption)
-            {
-                case "今天":
-                    FromDate = DateTime.Today; ToDate = DateTime.Today; break;
-                case "前7天":
-                    FromDate = DateTime.Today.AddDays(-6); ToDate = DateTime.Today; break;
-                case "自訂":
-                default: break; // 保留使用者輸入
-            }
-            _lastValidFromDate = FromDate;
-            _lastValidToDate = ToDate;
-        }
+
 
         // ICollectionView 的 Filter（供 _historyView 使用）
         private bool FilterByDate(object obj) => obj is AlarmItem a && InRange(a);

@@ -14,7 +14,7 @@ namespace FMSFrontend.ViewModels.Windows
         [ObservableProperty]
         private bool _isRobotRunning = false;
         [ObservableProperty]
-        private string _shutdownMessage ="";
+        private string _shutdownMessage = "";
 
         public ShutdownWindowViewModel()
         {
@@ -31,17 +31,11 @@ namespace FMSFrontend.ViewModels.Windows
         [RelayCommand]
         private void ShutdownComfirm()
         {
-            if (Application.Current.MainWindow?.DataContext is FMSFrontend.ViewModels.MainWindowViewModel mainVM)
-            {
-                mainVM.SaveCurrentStoragePageType();
-            }
             System.Windows.Application.Current.Shutdown();
-            // 執行關機邏輯
         }
         [RelayCommand]
         private void CloseWindow(Window window)
         {
-
             window?.Close();
         }
 
