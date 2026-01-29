@@ -34,7 +34,7 @@ namespace FMSFrontend.Services
             _userSession = userSession;
             _windowService = windowService;
             _operationService = operationService;
-             ReadMsgTable();
+            ReadMsgTable();
         }
         public bool RequireLoginAndWriteOperation(int No, string Note = "")
         {
@@ -89,7 +89,7 @@ namespace FMSFrontend.Services
                 _windowService.ShowMessage("寫入失敗");
             }
         }
-        void ReadMsgTable( )
+        void ReadMsgTable()
         {
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             int num = Convert.ToInt16(ini.Read("Prarm", "Language"));
