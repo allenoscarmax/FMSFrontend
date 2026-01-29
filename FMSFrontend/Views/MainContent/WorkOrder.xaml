@@ -6,7 +6,7 @@
         <local:BoolToIconConverter x:Key="BoolToIconConverter" />
         <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <Style x:Key="EDMWorkOrderGridStyle" TargetType="DataGrid" BasedOn="{StaticResource ModernFlatDataGridStyle}">
             <Setter Property="AutoGenerateColumns" Value="False" />
             <Setter Property="IsReadOnly" Value="True" />
@@ -103,9 +103,9 @@
 
             <!-- Tabs -->
             <TabControl Grid.Row="1" Tag="MainTab" SelectedIndex="{Binding SelectedTabIndexParameter}" Style="{StaticResource FlatTabControlStyle}" Height="40" Margin="0,8,0,0" Background="Transparent" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}">
-                <TabItem Header="New/新建" Tag="#2779A7" />
+                <TabItem Header="新工單" Tag="#2779A7" />
                 <TabItem Header="EDM" Tag="#2779A7" />
-                <TabItem Header="Failure/失敗" Tag="#2779A7" />
+                <TabItem Header="失敗工單" Tag="#2779A7" />
             </TabControl>
 
             <!-- 外部已經統一套好卡片框 -->
@@ -134,7 +134,7 @@
                                                             <Border CornerRadius="8" Background="Transparent">
                                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                                     <materialDesign:PackIcon Kind="Upload" Width="20" Height="20" Margin="0,0,6,0" />
-                                                                    <TextBlock Text="Upload/上傳" FontSize="18" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="上傳工單" FontSize="18" VerticalAlignment="Center" />
                                                                 </StackPanel>
                                                             </Border>
                                                         </Button>
@@ -460,7 +460,7 @@
 
                                                                                             <!-- 上方按鈕區 -->
                                                                                             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                                                                                                <Button Content="Revise" Width="80" Height="36" Background="#0070E0" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ReviseCommand}" />
+                                                                                                <Button Content="Revise" Width="120" Height="40" Background="#0070E0" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ReviseCommand}" />
                                                                                             </StackPanel>
 
                                                                                             <!-- 表格 -->
@@ -532,13 +532,13 @@
 
                                                                                             <!-- 上方日期篩選器 -->
                                                                                             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
-
-                                                                                                <ComboBox Width="120" Height="32" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" Margin="0,0,12,0" />
-                                                                                                <DatePicker SelectedDate="{Binding FromDate}" IsEnabled="{Binding IsCustomDateMode}" Width="150" Height="28" />
-                                                                                                <TextBlock Text="→" FontSize="20" VerticalAlignment="Center" Margin="12,0" />
-                                                                                                <DatePicker SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" Width="150" Height="28" />
+                                                                                                <ComboBox Width="120" Height="32" Margin="10,0,0,0" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
+                                                                                                <StackPanel Orientation="Horizontal" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                                                                    <DatePicker Width="180" Height="32" Margin="8,0,0,0" SelectedDate="{Binding FromDate}"  IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}" />
+                                                                                                    <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
+                                                                                                    <DatePicker Width="180" Height="32" SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}" />
+                                                                                                </StackPanel>
                                                                                             </StackPanel>
-
                                                                                             <!-- 表格 -->
                                                                                             <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
                                                                                                 <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" behaviors:RowDetailsToggleBehavior.KeepSelection="False" behaviors:RowDetailsToggleBehavior.ToggleOnRowClick="True"  SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource EDMWorkOrderGridStyle}" RowDetailsTemplate="{StaticResource EDMRowDetailsTemplate}">
