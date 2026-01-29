@@ -103,28 +103,18 @@
                                                 <DataTemplate>
                                                     <StackPanel>
                                                         <!-- 系統 IP 位址 -->
-                                                        <GroupBox Header="系統 IP 位址" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
+                                                        <GroupBox Header="系統IP位址" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
                                                             <Grid>
                                                                 <Grid.ColumnDefinitions>
-                                                                    <!-- 名稱欄 -->
                                                                     <ColumnDefinition Width="Auto" />
-                                                                    <!-- 分隔線欄 -->
                                                                     <ColumnDefinition Width="1.5" />
-                                                                    <!-- 內容欄 -->
-                                                                    <ColumnDefinition Width="*" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="Auto" />
                                                                 </Grid.ColumnDefinitions>
-
-                                                                <!-- 名稱 -->
-                                                                <TextBlock Grid.Column="0" Text="IP位址" VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,15,0" />
-
-                                                                <!-- 分隔線 -->
+                                                                <Button Grid.Column="0" Content="設定" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding SaveIPCommand}" />
                                                                 <Border Grid.Column="1" Background="Black" />
-
-                                                                <!-- 內容：輸入框 + 按鈕 -->
-                                                                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
-                                                                    <TextBox Width="200" Height="30" VerticalAlignment="Center" FontSize="20" Text="{Binding ServerIp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="Black" Padding="5,0" Style="{StaticResource UnderlineTextBoxStyle}" />
-                                                                    <Button Content="確認" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding SaveIPCommand}" />
-                                                                </StackPanel>
+                                                                <TextBlock Grid.Column="2" Text="IP位址:" TextWrapping="Wrap" VerticalAlignment="Center"  FontSize="20"  FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="10,0,20,0"/>
+                                                                <TextBox Grid.Column="3"  Width="200" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontSize="20" Text="{Binding ServerIp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="Black" Padding="5,0" Style="{StaticResource UnderlineTextBoxStyle}" />
                                                             </Grid>
                                                         </GroupBox>
                                                         <!-- 系統還原 -->
@@ -204,7 +194,10 @@
                                                                 <Border Grid.Column="1" Background="Black" />
                                                                 <StackPanel Grid.Column="2" Orientation="Vertical" Margin="8,0,0,0">
                                                                     <TextBlock Text="注意：如果系統顯示機器人的維護警報，請聯繫 FANUC 進行維護。" TextWrapping="Wrap" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" />
-                                                                    <TextBlock Text="{Binding RobotMaintenanceMsg}" FontSize="20" Foreground="Gray" Margin="0,10" />
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBlock Text="上次維護時間：" FontSize="20" Foreground="Black" Margin="0,10" />
+                                                                        <TextBlock Text="{Binding RobotMaintenanceMsg}" FontSize="20" Foreground="Black" Margin="0,10" />
+                                                                    </StackPanel>
                                                                 </StackPanel>
                                                             </Grid>
                                                         </GroupBox>
@@ -753,7 +746,7 @@
                 </Border>
             </Grid>
             <!-- Busy Overlay：全畫面鎖定（覆蓋 SettingsView 這一頁） -->
-            <Grid Grid.Row="0" Grid.RowSpan="2" Panel.ZIndex="9999" Background="#80000000" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="True">
+            <Grid Grid.Row="0" Grid.RowSpan="2" Panel.ZIndex="9999" Background="#80000000" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="True" d:Visibility="Collapsed">
 
                 <!-- 置中提示卡 -->
                 <Border Width="420" Padding="24" Background="{DynamicResource PageViewBrush}" CornerRadius="16" HorizontalAlignment="Center" VerticalAlignment="Center" Effect="{StaticResource ShadowEffect}">

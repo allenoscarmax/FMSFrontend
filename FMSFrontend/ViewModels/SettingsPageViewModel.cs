@@ -133,7 +133,7 @@ namespace FMSFrontend.ViewModels
             _workerListView = CollectionViewSource.GetDefaultView(WorkerList);
             _workerListView.Filter = FilterWorker;
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-            RobotMaintenanceMsg = "上次日期" + ini.Read("Prarm", "RobotMaintenanceMsg");
+            RobotMaintenanceMsg = ini.Read("Prarm", "RobotMaintenanceMsg");
         }
         // 這就是缺少的屬性，用來綁定 Tab 切換
         [ObservableProperty] private int selectedTabIndexParameter;
@@ -159,7 +159,7 @@ namespace FMSFrontend.ViewModels
                 case 4: //保養 
                     int[] week = { 1, 3, 5, 7 };
                     PeriodDisplay = BuildPeriodDisplay(ScheduleMode.Weekly, week, [0], 10, 12);
-                    // _ = AppointmentMaintenanceRefresh();
+                     _ = AppointmentMaintenanceRefresh();
                     break;
             }
         }
@@ -852,7 +852,7 @@ namespace FMSFrontend.ViewModels
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             var today = DateTime.Today.ToString("yyyy/MM/dd");
             ini.Write("Prarm", "RobotMaintenanceMsg", today);
-            RobotMaintenanceMsg = "上次維護時間: " + today;
+            RobotMaintenanceMsg = today;
             StatusMessage = "🤖 機械手臂維護已標記為完成";
             _windowService.ShowMessage("維護狀態已更新");
         }

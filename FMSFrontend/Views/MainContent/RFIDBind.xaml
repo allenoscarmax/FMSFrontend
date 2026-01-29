@@ -29,42 +29,86 @@
             </StackPanel>
 
             <!-- 🔘 按鈕列 -->
-            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,10">
-                <Button Width="240" Height="78" Background="#0B65CC" Foreground="White" FontSize="18" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Margin="0,0,30,0" Effect="{StaticResource ShadowEffect}" Command="{Binding OpenMaterialTypeSelectCommand}">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="12" SnapsToDevicePixels="True">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
-                            </Border>
+            <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="10,10,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-                            <ControlTemplate.Triggers>
-                                <!-- Hover -->
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="#0055C7" />
-                                </Trigger>
+                <!-- 左側：物料燒錄、物料讀取 -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
+                    <Button Width="240" Height="78" Background="#0B65CC" Foreground="White" FontSize="18" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Margin="0,0,30,0" Effect="{StaticResource ShadowEffect}" Command="{Binding OpenMaterialTypeSelectCommand}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="12" SnapsToDevicePixels="True">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                                </Border>
 
-                                <!-- Pressed -->
-                                <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="#003F9E" />
-                                </Trigger>
+                                <ControlTemplate.Triggers>
+                                    <!-- Hover -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#0055C7" />
+                                    </Trigger>
 
-                                <!-- Disabled -->
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter TargetName="border" Property="Background" Value="#CCC" />
-                                    <Setter Property="Foreground" Value="#888" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Button.Template>
+                                    <!-- Pressed -->
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#003F9E" />
+                                    </Trigger>
 
-                    <!-- 內容區 -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <materialDesign:PackIcon Kind="DatabaseImport" Width="36" Height="36" Margin="0,0,10,0" />
-                        <TextBlock Text="物料燒錄" VerticalAlignment="Center" FontSize="24" />
-                    </StackPanel>
-                </Button>
+                                    <!-- Disabled -->
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="border" Property="Background" Value="#CCC" />
+                                        <Setter Property="Foreground" Value="#888" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
 
-                <Button Width="240" Height="78" Background="#0066D9" Foreground="White" FontSize="18" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Effect="{StaticResource ShadowEffect}" Command="{Binding ReadMaterialInformationCommand}" >
+                        <!-- 內容區 -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="DatabaseImport" Width="36" Height="36" Margin="0,0,10,0" />
+                            <TextBlock Text="物料燒錄" VerticalAlignment="Center" FontSize="24" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button Width="240" Height="78" Background="#0066D9" Foreground="White" FontSize="18" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Effect="{StaticResource ShadowEffect}" Command="{Binding ReadMaterialInformationCommand}" >
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="12" SnapsToDevicePixels="True">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                                </Border>
+
+                                <ControlTemplate.Triggers>
+                                    <!-- Hover -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#0055C7" />
+                                    </Trigger>
+
+                                    <!-- Pressed -->
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#003F9E" />
+                                    </Trigger>
+
+                                    <!-- Disabled -->
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="border" Property="Background" Value="#CCC" />
+                                        <Setter Property="Foreground" Value="#888" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+
+                        <!-- 內容 -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="BarcodeScan" Width="36" Height="36" Margin="0,0,10,0" />
+                            <TextBlock Text="物料讀取" VerticalAlignment="Center" FontSize="24" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- 右側：重新連線 -->
+                <Button Grid.Column="2" Width="240" Margin="0,0,0,0" Height="78" Background="#0066D9" Foreground="White" FontSize="18" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Effect="{StaticResource ShadowEffect}" Command="{Binding BalluffResetCommand}" HorizontalAlignment="Right" >
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="12" SnapsToDevicePixels="True">
@@ -93,12 +137,11 @@
 
                     <!-- 內容 -->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <materialDesign:PackIcon Kind="BarcodeScan" Width="36" Height="36" Margin="0,0,10,0" />
-                        <TextBlock Text="物料讀取" VerticalAlignment="Center" FontSize="24" />
+                        <materialDesign:PackIcon Kind="Refresh" Width="36" Height="36" Margin="0,0,10,0" />
+                        <TextBlock Text="Tag重新連線" VerticalAlignment="Center" FontSize="24" />
                     </StackPanel>
                 </Button>
-
-            </StackPanel>
+            </Grid>
 
             <!-- 📦 主內容區 -->
             <Border Grid.Row="2" Background="#FFFFFF" CornerRadius="10" Padding="15" BorderBrush="#DDD" BorderThickness="1" Margin="0,10,0,0" Grid.ColumnSpan="2">
