@@ -14,7 +14,7 @@ namespace FMSFrontend.ViewModels.Windows
         [ObservableProperty]
         private bool _isRobotRunning = false;
         [ObservableProperty]
-        private string _shutdownMessage ="";
+        private string _shutdownMessage = "";
 
         public ShutdownWindowViewModel()
         {

@@ -28,11 +28,11 @@ namespace FMSFrontend.ViewModels.Windows
         private readonly IAuthorizationService _authorizationService;
 
         // 空畫面
-        public ShowMaterialWindowViewModel(IWindowService windowService, 
+        public ShowMaterialWindowViewModel(IWindowService windowService,
         IElectrodeService electrodeService,
         IWorkpieceService workpieceService,
         IProbeService probeService,
-        IStorageService storageService, 
+        IStorageService storageService,
         IAuthorizationService authorizationService)
         {
             Kind = MaterialKind.None;
@@ -118,12 +118,12 @@ namespace FMSFrontend.ViewModels.Windows
                 try
                 {
                     bool ok;
-                    if (!_authorizationService.RequireLoginAndWriteOperation(12, " " + SlotCode +  ": " + IsLocked.ToString()))
+                    if (!_authorizationService.RequireLoginAndWriteOperation(12, " " + SlotCode + ": " + IsLocked.ToString()))
                     {
                         IsLocked = !IsLocked; //還原勾選狀態
                         return;
                     }
-                      
+
                     if (e.ElectrodeName.Contains("Probe"))
                     {
                         ok = await _probeService.DB_SetProbeRestrictionByTagSerialAsync(e.TagSerial, IsLocked);
@@ -148,7 +148,7 @@ namespace FMSFrontend.ViewModels.Windows
                 WorkpieceDetailViewModel w = (WorkpieceDetailViewModel)DetailViewModel;
                 try
                 {
-                    if (!_authorizationService.RequireLoginAndWriteOperation(13, " " + SlotCode +  ": " + IsLocked.ToString()))
+                    if (!_authorizationService.RequireLoginAndWriteOperation(13, " " + SlotCode + ": " + IsLocked.ToString()))
                     {
                         IsLocked = !IsLocked; //還原勾選狀態
                         return;
@@ -175,7 +175,7 @@ namespace FMSFrontend.ViewModels.Windows
                 {
                     if (!_authorizationService.RequireLoginAndWriteOperation(14, " " + SlotCode + ": " + IsDisabled.ToString()))
                     {
-                        IsDisabled =!IsDisabled; //還原勾選狀態
+                        IsDisabled = !IsDisabled; //還原勾選狀態
                         return;
                     }
                     string storageName = code[0];
@@ -224,7 +224,7 @@ namespace FMSFrontend.ViewModels.Windows
                 // 用你現有的 API：把 restriction 跟 state 分開思考
                 // 解除預約 = state 改 Vacant
                 // 這裡需要 StorageDto（建議帶 _id 最穩）
-                if (!_authorizationService.RequireLoginAndWriteOperation(15, " " + SlotCode ))
+                if (!_authorizationService.RequireLoginAndWriteOperation(15, " " + SlotCode))
                     return;
                 var ss = await _storageService.GetStorageByLocationAsync(storageName, storageNumber, region, column, row);
                 if (ss != null)

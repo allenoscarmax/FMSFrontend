@@ -47,14 +47,14 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private MachineDisplayData displayData; //顯示機台詳細資訊
 
         public int MachineNumber = 0;
-        public string  SelectMachineName = "";
+        public string SelectMachineName = "";
 
         [RelayCommand]
         private async Task RestrictionClick() //禁用事件
         {
             try
             {
-               
+
                 var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
                 if (edm != null)
                 {
@@ -75,7 +75,7 @@ namespace FMSFrontend.ViewModels
                 var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
                 if (edm != null)
                 {
-                    if (!_authorizationService.RequireLoginAndWriteOperation(19, ": " + edm.MachineName)) 
+                    if (!_authorizationService.RequireLoginAndWriteOperation(19, ": " + edm.MachineName))
                         return;
                     await _machinesService.ResetDispatchErrorMessageAsync(edm.MachineNumber - 1);
                 }
@@ -88,11 +88,11 @@ namespace FMSFrontend.ViewModels
         public string MachineImagePath => Machine.MachineImagePath; //機台圖片路徑
         public string MachineName => Machine.MachineName; //機台名稱
 
-        
+
 
         //工單資訊
         public ObservableCollection<WorkOrderRow> WorkOrders { get; } = new();
-        
+
         // ===== 日期篩選 =====
         public ObservableCollection<string> DateFilterOptions { get; set; } = new() { "今天", "前7天", "自訂" };
         [ObservableProperty] private string selectedFilterOption = "今天";
@@ -179,7 +179,8 @@ namespace FMSFrontend.ViewModels
         //設定日期End
         private async Task RefreshFetch()
         {
-            try {
+            try
+            {
                 if (FromDate != null && ToDate != null)
                 {
                     List<WorksheetsTimelineDto>? WorksheetsTimelineDtos =
@@ -207,7 +208,7 @@ namespace FMSFrontend.ViewModels
                 {
                     _windowService.ShowMessage("日期格式錯誤");
                 }
-            } 
+            }
             catch
             {
             }
@@ -254,7 +255,7 @@ namespace FMSFrontend.ViewModels
         }
         public void OnPageActivated()
         {
-            
+
         }
         public void OnPageDeactivated()
         {
@@ -262,7 +263,7 @@ namespace FMSFrontend.ViewModels
             _timer = null!;
         }
         bool test = false;
-       public int canctrlDelay = 3;
+        public int canctrlDelay = 3;
         private void RefreshFromStore()
         {
             if (Machine == null || DisplayData == null) return;
@@ -271,7 +272,7 @@ namespace FMSFrontend.ViewModels
             if (edm == null || edm.OscarEdm == null) return;
             MachineNumber = int.TryParse(edm.OscarEdm.MachineNumber, out var num) ? num : -1;
             test = !test;
-            if(canctrlDelay>0) canctrlDelay--;
+            if (canctrlDelay > 0) canctrlDelay--;
             if (canctrlDelay == 0) DisplayData.CanControl = edm.OscarEdm.CanControl;
             // 機台資訊
             DisplayData.MachineNumber = edm.OscarEdm.MachineNumber;
@@ -330,7 +331,7 @@ namespace FMSFrontend.ViewModels
         public partial class MachineDisplayData : ObservableObject
         {
             //機台禁用
-            [ObservableProperty] private bool canControl = false; 
+            [ObservableProperty] private bool canControl = false;
             //機台資訊
             [ObservableProperty] private string machineNumber = "";
             [ObservableProperty] private string machineStatus = "";
@@ -375,7 +376,7 @@ namespace FMSFrontend.ViewModels
             [ObservableProperty] private string hV = "";
             [ObservableProperty] private string jT = "";
             [ObservableProperty] private string jD = "";
-            
+
 
         }
         public class WorkOrderRow

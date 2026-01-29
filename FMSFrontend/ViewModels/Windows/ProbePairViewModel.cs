@@ -20,6 +20,7 @@ namespace FMSFrontend.ViewModels.Windows
 {
     public partial class ProbePairViewModel : ObservableObject
     {
+
         private readonly IWindowService _windowService;
         private readonly IHttpService _httpService;
         // === Services ===
@@ -36,7 +37,7 @@ namespace FMSFrontend.ViewModels.Windows
             IWorkpieceService workpieceService, IWorksheetsService worksheetService,
             RFIDBindStore rFIDBindStore, RFIDBindLiveUpdater rFIDBindLiveUpdater)
         {
-          
+
             _windowService = windowService;
             _httpService = httpService;
 
@@ -116,8 +117,6 @@ namespace FMSFrontend.ViewModels.Windows
                     return;
                 }
                 _windowService.ShowMessage($"Probe上傳成功!");
-
-                // 配對成功後離開
                 CloseAction?.Invoke();
             }
             catch { _windowService.ShowMessage("發生錯誤"); }
@@ -126,7 +125,7 @@ namespace FMSFrontend.ViewModels.Windows
         [RelayCommand]
         private void Back()
         {
-            // 關閉目前視窗（假設你有存 _window）
+            // 用 CloseAction 關閉視窗（MVVM 正規方法）
             CloseAction?.Invoke();
 
             // 開啟物料種類選擇視窗（交給 WindowService）

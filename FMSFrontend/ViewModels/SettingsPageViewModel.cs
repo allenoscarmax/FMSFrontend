@@ -57,7 +57,7 @@ namespace FMSFrontend.ViewModels
         private readonly IWorkerService _workerService;
         private readonly IAppointmentMaintenanceService _appointmentMaintenanceService;
         private readonly IMongoDBService _mongoDBService;
-        private  readonly IAuthorizationService _authorizationService;
+        private readonly IAuthorizationService _authorizationService;
         public SettingsPageViewModel(IWindowService windowService,
             IHttpService httpService,
             IMachinesService machinesService,
@@ -159,7 +159,7 @@ namespace FMSFrontend.ViewModels
                 case 4: //保養 
                     int[] week = { 1, 3, 5, 7 };
                     PeriodDisplay = BuildPeriodDisplay(ScheduleMode.Weekly, week, [0], 10, 12);
-                     _ = AppointmentMaintenanceRefresh();
+                    _ = AppointmentMaintenanceRefresh();
                     break;
             }
         }
@@ -376,7 +376,7 @@ namespace FMSFrontend.ViewModels
                 dto.robot_IP = newIp;
                 if (!_authorizationService.RequireLoginAndWriteOperation(23))
                     return;
-                
+
                 bool ok = await _robotService.DB_UpdateRobotDataAsync(dto);
                 if (!ok)
                 {
@@ -433,7 +433,7 @@ namespace FMSFrontend.ViewModels
                     _windowService.ShowMessage("裝置更新失敗，請稍後再試");
                     return;
                 }
-                
+
                 StatusMessage = "✅ 裝置參數已更新";
 
                 // 重新載入裝置列表
@@ -444,10 +444,10 @@ namespace FMSFrontend.ViewModels
         private async Task AddWorker() // 新增使用者
         {
             var existingWorkers = WorkerList
-                .Select(w => new LoginInfo { Number = w.WorkerNumber,  Name = w.WorkerName, Password = w.Psssword })
+                .Select(w => new LoginInfo { Number = w.WorkerNumber, Name = w.WorkerName, Password = w.Psssword })
                 .ToList();
 
-            var result = _windowService.ShowAddWorkerWindow(existingWorkers, "","");
+            var result = _windowService.ShowAddWorkerWindow(existingWorkers, "", "");
             if (result == null)
                 return;
 
@@ -456,7 +456,7 @@ namespace FMSFrontend.ViewModels
                 _authorizationService.WriteOperation(25);
                 bool ok = await _workerService.InsertNewWorkerDataAsync(new WorkerDto
                 {
-                    WorkerNumber = result.Number,    
+                    WorkerNumber = result.Number,
                     WorkerName = result.Name,
                     Password = result.Password
                 });
@@ -498,7 +498,7 @@ namespace FMSFrontend.ViewModels
                 bool ok = await _workerService.UpdateWorkerDataAsync(new WorkerDto
                 {
                     Id = SelectedWorker.Id,
-                    WorkerNumber = result.Number,     
+                    WorkerNumber = result.Number,
                     WorkerName = result.Name,
                     Password = result.Password
                 });
@@ -584,7 +584,7 @@ namespace FMSFrontend.ViewModels
             BusyMessage = "系統備份中，請稍候...";
             try
             {
- 
+
                 var ok = await _mongoDBService.BackupDatabaseAsync();
 
                 _windowService.ShowMessage(ok ? "系統備份成功" : "系統備份失敗");
@@ -709,7 +709,7 @@ namespace FMSFrontend.ViewModels
 
         private void OpenPeriodDialog()
         {
-            if (!_authorizationService.RequireLogin()) 
+            if (!_authorizationService.RequireLogin())
                 return;
             var win = new PeriodWindow
             {
@@ -773,12 +773,12 @@ namespace FMSFrontend.ViewModels
                         _windowService.ShowMessage("潤滑週期更新失敗，請稍後再試");
                     }
                 }
-                else 
+                else
                 {
                     _windowService.ShowMessage("無潤滑資料");
                 }
             }
-            catch 
+            catch
             {
                 _windowService.ShowMessage("例外狀況");
             }

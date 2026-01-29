@@ -28,7 +28,7 @@ namespace FMSFrontend.ViewModels
 
         // === Singleton ===
         private readonly StorageStore _storageStore;
-        public ObservableCollection<StorageModel>  Storages => _storageStore.StorageGroup.Storage;
+        public ObservableCollection<StorageModel> Storages => _storageStore.StorageGroup.Storage;
         // ==LiveUpdater===
         private readonly StorageLiveUpdater _storageLiveUpdater;
         // 原始資料
@@ -126,11 +126,11 @@ namespace FMSFrontend.ViewModels
         }
         public void OnPageActivated() // 開啟警報視窗
         {
-           
+
         }
         public void OnPageDeactivated() // 關閉警報視窗
         {
-           
+
         }
         private bool FilterRow(object obj)
         {

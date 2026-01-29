@@ -23,8 +23,8 @@ namespace FMSFrontend.Services
         private readonly UserSession _userSession;
         private readonly IWindowService _windowService;
         private readonly IOperationMessageLogService _operationService;
-        private readonly string[] MsgTable ;
-       
+        private readonly string[] MsgTable;
+
         public AuthorizationService(
             UserSession userSession,
             IWindowService windowService,
@@ -35,7 +35,7 @@ namespace FMSFrontend.Services
             _operationService = operationService;
             MsgTable = ReadMsgTable();
         }
-        public bool RequireLoginAndWriteOperation(int No,string Note = "")
+        public bool RequireLoginAndWriteOperation(int No, string Note = "")
         {
             if (_userSession.IsLoggedIn)
             {

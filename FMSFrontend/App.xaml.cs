@@ -2,7 +2,6 @@
 using FMSFrontend.Controls.FactoryOverview;
 using FMSFrontend.Extensions;
 using FMSFrontend.Features.Services;
-//using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Helpers;
@@ -52,7 +51,7 @@ namespace FMSFrontend
             services.AddSingleton<IHttpService, HttpService>();
             services.AddSingleton<IWindowService, WindowService>();
             #region RestoreSingleton
-            
+
             // === Services ===
             services.AddSingleton<IElectrodeService, ElectrodeService>();
             services.AddSingleton<IProbeService, ProbeService>();
@@ -92,7 +91,7 @@ namespace FMSFrontend
             services.AddSingleton<AlarmLiveUpdater>();
             services.AddSingleton<CommandScheduleLiveUpdater>();
             services.AddSingleton<RobotLiveUpdater>();
-            services.AddSingleton<PlcLiveUpdater>();          
+            services.AddSingleton<PlcLiveUpdater>();
             services.AddSingleton<RFIDBindLiveUpdater>();
             services.AddSingleton<ServerHealthLiveUpdater>();
             services.AddSingleton<StationLiveUpdater>();
@@ -208,13 +207,6 @@ namespace FMSFrontend
             services.AddTransient<ShowMachineWindow>();
             services.AddTransient<ShowRobotWindow>();
             services.AddTransient<ReviseProcessWindow>();
-
-            
-
-
-
-
-
         }
 
     }
