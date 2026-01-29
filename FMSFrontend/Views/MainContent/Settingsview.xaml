@@ -70,7 +70,7 @@
                                                                 </Grid.ColumnDefinitions>
 
                                                                 <!-- 名稱 -->
-                                                                <TextBlock Grid.Column="0" Text="權限" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,15,0" />
+                                                                <TextBlock Grid.Column="0" Text="權限" VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,15,0" />
 
                                                                 <!-- 分隔線 -->
                                                                 <Border Grid.Column="1" Background="Black" />
@@ -78,43 +78,17 @@
 
                                                                 <!-- 內容 -->
                                                                 <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                                    <ComboBox Width="250" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding AvailablePermissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}" HorizontalAlignment="Left" />
+                                                                    <ComboBox Width="250" Height="40" FontSize="20" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding AvailablePermissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}" HorizontalAlignment="Left" />
                                                                     <StackPanel Orientation="Horizontal" Margin="20,0,0,0" VerticalAlignment="Center" Visibility="{Binding ShowPasswordPrompt, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                                                        <TextBlock FontSize="16" Text="密碼：" VerticalAlignment="Center" FontWeight="Bold" Margin="0,0,8,0" />
-                                                                        <PasswordBox x:Name="ExpertPasswordBox" FontSize="16" Width="180" VerticalAlignment="Center" FontWeight="Bold" PasswordChar="*" materialDesign:TextFieldAssist.DecorationVisibility="Hidden" helpers:PasswordBoxAssistant.BindPassword="True" helpers:PasswordBoxAssistant.BoundPassword="{Binding Password, Mode=TwoWay}" />
-                                                                        <Button Content="確認" Width="120" Height="40" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding PermissionClickCommand}" />
+                                                                        <TextBlock FontSize="20" Text="密碼："  VerticalAlignment="Center" FontWeight="Bold" Margin="0,0,8,0" />
+                                                                        <PasswordBox x:Name="ExpertPasswordBox" FontSize="20" Width="180"  Height="40" VerticalAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" PasswordChar="*" materialDesign:TextFieldAssist.DecorationVisibility="Hidden" helpers:PasswordBoxAssistant.BindPassword="True" helpers:PasswordBoxAssistant.BoundPassword="{Binding Password, Mode=TwoWay}" />
+                                                                        <Button Content="確認" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding PermissionClickCommand}" />
                                                                     </StackPanel>
                                                                 </StackPanel>
                                                             </Grid>
                                                         </GroupBox>
 
-                                                        <!-- 系統 IP 位址 -->
-                                                        <GroupBox Header="系統 IP 位址" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
-                                                            <Grid>
-                                                                <Grid.ColumnDefinitions>
-                                                                    <!-- 名稱欄 -->
-                                                                    <ColumnDefinition Width="Auto" />
-                                                                    <!-- 分隔線欄 -->
-                                                                    <ColumnDefinition Width="1.5" />
-                                                                    <!-- 內容欄 -->
-                                                                    <ColumnDefinition Width="*" />
-                                                                </Grid.ColumnDefinitions>
 
-                                                                <!-- 名稱 -->
-                                                                <TextBlock Grid.Column="0" Text="IP位址" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,15,0" />
-
-                                                                <!-- 分隔線 -->
-                                                                <Border Grid.Column="1" Background="Black" />
-
-                                                                <!-- 內容：輸入框 + 按鈕 -->
-                                                                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
-                                                                    <TextBox Width="200" Height="26" VerticalAlignment="Center" FontSize="16"
-                                                                             Text="{Binding ServerIp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                             Foreground="Black" Padding="5,0" Style="{StaticResource UnderlineTextBoxStyle}" />
-                                                                    <Button Content="確認" Width="120" Height="40" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding SaveIPCommand}" />
-                                                                </StackPanel>
-                                                            </Grid>
-                                                        </GroupBox>
 
                                                     </StackPanel>
                                                 </DataTemplate>
@@ -128,7 +102,21 @@
                                             <Setter.Value>
                                                 <DataTemplate>
                                                     <StackPanel>
-
+                                                        <!-- 系統 IP 位址 -->
+                                                        <GroupBox Header="系統IP位址" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="1.5" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Button Grid.Column="0" Content="設定" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding SaveIPCommand}" />
+                                                                <Border Grid.Column="1" Background="Black" />
+                                                                <TextBlock Grid.Column="2" Text="IP位址:" TextWrapping="Wrap" VerticalAlignment="Center"  FontSize="20"  FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="10,0,20,0"/>
+                                                                <TextBox Grid.Column="3"  Width="200" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontSize="20" Text="{Binding ServerIp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="Black" Padding="5,0" Style="{StaticResource UnderlineTextBoxStyle}" />
+                                                            </Grid>
+                                                        </GroupBox>
                                                         <!-- 系統還原 -->
                                                         <GroupBox Header="系統還原" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
                                                             <Grid>
@@ -137,16 +125,29 @@
                                                                     <ColumnDefinition Width="1.5" />
                                                                     <ColumnDefinition Width="*" />
                                                                 </Grid.ColumnDefinitions>
+                                                                <Button Grid.Column="0" Content="還原" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding RestoreSystemCommand}" />
+                                                                <Border Grid.Column="1" Background="Black" />
+                                                                <TextBlock Grid.Column="2" Text="注意：點擊還原按鈕以還原系統。此過程將刪除所有材料、表單、日誌和使用情況。" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
+                                                            </Grid>
+                                                        </GroupBox>
+                                                        <!-- 系統備份 -->
+                                                        <GroupBox Header="系統備份" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="1.5" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                </Grid.ColumnDefinitions>
 
-                                                                <Button Grid.Column="0" Content="還原" Width="120" Height="40" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding RestoreSystemCommand}" />
+                                                                <Button Grid.Column="0" Content="備份" Width="120" Height="40"  FontSize="20" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding BackupSystemCommand}" />
 
                                                                 <Border Grid.Column="1" Background="Black" />
 
-                                                                <TextBlock Grid.Column="2" Text="注意：點擊還原按鈕以還原系統。此過程將刪除所有材料、表單、日誌和使用情況。" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
+                                                                <TextBlock Grid.Column="2" Text="注意：點擊備份資料庫。" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
                                                             </Grid>
                                                         </GroupBox>
-
                                                         <!-- 日誌重置 -->
+                                                        <!--
                                                         <GroupBox Header="日誌重置" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
                                                             <Grid>
                                                                 <Grid.ColumnDefinitions>
@@ -162,7 +163,7 @@
                                                                 <TextBlock Grid.Column="2" Text="注意：點擊重置按鈕以清除系統中的所有日誌。" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
                                                             </Grid>
                                                         </GroupBox>
-
+                                                        -->
                                                         <!-- 權限密碼重置 -->
                                                         <!--
                                                         <GroupBox Header="權限密碼重置" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
@@ -189,14 +190,14 @@
                                                                     <ColumnDefinition Width="1.5" />
                                                                     <ColumnDefinition Width="*" />
                                                                 </Grid.ColumnDefinitions>
-
-                                                                <Button Grid.Column="0" Content="設置完成" Width="120" Height="40" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding CompleteRobotMaintenanceCommand}" />
-
+                                                                <Button Grid.Column="0" Content="維護完成" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding CompleteRobotMaintenanceCommand}" />
                                                                 <Border Grid.Column="1" Background="Black" />
-
                                                                 <StackPanel Grid.Column="2" Orientation="Vertical" Margin="8,0,0,0">
-                                                                    <TextBlock Text="注意：如果系統顯示機器人的維護警報，請聯繫 FANUC 進行維護。" TextWrapping="Wrap" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" />
-                                                                    <TextBlock Text="最後檢查日期：2022/1/1 上午 12:00:00" FontSize="12" Foreground="Gray" Margin="0,5,0,0" />
+                                                                    <TextBlock Text="注意：如果系統顯示機器人的維護警報，請聯繫 FANUC 進行維護。" TextWrapping="Wrap" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBlock Text="上次維護時間：" FontSize="20" Foreground="Black" Margin="0,10" />
+                                                                        <TextBlock Text="{Binding RobotMaintenanceMsg}" FontSize="20" Foreground="Black" Margin="0,10" />
+                                                                    </StackPanel>
                                                                 </StackPanel>
                                                             </Grid>
                                                         </GroupBox>
@@ -277,7 +278,7 @@
 
                                                                                                             <Border Grid.Column="1" BorderThickness="0,0,0,1" BorderBrush="#222" VerticalAlignment="Center">
                                                                                                                 <TextBox x:Name="SearchBox" BorderThickness="0" Padding="4,4,4,6" FontSize="16" Foreground="#888" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
-                                                                                                                    
+
                                                                                                                 </TextBox>
                                                                                                             </Border>
                                                                                                         </Grid>
@@ -698,10 +699,12 @@
                                                                 </Grid.RowDefinitions>
 
                                                                 <!-- 🕒 最近潤滑時間 -->
+                                                                <!--
                                                                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
-                                                                    <TextBlock Text="最近潤滑時間：" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                                    <TextBlock Text="最近潤滑時間：" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
                                                                     <TextBlock Text="{Binding LastLubricationTimeDisplay}" d:Text="1993/04/06" FontSize="16" Margin="8,0,0,0" Foreground="{DynamicResource PrimaryTextBrush}" />
                                                                 </StackPanel>
+                                                                -->
 
                                                                 <!-- 🔁 潤滑週期（左側標籤 + 底線文字顯示） -->
                                                                 <Grid Grid.Row="1" Margin="0,0,0,16" VerticalAlignment="Center">
@@ -711,22 +714,22 @@
                                                                         <ColumnDefinition Width="*" />
                                                                     </Grid.ColumnDefinitions>
 
-                                                                    <TextBlock Grid.Column="0" Text="潤滑週期" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                                    <TextBlock Grid.Column="0" Text="潤滑週期" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="{DynamicResource PrimaryTextBrush}" />
 
                                                                     <Border Grid.Column="1" Background="Black"/>
                                                                     <!-- 內容：輸入框 + 按鈕 -->
                                                                     <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
-                                                                        <TextBox Width="500" Height="26" VerticalAlignment="Center" FontSize="16" Text="{Binding PeriodDisplay, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Foreground="Black" Padding="5,0" Style="{StaticResource UnderlineTextBoxStyle}" IsReadOnly="True" />
+                                                                        <TextBox Width="500" Height="40" VerticalAlignment="Center" VerticalContentAlignment="Center" FontSize="20" Text="{Binding PeriodDisplay, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Foreground="Black" Padding="5,0" Style="{StaticResource UnderlineTextBoxStyle}" IsReadOnly="True" />
                                                                     </StackPanel>
                                                                 </Grid>
 
                                                                 <!-- 🔘 按鈕區 -->
                                                                 <StackPanel Grid.Row="2" Orientation="Horizontal">
                                                                     <!-- 左灰：設定週期 -->
-                                                                    <Button Content="設定週期" Width="120" Height="40" Margin="0,0,12,0" Background="#CCCCCC" Foreground="Black" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding OpenSetPeriodDialogCommand}" />
+                                                                    <Button Content="設定週期" Width="120" Height="40" Margin="0,0,12,0" FontSize="20" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding OpenSetPeriodDialogCommand}" />
 
                                                                     <!-- 右藍：強制潤滑 -->
-                                                                    <Button Content="強制潤滑" Width="120" Height="40" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ForceLubricationCommand}" />
+                                                                    <Button Content="強制潤滑" Width="120" Height="40" FontSize="20" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ForceLubricationCommand}" />
                                                                 </StackPanel>
                                                             </Grid>
                                                         </GroupBox>
@@ -742,6 +745,23 @@
                     </ContentControl>
                 </Border>
             </Grid>
+            <!-- Busy Overlay：全畫面鎖定（覆蓋 SettingsView 這一頁） -->
+            <Grid Grid.Row="0" Grid.RowSpan="2" Panel.ZIndex="9999" Background="#80000000" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="True" d:Visibility="Collapsed">
+
+                <!-- 置中提示卡 -->
+                <Border Width="420" Padding="24" Background="{DynamicResource PageViewBrush}" CornerRadius="16" HorizontalAlignment="Center" VerticalAlignment="Center" Effect="{StaticResource ShadowEffect}">
+
+                    <StackPanel>
+                        <TextBlock Text="{Binding BusyMessage}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" Margin="0,0,0,16" />
+
+                        <ProgressBar IsIndeterminate="True" Height="10" />
+
+                        <TextBlock Text="請勿關閉程式或中斷電源" Foreground="{DynamicResource PrimaryTextBrush}" Opacity="0.7" Margin="0,12,0,0" TextAlignment="Center" />
+                    </StackPanel>
+
+                </Border>
+            </Grid>
         </Grid>
+
     </Border>
 </UserControl>

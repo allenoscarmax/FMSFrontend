@@ -7,12 +7,16 @@ using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
+using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Windows.Data;
+using static FMSFrontend.ViewModels.OperationHistoryViewModel;
 using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 
 namespace FMSFrontend.ViewModels
@@ -22,6 +26,7 @@ namespace FMSFrontend.ViewModels
     {
         private readonly IWindowService _windowService;
         private readonly IAlarmService _alarmService;
+        private readonly IAuthorizationService _auth;
         public AlarmStore AlarmStore { get; }
         public AlarmGroupModel AlarmGroup => AlarmStore.AlarmGroup;
 
@@ -92,16 +97,18 @@ namespace FMSFrontend.ViewModels
 
         // ===================== End Pagination =====================
 
-        public AlarmPageViewModel(IWindowService windowService, IAlarmService alarmService, AlarmStore alarmStore)
+        public AlarmPageViewModel(IWindowService windowService, 
+            IAlarmService alarmService,
+            IAuthorizationService authorizationService, 
+            AlarmStore alarmStore)
         {
             _windowService = windowService;
             _alarmService = alarmService;
-            AlarmStore = alarmStore;
 
+            AlarmStore = alarmStore;
+            _auth = authorizationService;
 
             AlarmStore.AlarmGroup.PropertyChanged += (_, __) => RefreshFromStore();
-
-            selectedFilterOption = DateFilterOptions.FirstOrDefault(); // 預設第一個
 
             // ---- Demo：目前警報 ----
             //CurrentAlarms.Add(new AlarmItem { Time = DateTime.Parse("2025/06/23 16:19:19"), Code = "HINT_007", Message = "!", Level = "HINT", Source = "EDM02S" });
@@ -189,7 +196,7 @@ namespace FMSFrontend.ViewModels
 
         // ====== 日期篩選 ======
         private bool _updatingDate;
-        partial void OnSelectedFilterOptionChanged(string? value) //選擇 今日、7日 或 自訂
+        partial void OnSelectedFilterOptionChanged(string value) //選擇 今日、7日 或 自訂
         {
             IsCustomDateMode = value == "自訂";
             ApplyDateFilter(); //設定日期
@@ -269,12 +276,64 @@ namespace FMSFrontend.ViewModels
         }
 
         // ====== Commands（仍可用） ======
+        /*[RelayCommand]
+
+       private void ExportAlarms()
+       {
+           // 以 _historyView 的目前過濾結果計數
+           var count = _historyView.Cast<AlarmItem>().Count();
+           _windowService.ShowMessage($"已匯出 {count} 筆歷史警報（示意）");
+       }*/
         [RelayCommand]
+        
         private void ExportAlarms()
         {
-            // 以 _historyView 的目前過濾結果計數
-            var count = _historyView.Cast<AlarmItem>().Count();
-            _windowService.ShowMessage($"已匯出 {count} 筆歷史警報（示意）");
+            // 匯出目前「篩選後」的資料
+            var rows = _historyView.Cast<AlarmItem>().ToList();
+            if (rows.Count == 0)
+            {
+                _windowService.ShowMessage("目前沒有可匯出的資料。");
+                return;
+            }
+
+            var dlg = new SaveFileDialog
+            {
+                Title = "匯出檔案",
+                Filter = "CSV 檔 (*.csv)|*.csv",
+                FileName = $"AlarmHistory_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+            };
+
+            if (dlg.ShowDialog() == true)
+            {
+                try
+                {
+                    using var sw = new StreamWriter(dlg.FileName, false, System.Text.Encoding.UTF8);
+                    // 讀取 標題列 然後寫入 
+                    // 寫入正確的標頭
+                    sw.WriteLine("時間,錯誤代碼,訊息內容");
+
+                    foreach (var r in rows)
+                    {
+                        // CSV 簡單轉義（用雙引號包起來）
+                        string t = r.Time.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+                        string code = CsvEscape(r.Code);
+                        string message = CsvEscape(r.Message);
+                        sw.WriteLine($"\"{t}\",\"{code}\",\"{message}\"");
+                    }
+
+                    _windowService.ShowMessage("匯出完成。");
+                }
+                catch (Exception ex)
+                {
+                    _windowService.ShowMessage($"匯出失敗：{ex.Message}");
+                }
+            }
+        }
+
+        private static string CsvEscape(string? s)
+        {
+            if (string.IsNullOrEmpty(s)) return string.Empty;
+            return s.Replace("\"", "\"\"");
         }
 
         [RelayCommand]
@@ -285,6 +344,8 @@ namespace FMSFrontend.ViewModels
             if (!confirm) return;
             if (FromDate != null && ToDate != null)
             {
+                if (!_auth.RequireLoginAndWriteOperation(11))
+                    return;
                 bool ok = await _alarmService.RemoveErrorMessageLogByDateTimeAsync(FromDate.Value, ToDate.Value);
                 if (!ok)
                 {

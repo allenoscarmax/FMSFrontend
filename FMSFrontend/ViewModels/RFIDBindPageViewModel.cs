@@ -31,7 +31,8 @@ namespace FMSFrontend.ViewModels
         // === Services ===
         private readonly IWindowService _windowService;
         private readonly IHttpService _httpService;
-        private readonly IRfidService _RfidService;
+        private readonly IRfidService _rfidService;
+        private readonly IPlcService _plcService; 
         private readonly IAuthorizationService _auth;
         private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
         // === Singleton ===
@@ -41,14 +42,14 @@ namespace FMSFrontend.ViewModels
         // === LiveUpdater ===
         public RFIDBindLiveUpdater _rfidUpdater;
         public RFIDBindPageViewModel(IWindowService windowService, IHttpService httpService,
-        IRfidService iRFIDMgmtModuleService, IAuthorizationService auth,
+        IRfidService iRFIDMgmtModuleService, IPlcService plcService, IAuthorizationService auth,
         RFIDBindStore rfidBindStore,
         RFIDBindLiveUpdater rfidUpdater)
         {
             _windowService = windowService;
             _httpService = httpService;
-
-            _RfidService = iRFIDMgmtModuleService;
+            _plcService = plcService;
+            _rfidService = iRFIDMgmtModuleService;
             RfidBindStore = rfidBindStore;
             _rfidUpdater = rfidUpdater;
             _rfidUpdater.ReadTagFlag = true;
@@ -142,7 +143,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void ReadMaterialInformation()
         {
-            // if (!_auth.RequireLogin()) return;
+             if (!_auth.RequireLogin()) return;
 
             _rfidUpdater.ReadTagFlag = true;
             _rfidUpdater.ReadMaterInfoFlag = true;
@@ -208,6 +209,25 @@ namespace FMSFrontend.ViewModels
             _rfidUpdater.ReadTagFlag = false;
             RefreshFetch();   // 關閉視窗後重新抓取並綁定
         }
+        [RelayCommand]
+        private async Task BalluffReset()
+        {
+            if (!_auth.RequireLoginAndWriteOperation(30)) return;
+
+            try
+            {
+                bool ok = await _plcService.BalluffPowerAsync(true);
+                await Task.Delay(1000);
+                ok = await _plcService.BalluffPowerAsync(false);
+                await Task.Delay(1000);
+                ok = await _rfidService.RFID_to_disconnect(0);
+                await Task.Delay(300);
+                ok = await _rfidService.RFID_to_connect(0);
+
+                _windowService.ShowMessage("OK");
+            }
+            catch { }
+        }
 
         [RelayCommand]
         private async Task Clear()
@@ -218,7 +238,7 @@ namespace FMSFrontend.ViewModels
                 bool confirm = _windowService.ShowYesNoDialog("確定要清除所有燒錄歷史紀錄嗎？此動作無法復原。");
                 if (!confirm) return;
 
-                bool ok = await _RfidService.DeleteAllRFIDWriteLogDataAsync();
+                bool ok = await _rfidService.DeleteAllRFIDWriteLogDataAsync();
                 if (ok)
                 {
                     // _windowService.ShowMessage("清除成功");

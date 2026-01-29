@@ -6,6 +6,7 @@ using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
+using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Factory;
 using FMSFrontend.ViewModels.Production;
 using IniFile;
@@ -29,6 +30,8 @@ namespace FMSFrontend.ViewModels
         public readonly IMachinesService _machinesService;
         public readonly IWorksheetsService _worksheetsService;
         public readonly IPlcService _plcService;
+        public readonly IAuthorizationService _authorizationService;
+
 
         // === Singleton ===
         public readonly MachineStore _machineStore;
@@ -65,6 +68,7 @@ namespace FMSFrontend.ViewModels
             IMachinesService machinesService,
             IWorksheetsService worksheetsService,
             IPlcService plcService,
+            IAuthorizationService authorizationService,
             MachineStore machineStore,
             StationStore stationStore,
             MachineLiveUpdater machineLiveUpdater,
@@ -75,7 +79,7 @@ namespace FMSFrontend.ViewModels
             _windowService = windowService;
             _machinesService = machinesService;
             _worksheetsService = worksheetsService;
-           
+            _authorizationService = authorizationService;
             _machineStore = machineStore;
             _stationStore = stationStore;
 

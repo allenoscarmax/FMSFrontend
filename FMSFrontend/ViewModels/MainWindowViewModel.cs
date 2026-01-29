@@ -25,12 +25,8 @@ namespace FMSFrontend.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
-        // 建議做成 static readonly，避免每次輪詢都 new
-      
         private static readonly SolidColorBrush Dark = new(Color.FromRgb(0x00, 0x4E, 0x79));
         private static readonly SolidColorBrush Light = new(Color.FromRgb(0xFF, 0xFF, 0xFF));
-        // 開啟頁面視窗（改為延遲建立：避免啟動時一次建立大量 UI）
-        //private ProductionLines? productionLines ;
 
         private readonly IHttpService _httpService;
         private readonly IRobotService _robotService;
@@ -42,8 +38,6 @@ namespace FMSFrontend.ViewModels
         private readonly IOperationMessageLogService _operationService;
 
         public GlobalProperties _globalProperties { get; }
-        public AlarmPageViewModel AlarmVM { get; }
-        
         public AlarmStore AlarmStore { get; }
         public AlarmGroupModel AlarmGroup => AlarmStore.AlarmGroup;
 
@@ -68,7 +62,6 @@ namespace FMSFrontend.ViewModels
         private List<string> RobotNames = new List<string>() ;
         public Robot Robot => RobotStore.Robot;
 
-
         //開始
         [ObservableProperty] private bool startStatus;
         [ObservableProperty] private Brush startBackground = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
@@ -92,42 +85,21 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private bool isPauseEnabled;
         [ObservableProperty] private bool isStopEnabled;
 
-        
         public PlcStore PlcStore { get; }
         public MagazinePara MagazinePara => PlcStore.MagazinePara;
         private readonly UserSession _userSession;
         public UserSession UserSession => _userSession;
 
-
-        // ASRS 參數輪詢計時器
-        // DispatcherTimer? asrsTimer;
-        // ✅ 新增：關機儲存UI設定
-        public void SaveCurrentStoragePageType()
-        {
-            /*
-            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-            string pageType = (StorageControlPage is FMSFrontend.Views.StorageUnitMiniControlPage).ToString();
-            ini.Write("Prarm", "IsStorageUnitControlMini", pageType);
-
-            if (productionLines?.DataContext is FMSFrontend.ViewModels.ProductionLinesViewModel vm)
-                pageType = (vm.CurrentStorageView is FMSFrontend.Controls.StorageOverviewControl).ToString();
-            else
-                pageType = false.ToString();
-            ini.Write("Prarm", "IsStorageOverviewControl", pageType);
-            */
-        }
-
-      
-        public MainWindowViewModel(IHttpService httpService, 
+        public MainWindowViewModel(IHttpService httpService,
             IRobotService robotService,
-            IPlcService plcService , 
+            IPlcService plcService,
             IAlarmService alarmService,
             IWorkerService workerService,
             IWindowService windowService,
             IAuthorizationService auth,
             IOperationMessageLogService operationService,
-            AlarmPageViewModel alarmVM, 
-            RobotStore store, 
+            AlarmPageViewModel alarmVM,
+            RobotStore store,
             PlcStore plcStore,
             AlarmStore alarmStore,
             GlobalProperties globalProperties,
@@ -147,7 +119,7 @@ namespace FMSFrontend.ViewModels
             _globalProperties = globalProperties;
             _userSession = userSession;
 
-            // 使用 DispatcherTimer 在 UI Thread 週期性更新時間（比起背景執行緒直接更新屬性更安全且不會產生跨執行緒問題）
+            // 更新時間
             var timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Normal, (s, e) =>
             {
                 if (AlarmGroup.IsAlarm)
@@ -156,10 +128,9 @@ namespace FMSFrontend.ViewModels
                     IsHint = false;
                     IsIdle = false;
                     SummaryMessageBrush = new SolidColorBrush(Colors.Red);
-
                     SummaryMessage = "系統有警報";
                 }
-                else 
+                else
                 {
                     IsAlarm = false;
                     IsHint = true;
@@ -171,17 +142,14 @@ namespace FMSFrontend.ViewModels
                 CurrentDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
             }, Application.Current.Dispatcher);
             timer.Start();
-            
-            AlarmVM = alarmVM;
 
-            //✅ 新增：電極倉門初始頁面 -> 延遲建立到 UI Thread 空閒時再建立，避免啟動卡住
+            //電極倉門初始頁面
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             bool b = ini.Read("Prarm", "IsStorageUnitControlMini") == "True";
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                StorageControlPage = b ? new StorageUnitMiniControlPage() : new StorageUnitControlPage();
-            }), DispatcherPriority.Background);
-
+            if (b)
+                StorageControlPage = App.ServiceProvider!.GetRequiredService<StorageUnitMiniControlPage>();
+            else
+                StorageControlPage = App.ServiceProvider!.GetRequiredService<StorageUnitControlPage>();
 
             // 初始 & 監聽 Robot 變化
             RefreshFromStore();
@@ -192,9 +160,6 @@ namespace FMSFrontend.ViewModels
             };
             // 如果你會改 Robot 內部屬性，也可加：
             RobotStore.Robot.PropertyChanged += (_, __) => RefreshFromStore();
-           
-            //✅ 新增：讀取初始參數,然後開啟輪詢
-            // _ = MainWindowViewModelAsync_Init();
         }
 
         // === 將 Store 狀態轉成 UI ===
@@ -280,7 +245,7 @@ namespace FMSFrontend.ViewModels
             // 檢查 ServiceProvider 是否為 null
             if (App.ServiceProvider == null)
             {
-                new DialogMessageWindow("ServiceProvider 尚未初始化，無法切換頁面。").ShowDialog();
+                _windowService.ShowMessage("ServiceProvider 尚未初始化，無法切換頁面。");
                 return;
             }
             var page = App.ServiceProvider.GetRequiredService<TPage>();
@@ -292,30 +257,12 @@ namespace FMSFrontend.ViewModels
         #endregion
 
         #region StoragePageChange
-        [RelayCommand]
-        private void ShowDetail(string storageId)
-        {
-            var detailPage = new StorageUnitControlPage
-            {
-                DataContext = this // 👈 傳入目前的 MainWindowViewModel
-            };
-            // 等畫面載入完成後再捲動
-            detailPage.Loaded += (s, e) =>
-            {
-                detailPage.ScrollToStorageId(storageId);
-            };
-
-            StorageControlPage = detailPage;
-        }
-
-        private bool[] isUpperDoorOpen = new bool[8];
-        private bool[] isLowerDoorOpen = new bool[8];
-
-
-        // 上門 -> 使用第 0 顆燈
+        //開啟上倉門
         [RelayCommand]
         private async Task UpperDoor(string storageId)
         {
+            if (!_auth.RequireLoginAndWriteOperation(8, "Id = " + storageId))
+                return;
             try
             {
                 var success = false;
@@ -325,20 +272,21 @@ namespace FMSFrontend.ViewModels
                     success = await _PlcService.EMagzineDoorSwitchAsync(0, 0, true);
                 if (!success)
                 {
-                    new DialogMessageWindow("API 回傳失敗").ShowDialog();
+                    _windowService.ShowMessage("回傳失敗");
                     return;
                 }
             }
             catch
             {
-                new DialogMessageWindow("Reset Fail").ShowDialog();
+                _windowService.ShowMessage("例外狀況");
             }
         }
-
-        // 下門 -> 使用 LowerDoorLights1 對應索引
+        //開啟下倉門
         [RelayCommand]
         private async Task LowerDoor(string storageId)
         {
+            if (!_auth.RequireLoginAndWriteOperation(9, "Id = " + storageId))
+                return;
             try
             {
                 var success = false;
@@ -348,48 +296,69 @@ namespace FMSFrontend.ViewModels
                     success = await _PlcService.EMagzineDoorSwitchAsync(0, 1, true);
                 if (!success)
                 {
-                    new DialogMessageWindow("API 回傳失敗").ShowDialog();
+                    _windowService.ShowMessage("回傳失敗");
                     return;
                 }
             }
             catch
             {
-                new DialogMessageWindow("Reset Fail").ShowDialog();
+                _windowService.ShowMessage("例外狀況");
             }
         }
-       
-        [ObservableProperty]
-        //private bool _isDoorLightOn;
-
-        private bool _isDoorLightOn;
-        // 新增命令：ToggleButton 切換時呼叫
+        //開啟倉門燈
         [RelayCommand]
         private async Task DoorLightSwitchChanged(bool isChecked)
         {
+            if (!_auth.RequireLoginAndWriteOperation(10, isChecked ? "On" : "Off"))
+                return;
             try
             {
                 var success = false;
-                success =  await _PlcService.WEMagzineDoorLightSwitchAsync(0, isChecked);
-                success =  await _PlcService.EMagzineDoorLightSwitchAsync(0, isChecked);
+                success = await _PlcService.WEMagzineDoorLightSwitchAsync(0, isChecked);
+                success = await _PlcService.EMagzineDoorLightSwitchAsync(0, isChecked);
                 if (!success)
                 {
-                    new DialogMessageWindow("API 回傳失敗").ShowDialog();
+                    _windowService.ShowMessage("回傳失敗");
                     return;
                 }
             }
             catch
             {
-               new DialogMessageWindow("Reset Fail").ShowDialog();
+                _windowService.ShowMessage("例外狀況");
             }
         }
-
+        //顯示詳細倉門
+        [RelayCommand]
+        private void ShowDetail(string storageId) 
+        {
+            if (App.ServiceProvider == null)
+            {
+                _windowService.ShowMessage("ServiceProvider 尚未初始化，無法切換頁面。");
+                return;
+            }
+            var detailPage = App.ServiceProvider.GetRequiredService<StorageUnitControlPage>();
+            // 保持 ViewModel 綁定，確保按鈕 Command 有效
+            detailPage.DataContext = this; 
+            // 等畫面載入完成後再捲動
+            detailPage.Loaded += (s, e) =>
+            {
+                detailPage.ScrollToStorageId(storageId);
+            };
+            StorageControlPage = detailPage;
+        }
+        //返回倉門總覽
         [RelayCommand]
         public void Back()
         {
-            StorageControlPage = new StorageUnitMiniControlPage
+            if (App.ServiceProvider == null)
             {
-                DataContext = this // 保持 ViewModel 綁定，否則按鈕 Command 會失效
-            };
+                _windowService.ShowMessage("ServiceProvider 尚未初始化，無法切換頁面。");
+                return;
+            }
+            var page = App.ServiceProvider.GetRequiredService<StorageUnitMiniControlPage>();
+            // 保持 ViewModel 綁定，確保按鈕 Command 有效
+            page.DataContext = this;
+            StorageControlPage = page;
         }
         #endregion
 
@@ -405,6 +374,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void Logout()
         {
+            _auth.RequireLoginAndWriteOperation(2);
             _userSession.SignOut();
             _windowService.ShowMessage("您已成功登出！");
         }
@@ -446,8 +416,9 @@ namespace FMSFrontend.ViewModels
                     _userSession.SignIn(loginName);
                     _windowService.ShowMessage($"歡迎登入，{loginName}！");
                 }
+                _auth.RequireLoginAndWriteOperation(1);
             }
-            catch
+            catch 
             {
                 _windowService.ShowMessage("登入過程發生錯誤");
             }
@@ -457,11 +428,8 @@ namespace FMSFrontend.ViewModels
 
         #region ControlUnit Start Pause Stop  Reset Dispatch
         [RelayCommand]
-        private async Task RobotStartButtonClick()
+        private async Task RobotStartButtonClick() //手臂啟動
         {
-            if (!_auth.RequireLogin())
-                return;
-
             if (!Robot.IsRobotConnected)
             {
                  _windowService.ShowMessage("機器人未連線，無法啟動");
@@ -469,39 +437,30 @@ namespace FMSFrontend.ViewModels
             }
             if (!StartStatus)
             {
+                if (Robot.AsrsState == AsrsControlState.Started)
+                    return;
+                if (!_auth.RequireLoginAndWriteOperation(3))
+                    return;
                 try
                 {
-                    if (Robot.AsrsState == AsrsControlState.Started)
+                    var success = await _robotService.SetRobotStartAsync();
+                    if (!success)
+                    {
+                        _windowService.ShowMessage("回傳失敗");
                         return;
-
-                    try
-                    {
-                        var success = await _robotService.SetRobotStartAsync();
-                        if (!success)
-                        {
-                            new DialogMessageWindow("忙碌中").ShowDialog();
-                            return;
-                        }
-
-                        // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
-                        Robot.AsrsState = AsrsControlState.Started;
                     }
-                    catch (Exception ex)
-                    {
-                        new DialogMessageWindow($"Start Fail\n{ex.Message}").ShowDialog();
-                    }
+                    // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
+                    Robot.AsrsState = AsrsControlState.Started;
                 }
-                catch
+                catch (Exception ex)
                 {
-                    new DialogMessageWindow("Start Fail").ShowDialog();
+                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
                 }
             }
         }
         [RelayCommand]
-        private async Task RobotPauseButtonClick()
+        private async Task RobotPauseButtonClick() //手臂暫停
         {
-            if (!_auth.RequireLogin())
-                return;
             if (!Robot.IsRobotConnected)
             {
                 _windowService.ShowMessage("機器人未連線，無法執行");
@@ -509,39 +468,30 @@ namespace FMSFrontend.ViewModels
             }
             if (!PauseStatus)
             {
+                if (Robot.AsrsState == AsrsControlState.Paused)
+                    return;
+                if (!_auth.RequireLoginAndWriteOperation(4))
+                    return;
                 try
                 {
-                    if (Robot.AsrsState == AsrsControlState.Paused)
+                    var success = await _robotService.SetRobotPauseAsync();
+                    if (!success)
+                    {
+                        _windowService.ShowMessage("回傳失敗");
                         return;
-
-                    try
-                    {
-                        var success = await _robotService.SetRobotPauseAsync();
-                        if (!success)
-                        {
-                            new DialogMessageWindow("忙碌中").ShowDialog();
-                            return;
-                        }
-
-                        // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
-                        Robot.AsrsState = AsrsControlState.Paused;
                     }
-                    catch (Exception ex)
-                    {
-                        new DialogMessageWindow($"Pause Fail\n{ex.Message}").ShowDialog();
-                    }
+                    // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
+                    Robot.AsrsState = AsrsControlState.Paused;
                 }
-                catch
+                catch (Exception ex)
                 {
-                    new DialogMessageWindow("Pause Fail").ShowDialog();
+                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
                 }
-
             }
         }
         [RelayCommand]
-        private async Task RobotStopButtonClick()
+        private async Task RobotStopButtonClick() //手臂停止
         {
-
             if (!Robot.IsRobotConnected)
             {
                 _windowService.ShowMessage("機器人未連線，無法執行");
@@ -549,79 +499,70 @@ namespace FMSFrontend.ViewModels
             }
             if (!StopStatus)
             {
+                if (Robot.AsrsState == AsrsControlState.Stopped)
+                    return;
+                if (!_auth.RequireLoginAndWriteOperation(5))
+                    return;
                 try
                 {
-                    if (Robot.AsrsState == AsrsControlState.Stopped)
+                    var success = await _robotService.SetRobotStopAsync();
+                    if (!success)
+                    {
+                        _windowService.ShowMessage("回傳失敗");
                         return;
-
-                    try
-                    {
-                        var success = await _robotService.SetRobotStopAsync();
-                        if (!success)
-                        {
-                            new DialogMessageWindow("忙碌中").ShowDialog();
-                            return;
-                        }
-
-                        // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
-                        Robot.AsrsState = AsrsControlState.Stopped;
                     }
-                    catch (Exception ex)
-                    {
-                        new DialogMessageWindow($"Stop Fail\n{ex.Message}").ShowDialog();
-                    }
+
+                    // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
+                    Robot.AsrsState = AsrsControlState.Stopped;
                 }
-                catch
+                catch (Exception ex)
                 {
-                    new DialogMessageWindow("Stop Fail").ShowDialog();
+                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
                 }
             }
         }
         [RelayCommand]
-        private async Task RobotResetButtonClick()
+        private async Task RobotResetButtonClick() //手臂重置
         {
-            if (!_auth.RequireLogin())
-                return;
-
-         //   _ = _operationService.WriteAsync("Reset Robot", _userSession.UserName);
-            
             if (!Robot.IsRobotConnected)
             {
                 _windowService.ShowMessage("機器人未連線，無法執行");
                 return;
             }
+            if (!_auth.RequireLoginAndWriteOperation(6))
+                return;
             try
             {
                 var success = await _robotService.ASRSRobotResetStatusAsync(0);
                 if (!success)
                 {
-                    new DialogMessageWindow("忙碌中").ShowDialog();
+                    _windowService.ShowMessage("回傳失敗");
                     return;
                 }
             }
-            catch 
+            catch (Exception ex)
             {
-                new DialogMessageWindow("Reset Fail").ShowDialog();
+                _windowService.ShowMessage($"例外狀況: {ex.Message}");
             }
         }
         [RelayCommand]
         private async Task RobotDispatchButtonClick()
         {
-            if (!_auth.RequireLogin())
-                return;
             var target = !DispatchStatus;
+            if (!_auth.RequireLoginAndWriteOperation(7, target ? " :On" : " :Off"))
+                return;
             try
             {
                 var ok = await _robotService.SetASRSDispatchSwitchAsync(target);
                 if (!ok)
                 {
-                    new DialogMessageWindow("Dispatch Fail").ShowDialog();
+                    _windowService.ShowMessage("回傳失敗");
                     return;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                new DialogMessageWindow("Dispatch Fail").ShowDialog();
+                _windowService.ShowMessage($"例外狀況: {ex.Message}");
             }
         }
         #endregion

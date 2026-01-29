@@ -53,8 +53,10 @@
                 <TabControl Grid.Row="0" SelectedIndex="{Binding SelectedTabIndex}" Style="{StaticResource FlatTabControlStyle}" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}" Height="40" Padding="0" Margin="0,8,0,0" Background="Transparent">
                     <TabItem Header="架上工件" Tag="#2779A7" />
                     <TabItem Header="架上電極" Tag="#2779A7" />
+                    <!--    
                     <TabItem Header="已下架工件" Tag="#2779A7" />
                     <TabItem Header="已下架電極" Tag="#2779A7" />
+                    -->
                 </TabControl>
 
                 <!-- 工具列（可選）：搜索 + 重新整理；若不需要可整段刪除 -->

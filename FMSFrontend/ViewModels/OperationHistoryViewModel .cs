@@ -43,37 +43,36 @@ namespace FMSFrontend.ViewModels
         }
         private async Task Refresh() //讀取記錄檔案
         {
-            //try
-            //{
-            //    if (FromDate is null || ToDate is null)
-            //        return;
+            try
+            {
+                if (FromDate is null || ToDate is null)
+                    return;
 
-            //    var from = FromDate.Value.Date;
-            //    var to = ToDate.Value.Date.AddDays(1).AddTicks(-1); // 包含當天整日
+                var from = FromDate.Value.Date;
+                var to = ToDate.Value.Date.AddDays(1).AddTicks(-1); // 包含當天整日
 
-            //    var dtos = await _operationService.GetOperationMessageLogByDateAsync(from, to);
+                var dtos = await _operationService.GetOperationMessageLogByDateAsync(from, to);
 
-            //    _allRecords.Clear();
-            //    if (dtos != null)
-            //    {
-            //        foreach (var dto in dtos)
-            //        {
-            //            if (dto.Time is null) continue;
-            //            _allRecords.Add(new OperationRecord
-            //            {
-            //                Time = dto.Time.Value,
-            //                User = dto.Operation ?? string.Empty,
-            //                Message = dto.worksheetDone ?? string.Empty
-            //            });
-            //        }
-            //    }
+                _allRecords.Clear();
+                if (dtos != null)
+                {
+                    foreach (var dto in dtos)
+                    {
+                        _allRecords.Add(new OperationRecord
+                        {
+                            Time = dto.TimeStamp,
+                            User = dto.SetupUser ?? string.Empty,
+                            Message = dto.MessageCn ?? string.Empty
+                        });
+                    }
+                }
 
-            //    RefreshFilter();
-            //}
-            //catch (Exception ex)
-            //{
-            //    _windowService.ShowMessage($"讀取操作紀錄失敗：{ex.Message}");
-            //}
+                RefreshFilter();
+            }
+            catch (Exception ex)
+            {
+                _windowService.ShowMessage($"讀取操作紀錄失敗：{ex.Message}");
+            }
         }
         #region 日期篩選
         // ===== 日期篩選 =====
@@ -177,7 +176,10 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void Clear()
         {
-
+            bool confirm = _windowService.ShowYesNoDialog("確定要刪除?");
+            if (!confirm) return;
+            _operationService.DeleteAllOperationMessageLogDataAsync();
+            _ = Refresh();
         }
 
         [RelayCommand]
