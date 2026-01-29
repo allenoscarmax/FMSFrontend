@@ -33,6 +33,7 @@ namespace FMSFrontend.ViewModels
         private readonly IWindowService _windowService;
         private readonly IHttpService _httpService;
         private readonly IPlcService _plcService;
+        private readonly IAuthorizationService _authorizationService;
 
         // === Singleton ===
         private readonly StationStore _store = new();
@@ -53,13 +54,14 @@ namespace FMSFrontend.ViewModels
         public MachineStationViewModel(IWindowService windowService,
         IHttpService httpService,
         IPlcService plcService,
+        IAuthorizationService authorizationService,
         StationStore stationStore)
         {
             _windowService = windowService;
             _httpService = httpService;
             _plcService = plcService;
             _store = stationStore;
-
+            _authorizationService = authorizationService;
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
             _timer.Tick += (_, __) => RefreshFromStore();
 
@@ -131,6 +133,7 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
+                if (!_authorizationService.RequireLoginAndWriteOperation(31)) return;
                 // 取消前一次仍在執行的更新,逾時設定1秒
                 bool ok = await _plcService.ASE_OpenDoorAsync();
                 if (!ok)
@@ -147,6 +150,7 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
+                if (!_authorizationService.RequireLoginAndWriteOperation(open == "True" ? 32 : 33)) return;
                 // 取消前一次仍在執行的更新,逾時設定1秒
                 bool ok = await _plcService.ASE_OpenDoorLightAsync(open == "True");
                 if (!ok)
@@ -163,6 +167,7 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
+                if (!_authorizationService.RequireLoginAndWriteOperation(open == "True" ? 34 : 35)) return;
                 // 取消前一次仍在執行的更新,逾時設定1秒
                 bool ok = await _plcService.ASE_OpenChuckAsync(open == "True");
                 if (!ok)
@@ -195,6 +200,7 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
+                if (!_authorizationService.RequireLoginAndWriteOperation(36)) return;
                 // 取消前一次仍在執行的更新,逾時設定1秒
                 bool ok = await _plcService.ASE_Require_IncomingPartAsync(open == "True");
                 if (!ok)
