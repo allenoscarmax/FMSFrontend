@@ -5,11 +5,8 @@ using FMSFrontend.Features.Mappings;
 using FMSFrontend.Models;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Net;
 using System.Runtime.InteropServices.Marshalling;
 using System.Windows;
-using System.Windows.Input.Manipulations;
-using System.Windows.Media.Animation;
 
 namespace FMSFrontend.Features.Singleton
 {

@@ -23,7 +23,7 @@ namespace FMSFrontend.Interfaces
         void ShowMaterialPairWindow(bool isElectrode);
         void ShowProbePairWindow();
         void ShowMaterial(object detailViewModel, IEnumerable<TimelineItemViewModel> timeline, MaterialKind kind, string? slotCode = null);
-        void ShowWorkpiece(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline,  string? slotCode = null);
+        void ShowWorkpiece(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, string? slotCode = null);
         void ShowElectrode(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, string? slotCode = null);
         void ShowMaterialEmpty(Slot slot);
         void ShowMaterialInformation(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline);

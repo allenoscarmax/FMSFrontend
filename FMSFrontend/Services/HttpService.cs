@@ -80,7 +80,7 @@ namespace FMSFrontend.Services
             if (ShouldBlockApiCall())
                 return default;
             try
-            { 
+            {
                 var url = BuildUrl(route);
                 using var resp = await _httpClient.PutAsJsonAsync(url, payload, _jsonOptions).ConfigureAwait(false);
                 return resp.IsSuccessStatusCode;
@@ -105,7 +105,8 @@ namespace FMSFrontend.Services
             if (!isHealth && ShouldBlockApiCall())
                 return default;
 
-            try {
+            try
+            {
                 var url = BuildUrl(route);
                 using var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
 

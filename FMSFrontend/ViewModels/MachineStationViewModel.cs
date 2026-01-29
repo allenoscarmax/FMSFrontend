@@ -99,11 +99,11 @@ namespace FMSFrontend.ViewModels
             displayData.Require_OutcomingPart = Cnt.ToString();
             displayData.Notification_Doorislocked = Cnt.ToString();
             */
-            
+
             // 保持同一個 DisplayData 實例，逐一更新屬性以觸發 UI 刷新
             displayData.MachineImagePath = Station.MachineImagePath;
-            
-            displayData.Air_error = Station.Air_error.ToString() ; // 氣壓異常
+
+            displayData.Air_error = Station.Air_error.ToString(); // 氣壓異常
             displayData.DoorisOpen = Station.DoorisOpen.ToString(); // 門是否被打開 ON 打開 OFF 關閉中
 
             displayData.RFIDisPolarization = Station.RFIDisPolarization.ToString(); // ON 表示回到安全位置，OFF 表示不在安全位置
@@ -117,11 +117,11 @@ namespace FMSFrontend.ViewModels
 
             displayData.Require_OutcomingPart = Station.Require_OutcomingPart.ToString(); // UI要求出工件 (UI→後台)
             displayData.Notification_Doorislocked = Station.Notification_Doorislocked.ToString(); // PLC回饋 門已鎖好
-            
+
         }
         public void OnPageActivated()
         {
-            
+
         }
         public void OnPageDeactivated()
         {
@@ -144,7 +144,7 @@ namespace FMSFrontend.ViewModels
                 new DialogMessageWindow("API發送失敗").ShowDialog();
             }
         }
-        
+
         [RelayCommand]
         private async Task OpenDoorLightClick(string open) //  開門燈
         {
@@ -161,7 +161,7 @@ namespace FMSFrontend.ViewModels
                 new DialogMessageWindow("API發送失敗").ShowDialog();
             }
         }
-        
+
         [RelayCommand]
         private async Task OpenChuckClick(string open) //  開夾頭
         {
@@ -178,14 +178,14 @@ namespace FMSFrontend.ViewModels
                 new DialogMessageWindow("API發送失敗").ShowDialog();
             }
         }
-        
+
         [RelayCommand]
-        private async Task OutcomingPartClick(string open) 
+        private async Task OutcomingPartClick(string open)
         {
             try
             {
                 // 取消前一次仍在執行的更新,逾時設定1秒
-                bool ok = await _plcService.ASE_Require_OutcomingPartAsync(open == "True"); 
+                bool ok = await _plcService.ASE_Require_OutcomingPartAsync(open == "True");
                 if (!ok)
                     throw new System.Exception("API回傳失敗");
             }
@@ -194,9 +194,9 @@ namespace FMSFrontend.ViewModels
                 new DialogMessageWindow("API發送失敗").ShowDialog();
             }
         }
-        
+
         [RelayCommand]
-        private async Task IncomingPartClick(string open) 
+        private async Task IncomingPartClick(string open)
         {
             try
             {
@@ -211,7 +211,7 @@ namespace FMSFrontend.ViewModels
                 new DialogMessageWindow("API發送失敗").ShowDialog();
             }
         }
-        
+
         public partial class DisplayData : ObservableObject
         {
             [ObservableProperty] private string machineImagePath = ""; //機台圖片路徑

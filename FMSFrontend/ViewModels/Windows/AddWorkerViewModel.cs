@@ -23,7 +23,7 @@ namespace FMSFrontend.ViewModels.Windows
 
         public AddWorkerViewModel()
         {
-          
+
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace FMSFrontend.ViewModels.Windows
                 IsEnable = false;              // 帳號不可改
                 Title = "編輯使用者";
                 WorkerNumber = selectNumber;
-                WorkerName = selectName ;
+                WorkerName = selectName;
             }
         }
 
@@ -87,8 +87,8 @@ namespace FMSFrontend.ViewModels.Windows
                 return;
             }
             // 這裡可改為呼叫後端 API 新增使用者
-            ExistingWorkers.Add(new LoginInfo { Number = WorkerNumber, Name = WorkerName,  Password = Password });
-           // MessageBox.Show("新增成功");
+            ExistingWorkers.Add(new LoginInfo { Number = WorkerNumber, Name = WorkerName, Password = Password });
+            // MessageBox.Show("新增成功");
 
             // 若此 ViewModel 綁定於對話視窗，成功後可自動關閉
             if (Application.Current.Windows != null)

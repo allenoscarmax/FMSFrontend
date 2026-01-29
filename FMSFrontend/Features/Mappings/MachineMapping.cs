@@ -25,14 +25,14 @@ namespace FMSFrontend.Features.Mappings
         public static void ApplyElectrodeDto(this ElectrodeDto dto, MachineModel model)
         {
             if (dto == null || model == null) return;
-            model.ElectrodeName = dto.electrodeName ;
+            model.ElectrodeName = dto.electrodeName;
             model.ElectrodeShortName = ShortNameConversion(true, dto.electrodeName); //20260120佑義要求修改電極名稱規則
         }
         public static void ApplyWorkpieceDto(this WorkpieceDto dto, MachineModel model)
         {
             if (dto == null || model == null) return;
 
-            model.WorkpieceName = dto.workpieceName ;
+            model.WorkpieceName = dto.workpieceName;
             model.WorkpieceShortName = ShortNameConversion(false, dto.workpieceName);   //20260120佑義要求修改電極名稱規則
         }
 

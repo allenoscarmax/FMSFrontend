@@ -8,11 +8,11 @@ namespace FMSFrontend.Features.Mappings
     public static class StorageMapping
     {
         private static bool JusticeShortNameFlag = false; //佑義客製需求 20260122
-        public static void ApplyStorageDto(this List<StorageDto> dtos, ObservableCollection<StorageModel>  models)
+        public static void ApplyStorageDto(this List<StorageDto> dtos, ObservableCollection<StorageModel> models)
         {
             if (dtos == null || models == null) return;
             // 根據庫名稱與庫編號分組
-            var groups = dtos 
+            var groups = dtos
             .GroupBy(s => new { s.storageName, s.storageNumber })
             .OrderBy(g => g.Key.storageName)
             .ThenBy(g => g.Key.storageNumber)
@@ -23,8 +23,8 @@ namespace FMSFrontend.Features.Mappings
                 var g = groups[i];
                 models[i].Name = g.Key.storageName;                       // 庫名稱
                 models[i].Number = g.Key.storageNumber;                   // 庫編號
-                // models[i].Rows = Math.Max(1, g.Max(x => x.row));          //最大行數為
-                
+                                                                          // models[i].Rows = Math.Max(1, g.Max(x => x.row));          //最大行數為
+
                 // 20260119 鋐興追加
                 // 依 region 分組，計算每個 region 的最大 row，並依 region 排序
                 var regionInfos = g
@@ -101,7 +101,7 @@ namespace FMSFrontend.Features.Mappings
 
             model.Kind = MaterialType.Electrode;
             model.Name = dto?.electrodeName ?? "";
-           
+
             model.ShortName = ShortNameConversion(true, dto?.electrodeName ?? "");  //20260120佑義要求修改電極名稱規則
 
             model.MaterialStatus = dto?.state ?? "";
@@ -113,7 +113,7 @@ namespace FMSFrontend.Features.Mappings
 
 
         }
-        
+
         private static string ShortNameConversion(bool isElectrode, string Name)
         {
             // 電極名稱規則修改為 末三碼-序號+字母 (A,B,C...)，工件名稱規則修改為 末三碼-序號
@@ -152,7 +152,7 @@ namespace FMSFrontend.Features.Mappings
                         //return Regex.Match(Name, @"-(\d+_\d+-[A-Za-z]+)$").Groups[1].Value;
                         return Name;
                     }
-                       
+
                 }
             }
             catch { }

@@ -28,7 +28,7 @@ namespace FMSFrontend.ViewModels
         private readonly IWindowService _windowService;
         private readonly IOperationMessageLogService _operationService;
 
-        public OperationHistoryViewModel(IWindowService windowService, IOperationMessageLogService operationService )
+        public OperationHistoryViewModel(IWindowService windowService, IOperationMessageLogService operationService)
         {
             _windowService = windowService;
 
@@ -81,7 +81,7 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private DateTime? fromDate = DateTime.Today;
         [ObservableProperty] private DateTime? toDate = DateTime.Today;
         [ObservableProperty] private bool isCustomDateMode;
-       
+
         private bool _updatingDate;
         partial void OnSelectedFilterOptionChanged(string value)
         {

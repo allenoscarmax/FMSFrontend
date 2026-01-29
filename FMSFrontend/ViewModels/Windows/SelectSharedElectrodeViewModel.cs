@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ControlzEx.Standard;
 using FMSFrontend.Extensions;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
@@ -25,7 +24,7 @@ namespace FMSFrontend.ViewModels.Windows
         private readonly IElectrodeService _electrodeService;
         private readonly IWindowService _windowService;
         public string _targetElectrodeName; // Share 時傳入的電極名稱
-        
+
         // 🔹 顯示文字用屬性
         [ObservableProperty] private string? selectedWorkOrderName = "請選擇工單";
         [ObservableProperty] private string? selectedElectrodeNameDisplay = "請選擇電極";
@@ -107,7 +106,7 @@ namespace FMSFrontend.ViewModels.Windows
                 if (items.Count == 0)
                     return;
                 //檢查shared electrode是否已被使用
-                for (int i = 0; i < items.Count;i++)
+                for (int i = 0; i < items.Count; i++)
                 {
                     var es = await _electrodeService.GetElectrodeByWorksheetNumberAsync(items[i].WorkOrderNo ?? string.Empty) ?? new List<ElectrodeDto>(); // 取得該工單的電極清單
                     foreach (var e in es)//如果電及已經被共用 移除item
@@ -164,7 +163,7 @@ namespace FMSFrontend.ViewModels.Windows
 
                     // 只挑尾碼為 -02
                     if (string.IsNullOrWhiteSpace(e.electrodeName) ||
-                        !e.electrodeName.EndsWith("-"+ ElectrodesFilter.ToString("D2"), StringComparison.OrdinalIgnoreCase))
+                        !e.electrodeName.EndsWith("-" + ElectrodesFilter.ToString("D2"), StringComparison.OrdinalIgnoreCase))
                         continue;
 
                     // lifeTimes > useTimes

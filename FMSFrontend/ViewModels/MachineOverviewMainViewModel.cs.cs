@@ -43,11 +43,11 @@ namespace FMSFrontend.ViewModels
         public MachineLiveUpdater _machineLiveUpdater;
         public StationLiveUpdater _stationLiveUpdater;
         DispatcherTimer _timer;
-        
+
         [ObservableProperty] private MachineOverviewCard? selectedMachine;
 
         // UI 綁定的卡片清單（會變）
-        public ObservableCollection<MachineOverviewCard> FilteredMachines { get; } = new(); 
+        public ObservableCollection<MachineOverviewCard> FilteredMachines { get; } = new();
         public ObservableCollection<MachineOverviewCard> AllMachines { get; } = new();
 
         [ObservableProperty] private int selectedTabIndex = 0; // 預設選 EDM
@@ -154,8 +154,8 @@ namespace FMSFrontend.ViewModels
             }
 
             // 2) Station 卡（單一張）
-            
-            if (AllMachines.Count > 0 && StationCount !=0)
+
+            if (AllMachines.Count > 0 && StationCount != 0)
             {
                 var stationCard = AllMachines.FirstOrDefault(c => c.Type == MachineType.STATION);
                 if (stationCard == null)
@@ -359,10 +359,10 @@ namespace FMSFrontend.ViewModels
 
         public string MachineImagePath => Type switch
         {
-            MachineType.EDM =>     "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png",
-            MachineType.CNC =>     "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/CNC.png",
-            MachineType.ZNC =>     "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/ZNC.png",
-            MachineType.ROBOT =>   "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/Robot.png",
+            MachineType.EDM => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png",
+            MachineType.CNC => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/CNC.png",
+            MachineType.ZNC => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/ZNC.png",
+            MachineType.ROBOT => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/Robot.png",
             MachineType.STATION => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/FMS.png",
             _ => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/RobotOff.png"
         };
