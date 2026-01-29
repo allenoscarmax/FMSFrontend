@@ -16,14 +16,15 @@ namespace FMSFrontend.Services
     {
         bool RequireLoginAndWriteOperation(int No, string Note = "");
         bool RequireLogin();
-        void WriteOperation(int No);
+        void WriteOperation(int No, string Note = "");
     }
     public class AuthorizationService : IAuthorizationService
     {
         private readonly UserSession _userSession;
         private readonly IWindowService _windowService;
         private readonly IOperationMessageLogService _operationService;
-        private readonly string[] MsgTable;
+        private string[] MsgTableCN = Array.Empty<string>();
+        private string[] MsgTableEN = Array.Empty<string>();
 
         public AuthorizationService(
             UserSession userSession,
@@ -33,23 +34,32 @@ namespace FMSFrontend.Services
             _userSession = userSession;
             _windowService = windowService;
             _operationService = operationService;
-            MsgTable = ReadMsgTable();
+            ReadMsgTable();
         }
         public bool RequireLoginAndWriteOperation(int No, string Note = "")
         {
-            if (_userSession.IsLoggedIn)
+            try
             {
-                var payload = new OperationMessageLogDto
+                if (_userSession.IsLoggedIn)
                 {
-                    TimeStamp = DateTime.Now,
-                    MessageCn = MsgTable[No] + Note,
-                    SetupUser = _userSession.UserName
-                };
-                _operationService.InsertNewOperationMessageLogDataAsync(payload); // 記錄操作
-                return true;
+                    var payload = new OperationMessageLogDto
+                    {
+                        TimeStamp = DateTime.Now,
+                        MessageCn = MsgTableCN[No] + Note,
+                        MessageEn = MsgTableEN[No] + Note,
+                        SetupUser = _userSession.UserName
+                    };
+                    _operationService.InsertNewOperationMessageLogDataAsync(payload); // 記錄操作
+                    return true;
+                }
+                _windowService.ShowMessage("請先登入");
+                return false;
             }
-            _windowService.ShowMessage("請先登入");
-            return false;
+            catch
+            {
+                _windowService.ShowMessage("寫入失敗");
+                return false;
+            }
         }
         public bool RequireLogin()
         {
@@ -61,21 +71,29 @@ namespace FMSFrontend.Services
             return false;
 
         }
-        public void WriteOperation(int No)
+        public void WriteOperation(int No, string Note = "")
         {
-            var payload = new OperationMessageLogDto
+            try
             {
-                TimeStamp = DateTime.Now,
-                MessageCn = MsgTable[No],
-                SetupUser = _userSession.UserName
-            };
-            _operationService.InsertNewOperationMessageLogDataAsync(payload); // 記錄操作
+                var payload = new OperationMessageLogDto
+                {
+                    TimeStamp = DateTime.Now,
+                    MessageCn = MsgTableCN[No] + Note,
+                    MessageEn = MsgTableEN[No] + Note,
+                    SetupUser = _userSession.UserName
+                };
+                _operationService.InsertNewOperationMessageLogDataAsync(payload); // 記錄操作
+            }
+            catch
+            {
+                _windowService.ShowMessage("寫入失敗");
+            }
         }
-        string[] ReadMsgTable()
+        void ReadMsgTable()
         {
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             int num = Convert.ToInt16(ini.Read("Prarm", "Language"));
-            string FilePath = AppDomain.CurrentDomain.BaseDirectory + "//Language//OperationMessage.csv";
+            string FilePath = AppDomain.CurrentDomain.BaseDirectory + "\\Language\\OperationMessage.csv";
             //從Language//OperationMessage.csv讀取表中的 column =  num + 1的位置到 MsgTable
             if (File.Exists(FilePath))
             {
@@ -83,27 +101,23 @@ namespace FMSFrontend.Services
                     .Where(l => !string.IsNullOrWhiteSpace(l))
                     .ToArray();
 
-                // If the first line is a header, keep it as data if needed; here we include all lines.
-                var list = new List<string>(capacity: lines.Length);
-                int targetIndex = num + 1; // column index to read
+                // 讀取第1欄(索引1)為中文、第2欄(索引2)為英文，若不存在則給空字串。
+                var cn = new List<string>(capacity: lines.Length);
+                var en = new List<string>(capacity: lines.Length);
                 foreach (var line in lines)
                 {
-                    // Basic CSV split by comma. If values may contain commas, replace with a proper CSV parser.
+                    // 簡單以逗號切分，若有更複雜CSV需求請改用正式CSV解析器
                     var cols = line.Split(',');
-                    if (targetIndex >= 0 && targetIndex < cols.Length)
-                    {
-                        list.Add(cols[targetIndex].Trim());
-                    }
-                    else
-                    {
-                        list.Add(string.Empty);
-                    }
+                    cn.Add(cols.Length > 1 ? cols[1].Trim() : string.Empty);
+                    en.Add(cols.Length > 2 ? cols[2].Trim() : string.Empty);
                 }
-                return list.ToArray();
+                MsgTableCN = cn.ToArray();
+                MsgTableEN = en.ToArray();
             }
             else
             {
-                return Array.Empty<string>();
+                MsgTableCN = Array.Empty<string>();
+                MsgTableEN = Array.Empty<string>();
             }
         }
     }
