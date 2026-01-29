@@ -1,6 +1,5 @@
 ﻿using FMSFrontend.Extensions;
 using FMSFrontend.Features.Services;
-using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
@@ -24,7 +23,7 @@ namespace FMSFrontend.Interfaces
         void ShowMaterialPairWindow(bool isElectrode);
         void ShowProbePairWindow();
         void ShowMaterial(object detailViewModel, IEnumerable<TimelineItemViewModel> timeline, MaterialKind kind, string? slotCode = null);
-        void ShowWorkpiece(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline,  string? slotCode = null);
+        void ShowWorkpiece(WorkpieceModel workpiece, IEnumerable<TimelineItemModel> timeline, string? slotCode = null);
         void ShowElectrode(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline, string? slotCode = null);
         void ShowMaterialEmpty(Slot slot);
         void ShowMaterialInformation(ElectrodeModel electrode, IEnumerable<TimelineItemModel> timeline);
@@ -41,7 +40,7 @@ namespace FMSFrontend.Interfaces
         void ShowRobotWindow();
 
         ReviseProcessAction? ShowReviseWindow();
-        WorkerEditResult? ShowAddWorkerWindow(List<LoginInfo> existingWorkers, string selectedName);
+        WorkerEditResult? ShowAddWorkerWindow(List<LoginInfo> existingWorkers, string selectedNumber, string selectedName);
 
         // 保留舊版無回傳功能
         void ShowSelectSharedElectrodeWindow(string targetWorkpieceName);

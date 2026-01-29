@@ -1,6 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Features.Services;
+using FMSFrontend.Features.Dtos;
 using FMSFrontend.Interfaces;
+using FMSFrontend.Models;
+using FMSFrontend.Services;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,38 +13,22 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Windows.Data;
-using Microsoft.Win32;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FMSFrontend.ViewModels
 {
     public partial class OperationHistoryViewModel : ObservableObject
     {
-        // 供 UI 綁定的快速範圍
-        public List<string> QuickRanges { get; set; } = new() { "今天", "過去7天", "自訂" };
-
-        [ObservableProperty]
-        private string selectedQuickRange = "今天";
-
-        // 供工具列 DatePicker 綁定
-        [ObservableProperty]
-        private DateTime? startDate = DateTime.Today;
-
-        [ObservableProperty]
-        private DateTime? endDate = DateTime.Today;
-
         // DataGrid 綁這個（已過濾）
         public ICollectionView OperationRecords { get; set; }
-
         // 內部完整資料集
         private readonly ObservableCollection<OperationRecord> _allRecords = new();
-
         private readonly IWindowService _windowService;
+        private readonly IOperationMessageLogService _operationService;
 
-        private DateTime? _lastValidStart = DateTime.Today;
-        private DateTime? _lastValidEnd = DateTime.Today;
-
-        public OperationHistoryViewModel(IWindowService windowService)
+        public OperationHistoryViewModel(IWindowService windowService, IOperationMessageLogService operationService)
         {
             _windowService = windowService;
 
@@ -49,105 +38,137 @@ namespace FMSFrontend.ViewModels
             // 準備 View + 篩選器
             OperationRecords = CollectionViewSource.GetDefaultView(_allRecords);
             OperationRecords.Filter = FilterByDate;
-
-            // 依預設「今天」套一次
-            ApplyQuickRange();
+            _operationService = operationService;
+            _ = Refresh();
         }
-
-        #region 快速範圍/日期變更
-
-        partial void OnSelectedQuickRangeChanged(string value)
+        private async Task Refresh() //讀取記錄檔案
         {
-            ApplyQuickRange();
-            RefreshFilter();
-        }
-
-        partial void OnStartDateChanged(DateTime? value)
-        {
-            // 自訂模式才允許手調日期；快速範圍仍可顯示但不調整
-            if (SelectedQuickRange != "自訂")
-                return;
-
-            if (!ValidateRange(value, EndDate, out string? msg))
+            try
             {
-                _windowService.ShowMessage(msg ?? "日期區間不合法");
-                StartDate = _lastValidStart;
-                return;
+                if (FromDate is null || ToDate is null)
+                    return;
+
+                var from = FromDate.Value.Date;
+                var to = ToDate.Value.Date.AddDays(1).AddTicks(-1); // 包含當天整日
+
+                var dtos = await _operationService.GetOperationMessageLogByDateAsync(from, to);
+
+                _allRecords.Clear();
+                if (dtos != null)
+                {
+                    foreach (var dto in dtos)
+                    {
+                        _allRecords.Add(new OperationRecord
+                        {
+                            Time = dto.TimeStamp,
+                            User = dto.SetupUser ?? string.Empty,
+                            Message = dto.MessageCn ?? string.Empty
+                        });
+                    }
+                }
+
+                RefreshFilter();
             }
-
-            _lastValidStart = value;
-            RefreshFilter();
-        }
-
-        partial void OnEndDateChanged(DateTime? value)
-        {
-            if (SelectedQuickRange != "自訂")
-                return;
-
-            if (!ValidateRange(StartDate, value, out string? msg))
+            catch (Exception ex)
             {
-                _windowService.ShowMessage(msg ?? "日期區間不合法");
-                EndDate = _lastValidEnd;
-                return;
+                _windowService.ShowMessage($"讀取操作紀錄失敗：{ex.Message}");
             }
-
-            _lastValidEnd = value;
-            RefreshFilter();
         }
+        #region 日期篩選
+        // ===== 日期篩選 =====
+        public ObservableCollection<string> DateFilterOptions { get; } = new() { "今天", "前7天", "自訂" };
+        [ObservableProperty] private string selectedFilterOption = "今天";
+        [ObservableProperty] private DateTime? fromDate = DateTime.Today;
+        [ObservableProperty] private DateTime? toDate = DateTime.Today;
+        [ObservableProperty] private bool isCustomDateMode;
 
-        private void ApplyQuickRange()
+        private bool _updatingDate;
+        partial void OnSelectedFilterOptionChanged(string value)
         {
-            switch (SelectedQuickRange)
+            IsCustomDateMode = value == "自訂";
+            ApplyDateFilter(); //設定日期
+            _ = Refresh();
+        }
+        private void ApplyDateFilter()
+        {
+            _updatingDate = true;
+            switch (SelectedFilterOption)
             {
                 case "今天":
-                    StartDate = DateTime.Today;
-                    EndDate = DateTime.Today;
-                    break;
-                case "過去7天":
-                    EndDate = DateTime.Today;
-                    StartDate = DateTime.Today.AddDays(-6); // 含今天共7天
-                    break;
+                    FromDate = DateTime.Today; ToDate = DateTime.Today; break;
+                case "前7天":
+                    FromDate = DateTime.Today.AddDays(-6); ToDate = DateTime.Today; break;
                 case "自訂":
-                    // 保留使用者目前的 Start/End，不強制改動
-                    break;
+                    FromDate = DateTime.Today.AddMonths(-1); ToDate = DateTime.Today; break;
+                default: break; // 保留使用者輸入
             }
-            _lastValidStart = StartDate;
-            _lastValidEnd = EndDate;
+            _updatingDate = false;
         }
-
-        private static bool ValidateRange(DateTime? start, DateTime? end, out string? message)
+        partial void OnFromDateChanged(DateTime? value) //開始日期變更
         {
-            message = null;
-            if (start is null || end is null) return true;
-
-            if (end < start)
+            if (_updatingDate || value == null || ToDate == null) return;
+            _updatingDate = true;
+            try
             {
-                message = "結束日期不能小於開始日期";
-                return false;
+                var today = DateTime.Today;
+                var from = value.Value.Date;
+                var to = ToDate.Value.Date;
+                //日期邏輯判斷
+                if (from > today) from = today;         // 封頂今天
+                if (to > today) to = today;             // 封頂今天
+                if (from > to) to = from.AddMonths(1);  // 如果開始日大於結束日，調整結束日為開始日加一個月
+                if (to > from.AddMonths(1))             // 一個月範圍限制
+                {
+                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    to = from.AddMonths(1);
+                }
+                if (to > today) to = today; // 避免被 AddMonths 推到未來
+                FromDate = from;
+                ToDate = to;
             }
-
-            if ((end.Value - start.Value).TotalDays > 31)
+            finally
             {
-                message = "選擇的日期範圍不能超過一個月";
-                return false;
+                _updatingDate = false;
             }
-
-            return true;
+            _ = Refresh();
         }
-
+        partial void OnToDateChanged(DateTime? value) //結束日期變更
+        {
+            if (_updatingDate || value == null || FromDate == null) return;
+            _updatingDate = true;
+            try
+            {
+                var today = DateTime.Today;
+                var to = value.Value.Date;
+                var from = FromDate.Value.Date;
+                if (to > today) to = today; // 封頂今天（結束日不能超過今天）
+                if (to < from) from = to.AddMonths(-1); // 如果結束日小於開始日，調整開始日為結束日減一個月
+                if (from < to.AddMonths(-1)) // 一個月範圍限制
+                {
+                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    from = to.AddMonths(-1);
+                }
+                if (from > today) from = today; // 避免 from 被推到未來（理論上不會，但保險）
+                FromDate = from;
+                ToDate = to;
+            }
+            finally
+            {
+                _updatingDate = false;
+            }
+            _ = Refresh();
+        }
         private void RefreshFilter() => OperationRecords?.Refresh();
-
         private bool FilterByDate(object obj)
         {
             if (obj is not OperationRecord r) return false;
 
             // 沒選日期就不篩
-            if (StartDate is null || EndDate is null) return true;
+            if (FromDate is null || ToDate is null) return true;
 
             var d = r.Time.Date;
-            return d >= StartDate.Value.Date && d <= EndDate.Value.Date;
+            return d >= FromDate.Value.Date && d <= ToDate.Value.Date;
         }
-
         #endregion
 
         #region Commands
@@ -155,9 +176,10 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void Clear()
         {
-            SelectedQuickRange = "今天";
-            ApplyQuickRange();
-            RefreshFilter();
+            bool confirm = _windowService.ShowYesNoDialog("確定要刪除?");
+            if (!confirm) return;
+            _operationService.DeleteAllOperationMessageLogDataAsync();
+            _ = Refresh();
         }
 
         [RelayCommand]

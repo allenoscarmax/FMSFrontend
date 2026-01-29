@@ -133,17 +133,15 @@
             </ScrollViewer>
 
             <!-- 底部按鈕列：兩排排列，顏色比照圖片 -->
+            <!--
             <Border Grid.Row="3" Padding="8,1,8,10" Background="{x:Null}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
-                    <!-- 第一排：4 個按鈕 -->
                     <WrapPanel Margin="0,0,0,8">
                         <Button Style="{StaticResource PrimaryButtonStyle}" Background="#2F64CF" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="電極再使用" Command="{Binding ReuseElectrodeCommand}" />
                         <Button Style="{StaticResource PrimaryButtonStyle}" Background="#C0392B" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="解除異常" Command="{Binding ClearAbnormalCommand}" />
                         <Button Style="{StaticResource PrimaryButtonStyle}" Background="#9C27B0" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="修改補償值" Command="{Binding EditCompensationCommand}" />
                         <Button Style="{StaticResource PrimaryButtonStyle}" Background="#56C06C" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="電極再使用" Command="{Binding ReuseElectrodeAltCommand}" />
                     </WrapPanel>
-
-                    <!-- 第二排：3 個按鈕 -->
                     <WrapPanel>
                         <Button Style="{StaticResource PrimaryButtonStyle}" Background="#6E6E6E" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="解除碰撞" Command="{Binding ClearCollisionCommand}" />
                         <Button Style="{StaticResource PrimaryButtonStyle}" Background="#E6B93E" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="解除預約" Command="{Binding ClearReservationCommand}" />
@@ -151,6 +149,7 @@
                     </WrapPanel>
                 </StackPanel>
             </Border>
+            -->
         </Grid>
     </Border>
 </UserControl>

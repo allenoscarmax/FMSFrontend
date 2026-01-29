@@ -80,7 +80,7 @@ namespace FMSFrontend.Services
             if (ShouldBlockApiCall())
                 return default;
             try
-            { 
+            {
                 var url = BuildUrl(route);
                 using var resp = await _httpClient.PutAsJsonAsync(url, payload, _jsonOptions).ConfigureAwait(false);
                 return resp.IsSuccessStatusCode;
@@ -105,7 +105,8 @@ namespace FMSFrontend.Services
             if (!isHealth && ShouldBlockApiCall())
                 return default;
 
-            try {
+            try
+            {
                 var url = BuildUrl(route);
                 using var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
 
@@ -205,35 +206,34 @@ namespace FMSFrontend.Services
         //    }
         //}
         */
-        public async Task<TResult?> PutJsonAsync<TRequest, TResult>(
-    string route,
-    TRequest payload,
-    CancellationToken cancellationToken = default)
+        public async Task<TResult?> PutJsonAsync<TRequest, TResult>(string route, TRequest payload, CancellationToken cancellationToken = default)
         {
-            if (ShouldBlockApiCall())
-                return default;
+            if (ShouldBlockApiCall()) return default;
 
             var url = BuildUrl(route);
-            using var response = await _httpClient.PutAsJsonAsync(url, payload, _jsonOptions, cancellationToken).ConfigureAwait(false);
-
-            // 若 content 為空 → 直接回傳 default
-            if (response.Content == null)
-                return default;
-
-            var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-            if (string.IsNullOrWhiteSpace(content))
-                return default;
-
             try
             {
-                return JsonSerializer.Deserialize<TResult>(content, _jsonOptions);
-            }
-            catch
-            {
-                return default;
-            }
-        }
+                using var response = await _httpClient.PutAsJsonAsync(url, payload, _jsonOptions, cancellationToken).ConfigureAwait(false);
 
+                // 若 content 為空 → 直接回傳 default
+                if (response.Content == null)
+                    return default;
+
+                var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                if (string.IsNullOrWhiteSpace(content))
+                    return default;
+
+                try
+                {
+                    return JsonSerializer.Deserialize<TResult>(content, _jsonOptions);
+                }
+                catch
+                {
+                    return default;
+                }
+            }
+            catch { return default; }
+        }
 
         public string? ServerIp { get; private set; }
 

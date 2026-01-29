@@ -2,7 +2,7 @@
 
     <!-- 日曆日期方塊 -->
     <Style TargetType="CalendarDayButton">
-        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontSize" Value="16" />
         <Setter Property="Width" Value="36" />
         <Setter Property="Height" Value="36" />
         <Setter Property="Margin" Value="2" />
@@ -10,7 +10,7 @@
 
     <!-- 月曆容器 (正確：覆寫 CalendarItem，而非 Calendar) -->
     <Style TargetType="CalendarItem">
-        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontSize" Value="16" />
         <Setter Property="Padding" Value="10" />
         <!-- 可在這裡調整 CalendarItem 的 Template；若不需要自訂標頭，使用預設即可 -->
     </Style>
@@ -35,16 +35,33 @@
         <Setter Property="CalendarItemStyle">
             <Setter.Value>
                 <Style TargetType="CalendarItem" BasedOn="{StaticResource {x:Type CalendarItem}}">
-                    <Setter Property="FontSize" Value="18" />
+                    <Setter Property="FontSize" Value="16" />
                     <Setter Property="Padding" Value="10" />
                 </Style>
             </Setter.Value>
         </Setter>
     </Style>
 
+    <!-- 放大 Calendar -->
+    <Style x:Key="styleCalendar" TargetType="{x:Type Calendar}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Calendar}">
+                    <!-- Wrapping in ViewBox will enlarge calendar of that size. -->
+                    <Viewbox Height="300" Width="300">
+                        <CalendarItem x:Name="PART_CalendarItem"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}" />
+                    </Viewbox>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- DatePicker 外觀 -->
     <Style x:Key="CustomDatePickerStyle" TargetType="{x:Type DatePicker}">
-        <Setter Property="CalendarStyle" Value="{StaticResource CustomCalendarStyle}" />
+        <Setter Property="CalendarStyle" Value="{StaticResource styleCalendar}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DatePicker}">
@@ -56,7 +73,7 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
-                                <DatePickerTextBox x:Name="PART_TextBox" Grid.Column="0" BorderThickness="0" Background="Transparent" FontSize="18" Padding="5,0,0,0" />
+                                <DatePickerTextBox x:Name="PART_TextBox" Grid.Column="0" BorderThickness="0" Background="Transparent" FontSize="16" Padding="5,0,0,0" />
 
                                 <Button x:Name="PART_Button" Grid.Column="1" Focusable="False" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Cursor="Hand">
                                     <Path Stretch="Fill" Width="22" Height="22" Fill="#666666" Data="M19,19H5V8H19M19,3H18V1H16V3H8V1H6V3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" />
@@ -67,7 +84,11 @@
                         <!-- 重要：Popup 的 PlacementTarget 用 x:Reference 指向模板內元素 -->
                         <Popup x:Name="PART_Popup" AllowsTransparency="True" Placement="Bottom" PlacementTarget="{Binding Source={x:Reference dp_border}}" StaysOpen="False" HorizontalOffset="0" VerticalOffset="5">
                             <Border BorderThickness="1" BorderBrush="#CCCCCC" Background="White" CornerRadius="8" Padding="5">
-                                <Calendar x:Name="PART_Calendar" Style="{TemplateBinding CalendarStyle}" />
+                                <Calendar x:Name="PART_Calendar">
+                                    <Calendar.LayoutTransform>
+                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                                    </Calendar.LayoutTransform>
+                                </Calendar>
                             </Border>
                         </Popup>
                     </Grid>

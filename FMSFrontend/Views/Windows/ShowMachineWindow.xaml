@@ -1,4 +1,4 @@
-﻿<Window x:Class="FMSFrontend.Views.Windows.ShowMachineWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:conv="clr-namespace:FMSFrontend.Converters" mc:Ignorable="d" Title="設備資訊" Height="740" Width="1080" WindowStartupLocation="CenterOwner" WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+﻿<Window x:Class="FMSFrontend.Views.Windows.ShowMachineWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:conv="clr-namespace:FMSFrontend.Converters" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" mc:Ignorable="d" Title="設備資訊" Height="740" Width="1080" WindowStartupLocation="CenterOwner" WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown">
 
     <Window.InputBindings>
         <!-- 按 ESC 關閉 -->
@@ -10,6 +10,8 @@
         <DropShadowEffect x:Key="ShadowEffect" BlurRadius="14" ShadowDepth="0" Opacity="0.28" />
         <!-- Bool → Visibility -->
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <!-- Custom Bool to Visibility Converter used by date filter visibility -->
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
         <!-- DataGrid 欄頭藍底白字 -->
         <Style x:Key="BlueHeader" TargetType="DataGridColumnHeader">
@@ -148,7 +150,7 @@
                                 <TextBlock Grid.Row="8" Grid.Column="0" Text="工件名稱：" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding Info.WorkPieceName}" FontSize="20" Margin="0,6" />
 
-                              <!--  
+                                <!--  
                                 <TextBlock Grid.Row="9" Grid.Column="0" Text="本日完工數：" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding Info.FinishedToday}" FontSize="20" Margin="0,6" />
 
@@ -180,48 +182,21 @@
                             <!-- 左側新增：日期篩選區域 -->
                             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="18,10,0,0" VerticalAlignment="Center">
                                 <DockPanel LastChildFill="True" Margin="0,0,0,0" VerticalAlignment="Center">
-                                    <ComboBox Width="120" Name="cbb_Day" Height="32" FontSize="16" Margin="0,0,20,0" Background="White" BorderBrush="#444" BorderThickness="1" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" SelectedIndex="{Binding SelectedFilterIndex, Mode=TwoWay}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{StaticResource PillComboBoxStyle}" />
-                                    <DatePicker Name ="DayPicker1" FontSize="16" SelectedDate="{Binding FromDate}" IsEnabled="{Binding IsCustomDateMode}" Width="180" Height="30" Style="{StaticResource CustomDatePickerStyle}" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVis}}">
-                                        <DatePicker.CalendarStyle>
-                                            <Style TargetType="Calendar">
-                                                <Setter Property="CalendarItemStyle">
-                                                    <Setter.Value>
-                                                        <Style TargetType="CalendarItem">
-                                                            <Setter Property="FontSize" Value="18" />
-                                                            <Setter Property="Padding" Value="10" />
+                                    <ComboBox Width="120" Height="32" Margin="10,0,0,0" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
 
-                                                        </Style>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Style>
-                                        </DatePicker.CalendarStyle>
-
-                                    </DatePicker>
-                                    <TextBlock Name="ttb_DayPicker" Text="→" FontSize="16" VerticalAlignment="Center" Margin="12,0" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVis}}" />
-                                    <DatePicker Name="DayPicker2" SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" Width="180" Height="32" Style="{StaticResource CustomDatePickerStyle}" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVis}}">
-                                        <DatePicker.CalendarStyle>
-                                            <Style TargetType="Calendar">
-                                                <Setter Property="CalendarItemStyle">
-                                                    <Setter.Value>
-                                                        <Style TargetType="CalendarItem">
-                                                            <Setter Property="FontSize" Value="18" />
-                                                            <Setter Property="Padding" Value="10" />
-
-                                                        </Style>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Style>
-                                        </DatePicker.CalendarStyle>
-
-                                        <DatePicker.Resources>
-                                            <!-- 日期文字置中 -->
-                                            <Style TargetType="DatePickerTextBox">
-                                                <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                                <Setter Property="VerticalContentAlignment" Value="Center" />
-                                                <Setter Property="FontSize" Value="18" />
-                                            </Style>
-                                        </DatePicker.Resources>
-                                    </DatePicker>
+                                    <!-- 僅在 IsCustomDateMode = true 時顯示 -->
+                                    <StackPanel Orientation="Horizontal"
+                                        Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <DatePicker Width="180" Height="32" Margin="8,0,0,0"
+                                             SelectedDate="{Binding FromDate}"
+                                             IsEnabled="{Binding IsCustomDateMode}"
+                                             Style="{StaticResource CustomDatePickerStyle}" />
+                                        <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
+                                        <DatePicker Width="180" Height="32"
+                                             SelectedDate="{Binding ToDate}"
+                                             IsEnabled="{Binding IsCustomDateMode}"
+                                             Style="{StaticResource CustomDatePickerStyle}" />
+                                    </StackPanel>
 
                                 </DockPanel>
 

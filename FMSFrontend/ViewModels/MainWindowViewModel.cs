@@ -317,6 +317,8 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
+                if (!_auth.RequireLoginAndWriteOperation(8, "Id = " + storageId))
+                    return;
                 var success = await _PlcService.EleMagzineDoorSwitchAsync(0,0,true);
                 if (!success)
                 {
@@ -336,6 +338,8 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
+                if (!_auth.RequireLoginAndWriteOperation(9, "Id = " + storageId))
+                    return;
                 var success = await _PlcService.EleMagzineDoorSwitchAsync(0, 1, true);
                 if (!success)
                 {
@@ -358,6 +362,8 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private async Task DoorLightSwitchChanged(bool isChecked)
         {
+            if (!_auth.RequireLoginAndWriteOperation(10, isChecked ? "On" : "Off"))
+                return;
             try
             {
                 Cnt++;
@@ -396,6 +402,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void Logout()
         {
+            _auth.RequireLoginAndWriteOperation(2);
             _userSession.SignOut();
             _windowService.ShowMessage("您已成功登出！");
         }
@@ -423,7 +430,7 @@ namespace FMSFrontend.ViewModels
 
                 var loginDatas = dtos.Select(dto => new LoginInfo
                 {
-                    Name = dto.WorkerNumber,
+                    Name = dto.WorkerName,
                     Password = dto.Password
                 }).ToList();
 
@@ -437,6 +444,7 @@ namespace FMSFrontend.ViewModels
                     _userSession.SignIn(loginName);
                     _windowService.ShowMessage($"歡迎登入，{loginName}！");
                 }
+                _auth.RequireLoginAndWriteOperation(1);
             }
             catch
             {
@@ -460,31 +468,26 @@ namespace FMSFrontend.ViewModels
             }
             if (!StartStatus)
             {
+                if (Robot.AsrsState == AsrsControlState.Started)
+                    return;
+
                 try
                 {
-                    if (Robot.AsrsState == AsrsControlState.Started)
+                    if (!_auth.RequireLoginAndWriteOperation(3))
                         return;
-
-                    try
+                    var success = await _robotService.SetRobotStartAsync();
+                    if (!success)
                     {
-                        var success = await _robotService.SetRobotStartAsync();
-                        if (!success)
-                        {
-                            new DialogMessageWindow("忙碌中").ShowDialog();
-                            return;
-                        }
+                        new DialogMessageWindow("忙碌中").ShowDialog();
+                        return;
+                    }
 
-                        // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
-                        Robot.AsrsState = AsrsControlState.Started;
-                    }
-                    catch (Exception ex)
-                    {
-                        new DialogMessageWindow($"Start Fail\n{ex.Message}").ShowDialog();
-                    }
+                    // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
+                    Robot.AsrsState = AsrsControlState.Started;
                 }
-                catch
+                catch (Exception ex)
                 {
-                    new DialogMessageWindow("Start Fail").ShowDialog();
+                    new DialogMessageWindow($"Start Fail\n{ex.Message}").ShowDialog();
                 }
             }
         }
@@ -500,33 +503,25 @@ namespace FMSFrontend.ViewModels
             }
             if (!PauseStatus)
             {
+                if (Robot.AsrsState == AsrsControlState.Paused)
+                    return;
+                if (!_auth.RequireLoginAndWriteOperation(4))
+                    return;
                 try
                 {
-                    if (Robot.AsrsState == AsrsControlState.Paused)
+                    var success = await _robotService.SetRobotPauseAsync();
+                    if (!success)
+                    {
+                        new DialogMessageWindow("忙碌中").ShowDialog();
                         return;
-
-                    try
-                    {
-                        var success = await _robotService.SetRobotPauseAsync();
-                        if (!success)
-                        {
-                            new DialogMessageWindow("忙碌中").ShowDialog();
-                            return;
-                        }
-
-                        // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
-                        Robot.AsrsState = AsrsControlState.Paused;
                     }
-                    catch (Exception ex)
-                    {
-                        new DialogMessageWindow($"Pause Fail\n{ex.Message}").ShowDialog();
-                    }
+                    // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
+                    Robot.AsrsState = AsrsControlState.Paused;
                 }
-                catch
+                catch (Exception ex)
                 {
-                    new DialogMessageWindow("Pause Fail").ShowDialog();
+                    new DialogMessageWindow($"Pause Fail\n{ex.Message}").ShowDialog();
                 }
-
             }
         }
         [RelayCommand]
@@ -540,31 +535,25 @@ namespace FMSFrontend.ViewModels
             }
             if (!StopStatus)
             {
+                if (Robot.AsrsState == AsrsControlState.Stopped)
+                    return;
                 try
                 {
-                    if (Robot.AsrsState == AsrsControlState.Stopped)
+                    if (!_auth.RequireLoginAndWriteOperation(5))
                         return;
-
-                    try
+                    var success = await _robotService.SetRobotStopAsync();
+                    if (!success)
                     {
-                        var success = await _robotService.SetRobotStopAsync();
-                        if (!success)
-                        {
-                            new DialogMessageWindow("忙碌中").ShowDialog();
-                            return;
-                        }
+                        new DialogMessageWindow("忙碌中").ShowDialog();
+                        return;
+                    }
 
-                        // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
-                        Robot.AsrsState = AsrsControlState.Stopped;
-                    }
-                    catch (Exception ex)
-                    {
-                        new DialogMessageWindow($"Stop Fail\n{ex.Message}").ShowDialog();
-                    }
+                    // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
+                    Robot.AsrsState = AsrsControlState.Stopped;
                 }
-                catch
+                catch (Exception ex)
                 {
-                    new DialogMessageWindow("Stop Fail").ShowDialog();
+                    new DialogMessageWindow($"Stop Fail\n{ex.Message}").ShowDialog();
                 }
             }
         }
@@ -580,6 +569,8 @@ namespace FMSFrontend.ViewModels
             }
             try
             {
+                if (!_auth.RequireLoginAndWriteOperation(6))
+                    return;
                 var success = await _robotService.ASRSRobotResetStatusAsync(0);
                 if (!success)
                 {
@@ -598,6 +589,8 @@ namespace FMSFrontend.ViewModels
             if (!_auth.RequireLogin())
                 return;
             var target = !DispatchStatus;
+            if (!_auth.RequireLoginAndWriteOperation(7, target ? " :On" : " :Off"))
+                return;
             try
             {
                 var ok = await _robotService.SetASRSDispatchSwitchAsync(target);

@@ -2,11 +2,11 @@
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
-using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
+using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Factory;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
@@ -29,7 +29,7 @@ namespace FMSFrontend.ViewModels
         private readonly IWindowService _windowService;
         private readonly IWorksheetsService _worksheetService;
         private readonly IMachinesService _machinesService;
-
+        private readonly IAuthorizationService _authorizationService;
         // === Singleton ===
         private readonly MachineStore _machineStore;
         public ObservableCollection<MachineModel> AllMachines => _machineStore.Machines;
@@ -47,17 +47,20 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private MachineDisplayData displayData; //顯示機台詳細資訊
 
         public int MachineNumber = 0;
-        public string  SelectMachineName = "";
+        public string SelectMachineName = "";
 
         [RelayCommand]
         private async Task RestrictionClick() //禁用事件
         {
             try
             {
+
                 var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
                 if (edm != null)
                 {
                     bool canctrl = !edm.OscarEdm.CanControl;
+                    if (!_authorizationService.RequireLoginAndWriteOperation(18, " " + edm.MachineName + ": " + canctrl))
+                        return;
                     await _machinesService.SetMachineCanControlAsync(edm.MachineNumber - 1, canctrl);
                     canctrlDelay = 5;
                 }
@@ -71,10 +74,13 @@ namespace FMSFrontend.ViewModels
             {
                 var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
                 if (edm != null)
+                {
+                    if (!_authorizationService.RequireLoginAndWriteOperation(19, ": " + edm.MachineName))
+                        return;
                     await _machinesService.ResetDispatchErrorMessageAsync(edm.MachineNumber - 1);
+                }
             }
             catch { }
-                
         }
         //[ObservableProperty] private MachineOverviewCard selectedMachine;
         [ObservableProperty] private int machineInfoTabControlSelectedIndex; //機台資訊TabControl選擇索引 
@@ -82,104 +88,99 @@ namespace FMSFrontend.ViewModels
         public string MachineImagePath => Machine.MachineImagePath; //機台圖片路徑
         public string MachineName => Machine.MachineName; //機台名稱
 
-        
+
 
         //工單資訊
         public ObservableCollection<WorkOrderRow> WorkOrders { get; } = new();
-        public List<string> DateFilterOptions { get; set; } = new() { "今天", "前7天", "自訂" };
-        public bool IsCustomDateMode => SelectedFilterOption == "自訂";
-        [ObservableProperty] private string selectedFilterOption = "今天";
-        [ObservableProperty] private int selectedFilterIndex = 0;
 
+        // ===== 日期篩選 =====
+        public ObservableCollection<string> DateFilterOptions { get; set; } = new() { "今天", "前7天", "自訂" };
+        [ObservableProperty] private string selectedFilterOption = "今天";
         [ObservableProperty] private DateTime? fromDate = DateTime.Today;
         [ObservableProperty] private DateTime? toDate = DateTime.Today;
+        [ObservableProperty] private bool isCustomDateMode;
 
-        private DateTime? lastValidFromDate = DateTime.Today;
-        private DateTime? lastValidToDate = DateTime.Today;
+        private bool _updatingDate;
         partial void OnSelectedFilterOptionChanged(string value)
         {
-            OnPropertyChanged(nameof(IsCustomDateMode));
+            IsCustomDateMode = value == "自訂";
             ApplyDateFilter();
             _ = RefreshFetch();
         }
-        partial void OnSelectedFilterIndexChanged(int value)
-        {
-            // 當以 index 選擇時，轉成對應的選項文字，讓現有的文字處理流程負責套用與抓取
-            if (value >= 0 && value < DateFilterOptions.Count)
-            {
-                SelectedFilterOption = DateFilterOptions[value];
-            }
-        }
-        partial void OnFromDateChanged(DateTime? value)
-        {
-            if (value == null || ToDate == null)
-            {
-                lastValidFromDate = value;
-                return;
-            }
-            if (value > ToDate)
-            {
-                _windowService.ShowMessage("開始日期不能大於結束日期");
-                FromDate = lastValidFromDate;
-                return;
-            }
-            if ((ToDate - value)?.TotalDays > 31)
-            {
-                _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
-                FromDate = lastValidFromDate;
-                return;
-            }
-            lastValidFromDate = value;
-            if (IsCustomDateMode) _ = RefreshFetch(); // 若為自訂模式且日期變更，重新抓取
-        }
-        partial void OnToDateChanged(DateTime? value)
-        {
-            if (value == null || FromDate == null)
-            {
-                lastValidToDate = value;
-                return;
-            }
-
-            if (value < FromDate)
-            {
-                _windowService.ShowMessage("結束日期不能小於開始日期");
-                ToDate = lastValidToDate;
-                return;
-            }
-
-            if ((value - FromDate)?.TotalDays > 31)
-            {
-                _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
-                ToDate = lastValidToDate;
-                return;
-            }
-
-            lastValidToDate = value;
-            // 若為自訂模式且日期變更，重新抓取
-            if (IsCustomDateMode) _ = RefreshFetch();
-        }
-
         private void ApplyDateFilter()
         {
+            _updatingDate = true;
             switch (SelectedFilterOption)
             {
                 case "今天":
-                    ToDate = DateTime.Today;
-                    FromDate = DateTime.Today;
-                    break;
+                    FromDate = DateTime.Today; ToDate = DateTime.Today; break;
                 case "前7天":
-                    ToDate = DateTime.Today;
-                    FromDate = DateTime.Today.AddDays(-6); // 包含今天一共7天
-                    break;
+                    FromDate = DateTime.Today.AddDays(-6); ToDate = DateTime.Today; break;
                 case "自訂":
-                default:
-                    break;
+                    FromDate = DateTime.Today.AddMonths(-1); ToDate = DateTime.Today; break;
+                default: break; // 保留使用者輸入
             }
+            _updatingDate = false;
+        }
+        partial void OnFromDateChanged(DateTime? value)
+        {
+            if (_updatingDate || value == null || ToDate == null) return;
+            _updatingDate = true;
+            try
+            {
+                var today = DateTime.Today;
+                var from = value.Value.Date;
+                var to = ToDate.Value.Date;
+                //日期邏輯判斷
+                if (from > today) from = today;         // 封頂今天
+                if (to > today) to = today;             // 封頂今天
+                if (from > to) to = from.AddMonths(1);  // 如果開始日大於結束日，調整結束日為開始日加一個月
+                if (to > from.AddMonths(1))             // 一個月範圍限制
+                {
+                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    to = from.AddMonths(1);
+                }
+                if (to > today) to = today; // 避免被 AddMonths 推到未來
+                FromDate = from;
+                ToDate = to;
+            }
+            finally
+            {
+                _updatingDate = false;
+            }
+            _ = RefreshFetch(); // 若為自訂模式且日期變更，重新抓取
+        }
+        partial void OnToDateChanged(DateTime? value)
+        {
+            if (_updatingDate || value == null || FromDate == null) return;
+            _updatingDate = true;
+            try
+            {
+                var today = DateTime.Today;
+                var to = value.Value.Date;
+                var from = FromDate.Value.Date;
+                if (to > today) to = today; // 封頂今天（結束日不能超過今天）
+                if (to < from) from = to.AddMonths(-1); // 如果結束日小於開始日，調整開始日為結束日減一個月
+                if (from < to.AddMonths(-1)) // 一個月範圍限制
+                {
+                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    from = to.AddMonths(-1);
+                }
+                if (from > today) from = today; // 避免 from 被推到未來（理論上不會，但保險）
+                FromDate = from;
+                ToDate = to;
+            }
+            finally
+            {
+                _updatingDate = false;
+            }
+            _ = RefreshFetch();
         }
         //設定日期End
         private async Task RefreshFetch()
         {
-            try {
+            try
+            {
                 if (FromDate != null && ToDate != null)
                 {
                     List<WorksheetsTimelineDto>? WorksheetsTimelineDtos =
@@ -207,7 +208,7 @@ namespace FMSFrontend.ViewModels
                 {
                     _windowService.ShowMessage("日期格式錯誤");
                 }
-            } 
+            }
             catch
             {
             }
@@ -221,8 +222,7 @@ namespace FMSFrontend.ViewModels
             _machineStore = parent._machineStore;
             _worksheetService = parent._worksheetsService;
             _machinesService = parent._machinesService;
-
-           
+            _authorizationService = parent._authorizationService;
 
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
             _timer.Tick += (_, __) => RefreshFromStore();
@@ -255,7 +255,7 @@ namespace FMSFrontend.ViewModels
         }
         public void OnPageActivated()
         {
-            
+
         }
         public void OnPageDeactivated()
         {
@@ -263,7 +263,7 @@ namespace FMSFrontend.ViewModels
             _timer = null!;
         }
         bool test = false;
-       public int canctrlDelay = 3;
+        public int canctrlDelay = 3;
         private void RefreshFromStore()
         {
             if (Machine == null || DisplayData == null) return;
@@ -272,7 +272,7 @@ namespace FMSFrontend.ViewModels
             if (edm == null || edm.OscarEdm == null) return;
             MachineNumber = int.TryParse(edm.OscarEdm.MachineNumber, out var num) ? num : -1;
             test = !test;
-            if(canctrlDelay>0) canctrlDelay--;
+            if (canctrlDelay > 0) canctrlDelay--;
             if (canctrlDelay == 0) DisplayData.CanControl = edm.OscarEdm.CanControl;
             // 機台資訊
             DisplayData.MachineNumber = edm.OscarEdm.MachineNumber;
@@ -331,7 +331,7 @@ namespace FMSFrontend.ViewModels
         public partial class MachineDisplayData : ObservableObject
         {
             //機台禁用
-            [ObservableProperty] private bool canControl = false; 
+            [ObservableProperty] private bool canControl = false;
             //機台資訊
             [ObservableProperty] private string machineNumber = "";
             [ObservableProperty] private string machineStatus = "";
@@ -376,7 +376,7 @@ namespace FMSFrontend.ViewModels
             [ObservableProperty] private string hV = "";
             [ObservableProperty] private string jT = "";
             [ObservableProperty] private string jD = "";
-            
+
 
         }
         public class WorkOrderRow

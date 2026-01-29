@@ -2,13 +2,14 @@
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Controls;
 using FMSFrontend.Features.Services;
-using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
+using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Factory;
 using FMSFrontend.ViewModels.Production;
+using IniFile;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -29,6 +30,8 @@ namespace FMSFrontend.ViewModels
         public readonly IMachinesService _machinesService;
         public readonly IWorksheetsService _worksheetsService;
         public readonly IPlcService _plcService;
+        public readonly IAuthorizationService _authorizationService;
+
 
         // === Singleton ===
         public readonly MachineStore _machineStore;
@@ -40,11 +43,11 @@ namespace FMSFrontend.ViewModels
         public MachineLiveUpdater _machineLiveUpdater;
         public StationLiveUpdater _stationLiveUpdater;
         DispatcherTimer _timer;
-        
+
         [ObservableProperty] private MachineOverviewCard? selectedMachine;
 
         // UI 綁定的卡片清單（會變）
-        public ObservableCollection<MachineOverviewCard> FilteredMachines { get; } = new(); 
+        public ObservableCollection<MachineOverviewCard> FilteredMachines { get; } = new();
         public ObservableCollection<MachineOverviewCard> AllMachines { get; } = new();
 
         [ObservableProperty] private int selectedTabIndex = 0; // 預設選 EDM
@@ -59,12 +62,13 @@ namespace FMSFrontend.ViewModels
             get => _currentMachineDetailContent;
             set => SetProperty(ref _currentMachineDetailContent, value);
         }
-        
+        int StationCount = 0; //工作站數量
         public MachineOverviewMainViewModel(
             IWindowService windowService,
             IMachinesService machinesService,
             IWorksheetsService worksheetsService,
             IPlcService plcService,
+            IAuthorizationService authorizationService,
             MachineStore machineStore,
             StationStore stationStore,
             MachineLiveUpdater machineLiveUpdater,
@@ -75,7 +79,7 @@ namespace FMSFrontend.ViewModels
             _windowService = windowService;
             _machinesService = machinesService;
             _worksheetsService = worksheetsService;
-           
+            _authorizationService = authorizationService;
             _machineStore = machineStore;
             _stationStore = stationStore;
 
@@ -86,6 +90,14 @@ namespace FMSFrontend.ViewModels
             _timer.Start();
 
             _ = _machineLiveUpdater.UpdateStatusAsync();
+
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "Basesitting.ini");
+            try
+            {
+                StationCount = Convert.ToInt16(ini.Read("Prarm", "StationCount"));
+            }
+            catch { }
+
             RefreshFromStore();
             RebuildFilteredMachines();
         }
@@ -142,7 +154,8 @@ namespace FMSFrontend.ViewModels
             }
 
             // 2) Station 卡（單一張）
-            if (AllMachines.Count > 0)
+
+            if (AllMachines.Count > 0 && StationCount != 0)
             {
                 var stationCard = AllMachines.FirstOrDefault(c => c.Type == MachineType.STATION);
                 if (stationCard == null)
@@ -346,10 +359,10 @@ namespace FMSFrontend.ViewModels
 
         public string MachineImagePath => Type switch
         {
-            MachineType.EDM =>     "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png",
-            MachineType.CNC =>     "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/CNC.png",
-            MachineType.ZNC =>     "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/ZNC.png",
-            MachineType.ROBOT =>   "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/Robot.png",
+            MachineType.EDM => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png",
+            MachineType.CNC => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/CNC.png",
+            MachineType.ZNC => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/ZNC.png",
+            MachineType.ROBOT => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/Robot.png",
             MachineType.STATION => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/FMS.png",
             _ => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/RobotOff.png"
         };

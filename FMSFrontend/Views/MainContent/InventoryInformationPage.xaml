@@ -53,8 +53,10 @@
                 <TabControl Grid.Row="0" SelectedIndex="{Binding SelectedTabIndex}" Style="{StaticResource FlatTabControlStyle}" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}" Height="40" Padding="0" Margin="0,8,0,0" Background="Transparent">
                     <TabItem Header="架上工件" Tag="#2779A7" />
                     <TabItem Header="架上電極" Tag="#2779A7" />
+                    <!--    
                     <TabItem Header="已下架工件" Tag="#2779A7" />
                     <TabItem Header="已下架電極" Tag="#2779A7" />
+                    -->
                 </TabControl>
 
                 <!-- 工具列（可選）：搜索 + 重新整理；若不需要可整段刪除 -->
@@ -87,7 +89,7 @@
                         </Border>
                     </Grid>
 
-                    <Button Grid.Column="1" Content="重新整理" Margin="12,0,0,0" Width="96" Height="40" Command="{Binding RefreshCommand}" Foreground="Black" Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}"/>
+                    <Button Grid.Column="1" Content="重新整理" Margin="12,0,0,0" Width="120" Height="40" Command="{Binding RefreshCommand}" Foreground="White" Background="#1976D2" BorderBrush="#E5E7EB" BorderThickness="1" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}"/>
                 </Grid>
 
                 <!-- 主內容：表格（完全依你提供的樣式與寫法） -->

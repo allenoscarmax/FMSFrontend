@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
-using FMSFrontend.Features.Services.FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
@@ -26,13 +25,15 @@ namespace FMSFrontend.ViewModels.Windows
         private readonly IWorkpieceService _workpieceService;
         private readonly IProbeService _probeService;
         private readonly IStorageService _storageService;
-
+        private readonly IAuthorizationService _authorizationService;
 
         // 空畫面
-        public ShowMaterialWindowViewModel(IWindowService windowService,IElectrodeService electrodeService,
+        public ShowMaterialWindowViewModel(IWindowService windowService,
+        IElectrodeService electrodeService,
         IWorkpieceService workpieceService,
         IProbeService probeService,
-        IStorageService storageService)
+        IStorageService storageService,
+        IAuthorizationService authorizationService)
         {
             Kind = MaterialKind.None;
 
@@ -43,6 +44,7 @@ namespace FMSFrontend.ViewModels.Windows
             _probeService = probeService;
             _storageService = storageService;
             _windowService = windowService;
+            _authorizationService = authorizationService;
         }
 
         [ObservableProperty]
@@ -116,33 +118,54 @@ namespace FMSFrontend.ViewModels.Windows
                 try
                 {
                     bool ok;
+                    if (!_authorizationService.RequireLoginAndWriteOperation(12, " " + SlotCode + ": " + IsLocked.ToString()))
+                    {
+                        IsLocked = !IsLocked; //還原勾選狀態
+                        return;
+                    }
+
                     if (e.ElectrodeName.Contains("Probe"))
                     {
-                        ok  = await _probeService.DB_SetProbeRestrictionByTagSerialAsync(e.TagSerial, IsLocked);
+                        ok = await _probeService.DB_SetProbeRestrictionByTagSerialAsync(e.TagSerial, IsLocked);
                     }
                     else
                         ok = await _electrodeService.DB_SetElectrodeRestrictionByTagSerialAsync(e.TagSerial, IsLocked);
+                    if (!ok)
+                        _windowService.ShowMessage("回傳失敗");
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                }
             }
         }
 
         [RelayCommand]
-        private async Task  UpdataWorkpiece() //工件鎖定
+        private async Task UpdataWorkpiece() //工件鎖定
         {
             if (DetailViewModel is WorkpieceDetailViewModel)
             {
                 WorkpieceDetailViewModel w = (WorkpieceDetailViewModel)DetailViewModel;
                 try
                 {
+                    if (!_authorizationService.RequireLoginAndWriteOperation(13, " " + SlotCode + ": " + IsLocked.ToString()))
+                    {
+                        IsLocked = !IsLocked; //還原勾選狀態
+                        return;
+                    }
                     var ok = await _workpieceService.SetWorkpieceRestrictionByTagSerialAsync(w.SerialCode, IsLocked);
+                    if (!ok)
+                        _windowService.ShowMessage("回傳失敗");
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                }
             }
         }
 
         [RelayCommand]
-        private async Task UpdataStorage() //電極庫鎖定
+        private async Task UpdataStorage() //電極庫禁用
         {
             if (SlotCode == null) return;
             string[] code = SlotCode.Split(":");
@@ -150,14 +173,24 @@ namespace FMSFrontend.ViewModels.Windows
             {
                 try
                 {
+                    if (!_authorizationService.RequireLoginAndWriteOperation(14, " " + SlotCode + ": " + IsDisabled.ToString()))
+                    {
+                        IsDisabled = !IsDisabled; //還原勾選狀態
+                        return;
+                    }
                     string storageName = code[0];
                     string storageNumber = code[1];
                     int region = int.Parse(code[2]);
                     int column = int.Parse(code[3]);
                     int row = int.Parse(code[4]);
                     var ok = await _storageService.SetRestrictionByLocationAsync(storageName, storageNumber, region, column, row, IsDisabled);
+                    if (!ok)
+                        _windowService.ShowMessage("回傳失敗");
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                }
             }
         }
 
@@ -191,16 +224,25 @@ namespace FMSFrontend.ViewModels.Windows
                 // 用你現有的 API：把 restriction 跟 state 分開思考
                 // 解除預約 = state 改 Vacant
                 // 這裡需要 StorageDto（建議帶 _id 最穩）
-
-                var ss = await _storageService.GetStorageByLocationAsync(storageName, storageNumber , region, column, row);
-                ss.state = StorageStateEnum.Vacant.ToString();
-                var ok = await _storageService.UpdateStorageDataAsync(ss, ct);
-                if (ok)
+                if (!_authorizationService.RequireLoginAndWriteOperation(15, " " + SlotCode))
+                    return;
+                var ss = await _storageService.GetStorageByLocationAsync(storageName, storageNumber, region, column, row);
+                if (ss != null)
                 {
-                    CurrentStorageState = StorageStateEnum.Vacant.ToString(); // 立刻讓按鈕 disabled
+                    ss.state = StorageStateEnum.Vacant.ToString();
+                    var ok = await _storageService.UpdateStorageDataAsync(ss, ct);
+                    if (ok)
+                    {
+                        CurrentStorageState = StorageStateEnum.Vacant.ToString(); // 立刻讓按鈕 disabled
+                    }
+                    else
+                        _windowService.ShowMessage("回傳失敗");
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _windowService.ShowMessage($"例外狀況: {ex.Message}");
+            }
         }
 
         public string KindText => Kind switch
