@@ -2,7 +2,7 @@
 
     <!-- 下拉項目的樣式 -->
     <Style x:Key="ComboBoxItemStyle" TargetType="ComboBoxItem">
-        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontSize" Value="20" />
         <!-- 放大字體 -->
         <Setter Property="Padding" Value="12,8" />
         <!-- 增加上下左右間距 -->
@@ -48,7 +48,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <!-- 主體 ComboBox Style -->
     <Style x:Key="ComboBoxStyle" TargetType="ComboBox">
         <Setter Property="Foreground" Value="Black" />

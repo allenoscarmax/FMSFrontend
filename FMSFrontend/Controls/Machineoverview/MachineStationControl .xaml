@@ -9,192 +9,192 @@
              mc:Ignorable="d"
              d:DesignHeight="661"
              d:DesignWidth="1432">
-	<UserControl.Resources>
-		<selectors:TabItemBackgroundSelector x:Key="TabtemColorSelector" />
-	</UserControl.Resources>
-	<Border BorderBrush="#000000" BorderThickness="1" CornerRadius="6">
-		<Grid Background="{DynamicResource PageViewBrush}">
-			<!-- 🧩 頂層切 2 Row：標題 + 內容 -->
-			<Grid.RowDefinitions>
-				<RowDefinition Height="50" />
-				<!-- 標題列 -->
-				<RowDefinition Height="*" />
-				<!-- 內容列 -->
-			</Grid.RowDefinitions>
+    <UserControl.Resources>
+        <selectors:TabItemBackgroundSelector x:Key="TabtemColorSelector" />
+    </UserControl.Resources>
+    <Border BorderBrush="#000000" BorderThickness="1" CornerRadius="6">
+        <Grid Background="{DynamicResource PageViewBrush}">
+            <!-- 🧩 頂層切 2 Row：標題 + 內容 -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <!-- 標題列 -->
+                <RowDefinition Height="*" />
+                <!-- 內容列 -->
+            </Grid.RowDefinitions>
 
-			<!-- 🔹 標題區塊 -->
-			<Border Grid.Row="0" Background="#CCCCCC" BorderThickness="1" BorderBrush="#000000">
-				<!-- 修正：使用 Grid 分三欄，避免在無 Grid 的 Border 內使用 Grid.Column -->
-				<Grid Margin="12,0">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition />
-						<ColumnDefinition Width="Auto" />
-						<ColumnDefinition Width="Auto" />
-					</Grid.ColumnDefinitions>
+            <!-- 🔹 標題區塊 -->
+            <Border Grid.Row="0" Background="#CCCCCC" BorderThickness="1" BorderBrush="#000000">
+                <!-- 修正：使用 Grid 分三欄，避免在無 Grid 的 Border 內使用 Grid.Column -->
+                <Grid Margin="12,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-					<!-- 左側原資訊 -->
-					<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-						<TextBlock Text="{Binding MachineName}" d:Text="EDM1" TextDecorations="Underline" FontSize="20" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
-						<TextBlock Text=" 機台資訊" FontSize="20" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
-					</StackPanel>
+                    <!-- 左側原資訊 -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding MachineName}" d:Text="EDM1" TextDecorations="Underline" FontSize="20" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                        <TextBlock Text=" 機台資訊" FontSize="20" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                    </StackPanel>
 
-					<!-- 右側按鈕：刷新 + 自動更新 -->
-				</Grid>
-			</Border>
-			<!-- 主內容區：移除 RowSpan 以避免覆蓋標題區 -->
-			<Grid Grid.Row="1">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="227" />
-					<ColumnDefinition Width="*" />
-					<ColumnDefinition Width="*" />
-				</Grid.ColumnDefinitions>
-				<!-- 🔹 左上圖片 -->
-				<Border Grid.Column="0" Background="White" CornerRadius="8" Margin="8,160,8,160" BorderBrush="LightGray" BorderThickness="1">
-					<Image Source="{Binding MachineImagePath}" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />
-				</Border>
+                    <!-- 右側按鈕：刷新 + 自動更新 -->
+                </Grid>
+            </Border>
+            <!-- 主內容區：移除 RowSpan 以避免覆蓋標題區 -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="227" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <!-- 🔹 左上圖片 -->
+                <Border Grid.Column="0" Background="White" CornerRadius="8" Margin="8,160,8,160" BorderBrush="LightGray" BorderThickness="1">
+                    <Image Source="{Binding MachineImagePath}" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />
+                </Border>
 
-				<Border Grid.Column="1" Background="White" CornerRadius="10" Margin="8" SnapsToDevicePixels="True">
-					<Border.Effect>
-						<DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
-					</Border.Effect>
-					<Grid>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="32" />
-							<RowDefinition Height="*" />
-						</Grid.RowDefinitions>
-						<!-- 區塊標題 -->
-						<Border Grid.Row="0"  Background="#444" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
-							<TextBlock Text="資訊區" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
-						</Border>
-						<Border Grid.Row="1"  Background="#FFFFFF" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
-							<Grid>
-								<!-- 2 Columns -->
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="*" />
-									<ColumnDefinition Width="80" />
-									<ColumnDefinition Width="*" />
-									<ColumnDefinition Width="80" />
-									<ColumnDefinition Width="30" />
-
-
-								</Grid.ColumnDefinitions>
-
-								<!-- 11 Rows -->
-								<Grid.RowDefinitions>
-									<RowDefinition Height="50"/>
-									<RowDefinition Height="50"/>
-									<RowDefinition Height="50"/>
-									<RowDefinition Height="50"/>
-									<RowDefinition Height="50"/>
-									<RowDefinition Height="50"/>
-									<RowDefinition Height="50"/>
-
-								</Grid.RowDefinitions>
-								<!-- 🔥 Button 樣式（寬100、高40、圓角3、藍底白字） -->
-								<Grid.Resources>
-									<Style x:Key="LabelText" TargetType="TextBlock">
-										<Setter Property="Foreground" Value="Black"/>
-										<Setter Property="Background" Value="Transparent"/>
-										<Setter Property="FontSize" Value="16"/>
-										<Setter Property="FontSize" Value="16"/>
-										<Setter Property="HorizontalAlignment" Value="Center"/>
-										<Setter Property="VerticalAlignment" Value="Center"/>
-										<Setter Property="TextAlignment" Value="Center"/>
-
-									</Style>
-									<Style x:Key="DataText" TargetType="TextBlock">
-										<Setter Property="Foreground" Value="Black"/>
-										<Setter Property="Background" Value="Transparent"/>
-										<Setter Property="FontSize" Value="16"/>
-										<Setter Property="HorizontalAlignment" Value="Center"/>
-										<Setter Property="VerticalAlignment" Value="Center"/>
-										<Setter Property="TextAlignment" Value="Center"/>
-									</Style>
-								</Grid.Resources>
-
-								<!-- Row1~Row10 -->
-								<TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="空壓異常"/>
-								<TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Air_error}"/>
-								<Border Grid.Row="0" Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
-								
-								<TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource LabelText}" Text="門開著"/>
-								<TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.DoorisOpen}"/>
-								<Border Grid.Row="0" Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
-								
-								<TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text="RFID在原點上"/>
-								<TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.RFIDisPolarization						}"/>
-								<Border Grid.Row="1" Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
-								
-								<TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource LabelText}" Text="工件在組裝站上"/>
-								<TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.WorkpieceOnAssemblyStation}"/>
-								<Border Grid.Row="1" Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
-								
-								<TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="入料通知"/>
-								<TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Notification_IncomingPart}"/>
-								<Border Grid.Row="2"  Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
-								
-								<TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource LabelText}" Text="等待工件回來組裝站"/>
-								<TextBlock Grid.Row="2" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.Notification_WaitingWorkpieceReturn}"/>
-								<Border Grid.Row="2" Grid.Column="3"  Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
-								
-								<TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="異常"/>
-								<TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Alarm}"/>
-								<Border Grid.Row="3" Grid.Column="1"  Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
-								
-								<TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource LabelText}" Text="要求入料中"/>
-								<TextBlock Grid.Row="3" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.Require_IncomingPart}"/>
-								<Border Grid.Row="3" Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
-								
-								<TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="要求出料中"/>
-								<TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Require_OutcomingPart}"/>
-								<Border Grid.Row="4"  Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
-								
-								<TextBlock Grid.Row="4" Grid.Column="2" Style="{StaticResource LabelText}" Text="門關著"/>
-								<TextBlock Grid.Row="4" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.Notification_Doorislocked}"/>
-								<Border Grid.Row="4"  Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
-							</Grid>
-						</Border>
-					</Grid>
-				</Border>
-				<Border Grid.Column="2" Background="White" CornerRadius="10" Margin="8" SnapsToDevicePixels="True">
-					<Border.Effect>
-						<DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
-					</Border.Effect>
-					<Grid>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="32" />
-							<RowDefinition Height="*" />
-						</Grid.RowDefinitions>
-						<!-- 區塊標題 -->
-						<Border Grid.Row="0"  Background="#444" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
-							<TextBlock Text="控制區" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
-						</Border>
-						<Border Grid.Row="1"  Background="#FFFFFF" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
+                <Border Grid.Column="1" Background="White" CornerRadius="10" Margin="8" SnapsToDevicePixels="True">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="32" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <!-- 區塊標題 -->
+                        <Border Grid.Row="0"  Background="#444" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
+                            <TextBlock Text="資訊區" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Row="1"  Background="#FFFFFF" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
                             <Grid>
-								<!-- 2 Columns -->
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="200" />
+                                <!-- 2 Columns -->
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="30" />
+
+
+                                </Grid.ColumnDefinitions>
+
+                                <!-- 11 Rows -->
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"/>
+                                    <RowDefinition Height="50"/>
+                                    <RowDefinition Height="50"/>
+                                    <RowDefinition Height="50"/>
+                                    <RowDefinition Height="50"/>
+                                    <RowDefinition Height="50"/>
+                                    <RowDefinition Height="50"/>
+
+                                </Grid.RowDefinitions>
+                                <!-- 🔥 Button 樣式（寬100、高40、圓角3、藍底白字） -->
+                                <Grid.Resources>
+                                    <Style x:Key="LabelText" TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="FontSize" Value="16"/>
+                                        <Setter Property="FontSize" Value="16"/>
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="TextAlignment" Value="Center"/>
+
+                                    </Style>
+                                    <Style x:Key="DataText" TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="FontSize" Value="16"/>
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="TextAlignment" Value="Center"/>
+                                    </Style>
+                                </Grid.Resources>
+
+                                <!-- Row1~Row10 -->
+                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="空壓異常"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Air_error}"/>
+                                <Border Grid.Row="0" Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
+
+                                <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource LabelText}" Text="門開著"/>
+                                <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.DoorisOpen}"/>
+                                <Border Grid.Row="0" Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text="RFID在原點上"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.RFIDisPolarization						}"/>
+                                <Border Grid.Row="1" Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource LabelText}" Text="工件在組裝站上"/>
+                                <TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.WorkpieceOnAssemblyStation}"/>
+                                <Border Grid.Row="1" Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="入料通知"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Notification_IncomingPart}"/>
+                                <Border Grid.Row="2"  Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource LabelText}" Text="等待工件回來組裝站"/>
+                                <TextBlock Grid.Row="2" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.Notification_WaitingWorkpieceReturn}"/>
+                                <Border Grid.Row="2" Grid.Column="3"  Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="異常"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Alarm}"/>
+                                <Border Grid.Row="3" Grid.Column="1"  Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
+
+                                <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource LabelText}" Text="要求入料中"/>
+                                <TextBlock Grid.Row="3" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.Require_IncomingPart}"/>
+                                <Border Grid.Row="3" Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="要求出料中"/>
+                                <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Require_OutcomingPart}"/>
+                                <Border Grid.Row="4"  Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
+
+                                <TextBlock Grid.Row="4" Grid.Column="2" Style="{StaticResource LabelText}" Text="門關著"/>
+                                <TextBlock Grid.Row="4" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.Notification_Doorislocked}"/>
+                                <Border Grid.Row="4"  Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+                <Border Grid.Column="2" Background="White" CornerRadius="10" Margin="8" SnapsToDevicePixels="True">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="32" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <!-- 區塊標題 -->
+                        <Border Grid.Row="0"  Background="#444" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
+                            <TextBlock Text="控制區" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Row="1"  Background="#FFFFFF" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
+                            <Grid>
+                                <!-- 2 Columns -->
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200" />
                                     <ColumnDefinition Width="120" />
                                     <ColumnDefinition Width="120" />
                                     <ColumnDefinition Width="*" />
-								</Grid.ColumnDefinitions>
+                                </Grid.ColumnDefinitions>
 
-								<!-- 11 Rows -->
-								<Grid.RowDefinitions>
-									<RowDefinition Height="60"/>
-									<RowDefinition Height="60"/>
-									<RowDefinition Height="60"/>
-									<RowDefinition Height="60"/>
+                                <!-- 11 Rows -->
+                                <Grid.RowDefinitions>
                                     <RowDefinition Height="60"/>
-									<RowDefinition Height="Auto"/>
-									<RowDefinition Height="Auto"/>
-									<RowDefinition Height="Auto"/>
-									<RowDefinition Height="Auto"/>
-									<RowDefinition Height="Auto"/>
-									<RowDefinition Height="Auto"/>
-								</Grid.RowDefinitions>
-								<!-- 🔥 Button 樣式（寬100、高40、圓角3、藍底白字） -->
-								<Grid.Resources>
+                                    <RowDefinition Height="60"/>
+                                    <RowDefinition Height="60"/>
+                                    <RowDefinition Height="60"/>
+                                    <RowDefinition Height="60"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <!-- 🔥 Button 樣式（寬100、高40、圓角3、藍底白字） -->
+                                <Grid.Resources>
                                     <Style x:Key="BlueButton" TargetType="Button">
                                         <Setter Property="Height" Value="40"/>
                                         <Setter Property="Foreground" Value="White"/>
@@ -262,10 +262,11 @@
 											Content="要求" Command="{Binding IncomingPartClickCommand}" CommandParameter="True" Margin="5"/>
                                 <Button    Grid.Row="3" Grid.Column="2" FontSize="18" Style="{StaticResource BlueButton}" Content="Close" Command="{Binding IncomingPartClickCommand}" CommandParameter="False" Margin="5" Visibility="Hidden" />
 
-                            </Grid>	</Border>
-					</Grid>
-				</Border>
-			</Grid>
-		</Grid>
-	</Border>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
 </UserControl>

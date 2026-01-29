@@ -36,6 +36,7 @@ namespace FMSFrontend.Features.Mappings
             model.WorkpieceShortName = ShortNameConversion(false, dto.workpieceName);   //20260120佑義要求修改電極名稱規則
         }
 
+
         private static string ShortNameConversion(bool isElectrode, string Name)
         {
             // 電極名稱規則修改為 末三碼-序號+字母 (A,B,C...)，工件名稱規則修改為 末三碼-序號
@@ -70,7 +71,8 @@ namespace FMSFrontend.Features.Mappings
                     if (isElectrode)
                         return Regex.Match(Name, @"_(\d+-[A-Za-z0-9]+)").Groups[1].Value;
                     else
-                        return Regex.Match(Name, @"-(\d+_\d+-[A-Za-z]+)$").Groups[1].Value;
+                        // return Regex.Match(Name, @"-(\d+_\d+-[A-Za-z]+)$").Groups[1].Value;
+                        return Name;
                 }
             }
             catch { }
