@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging.Messages; 
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using ControlzEx.Standard;
 using FMSFrontend.Extensions;
 using FMSFrontend.Features.Services;
@@ -21,7 +21,7 @@ using System.Windows;
 using static FMSFrontend.ViewModels.ElectrodeDetailViewModel;
 namespace FMSFrontend.Services
 {
-    
+
     public class WindowService : IWindowService
     {
         private ShowMaterialWindow? _materialWindow;
@@ -43,7 +43,7 @@ namespace FMSFrontend.Services
         {
             // 透過 DI 取得 Window 實例
             var window = _provider.GetRequiredService<UploadsheetsWindow>();
-           
+
             window.ShowDialog();
             // 新增：上傳視窗關閉後廣播訊息，讓其他 ViewModel 可接收到並刷新資料
             WeakReferenceMessenger.Default.Send(new UploadSheetsClosedMessage(true));
@@ -153,7 +153,7 @@ namespace FMSFrontend.Services
 
             _vm!.Kind = MaterialKind.Workpiece;
             _vm.SlotCode = slotCode ?? (!string.IsNullOrWhiteSpace(workpiece?.No) ? workpiece.No : workpiece?.Name);
-            _vm.DetailViewModel = new WorkpieceDetailViewModel(workpiece ?? new WorkpieceModel()); 
+            _vm.DetailViewModel = new WorkpieceDetailViewModel(workpiece ?? new WorkpieceModel());
             _vm.IsLocked = workpiece?.WorkRestriction ?? false;
             _vm.IsDisabled = workpiece?.StorageRestriction ?? false;
 
@@ -346,20 +346,20 @@ namespace FMSFrontend.Services
             foreach (var it in timeline)
                 dst.Add(new TimelineItemViewModel(it));
         }
-        
-        public WorkerEditResult? ShowAddWorkerWindow(List<LoginInfo> existingWorkers, string selectedName)
+
+        public WorkerEditResult? ShowAddWorkerWindow(List<LoginInfo> existingWorkers, string selectedNumber, string selectedName)
         {
             var window = _provider.GetRequiredService<AddWorrkerWindow>();
 
             if (window.DataContext is not AddWorkerViewModel vm)
                 throw new InvalidOperationException("AddWorrkerWindow 的 DataContext 應該是 AddWorkerViewModel");
 
-            vm.Initialize(existingWorkers, selectedName);
+            vm.Initialize(existingWorkers, selectedNumber, selectedName);
 
             bool? result = window.ShowDialog();
-            if (result == true && !string.IsNullOrWhiteSpace(vm.Name))
+            if (result == true && !string.IsNullOrWhiteSpace(vm.WorkerNumber) && !string.IsNullOrWhiteSpace(vm.WorkerName))
             {
-                return new WorkerEditResult(vm.Name, vm.Password);
+                return new WorkerEditResult(vm.WorkerNumber, vm.WorkerName, vm.Password);
             }
 
             return null;
@@ -504,6 +504,6 @@ namespace FMSFrontend.Services
     {
         public UploadSheetsClosedMessage(bool value) : base(value) { }
     }
-    public record WorkerEditResult(string Name, string Password);
+    public record WorkerEditResult(string Number, string Name, string Password);
 
 }

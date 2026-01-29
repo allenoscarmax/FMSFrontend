@@ -51,7 +51,7 @@ namespace FMSFrontend
             services.AddSingleton<IHttpService, HttpService>();
             services.AddSingleton<IWindowService, WindowService>();
             #region RestoreSingleton
-            
+
             // === Services ===
             services.AddSingleton<IElectrodeService, ElectrodeService>();
             services.AddSingleton<IProbeService, ProbeService>();
@@ -68,11 +68,10 @@ namespace FMSFrontend
             services.AddSingleton<IWorkerService, WorkerService>();
             services.AddSingleton<IAppointmentMaintenanceService, AppointmentMaintenanceService>();
             services.AddSingleton<ICommandScheduleService, CommandScheduleService>();
-            services.AddSingleton<IMachinesService, MachinesService>();
             services.AddSingleton<IAlarmService, AlarmService>();
             services.AddSingleton<IWorksheetAppService, WorksheetAppService>();
-
             services.AddSingleton<IAuthorizationService, AuthorizationService>();
+            services.AddSingleton<IOperationMessageLogService, OperationMessageLogService>();
 
 
             // === Singleton ===
@@ -92,7 +91,7 @@ namespace FMSFrontend
             services.AddSingleton<AlarmLiveUpdater>();
             services.AddSingleton<CommandScheduleLiveUpdater>();
             services.AddSingleton<RobotLiveUpdater>();
-            services.AddSingleton<PlcLiveUpdater>();          
+            services.AddSingleton<PlcLiveUpdater>();
             services.AddSingleton<RFIDBindLiveUpdater>();
             services.AddSingleton<ServerHealthLiveUpdater>();
             services.AddSingleton<StationLiveUpdater>();
@@ -155,23 +154,20 @@ namespace FMSFrontend
 
             services.AddTransient<TaskListViewModel>();
             services.AddTransient<FactoryLayoutViewModel>();
-            services.AddTransient<FactoryOverviewPageViewModel>();
-
-            services.AddTransient<MachineStationViewModel>();
             services.AddTransient<SelectWorksheetWindowViewModel>();
             services.AddTransient<SelectItemWindowViewModel>();
-
 
             //Windows
             services.AddTransient<SelectSharedElectrodeViewModel>();
             services.AddTransient<UploadSheetViewModel>();
-            services.AddTransient<ProbePairViewModel>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<ShutdownWindowViewModel>();
             services.AddTransient<AddWorkerViewModel>();
             services.AddTransient<ShowMachineWindowViewModel>();
             services.AddTransient<ShowRobotViewModel>();
             services.AddTransient<ReviseProcessViewModel>();
+
+
         }
         private void RegisterViews(IServiceCollection services)
         {
@@ -188,7 +184,10 @@ namespace FMSFrontend
             services.AddTransient<WorkOrder>();
             services.AddTransient<MachineMainDetailControl>();
             services.AddTransient<TaskListControl>();
-            services.AddTransient<FactoryOverviewPage>();
+            services.AddTransient<FactoryLayoutCanvasControl>();
+            services.AddTransient<TaskListControl>();
+            services.AddTransient<StorageUnitMiniControlPage>();
+            services.AddTransient<StorageUnitControlPage>();
         }
 
         private void RegisterWindows(IServiceCollection services)
@@ -208,8 +207,6 @@ namespace FMSFrontend
             services.AddTransient<ShowMachineWindow>();
             services.AddTransient<ShowRobotWindow>();
             services.AddTransient<ReviseProcessWindow>();
-
-
         }
 
     }
