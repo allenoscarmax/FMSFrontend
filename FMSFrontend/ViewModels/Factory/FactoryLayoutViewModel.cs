@@ -176,15 +176,15 @@ namespace FMSFrontend.ViewModels.Factory
             SyncRobotPositionFromStore(); // 內部會呼叫 SetRobotAt(...)
             //////測試
             //Machines.Clear();
-            //Machines.Add(new MachineNode { Id = "EDM1", DisplayName = "EDM1", X = 780, Y = 230, Width = 180, Height = 200, IconPath = Pack("Image/MachineIcons/EDM.png") });
-            //Machines.Add(new MachineNode { Id = "EDM2", DisplayName = "EDM2", X = 520, Y = 60, Width = 200, Height = 200, IconPath = Pack("Image/MachineIcons/EDM.png") });
-            //Machines.Add(new MachineNode { Id = "EDM3", DisplayName = "EDM3", X = 250, Y = 60, Width = 200, Height = 200, IconPath = Pack("Image/MachineIcons/EDM.png") });
+            //Machines.Add(new MachineNode { Id = "EDM1", DisplayName = "EDM1", X = 780, Y = 230, Width = 150, Height = 200, IconPath = Pack("Image/MachineIcons/EDM.png") });
+            //Machines.Add(new MachineNode { Id = "EDM2", DisplayName = "EDM2", X = 550, Y = 50, Width = 150, Height = 200, IconPath = Pack("Image/MachineIcons/EDM.png") });
+            //Machines.Add(new MachineNode { Id = "EDM3", DisplayName = "EDM3", X = 170, Y = 50, Width = 150, Height = 200, IconPath = Pack("Image/MachineIcons/EDM.png") });
 
             //Machines.Add(new MachineNode { Id = "ROBOT", DisplayName = "R", X = 350, Y = 250, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/Robot.png") });
 
             //Machines.Add(new MachineNode { Id = "Track", DisplayName = "", X = 0, Y = 400, Width = 760, Height = 80, IconPath = Pack("Image/MachineIcons/long-track.png") });
-            //Machines.Add(new MachineNode { Id = "ASE1", DisplayName = "ASE1", X = -20, Y = 500, Width = 800, Height = 150, IconPath = Pack("Image/MachineIcons/FMS.png") });
-            //Machines.Add(new MachineNode { Id = "EW1", DisplayName = "EW1", X = 520, Y = 430, Width = 230, Height = 230, IconPath = Pack("Image/MachineIcons/Magzine.png") });
+            //Machines.Add(new MachineNode { Id = "ASE1", DisplayName = "ASE1", X = 120, Y = 470, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/FMS.png") });
+            //Machines.Add(new MachineNode { Id = "EW1", DisplayName = "EW1", X = 500, Y = 470, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/Magzine.png") });
 
 
 
