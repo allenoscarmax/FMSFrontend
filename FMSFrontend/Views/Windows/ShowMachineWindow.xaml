@@ -65,7 +65,7 @@
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                         <Button Style="{StaticResource PrimaryButtonStyle}" Content="電極強制出倉" Command="{Binding ForceElectrodeOutCommand}" Margin="0,0,10,0" />
-                        <Button Style="{StaticResource PrimaryButtonStyle}" Content="工作強制出倉" Command="{Binding ForceWorkOutCommand}" Background="#E08E45" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Content="工件強制出倉" Command="{Binding ForceWorkOutCommand}" Background="#E08E45" />
                     </StackPanel>
 
                     <!-- 下方分隔線 -->

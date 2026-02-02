@@ -53,7 +53,7 @@
 
             <!-- ✅ Select 按鈕 -->
             <StackPanel Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Button Content="Select" Width="160" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Command="{Binding ConfirmSelectCommand}" />
+                <Button Content="確認" Width="160" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Command="{Binding ConfirmSelectCommand}" />
             </StackPanel>
         </Grid>
     </Border>
