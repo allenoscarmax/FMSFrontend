@@ -331,6 +331,7 @@ namespace FMSFrontend.ViewModels
                 }
                 else
                     ws = await _WorksheetsService.GetWorkSheetByWorkStatusAsync(status, CancellationToken.None) ?? new List<WorksheetsDto>();
+                ws = await _WorksheetsService.GetWorkSheetByWorkStatusAsync("New", CancellationToken.None) ?? new List<WorksheetsDto>();
                 WorkOrderList.Clear();
                 FilteredEDMList.Clear();
                 FailureWorkOrders.Clear();
