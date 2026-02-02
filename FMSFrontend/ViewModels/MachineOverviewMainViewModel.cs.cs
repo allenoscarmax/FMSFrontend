@@ -62,7 +62,7 @@ namespace FMSFrontend.ViewModels
             get => _currentMachineDetailContent;
             set => SetProperty(ref _currentMachineDetailContent, value);
         }
-        int StationCount = 0; //工作站數量
+        int StationCount = 1; //工作站數量 鋐興:0 佑義:1
         public MachineOverviewMainViewModel(
             IWindowService windowService,
             IMachinesService machinesService,
@@ -91,12 +91,12 @@ namespace FMSFrontend.ViewModels
 
             _ = _machineLiveUpdater.UpdateStatusAsync();
 
-            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "Basesitting.ini");
-            try
-            {
-                StationCount = Convert.ToInt16(ini.Read("Prarm", "StationCount"));
-            }
-            catch { }
+            //INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "Basesitting.ini");
+            //try
+            //{
+            //    StationCount = Convert.ToInt16(ini.Read("Prarm", "StationCount"));
+            //}
+            //catch { }
 
             RefreshFromStore();
             RebuildFilteredMachines();
