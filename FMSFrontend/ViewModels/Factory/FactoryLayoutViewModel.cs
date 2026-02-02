@@ -107,9 +107,9 @@ namespace FMSFrontend.ViewModels.Factory
             {
                 if (robot.Height > 0)
                     targetY = track.Y - 160;
-                if (track.Width + track.X < targetX)
+                if (targetX > track.Width + track.X - 85)
                     targetX = track.Width + track.X - 85;
-                if (targetX < track.X)
+                if (targetX < track.X - 20)
                     targetX = track.X - 20;
             }
             // 🔔 通知 View（UserControl）去做動畫
@@ -237,11 +237,10 @@ namespace FMSFrontend.ViewModels.Factory
 
             //讀取工作站資料
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "Basesitting.ini");
-            int stationCount = 0;
+            int stationCount = 0; //工作站數量 鋐興:0 佑義:1
             try
             {
-                stationCount = Convert.ToInt16(ini.Read("Prarm", "StationCount"));
-                stationCount = 0;
+                //stationCount = Convert.ToInt16(ini.Read("Prarm", "StationCount"));
                 if (stationCount != 0)
                 {
                     Machines.Add(new MachineNode
@@ -303,7 +302,7 @@ namespace FMSFrontend.ViewModels.Factory
             Width = Width > 150 ? 150 : Width;
             for (int i = 0; i < StorageCnt; i++)
             {
-                Machines[Machines.Count - StorageCnt + i].X = X_str + WinWidth / dtos.Count * (i + 0.5) - Width * 0.5;
+                Machines[Machines.Count - StorageCnt + i].X = X_str + WinWidth / StorageCnt * (i + 0.5) - Width * 0.5;
                 Machines[Machines.Count - StorageCnt + i].Width = Width;
                 //  Machines[Machines.Count - StorageCnt + i].Height = WinWidth / StorageCnt - MarginW;
             }
