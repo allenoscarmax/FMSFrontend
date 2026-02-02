@@ -1,6 +1,7 @@
 ﻿using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
+using FMSFrontend.Features.Mappings;
 using FMSFrontend.Models;
 using System;
 using System.Collections.Generic;
@@ -65,7 +66,7 @@ namespace FMSFrontend.Features.Threading
                         {
                             _store.Robot.MaterialName = ((ElectrodeDto)(e.First())).electrodeName;
                             _store.Robot.MaterialShortName =
-                            "電極 : " + (_store.Robot.MaterialName ?? "").PadLeft(7)[^7..];
+                            "電極 : " + Conversion.ShortNameConversion(true, _store.Robot.MaterialName ?? "");
                             _store.Robot.MaterialKind = "Electrode";
                             return;
                         }
@@ -74,7 +75,7 @@ namespace FMSFrontend.Features.Threading
                         {
                             _store.Robot.MaterialName = ((WorkpieceDto)w).workpieceName;
                             _store.Robot.MaterialShortName =
-                            "工件 : " + (_store.Robot.MaterialName ?? "").PadLeft(7)[^7..];
+                            "工件 : " + Conversion.ShortNameConversion(false, _store.Robot.MaterialName ?? "");
                             _store.Robot.MaterialKind = "Workpiece";
                             return;
                         }
