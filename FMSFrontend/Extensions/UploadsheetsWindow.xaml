@@ -169,7 +169,7 @@
                                     <DataGridTextColumn Header="加工程式" Binding="{Binding MeasurementProgram}" Width="*" />
 
                                     <!-- 操作欄：只保留 Share 按鈕，Command 綁到 ViewModel 的 ShareCommand，參數為該列的 ElectrodeItem -->
-                                    <DataGridTemplateColumn Header="Share電極" Width="100">
+                                    <DataGridTemplateColumn Header="是否共用電極" Width="100">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0">
@@ -184,8 +184,8 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    <DataGridTextColumn Header="Share電極工單" Binding="{Binding ShareWorksheet}" Width="*" />
-                                    <DataGridTextColumn Header="Share電極名稱" Binding="{Binding ShareElectrode}" Width="*" />
+                                    <DataGridTextColumn Header="共用電極工單" Binding="{Binding ShareWorksheet}" Width="*" />
+                                    <DataGridTextColumn Header="共用電極名稱" Binding="{Binding ShareElectrode}" Width="*" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
