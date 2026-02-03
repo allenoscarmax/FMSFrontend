@@ -146,7 +146,7 @@ namespace FMSFrontend.ViewModels.Factory
             _storageService = storageService;
             _robotService = robotService;
             RobotStore = robotStore;
-            UpdateHighlight(); // 初始化一次
+            //UpdateHighlight(); // 初始化一次
             Robot.PropertyChanged += RobotOnPropertyChanged;
         }
         private void RobotOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -181,6 +181,7 @@ namespace FMSFrontend.ViewModels.Factory
             if (nodes == null) return;
             Machines.Clear();
             foreach (var n in nodes) Machines.Add(n);
+            SetRobotAt(Robot.CurrentLocation);
             /*
             //測試
             Machines.Clear();

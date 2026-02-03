@@ -83,7 +83,16 @@ namespace FMSFrontend.Features.Threading
                                 if (eDto != null)
                                     _store.ApplyElectrodeDto(eDto, i);
                             }
-                            else _store.ApplyNull(i, true);
+                            else
+                            {
+                                ProbeDto? pDto = await _svc_Probe.DB_GetProbeByTagSerialAsync(serial);
+
+                                if (pDto != null)
+                                {
+                                    _store.ApplyProbeDto(pDto, i);
+                                }
+                                else _store.ApplyNull(i, true);
+                            }
                         }
                         else _store.ApplyNull(i, true);
                         //如果有工件序號讀取,工件資訊
