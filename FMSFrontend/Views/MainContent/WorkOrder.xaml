@@ -465,7 +465,7 @@
 
                                                                                             <!-- 表格 -->
                                                                                             <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
-                                                                                                <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" behaviors:RowDetailsToggleBehavior.KeepSelection="False" behaviors:RowDetailsToggleBehavior.ToggleOnRowClick="True"  SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource EDMWorkOrderGridStyle}" RowDetailsTemplate="{StaticResource EDMRowDetailsTemplate}">
+                                                                                                <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" behaviors:RowDetailsToggleBehavior.KeepSelection="True" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource EDMWorkOrderGridStyle}" RowDetailsTemplate="{StaticResource EDMRowDetailsTemplate}">
                                                                                                     <DataGrid.Columns>
                                                                                                         <!-- 第 0 欄：展開箭頭 -->
                                                                                                         <DataGridTemplateColumn Width="40">
