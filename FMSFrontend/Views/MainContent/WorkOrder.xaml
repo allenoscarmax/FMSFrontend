@@ -72,7 +72,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="電極名稱" Binding="{Binding ElectrodeName}" Width="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                         <DataGridTextColumn Header="標籤序號" Binding="{Binding LabelSerial}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                        <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                        <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                         <DataGridTextColumn Header="加工程式" Binding="{Binding EDMProgram}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                         <DataGridTextColumn Header="補償" Binding="{Binding Offset}" Width="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                         <DataGridTextColumn Header="是否共用電極" Binding="{Binding IsShare}" Width="130" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
@@ -460,7 +460,8 @@
 
                                                                                             <!-- 上方按鈕區 -->
                                                                                             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                                                                                                <Button Content="Revise" Width="120" Height="40" Background="#0070E0" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ReviseCommand}" />
+                                                                                                <Button Content="流程修正" Width="120" Height="40" Margin ="3,0 " Background="#0070E0" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ReviseCommand}" />
+                                                                                                <Button Content="判定失敗" Width="120" Height="40" Margin ="3,0 " Background="#0070E0" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding FailCommand}" />
                                                                                             </StackPanel>
 
                                                                                             <!-- 表格 -->
