@@ -209,9 +209,9 @@
                                 </DataGrid.Resources>
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="建立時間" Binding="{Binding CreatTime}" Width="100" />
-                                    <DataGridTextColumn Header="工單編號" Binding="{Binding WorksheetNumber}" Width="*" />
-                                    <DataGridTextColumn Header="工單狀態" Binding="{Binding WorkStatus}" Width="100" />
-                                    <DataGridTextColumn Header="工件名稱" Binding="{Binding WorkpieceName}" Width="*" />
+                                    <DataGridTextColumn Header="工單編號" Binding="{Binding WorksheetNumber}" Width="*" MinWidth="100"/>
+                                    <DataGridTextColumn Header="工單狀態" Binding="{Binding WorkStatus}"      Width="*" MinWidth="100"/>
+                                    <DataGridTextColumn Header="電極名稱" Binding="{Binding ElectrodeName}"   Width="*" MinWidth="100"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>

@@ -82,6 +82,7 @@
                         <RowDefinition Height="37" />
                         <RowDefinition Height="37" />
                         <RowDefinition Height="37" />
+                        <RowDefinition Height="80" />
                         <!-- 被加工次數 -->
                     </Grid.RowDefinitions>
 
@@ -120,15 +121,15 @@
                     <TextBlock Grid.Row="6" Grid.Column="1" Style="{StaticResource ColonText}" />
                     <TextBlock Grid.Row="6" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding UsageRate}" />
 
-                    <!-- 8 電極補償值 -->
-                    <TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource LabelText}" Text="電極補償值" />
-                    <TextBlock Grid.Row="7" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="7" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding Compensation}" />
-
                     <!-- 9 被加工次數 -->
-                    <TextBlock Grid.Row="8" Grid.Column="0" Style="{StaticResource LabelText}" Text="被加工次數" />
+                    <TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource LabelText}" Text="被加工次數" />
+                    <TextBlock Grid.Row="7" Grid.Column="1" Style="{StaticResource ColonText}" />
+                    <TextBlock Grid.Row="7" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding ProcessedCount}" />
+
+                    <!-- 8 電極補償值 -->
+                    <TextBlock Grid.Row="8" Grid.Column="0" Style="{StaticResource LabelText}" Text="電極補償值" />
                     <TextBlock Grid.Row="8" Grid.Column="1" Style="{StaticResource ColonText}" />
-                    <TextBlock Grid.Row="8" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding ProcessedCount}" />
+                    <TextBlock Grid.Row="8" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding Compensation}" FontSize="14" />
                 </Grid>
             </ScrollViewer>
 
