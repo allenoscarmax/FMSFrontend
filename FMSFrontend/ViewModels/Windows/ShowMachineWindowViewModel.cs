@@ -209,6 +209,23 @@ namespace FMSFrontend.ViewModels.Windows
             }
             catch { }
         }
+        [RelayCommand]
+        private async Task ClearWorkSheet()
+        {
+            try
+            {
+                if (!_authorizationService.RequireLoginAndWriteOperation(39))
+                {
+                    return;
+                }
+                List<MachinesDto> dtos = await _machinesService.GetAllMachinesAsync() ?? new();
+                MachinesDto dto = dtos.FirstOrDefault(x => x.machineName == DeviceName)!;
+                dto.onDeckWorksheetSerial = "";
+                bool ok = await _machinesService.UpdateMachinesDataAsync(dto);
+            }
+            catch { }
+        }
+
         [RelayCommand] private void CloseWindow(Window? w) => w?.Close();
     }
 

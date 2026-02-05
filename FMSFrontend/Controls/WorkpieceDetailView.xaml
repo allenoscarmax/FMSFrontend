@@ -40,6 +40,8 @@
                 <RowDefinition Height="6" />
                 <!-- 黑色分隔線 -->
                 <RowDefinition Height="*" />
+                
+                <RowDefinition Height="Auto" />
                 <!-- 內容 -->
             </Grid.RowDefinitions>
 
@@ -56,7 +58,7 @@
             <Border Grid.Row="1" Background="Black" />
 
             <!-- 內容區（三欄：Label / ： / Value） -->
-            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,4,0,2" Grid.RowSpan="2">
                 <Grid Margin="10,6,16,20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="140" />
@@ -64,6 +66,7 @@
                         <ColumnDefinition Width="18" />
                         <!-- ： -->
                         <ColumnDefinition Width="*" />
+                        
                         <!-- Value -->
                     </Grid.ColumnDefinitions>
 
@@ -81,7 +84,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    
+
                     <!-- 1 -->
                     <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="工件名稱" />
                     <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource ColonText}" />
@@ -119,6 +122,22 @@
 
                 </Grid>
             </ScrollViewer>
+            <!-- 底部按鈕列：兩排排列，顏色比照圖片 -->
+            <Border Grid.Row="3" Padding="8,1,8,10" Background="{x:Null}">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
+                    <WrapPanel Margin="0,0,0,8">
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#E58C2C" Foreground="White" Width="120" Height="40" Margin="8,0,8,0" FontSize="14" Content="工件解除預約" Command="{Binding DataContext.WorkpieceClearBookedCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                        <!--<Button Style="{StaticResource PrimaryButtonStyle}" Background="#C0392B" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="解除異常" Command="{Binding ClearAbnormalCommand}" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#9C27B0" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="修改補償值" Command="{Binding EditCompensationCommand}" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#56C06C" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="電極再使用" Command="{Binding ReuseElectrodeAltCommand}" />-->
+                    </WrapPanel>
+                    <!--<WrapPanel>
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#2F64CF" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="電極再使用" Command="{Binding ReuseElectrodeCommand}" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#6E6E6E" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="解除碰撞" Command="{Binding ClearCollisionCommand}" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#000000" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="電極補償值" Command="{Binding EditCompensationCommand}" />
+                    </WrapPanel>-->
+                </StackPanel>
+            </Border>
         </Grid>
     </Border>
 </UserControl>

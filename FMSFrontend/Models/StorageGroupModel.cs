@@ -104,6 +104,7 @@ namespace FMSFrontend.Models
                     "Working" => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)),
                     "Error" => new SolidColorBrush(Color.FromRgb(0xC0, 0x39, 0x2B)),
                     "Completed" => new SolidColorBrush(Color.FromRgb(0x2F, 0x64, 0xCF)),
+                    "Booked" => Brushes.White,
                     _ => new SolidColorBrush(Color.FromRgb(245, 245, 220))
                 };
             }
