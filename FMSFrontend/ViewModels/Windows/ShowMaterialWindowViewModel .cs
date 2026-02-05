@@ -144,7 +144,7 @@ namespace FMSFrontend.ViewModels.Windows
                         dto.state = "Verified";
                         ok = await _probeService.DB_UpdateProbeDataAsync(dto);
 
-                        // 回傳更新
+                        // 回傳更新UI
                         ((ElectrodeDetailViewModel)DetailViewModel).Status = "Verified";
                     }
                     else
@@ -198,7 +198,7 @@ namespace FMSFrontend.ViewModels.Windows
                     bool ok = false;
                     var dto = await _workpieceService.GetWorkpieceByTagSerialAsync(w.SerialCode);
                     if (dto == null) return;
-                    
+
                     //取消預約
                     dto.status = "Verified";
                     ok = await _workpieceService.UpdateWorkpieceDataAsync(dto);
@@ -207,7 +207,7 @@ namespace FMSFrontend.ViewModels.Windows
                         _windowService.ShowMessage("回傳失敗");
                         return;
                     }
-                    // 回傳更新
+                    // 回傳更新UI
                     ((WorkpieceDetailViewModel)DetailViewModel).Status = "Verified";
                 }
                 catch (Exception ex)

@@ -43,7 +43,8 @@ namespace FMSFrontend.Features.Mappings
                     else
                     {
                         //return Regex.Match(Name, @"-(\d+_\d+-[A-Za-z]+)$").Groups[1].Value;
-                        return Name;
+                        //改成顯示最後六碼
+                        return Name.Length >= 6 ? Name.Substring(Name.Length - 6) : Name;
                     }
 
                 }
