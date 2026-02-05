@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,13 +8,25 @@ using FMSFrontend.Models;
 
 namespace FMSFrontend.ViewModels
 {
-    public class ElectrodeDetailViewModel
+    public class ElectrodeDetailViewModel : INotifyPropertyChanged
     {
         public string Id { get; set; } = "";
         public string ElectrodeName { get; set; } //電極名稱
         public string ElectrodeNo { get; set; } //電極編號
         public string ElectrodeType { get; set; } //電極類型
-        public string Status { get; set; } //狀態
+        private string _status = ""; //狀態
+        public string Status
+        {
+            get => _status;
+            set
+            {
+                if (_status != value)
+                {
+                    _status = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
+                }
+            }
+        }
         public string TagSerial { get; set; } //Tag序號
         public string MaxDischargeCount { get; set; } //最大放電次數
         public string Compensation { get; set; } //電極補償值
@@ -32,7 +45,7 @@ namespace FMSFrontend.ViewModels
             ElectrodeName = model.Name;
             ElectrodeNo = model.No;
             ElectrodeType = model.Type;
-            Status = model.Status;
+            _status = model.Status;
             TagSerial = model.TagSerial;
             MaxDischargeCount = model.MaxDischargeCount;
             Compensation = model.Compensation;
@@ -43,5 +56,7 @@ namespace FMSFrontend.ViewModels
             //HolderNo = model.HolderNo;
             //UsageRate = model.UsageRate;
         }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
     }
 }

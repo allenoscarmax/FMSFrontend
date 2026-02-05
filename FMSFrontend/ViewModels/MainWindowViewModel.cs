@@ -267,9 +267,24 @@ namespace FMSFrontend.ViewModels
             {
                 var success = false;
                 if (storageId == "0")
+                {
+                    //if (!MagazinePara.MagazineParas[0].UpperScanEnable && Robot.CurrentLocation == "W1" && Robot.CurrentAction == "RobotScaning")
+                    if (!MagazinePara.MagazineParas[0].UpperScanEnable && StartStatus)
+                    {
+                        _windowService.ShowMessage("請等待手臂掃描完成後再開啟");
+                        return;
+                    }
                     success = await _PlcService.WEMagzineDoorSwitchAsync(0, 0, true);
+                }
                 else if (storageId == "1")
+                {
+                    if (!MagazinePara.MagazineParas[1].UpperScanEnable && StartStatus)
+                    {
+                        _windowService.ShowMessage("請等待手臂掃描完成後再開啟");
+                        return;
+                    }
                     success = await _PlcService.EMagzineDoorSwitchAsync(0, 0, true);
+                } 
                 if (!success)
                 {
                     _windowService.ShowMessage("回傳失敗");
@@ -291,9 +306,23 @@ namespace FMSFrontend.ViewModels
             {
                 var success = false;
                 if (storageId == "0")
+                {
+                    if (!MagazinePara.MagazineParas[0].LowerScanEnable && StartStatus)
+                    {
+                        _windowService.ShowMessage("請等待手臂掃描完成後再開啟");
+                        return;
+                    }
                     success = await _PlcService.WEMagzineDoorSwitchAsync(0, 1, true);
+                }
                 else if (storageId == "1")
+                {
+                    if (!MagazinePara.MagazineParas[1].LowerScanEnable && StartStatus)
+                    {
+                        _windowService.ShowMessage("請等待手臂掃描完成後再開啟");
+                        return;
+                    }
                     success = await _PlcService.EMagzineDoorSwitchAsync(0, 1, true);
+                }
                 if (!success)
                 {
                     _windowService.ShowMessage("回傳失敗");

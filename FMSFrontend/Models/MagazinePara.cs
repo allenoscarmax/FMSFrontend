@@ -25,7 +25,10 @@ namespace FMSFrontend.Models
 
         [ObservableProperty] Brush upperScanStatus = Brushes.Gray;
         [ObservableProperty] Brush upperDoorStatus = Brushes.Gray;
+        [ObservableProperty] bool upperScanEnable = true;
+
         [ObservableProperty] Brush lowerScanStatus = Brushes.Gray;
         [ObservableProperty] Brush lowerDoorStatus = Brushes.Gray;
+        [ObservableProperty] bool lowerScanEnable = true;
     }
 }

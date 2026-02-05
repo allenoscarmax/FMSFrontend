@@ -13,7 +13,9 @@ namespace FMSFrontend.Features.Services
     {
         Task<UploadWorkOrderResultDto> Upload(UploadWorkOrderRequestDto data, CancellationToken ct = default);
 
-        Task<ReviseWorksheetResultDto> Revise(ReviseWorksheetRequestDto data, CancellationToken ct = default);
+        Task<ReviseWorksheetResultDto?> Revise(ReviseWorksheetRequestDto data, CancellationToken ct = default);
+        Task<FailWorksheetResultDto?> Fail(FailWorksheetRequestDto dto, CancellationToken ct = default);
+
     }
     public class WorksheetAppService : IWorksheetAppService
     {
@@ -38,6 +40,15 @@ namespace FMSFrontend.Features.Services
                ct
            );
 
+        }
+
+        public async Task<FailWorksheetResultDto?> Fail(FailWorksheetRequestDto dto, CancellationToken ct = default)
+        {
+            return await _http.PutJsonAsync<FailWorksheetRequestDto, FailWorksheetResultDto>(
+               "Apps/WorksheetApp/Fail",
+               dto,
+               ct
+           );
         }
 
     }

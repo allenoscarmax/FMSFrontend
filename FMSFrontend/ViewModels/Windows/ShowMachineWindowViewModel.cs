@@ -26,6 +26,7 @@ namespace FMSFrontend.ViewModels.Windows
         public readonly IWindowService _windowService;
         private readonly IWorksheetsService _worksheetsService;
         private readonly IMachinesService _machinesService;
+        private readonly IWorkpieceService _workpieceService;
         private readonly IAuthorizationService _authorizationService;
 
         [ObservableProperty] private string deviceName = "設備名稱";
@@ -35,12 +36,14 @@ namespace FMSFrontend.ViewModels.Windows
         IWindowService windowService,
         IWorksheetsService worksheetsService,
         IMachinesService machinesService,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IWorkpieceService workpieceService)
         {
             _windowService = windowService;
             _worksheetsService = worksheetsService;
             _machinesService = machinesService;
             _authorizationService = authorizationService;
+            _workpieceService = workpieceService;
         }
         /// <summary>
         /// 由 WindowService / 呼叫端注入哪一台機台的卡片。
@@ -150,7 +153,8 @@ namespace FMSFrontend.ViewModels.Windows
             {
                 if (ToDate == null || FromDate == null) return;
                 List<WorksheetsTimelineDto>? WorksheetsTimelineDtos =
-                    await _worksheetsService.GetWorksheetTimelineByDateTimeAsync(FromDate.Value, ToDate.Value);
+                    await _worksheetsService.GetWorksheetTimelineByDateTimeAsync(FromDate.Value, ToDate.Value.AddDays(1));
+                
                 if (WorksheetsTimelineDtos != null)
                 {
                     WorkOrders.Clear();
@@ -163,7 +167,7 @@ namespace FMSFrontend.ViewModels.Windows
                                 CreatTime = w.TimeStampe.ToString("yyyy/MM/dd") ?? "",
                                 WorksheetNumber = w.WorkSheetSerial ?? "",
                                 WorkStatus = w.WorkCommand,
-                                WorkpieceName = "" // 代定義
+                                ElectrodeName = w.ElectrodeSerial // 代定義
                             });
                         }
                     }
@@ -205,6 +209,23 @@ namespace FMSFrontend.ViewModels.Windows
             }
             catch { }
         }
+        [RelayCommand]
+        private async Task ClearWorkSheet()
+        {
+            try
+            {
+                if (!_authorizationService.RequireLoginAndWriteOperation(39))
+                {
+                    return;
+                }
+                List<MachinesDto> dtos = await _machinesService.GetAllMachinesAsync() ?? new();
+                MachinesDto dto = dtos.FirstOrDefault(x => x.machineName == DeviceName)!;
+                dto.onDeckWorksheetSerial = "";
+                bool ok = await _machinesService.UpdateMachinesDataAsync(dto);
+            }
+            catch { }
+        }
+
         [RelayCommand] private void CloseWindow(Window? w) => w?.Close();
     }
 
@@ -227,6 +248,6 @@ namespace FMSFrontend.ViewModels.Windows
         public string CreatTime { get; set; } = ""; //代定義
         public string WorksheetNumber { get; set; } = "";
         public string WorkStatus { get; set; } = "";
-        public string WorkpieceName { get; set; } = "";
+        public string ElectrodeName { get; set; } = "";
     }
 }

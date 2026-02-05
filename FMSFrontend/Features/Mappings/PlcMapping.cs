@@ -43,13 +43,18 @@ namespace FMSFrontend.Features.Mappings
             // 目前 DTO 只提供單一門狀態 -> 套用到第 0 個
             if (magazinePara.MagazineParas.Count == 2)
             {
+                magazinePara.MagazineParas[0].UpperScanEnable = !dto.shouldScanPart;
                 magazinePara.MagazineParas[0].UpperScanStatus = dto.shouldScanPart ? LightOn : LightOff;
                 magazinePara.MagazineParas[0].UpperDoorStatus = dto.partMagzineDoorOpen[0] ? LightOn : LightOff;
+
+                magazinePara.MagazineParas[0].LowerScanEnable = !dto.shouldScanEle[0];
                 magazinePara.MagazineParas[0].LowerScanStatus = dto.shouldScanEle[0] ? LightOn : LightOff;
                 magazinePara.MagazineParas[0].LowerDoorStatus = dto.eleMagzineDoorOpen[0] ? LightOn : LightOff;
 
+                magazinePara.MagazineParas[1].UpperScanEnable = !dto.shouldScanEle[1];
                 magazinePara.MagazineParas[1].UpperScanStatus = dto.shouldScanEle[1] ? LightOn : LightOff;
                 magazinePara.MagazineParas[1].UpperDoorStatus = dto.eleMagzineDoorOpen[1] ? LightOn : LightOff;
+                magazinePara.MagazineParas[1].LowerScanEnable = !dto.shouldScanEle[2];   
                 magazinePara.MagazineParas[1].LowerScanStatus = dto.shouldScanEle[2] ? LightOn : LightOff;
                 magazinePara.MagazineParas[1].LowerDoorStatus = dto.eleMagzineDoorOpen[2] ? LightOn : LightOff;
             }

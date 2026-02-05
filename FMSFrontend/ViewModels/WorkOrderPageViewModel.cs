@@ -38,6 +38,7 @@ namespace FMSFrontend.ViewModels
         private readonly IAuthorizationService _auth;
         private readonly IWorksheetAppService _worksheetAppService;
         private readonly RobotStore _robotStore;
+        private readonly UserSession _userSession;
 
         private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
 
@@ -56,14 +57,17 @@ namespace FMSFrontend.ViewModels
                 SelectedEDMQueueItem = null;
 
             ReviseCommand.NotifyCanExecuteChanged();
+            FailCommand.NotifyCanExecuteChanged();
         }
         partial void OnSelectedEDMQueueItemChanged(WorkOrderData? value)
         {
             //    System.Diagnostics.Debug.WriteLine($"SelectedEDMQueueItemChanged: {(value == null ? "null" : value.WorksheetNumber)}");
             ReviseCommand.NotifyCanExecuteChanged();
+            FailCommand.NotifyCanExecuteChanged();
         }
-        private bool CanRevise()
-    => EDMSelectedTab == 2 && SelectedEDMQueueItem != null;
+        private bool CanRevise() => EDMSelectedTab == 2 && SelectedEDMQueueItem != null;
+
+        private bool CanFail() => EDMSelectedTab == 2 && SelectedEDMQueueItem != null;
 
         [ObservableProperty]
         private int selectedTabIndexParameter;
@@ -188,7 +192,8 @@ namespace FMSFrontend.ViewModels
             IAuthorizationService auth,
             IWorksheetAppService worksheetAppService,
             RobotStore robotStore,
-            MachineLiveUpdater machineLiveUpdater)
+            MachineLiveUpdater machineLiveUpdater,
+            UserSession userSession)
         {
             _WindowService = windowService;
             _WorkpieceService = workpieceService;
@@ -198,7 +203,7 @@ namespace FMSFrontend.ViewModels
             _worksheetAppService = worksheetAppService;
             _auth = auth;
             _robotStore = robotStore;
-
+            _userSession = userSession;
             // 使用非同步方法刪除：保留 RelayCommand，但在內部啟動 async Task
             DeleteCommand = new RelayCommand<WorkOrderData>(item =>
             {
@@ -249,14 +254,14 @@ namespace FMSFrontend.ViewModels
             var item = SelectedEDMQueueItem;
             if (item is null) return; // 防競態
 
-            ReviseWorksheetResultDto result;
+            ReviseWorksheetResultDto? result;
             try
             {
                 result = await _worksheetAppService.Revise(new ReviseWorksheetRequestDto
                 {
                     worksheetNumber = item.WorksheetNumber,
                     action = (Features.Dtos.Apps.ReviseProcessAction)action,
-                    setupUser = "admin",
+                    setupUser = _userSession.UserName,
                 });
             }
             catch (Exception ex)
@@ -264,14 +269,70 @@ namespace FMSFrontend.ViewModels
                 _WindowService.ShowMessage("後端連線失敗：" + ex.Message);
                 return;
             }
-            if (!result.success)
+            if (result == null)
+            {
+                _WindowService.ShowMessage("無回傳資料");
+            }
+            else if (!result.success)
+            {
+                _WindowService.ShowMessage("失敗 訊息:" + result.message);
+            }
+            else
             {
                 _WindowService.ShowMessage(result.message);
+                _WindowService.ShowMessage("請記得手動將電極從機台上移除並重新開啟遠端模式");
+            }
+        }
+        [RelayCommand(CanExecute = nameof(CanFail))]
+        private async Task Fail()
+        {
+            if (!_auth.RequireLogin()) return;
+            bool confirm = _WindowService.ShowYesNoDialog("確定要判定為失敗工單");
+            if (!confirm) return;
+
+            if (_robot.DispatchEnabled || _robot.IsStarted)
+            {
+                _WindowService.ShowMessage("請先取消機器人啟動狀態與關閉派工功能後，才能進行流程修正。");
                 return;
             }
 
-            _WindowService.ShowMessage(result.message);
-            _WindowService.ShowMessage("請記得手動將電極從機台上移除並重新開啟遠端模式");
+            if (SelectedEDMQueueItem is null)
+            {
+                _WindowService.ShowMessage("請先選擇一筆工單。");
+                return;
+            }
+
+            var item = SelectedEDMQueueItem;
+            FailWorksheetResultDto? result;
+            try
+            {
+                result = await _worksheetAppService.Fail(new FailWorksheetRequestDto
+                {
+                    worksheetNumber = item.WorksheetNumber,
+                    reason = "",
+                    setupUser = _userSession.UserName,
+                });
+            }
+            catch (Exception ex)
+            {
+                _WindowService.ShowMessage("後端連線失敗：" + ex.Message);
+                return;
+            }
+
+            if (result == null)
+            {
+                _WindowService.ShowMessage("無回傳資料");
+            }
+            else if (!result.success)
+            {
+                _WindowService.ShowMessage("回傳失敗 訊息:" + result.message);
+            }
+            else
+            {
+                _WindowService.ShowMessage(result.message);
+                _WindowService.ShowMessage("請記得手動將電極從機台上移除並重新開啟遠端模式");
+            }
+            _ = FetchAndBindByStatusAsync();
         }
 
         // 最小改動：呼叫後端 API 並綁定到對應的 UI 集合（使用 CancellationToken）
@@ -326,6 +387,7 @@ namespace FMSFrontend.ViewModels
                     if (FromDate != null && ToDate != null)
                     {
                         List<WorksheetIncludeTimelineDto> dtos = await _WorksheetsService.GetWorkSheetsIncludeTimelineByDateTimeAsync(FromDate.Value, ToDate.Value, ct) ?? new();
+
                         ws = MappedWorksheets(dtos);
                     }
                 }
@@ -433,8 +495,32 @@ namespace FMSFrontend.ViewModels
                             _WindowService.ShowMessage($"刪除電極失敗：{el.electrodeName}（已中止刪除工單）");
                             return;
                         }
+
+                        if (el.shared)
+                        {
+                            //讀取所有電極,找出共用電極,然後將公用電極 的shared = false 與 shareLink = "" 清除
+                            var dtos = await _ElectrodeService.DB_GetAllElectrodeAsync();
+                            if (dtos != null && dtos.Count > 0)
+                            {
+                                //篩選出共用電極
+                                var sharedElectrodes = dtos.Where(d => d.electrodeName == el.shareLink && d.shareLink == el.electrodeName).ToList();
+                                foreach (var se in sharedElectrodes)
+                                {
+                                    se.shared = false;
+                                    se.shareLink = "";
+                                    bool updateOk = await _ElectrodeService.DB_UpdateElectrodeDataAsync(se);
+                                    if (!updateOk)
+                                    {
+                                        // _WindowService.ShowMessage($"更新共用電極失敗：{se.electrodeName}（已中止刪除工單）");
+                                        return;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+               
+
 
                 // 4) 最後刪工單
                 bool wsOk = await _WorksheetsService.DeleteWorkSheetDataByIdAsync(item.Id);
