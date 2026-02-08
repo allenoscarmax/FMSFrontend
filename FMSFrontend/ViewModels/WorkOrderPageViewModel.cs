@@ -287,17 +287,21 @@ namespace FMSFrontend.ViewModels
         private async Task Fail()
         {
             if (!_auth.RequireLogin()) return;
+            bool confirm = _WindowService.ShowYesNoDialog("確定要判定為失敗工單");
+            if (!confirm) return;
 
             if (_robot.DispatchEnabled || _robot.IsStarted)
             {
                 _WindowService.ShowMessage("請先取消機器人啟動狀態與關閉派工功能後，才能進行流程修正。");
                 return;
             }
+
             if (SelectedEDMQueueItem is null)
             {
                 _WindowService.ShowMessage("請先選擇一筆工單。");
                 return;
             }
+
             var item = SelectedEDMQueueItem;
             FailWorksheetResultDto? result;
             try
