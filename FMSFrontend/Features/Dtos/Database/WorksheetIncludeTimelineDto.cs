@@ -20,7 +20,7 @@ namespace FMSFrontend.Features.Dtos
         [JsonPropertyName("workpiecename")]
         public string workpieceName { get; set; } = "";
 
-        [JsonPropertyName("status")]
+        [JsonPropertyName("WorkStatus")]
         public string status { get; set; } = "";
 
         [JsonPropertyName("targetedm")]

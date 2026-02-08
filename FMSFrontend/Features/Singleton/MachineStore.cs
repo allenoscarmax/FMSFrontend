@@ -1,10 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;         
-using FMSFrontend.Features.Dtos;                      
-using FMSFrontend.Features.Mappings;              
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Mappings;
 using FMSFrontend.Models;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows;                              
+using System.Windows;
 
 namespace FMSFrontend.Features.Singleton
 {
@@ -30,7 +30,7 @@ namespace FMSFrontend.Features.Singleton
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();
         }
-        public void ApplyNull(int inedx,bool isElectrode)
+        public void ApplyNull(int inedx, bool isElectrode)
         {
             var disp = Application.Current?.Dispatcher;
             void apply()
@@ -49,12 +49,22 @@ namespace FMSFrontend.Features.Singleton
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();
         }
-        public void ApplyElectrodeDto(ElectrodeDto dto,int inedx)
+        public void ApplyElectrodeDto(ElectrodeDto dto, int inedx)
         {
             var disp = Application.Current?.Dispatcher;
             void apply()
             {
-                    dto.ApplyElectrodeDto(Machines[inedx]);
+                dto.ApplyElectrodeDto(Machines[inedx]);
+            }
+            if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
+            else apply();
+        }
+        public void ApplyProbeDto(ProbeDto dto, int inedx)
+        {
+            var disp = Application.Current?.Dispatcher;
+            void apply()
+            {
+                dto.ApplyProbeDto(Machines[inedx]);
             }
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();

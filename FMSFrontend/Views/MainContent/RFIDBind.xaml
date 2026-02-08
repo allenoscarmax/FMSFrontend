@@ -237,7 +237,7 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="時間" Binding="{Binding Time}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                 <DataGridTextColumn Header="物料種類" Binding="{Binding MaterialType}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                <DataGridTextColumn Header="Serial No." Binding="{Binding SerialNo}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                <DataGridTextColumn Header="工單編號" Binding="{Binding SerialNo}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                 <DataGridTextColumn Header="標籤序號" Binding="{Binding TagSerial}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                             </DataGrid.Columns>
                         </DataGrid>

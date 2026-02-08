@@ -191,9 +191,13 @@ namespace FMSFrontend.ViewModels
             };
             // 如果你會改 Robot 內部屬性，也可加：
             RobotStore.Robot.PropertyChanged += (_, __) => RefreshFromStore();
-           
+
             //✅ 新增：讀取初始參數,然後開啟輪詢
             // _ = MainWindowViewModelAsync_Init();
+            //自動登入
+            if (ini.Read("Prarm", "KeepLoggedIn") == "True")
+                _ = AutoLogin();
+
         }
 
         // === 將 Store 狀態轉成 UI ===
@@ -319,6 +323,11 @@ namespace FMSFrontend.ViewModels
             {
                 if (!_auth.RequireLoginAndWriteOperation(8, "Id = " + storageId))
                     return;
+                if (!MagazinePara.UpperScanEnable[0] && StartStatus)
+                {
+                    _windowService.ShowMessage("請等待手臂掃描完成後再開啟");
+                    return;
+                }
                 var success = await _PlcService.EleMagzineDoorSwitchAsync(0,0,true);
                 if (!success)
                 {
@@ -340,6 +349,11 @@ namespace FMSFrontend.ViewModels
             {
                 if (!_auth.RequireLoginAndWriteOperation(9, "Id = " + storageId))
                     return;
+                if (!MagazinePara.LowerScanEnable[0] && StartStatus)
+                {
+                    _windowService.ShowMessage("請等待手臂掃描完成後再開啟");
+                    return;
+                }
                 var success = await _PlcService.EleMagzineDoorSwitchAsync(0, 1, true);
                 if (!success)
                 {
@@ -409,7 +423,43 @@ namespace FMSFrontend.ViewModels
         #endregion
 
         #region Login
-      
+        private async Task AutoLogin()
+        {
+            try
+            {
+                // 等待伺服器可用（最多 10 秒）
+                var waitStart = DateTime.UtcNow;
+                while (!_globalProperties.IsServerAlive && (DateTime.UtcNow - waitStart).TotalSeconds < 10)
+                {
+                    await Task.Delay(500);
+                }
+
+                // 若仍離線則放棄自動登入
+                if (!_globalProperties.IsServerAlive)
+                    return;
+
+                // 讀取 BaseSitting.ini 的 LastLoginName
+                INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+                string lastLoginName = ini.Read("Login", "LastLoginName")?.Trim() ?? string.Empty;
+
+                // 無有效名稱則不自動登入
+                if (string.IsNullOrWhiteSpace(lastLoginName))
+                    return;
+
+                // 檢查是否存在於員工資料中
+                var dtos = await _workerService.GetAllWorkerAsync() ?? new();
+                if (dtos.Count == 0)
+                    return;
+
+                if (dtos.Any(dto => string.Equals(dto.WorkerName, lastLoginName, StringComparison.Ordinal)))
+                {
+                    _userSession.SignIn(lastLoginName);
+                    _auth.RequireLoginAndWriteOperation(1); //成功登入
+                }
+            }
+            catch { }
+        }
+
         [RelayCommand]
         private async Task Login()
         {
@@ -443,6 +493,9 @@ namespace FMSFrontend.ViewModels
                 {
                     _userSession.SignIn(loginName);
                     _windowService.ShowMessage($"歡迎登入，{loginName}！");
+                    INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+                    ini.Write("Login", "LastLoginName", loginName);
+
                 }
                 _auth.RequireLoginAndWriteOperation(1);
             }

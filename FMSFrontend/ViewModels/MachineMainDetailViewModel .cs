@@ -179,12 +179,13 @@ namespace FMSFrontend.ViewModels
         //設定日期End
         private async Task RefreshFetch()
         {
+
             try
             {
                 if (FromDate != null && ToDate != null)
                 {
                     List<WorksheetsTimelineDto>? WorksheetsTimelineDtos =
-                        await _worksheetService.GetWorksheetTimelineByDateTimeAsync(FromDate.Value, ToDate.Value);
+                        await _worksheetService.GetWorksheetTimelineByDateTimeAsync(FromDate.Value, ToDate.Value.AddDays(1));
                     WorkOrders.Clear();
                     if (WorksheetsTimelineDtos != null)
                     {
@@ -197,7 +198,7 @@ namespace FMSFrontend.ViewModels
                                     CreatTime = w.TimeStampe.ToString("yyyy/MM/dd") ?? "",
                                     WorksheetNumber = w.WorkSheetSerial ?? "",
                                     WorkStatus = w.WorkCommand,
-                                    WorkpieceName = "" // 代定義
+                                    EoectrodeName = w.ElectrodeSerial // 代定義
                                 });
 
                             }
@@ -384,7 +385,7 @@ namespace FMSFrontend.ViewModels
             public string CreatTime { get; set; } = ""; //代定義
             public string WorksheetNumber { get; set; } = "";
             public string WorkStatus { get; set; } = "";
-            public string WorkpieceName { get; set; } = "";
+            public string EoectrodeName { get; set; } = "";
         }
     }
 }

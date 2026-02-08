@@ -27,6 +27,13 @@ namespace FMSFrontend.Features.Mappings
             model.ElectrodeName = dto.electrodeName;
             model.ElectrodeShortName = Conversion.ShortNameConversion(true, dto.electrodeName); //20260120佑義要求修改電極名稱規則
         }
+        public static void ApplyProbeDto(this ProbeDto dto, MachineModel model)
+        {
+            if (dto == null || model == null) return;
+            model.ElectrodeName = dto.probeName;
+            model.ElectrodeShortName = "probe"; //20260120佑義要求修改電極名稱規則
+        }
+
         public static void ApplyWorkpieceDto(this WorkpieceDto dto, MachineModel model)
         {
             if (dto == null || model == null) return;
@@ -45,7 +52,7 @@ namespace FMSFrontend.Features.Mappings
             model.OscarEdm.MachineNumber = model.MachineName ?? "";                     //機台名稱
             model.OscarEdm.MachineStatus = model.Status ?? "";                          //機台狀態
             model.OscarEdm.UsingElectrode = model.ElectrodeShortName ?? "";             //電極名稱
-            model.OscarEdm.MachiningCode = model.Type ?? "";                            //機台型號
+            model.OscarEdm.MachiningCode = dto.MainProgramName ?? "";                            //機台型號
             model.OscarEdm.CycleTime = dto.CycleTime ?? "";                             //加工持續時間
             model.OscarEdm.MachiningWorkingPercentage = $"{dto.ProgressBar}%" ?? ""; //加工進度
             model.OscarEdm.CurrentWorksheet = dto.WorkNumber_now.ToString() ?? ""; //?? 目前工單
