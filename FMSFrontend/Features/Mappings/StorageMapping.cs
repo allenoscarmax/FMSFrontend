@@ -101,9 +101,8 @@ namespace FMSFrontend.Features.Mappings
 
             model.Kind = MaterialType.Electrode;
             model.Name = dto?.electrodeName ?? "";
-
-            model.ShortName = Conversion.ShortNameConversion(true, dto?.electrodeName ?? "");  //20260120佑義要求修改電極名稱規則
-
+            string[] sr = Conversion.ShortNameConversion(true, dto?.electrodeName ?? "").Split('-');
+            model.ShortName = sr[0]+"\r\n-"+sr[1];  //20260120佑義要求修改電極名稱規則
             model.MaterialStatus = dto?.state ?? "";
             model.MaterialRestriction = dto?.restriction ?? false;
             //庫存資訊
@@ -118,7 +117,8 @@ namespace FMSFrontend.Features.Mappings
             if (dto == null || model == null) return;
             model.Kind = MaterialType.Workpiece;
             model.Name = dto?.workpieceName ?? "";
-            model.ShortName = Conversion.ShortNameConversion(false, model.Name);  //20260120佑義要求修改電極名稱規則
+            string[] sr = Conversion.ShortNameConversion(true, dto?.workpieceName ?? "").Split('-');
+            model.ShortName = sr[0] + "\r\n-" + sr[1];  //20260120佑義要求修改電極名稱規則
             model.MaterialStatus = dto?.status ?? "";
             model.MaterialRestriction = dto?.restriction ?? false;
             //庫存資訊
