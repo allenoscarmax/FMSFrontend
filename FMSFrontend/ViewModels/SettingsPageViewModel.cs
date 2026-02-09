@@ -134,6 +134,10 @@ namespace FMSFrontend.ViewModels
             _workerListView.Filter = FilterWorker;
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             RobotMaintenanceMsg = ini.Read("Prarm", "RobotMaintenanceMsg");
+
+            // 保持登入：開啟時從 Basesitting 讀取
+            var keep = ini.Read("Prarm", "KeepLoggedIn");
+            KeepLoggedIn = keep == "True";
         }
         // 這就是缺少的屬性，用來綁定 Tab 切換
         [ObservableProperty] private int selectedTabIndexParameter;
@@ -620,6 +624,21 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty]
         private bool autoUpdate = true;
 
+        // === 保持登入 ===
+        [ObservableProperty]
+        private bool keepLoggedIn;
+
+        // 當勾選狀態改變時，寫入 Basesitting.ini
+        partial void OnKeepLoggedInChanged(bool value)
+        {
+            try
+            {
+                INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+                ini.Write("Prarm", "KeepLoggedIn", value ? "True" : "False");
+            }
+            catch { }
+        }
+
         [ObservableProperty]
         private string statusMessage = "設定尚未儲存";
         // === 權限相關屬性 ===
@@ -831,6 +850,12 @@ namespace FMSFrontend.ViewModels
             StatusMessage = "設定已重置";
             SelectedTabIndexParameter = 0; // 重置到第一個 Tab
             SelectedSubTabIndexParameter = 0; // 重置到第一個 Tab
+        }
+        // 點選保持登入時的指令（將目前狀態記錄到 Basesitting）
+        [RelayCommand]
+        private void ToggleKeepLoggedIn(bool? isChecked)
+        {
+            KeepLoggedIn = isChecked == true; // 交由 OnKeepLoggedInChanged 持久化
         }
         // === 系統還原 ===
         [RelayCommand]

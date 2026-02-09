@@ -73,6 +73,7 @@ namespace FMSFrontend.ViewModels.Windows
         [RelayCommand]
         private void ReuseElectrode()
         {
+
             // TODO: 實作再使用行為
         }
 
@@ -109,6 +110,114 @@ namespace FMSFrontend.ViewModels.Windows
         private void ClearReservation()
         {
         }
+        private bool CanElectrodeClearBooked()
+        {
+            if (DetailViewModel is ElectrodeDetailViewModel)
+            {
+                ElectrodeDetailViewModel e = (ElectrodeDetailViewModel)DetailViewModel;
+                return e != null && e.Status == "Booked";
+            }
+            return false;
+        }
+        [RelayCommand(CanExecute = nameof(CanElectrodeClearBooked))]
+        private async Task ElectrodeClearBooked()
+        {
+            if (DetailViewModel is ElectrodeDetailViewModel)
+            {
+                ElectrodeDetailViewModel e = (ElectrodeDetailViewModel)DetailViewModel;
+                try
+                {
+                    bool ok = false;
+                    if (!_authorizationService.RequireLoginAndWriteOperation(37))
+                    {
+                        IsLocked = !IsLocked; //還原勾選狀態
+                        return;
+                    }
+                    if (e.TagSerial == null) return;
+                    if (e.ElectrodeName.Contains("Probe"))
+                    {
+                        //取得探針資料
+                        var dto = await _probeService.DB_GetProbeByTagSerialAsync(e.TagSerial);
+                        if (dto == null) return;
+
+                        //取消預約
+                        dto.state = "Verified";
+                        ok = await _probeService.DB_UpdateProbeDataAsync(dto);
+
+                        // 回傳更新UI
+                        ((ElectrodeDetailViewModel)DetailViewModel).Status = "Verified";
+                    }
+                    else
+                    {
+                        //取得電極資料
+                        var dtos = await _electrodeService.DB_GetElectrodesByTagSerialAsync(e.TagSerial);
+                        if (dtos == null) return;
+                        var dto = dtos.FirstOrDefault();
+                        if (dto == null) return;
+
+                        //取消預約
+                        dto.state = "Verified";
+                        ok = await _electrodeService.DB_UpdateElectrodeDataAsync(dto);
+
+                        // 回傳更新
+                        ((ElectrodeDetailViewModel)DetailViewModel).Status = "Verified";
+                    }
+                    if (!ok)
+                        _windowService.ShowMessage("回傳失敗");
+                }
+                catch (Exception ex)
+                {
+                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                }
+            }
+        }
+        private bool CanWorkpieceClearBooked()
+        {
+            if (DetailViewModel is WorkpieceDetailViewModel)
+            {
+                WorkpieceDetailViewModel w = (WorkpieceDetailViewModel)DetailViewModel;
+                return w != null && w.Status == "Booked";
+            }
+            return false;
+        }
+        [RelayCommand(CanExecute = nameof(CanWorkpieceClearBooked))]
+        private async Task WorkpieceClearBooked()
+        {
+            if (DetailViewModel is WorkpieceDetailViewModel)
+            {
+                WorkpieceDetailViewModel w = (WorkpieceDetailViewModel)DetailViewModel;
+                try
+                {
+                    if (!_authorizationService.RequireLoginAndWriteOperation(38))
+                    {
+                        IsLocked = !IsLocked; //還原勾選狀態
+                        return;
+                    }
+
+                    //取得工件資料
+                    bool ok = false;
+                    var dto = await _workpieceService.GetWorkpieceByTagSerialAsync(w.SerialCode);
+                    if (dto == null) return;
+
+                    //取消預約
+                    dto.status = "Verified";
+                    ok = await _workpieceService.UpdateWorkpieceDataAsync(dto);
+                    if (!ok)
+                    {
+                        _windowService.ShowMessage("回傳失敗");
+                        return;
+                    }
+                    // 回傳更新UI
+                    ((WorkpieceDetailViewModel)DetailViewModel).Status = "Verified";
+                }
+                catch (Exception ex)
+                {
+                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                }
+            }
+        }
+
+
         [RelayCommand]
         private async Task UpdataElectrode()  //電極鎖定
         {
@@ -197,6 +306,7 @@ namespace FMSFrontend.ViewModels.Windows
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(CancelBookStorageCommand))]
         private string? currentStorageState; // Booked / Vacant / Occupy
+
 
         private bool CanCancelBookStorage()
             => string.Equals(CurrentStorageState, StorageStateEnum.Booked.ToString(), StringComparison.OrdinalIgnoreCase)

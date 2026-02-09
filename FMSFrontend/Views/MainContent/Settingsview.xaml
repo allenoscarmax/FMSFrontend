@@ -87,8 +87,28 @@
                                                                 </StackPanel>
                                                             </Grid>
                                                         </GroupBox>
-
-
+                                                        <!-- 保持登入 -->
+                                                        <GroupBox Header="保持登入" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
+                                                            <Grid Height="40">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="1.5" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <CheckBox Grid.Column="0" FontSize="20" IsChecked="{Binding KeepLoggedIn, Mode=TwoWay}" Margin="0,0,15,0" VerticalAlignment="Center"  Command="{Binding ToggleKeepLoggedInCommand}" CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}">
+                                                                    <CheckBox.LayoutTransform>
+                                                                        <ScaleTransform ScaleX="1.3" ScaleY="1.3" />
+                                                                    </CheckBox.LayoutTransform>
+                                                                    <TextBlock Text="開啟程式時，自動登入上次使用者">
+                                                                        <TextBlock.LayoutTransform>
+                                                                            <!-- counter-scale the label so its visual size stays about the same -->
+                                                                            <ScaleTransform ScaleX="0.769" ScaleY="0.769" />
+                                                                        </TextBlock.LayoutTransform>
+                                                                    </TextBlock>
+                                                                </CheckBox>
+                                                            </Grid>
+                                                        </GroupBox>
 
                                                     </StackPanel>
                                                 </DataTemplate>

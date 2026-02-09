@@ -5,7 +5,7 @@
 
     </UserControl.Resources>
 
-      <Border Background="Transparent" CornerRadius="10" Padding="8" d:Background="AliceBlue">
+    <Border Background="Transparent" CornerRadius="10" Padding="8" d:Background="AliceBlue">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
@@ -45,7 +45,7 @@
                             </Style>
                         </Border.Style>
                     </Border>
-                    
+
 
                     <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>
@@ -89,14 +89,14 @@
                     <Border Grid.Row="1" BorderThickness="1" BorderBrush="Black" CornerRadius="5" Margin="0,25,0,20">
                         <StackPanel>
                             <TextBlock Text="目前動作" FontSize="16" Background="Transparent" Padding="0,2" TextAlignment="Left" Margin="10,0,0,0" />
-                            <TextBlock Text="{Binding SelectedRobot.CurrentAction, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="16" Background="#444" Foreground="White" Padding="5,2" TextAlignment="Center" d:Text="result" />
+                            <TextBlock Text="{Binding SelectedRobot.CurrentAction, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="14" Background="#444" Foreground="White" Padding="5,2" TextAlignment="Center" d:Text="result" />
                         </StackPanel>
                     </Border>
 
                     <Border Grid.Row="2" BorderThickness="1" BorderBrush="Black" CornerRadius="5">
                         <StackPanel>
                             <TextBlock Text="下一步" FontSize="16" Background="Transparent" Padding="5,2" TextAlignment="Left" Margin="10,0,0,0" />
-                            <TextBlock Text="{Binding SelectedRobot.NextAction, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="16" Background="#444" Foreground="White" Padding="5,2" TextAlignment="Center" d:Text="next" RenderTransformOrigin="0.495,4.568" />
+                            <TextBlock Text="{Binding SelectedRobot.NextAction, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="14" Background="#444" Foreground="White" Padding="5,2" TextAlignment="Center" d:Text="next" RenderTransformOrigin="0.495,4.568" />
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -131,7 +131,7 @@
 
                     <md:PackIcon Kind="ChevronLeft" Width="20" Height="20" />
                 </Button>
-                
+
                 <!-- 文字置中 -->
                 <TextBlock Grid.Column="1" Text="{Binding SelectedRobot.SelectedRobotIndexDisplay, RelativeSource={RelativeSource AncestorType=UserControl}}" Visibility="{Binding SelectedRobot.IsMultipleRobotVisible}" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" d:Text="1 / 5" />
 

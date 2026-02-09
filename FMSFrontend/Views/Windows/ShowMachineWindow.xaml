@@ -64,6 +64,7 @@
                     <TextBlock Text="{Binding DeviceName, FallbackValue=設備名稱}" FontSize="26" FontWeight="SemiBold" FontFamily="微軟正黑體" VerticalAlignment="Center" />
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Content="清除機台工單" Command="{Binding ClearWorkSheetCommand}" Margin="0,0,10,0" Background="#444444" />
                         <Button Style="{StaticResource PrimaryButtonStyle}" Content="電極強制出倉" Command="{Binding ForceElectrodeOutCommand}" Margin="0,0,10,0" />
                         <Button Style="{StaticResource PrimaryButtonStyle}" Content="工件強制出倉" Command="{Binding ForceWorkOutCommand}" Background="#E08E45" />
                     </StackPanel>
@@ -209,9 +210,9 @@
                                 </DataGrid.Resources>
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="建立時間" Binding="{Binding CreatTime}" Width="100" />
-                                    <DataGridTextColumn Header="工單編號" Binding="{Binding WorksheetNumber}" Width="*" />
-                                    <DataGridTextColumn Header="工單狀態" Binding="{Binding WorkStatus}" Width="100" />
-                                    <DataGridTextColumn Header="工件名稱" Binding="{Binding WorkpieceName}" Width="*" />
+                                    <DataGridTextColumn Header="工單編號" Binding="{Binding WorksheetNumber}" Width="*" MinWidth="100"/>
+                                    <DataGridTextColumn Header="工單狀態" Binding="{Binding WorkStatus}"      Width="*" MinWidth="100"/>
+                                    <DataGridTextColumn Header="電極名稱" Binding="{Binding ElectrodeName}"   Width="*" MinWidth="100"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>

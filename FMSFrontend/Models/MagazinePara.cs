@@ -18,8 +18,10 @@ namespace FMSFrontend.Models
         [ObservableProperty] private ObservableCollection<Brush> rightTitleBrush = new ObservableCollection<Brush>(Enumerable.Repeat(PortTilieColor, 1));
         [ObservableProperty] private ObservableCollection<string> rightTitle = new ObservableCollection<string>(Enumerable.Repeat("工件", 1));
         //狀態燈
+        [ObservableProperty] private ObservableCollection<bool> upperScanEnable = new ObservableCollection<bool>(Enumerable.Repeat(false, 1));
         [ObservableProperty] private ObservableCollection<Brush> upperScanStatus = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
         [ObservableProperty] private ObservableCollection<Brush> upperDoorStatus = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
+        [ObservableProperty] private ObservableCollection<bool> lowerScanEnable = new ObservableCollection<bool>(Enumerable.Repeat(false, 1));
         [ObservableProperty] private ObservableCollection<Brush> lowerScanStatus = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
         [ObservableProperty] private ObservableCollection<Brush> lowerDoorStatus = new ObservableCollection<Brush>(Enumerable.Repeat(Brushes.Gray, 1));
     }

@@ -18,8 +18,10 @@ namespace FMSFrontend.Features.Mappings
         public static void ApplyMagazineParaDto(this MagazineParaDto dto, MagazinePara magazinePara)
         {
             magazinePara.IsDoorLightOn = dto.door_to_light[0];
+            magazinePara.UpperScanEnable[0] = !dto.shouldScanEle;
             magazinePara.UpperScanStatus[0] = dto.shouldScanEle ? LightOn : LightOff;
             magazinePara.UpperDoorStatus[0] = dto.eleMagzineDoorOpen[0] ? LightOn : LightOff;
+            magazinePara.LowerScanEnable[0] = !dto.shouldScanPart;
             magazinePara.LowerScanStatus[0] = dto.shouldScanPart ? LightOn : LightOff;
             magazinePara.LowerDoorStatus[0] = dto.partMagzineDoorOpen[0] ? LightOn : LightOff;
             /*
