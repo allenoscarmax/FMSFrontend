@@ -64,6 +64,7 @@
                     <TextBlock Text="{Binding DeviceName, FallbackValue=設備名稱}" FontSize="26" FontWeight="SemiBold" FontFamily="微軟正黑體" VerticalAlignment="Center" />
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Content="清除機台工單" Command="{Binding ClearWorkSheetCommand}" Margin="0,0,10,0" Background="#444444" />
                         <Button Style="{StaticResource PrimaryButtonStyle}" Content="電極強制出倉" Command="{Binding ForceElectrodeOutCommand}" Margin="0,0,10,0" />
                         <Button Style="{StaticResource PrimaryButtonStyle}" Content="工件強制出倉" Command="{Binding ForceWorkOutCommand}" Background="#E08E45" />
                     </StackPanel>

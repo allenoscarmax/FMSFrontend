@@ -189,6 +189,12 @@ namespace FMSFrontend.ViewModels.Windows
                 MachinesDto dto = dtos.FirstOrDefault(x => x.machineName == DeviceName)!;
                 dto.onDeckElectrodeSerial = "";
                 bool ok = await _machinesService.UpdateMachinesDataAsync(dto);
+                if (ok)
+                {
+                    dtos = await _machinesService.GetAllMachinesAsync() ?? new();
+                    dto = dtos.FirstOrDefault(x => x.machineName == DeviceName)!;
+                    if (dto.onDeckElectrodeSerial == "") Info.ElectrodeName = "";
+                }
             }
             catch { }
         }
@@ -206,9 +212,39 @@ namespace FMSFrontend.ViewModels.Windows
                 MachinesDto dto = dtos.FirstOrDefault(x => x.machineName == DeviceName)!;
                 dto.onDeckWorkpieceSerial = "";
                 bool ok = await _machinesService.UpdateMachinesDataAsync(dto);
+                if (ok)
+                {
+                    dtos = await _machinesService.GetAllMachinesAsync() ?? new();
+                    dto = dtos.FirstOrDefault(x => x.machineName == DeviceName)!;
+                    if (dto.onDeckWorkpieceSerial == "")  Info.WorkPieceName = "";
+                }
             }
             catch { }
         }
+        [RelayCommand]
+        private async Task ClearWorkSheet()
+        {
+            try
+            {
+                if (!_authorizationService.RequireLoginAndWriteOperation(39))
+                {
+                    return;
+                }
+                List<MachinesDto> dtos = await _machinesService.GetAllMachinesAsync() ?? new();
+                MachinesDto dto = dtos.FirstOrDefault(x => x.machineName == DeviceName)!;
+                dto.onDeckWorksheetSerial = "";
+                bool ok = await _machinesService.UpdateMachinesDataAsync(dto);
+                if (ok)
+                {
+                    // 即時更新 UI 綁定的資訊並刷新工單清單
+                    dtos = await _machinesService.GetAllMachinesAsync() ?? new();
+                    dto = dtos.FirstOrDefault(x => x.machineName == DeviceName)!;
+                    if (dto.onDeckWorksheetSerial == "") Info.WorkSheetName = "";
+                }
+            }
+            catch { }
+        }
+
         [RelayCommand] private void CloseWindow(Window? w) => w?.Close();
     }
 
