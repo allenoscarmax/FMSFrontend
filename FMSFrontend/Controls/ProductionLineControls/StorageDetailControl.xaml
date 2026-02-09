@@ -229,11 +229,11 @@
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="22" />
                                                             <RowDefinition Height="*" />
-                                                            <RowDefinition Height="22" />
+                                                            <!--<RowDefinition Height="22" />-->
                                                         </Grid.RowDefinitions>
                                                         <materialDesign:PackIcon Grid.Row="0" Kind="Lock" Width="16" Height="16" Foreground="Black" Visibility="{Binding MaterialRestriction, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                        <TextBlock Grid.Row="1" Text="{Binding ShortName}" FontSize="14" FontWeight="SemiBold" Foreground="Black" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                                        <Grid Grid.Row="2" />
+                                                        <TextBlock Grid.Row="1" Text="{Binding ShortName}" FontSize="14" FontWeight="SemiBold" Foreground="Black" VerticalAlignment="Top" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                                                        <!--<Grid Grid.Row="2" />-->
                                                     </Grid>
                                                 </Border>
                                             </ControlTemplate>

@@ -16,7 +16,7 @@ namespace FMSFrontend.Features.Mappings
                 {
                     var parts = Name.Split('-');
                     //顯示末三碼,不足三碼顯示全部
-                    var mainNo = parts[0].Length >= 3 ? parts[0].Substring(parts[0].Length - 3) : parts[0];
+                    var mainNo = parts[0].Length >=5 ? parts[0].Substring(parts[0].Length - 5) : parts[0];
                     //取得會最尾巴位文字
                     var seqNo = parts.Length > 1 ? parts[parts.Length - 1] : "";
                     int n = 0;
@@ -24,7 +24,7 @@ namespace FMSFrontend.Features.Mappings
                     {
                         if (int.TryParse(seqNo, out n))
                         {
-                            return $"{mainNo}-{seqNo}{(char)('A' + int.Parse(seqNo) - 1)}";
+                            return $"{mainNo}-{(char)('A' + int.Parse(seqNo) - 1)}";
                         }
                         else
                         {
