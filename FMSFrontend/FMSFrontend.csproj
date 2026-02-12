@@ -34,11 +34,13 @@
     <None Remove="Image\MachineIcons\07-.png" />
     <None Remove="Image\MachineIcons\08-.png" />
     <None Remove="Image\MachineIcons\09-.png" />
-    <None Remove="Image\MachineIcons\CNC.png" />
+    <None Remove="Image\MachineIcons\CMM.png" />
+	<None Remove="Image\MachineIcons\CNC.png" />
     <None Remove="Image\MachineIcons\EDM.png" />
     <None Remove="Image\MachineIcons\EX430.png" />
     <None Remove="Image\MachineIcons\FMS.png" />
     <None Remove="Image\MachineIcons\ICG-2Z-NC.png" />
+    <None Remove="Image\MachineIcons\UH500.png" />
     <None Remove="Image\MachineIcons\long-track.png" />
     <None Remove="Image\MachineIcons\Magzine.png" />
     <None Remove="Image\MachineIcons\Robot.png" />
@@ -70,7 +72,10 @@
     <Resource Include="Image\ControlUnit\06-2-lightbulbOff.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Image\MachineIcons\CNC.png">
+	  <Resource Include="Image\MachineIcons\CMM.png">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="Image\MachineIcons\CNC.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Image\MachineIcons\EDM.png">
@@ -83,6 +88,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Image\MachineIcons\ICG-2Z-NC.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\MachineIcons\UH500.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Image\MachineIcons\long-track.png">
