@@ -13,9 +13,13 @@ using FMSFrontend.Views;
 using MahApps.Metro.Controls;
 using System.Collections.ObjectModel;
 using System.Reflection.PortableExecutable;
+using System.Runtime.Intrinsics.Arm;
 using System.Security.Policy;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 using System.Windows.Threading;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -268,58 +272,153 @@ namespace FMSFrontend.ViewModels
         private void RefreshFromStore()
         {
             if (Machine == null || DisplayData == null) return;
-            // 從MachinesT取得對應Machine名稱一樣的的機台資料顯示在DisplayData上
-            var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
-            if (edm == null || edm.OscarEdm == null) return;
-            MachineNumber = int.TryParse(edm.OscarEdm.MachineNumber, out var num) ? num : -1;
-            test = !test;
-            if (canctrlDelay > 0) canctrlDelay--;
-            if (canctrlDelay == 0) DisplayData.CanControl = edm.OscarEdm.CanControl;
-            // 機台資訊
-            DisplayData.MachineNumber = edm.OscarEdm.MachineNumber;
-            DisplayData.MachineStatus = edm.OscarEdm.MachineStatus;
-            DisplayData.UsingElectrode = edm.OscarEdm.UsingElectrode;
-            DisplayData.MachiningCode = edm.OscarEdm.MachiningCode;
-            DisplayData.MachiningWorkingTime = edm.OscarEdm.CycleTime;
-            DisplayData.MachiningWorkingPercentage = edm.OscarEdm.MachiningWorkingPercentage;
-            DisplayData.CurrentWorksheet = edm.OscarEdm.CurrentWorksheet;
-            DisplayData.MachiningTool = edm.OscarEdm.MachiningTool;
+            if (MachineName.Contains("EDM"))
+            {
+                // 從MachinesT取得對應Machine名稱一樣的的機台資料顯示在DisplayData上
+                var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
+                if (edm == null || edm.OscarEdm == null) return;
+                MachineNumber = int.TryParse(edm.OscarEdm.MachineNumber, out var num) ? num : -1;
+                if (canctrlDelay > 0) canctrlDelay--;
+                if (canctrlDelay == 0) DisplayData.CanControl = edm.OscarEdm.CanControl;
 
-            // 機台狀態
-            DisplayData.MachineTemperature = edm.OscarEdm.MachineTemperature;
-            DisplayData.SpindleRPM = edm.OscarEdm.SpindleRPM;
-            DisplayData.OilLevelStatus = edm.OscarEdm.OilLevelStatus;
-            DisplayData.CoolantLevel = edm.OscarEdm.CoolantLevel;
+                // 機台資訊
+                DisplayData.MachineInfos[0].Name = "• 機台型號：";
+                DisplayData.MachineInfos[0].Value = edm.OscarEdm.MachineNumber;
+                DisplayData.MachineInfos[1].Name = "• 機台狀態：";
+                DisplayData.MachineInfos[1].Value = edm.OscarEdm.MachineStatus;
+                DisplayData.MachineInfos[2].Name = "• 使用電極：";
+                DisplayData.MachineInfos[2].Value = edm.OscarEdm.UsingElectrode;
+                DisplayData.MachineInfos[3].Name = "• 加工程式：";
+                DisplayData.MachineInfos[3].Value = edm.OscarEdm.MachiningCode;
+                DisplayData.MachineInfos[4].Name = "• 加工時間：";
+                DisplayData.MachineInfos[4].Value = edm.OscarEdm.CycleTime;
+                DisplayData.MachineInfos[5].Name = "• 加工進度：";
+                DisplayData.MachineInfos[5].Value = edm.OscarEdm.MachiningWorkingPercentage;
+                DisplayData.MachineInfos[6].Name = "• 目前工單：";
+                DisplayData.MachineInfos[6].Value = edm.OscarEdm.CurrentWorksheet;
+                DisplayData.MachineInfos[7].Name = "• 刀具號碼：";
+                DisplayData.MachineInfos[7].Value = edm.OscarEdm.MachiningTool;
 
-            // 座標
-            DisplayData.PositionID = edm.OscarEdm.PositionID;
-            DisplayData.ABS_X = edm.OscarEdm.ABS_X;
-            DisplayData.ABS_Y = edm.OscarEdm.ABS_Y;
-            DisplayData.ABS_Z = edm.OscarEdm.ABS_Z;
-            DisplayData.ABS_A = edm.OscarEdm.ABS_A;
-            DisplayData.ABS_B = edm.OscarEdm.ABS_B;
-            DisplayData.ABS_C = edm.OscarEdm.ABS_C;
+                DisplayData.MachineInfos[8].Name = "• 機台溫度 : ";
+                DisplayData.MachineInfos[8].Value = edm.OscarEdm.MachineTemperature;
+                DisplayData.MachineInfos[9].Name = "• 主軸轉速 : ";
+                DisplayData.MachineInfos[9].Value = edm.OscarEdm.SpindleRPM;
+                DisplayData.MachineInfos[10].Name = "• 油位狀態 : ";
+                DisplayData.MachineInfos[10].Value = edm.OscarEdm.OilLevelStatus;
+                DisplayData.MachineInfos[11].Name = "• 冷卻液量 : ";
+                DisplayData.MachineInfos[11].Value = edm.OscarEdm.CoolantLevel;
+                for (int i = 12; i < 16; i++)
+                {
+                    DisplayData.MachineInfos[i].Name = "";
+                    DisplayData.MachineInfos[i].Value = "";
+                }
 
-            DisplayData.MCH_X = edm.OscarEdm.MCH_X;
-            DisplayData.MCH_Y = edm.OscarEdm.MCH_Y;
-            DisplayData.MCH_Z = edm.OscarEdm.MCH_Z;
+                // 座標
+                DisplayData.PositionID = edm.OscarEdm.PositionID;
+                DisplayData.ABS_X = edm.OscarEdm.ABS_X;
+                DisplayData.ABS_Y = edm.OscarEdm.ABS_Y;
+                DisplayData.ABS_Z = edm.OscarEdm.ABS_Z;
+                DisplayData.ABS_A = edm.OscarEdm.ABS_A;
+                DisplayData.ABS_B = edm.OscarEdm.ABS_B;
+                DisplayData.ABS_C = edm.OscarEdm.ABS_C;
 
-            // 加工參數
-            DisplayData.Speed = edm.OscarEdm.Speed;
-            DisplayData.Servo = edm.OscarEdm.Servo;
-            DisplayData.Gap = edm.OscarEdm.Gap;
-            DisplayData.OB = edm.OscarEdm.OB;
-            DisplayData.E_SPD = edm.OscarEdm.E_SPD;
-            DisplayData.Pol = edm.OscarEdm.Pol;
-            DisplayData.Pulse = edm.OscarEdm.Pulse;
+                DisplayData.MCH_X = edm.OscarEdm.MCH_X;
+                DisplayData.MCH_Y = edm.OscarEdm.MCH_Y;
+                DisplayData.MCH_Z = edm.OscarEdm.MCH_Z;
+                DisplayData.MCH_A = "";
+                DisplayData.MCH_B = "";
+                DisplayData.MCH_C = "";
 
-            DisplayData.E_Cod = edm.OscarEdm.E_Code;
-            DisplayData.T_ON = edm.OscarEdm.T_ON;
-            DisplayData.T_OFF = edm.OscarEdm.T_OFF;
-            DisplayData.LV = edm.OscarEdm.LV;
-            DisplayData.HV = edm.OscarEdm.HV;
-            DisplayData.JT = edm.OscarEdm.JT;
-            DisplayData.JD = edm.OscarEdm.JD;
+                // 加工參數
+                DisplayData.ProcessingParam[0].Name = "TON(us):";
+                DisplayData.ProcessingParam[0].Value = edm.OscarEdm.T_ON;
+                DisplayData.ProcessingParam[1].Name = "TOFF(us):";
+                DisplayData.ProcessingParam[1].Value = edm.OscarEdm.T_OFF;
+                DisplayData.ProcessingParam[2].Name = "I(A):";
+                DisplayData.ProcessingParam[2].Value = edm.OscarEdm.E_SPD; //??
+                DisplayData.ProcessingParam[3].Name = "Pol:";
+                DisplayData.ProcessingParam[3].Value = edm.OscarEdm.Pol;
+                DisplayData.ProcessingParam[4].Name = "Hv:";
+                DisplayData.ProcessingParam[4].Value = edm.OscarEdm.HV;
+                DisplayData.ProcessingParam[5].Name = "Gap(V):";
+                DisplayData.ProcessingParam[5].Value = edm.OscarEdm.Gap;
+                DisplayData.ProcessingParam[6].Name = "Speed:";
+                DisplayData.ProcessingParam[6].Value = edm.OscarEdm.Speed;
+                DisplayData.ProcessingParam[7].Name = "Pulse";
+                DisplayData.ProcessingParam[7].Value = edm.OscarEdm.Pulse;
+                DisplayData.ProcessingParam[8].Name = "Servo(%):";
+                DisplayData.ProcessingParam[8].Value = edm.OscarEdm.Servo;
+                DisplayData.ProcessingParam[9].Name = "JD(mm):";
+                DisplayData.ProcessingParam[9].Value = edm.OscarEdm.JD;
+                DisplayData.ProcessingParam[10].Name = "OB:";
+                DisplayData.ProcessingParam[10].Value = edm.OscarEdm.OB;
+                DisplayData.ProcessingParam[11].Name = "JT(s):";
+                DisplayData.ProcessingParam[11].Value = edm.OscarEdm.JT;
+                for (int i = 12; i < 16; i++)
+                {
+                    DisplayData.ProcessingParam[i].Name = "";
+                    DisplayData.ProcessingParam[i].Value = "";
+                }
+            }
+            else if (MachineName.Contains("UH500"))
+            {
+                // 從MachinesT取得對應Machine名稱一樣的的機台資料顯示在DisplayData上
+                var machine = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
+                if (machine == null || machine.SunmillSiemensCNC == null) return;
+                var cnc = machine.SunmillSiemensCNC;
+
+                MachineNumber = int.TryParse(cnc.MachineNumber, out var num) ? num : -1;
+                if (canctrlDelay > 0) canctrlDelay--;
+                if (canctrlDelay == 0) DisplayData.CanControl = cnc.CanControl;
+                // 機台資訊
+                DisplayData.MachineInfos[0].Name = "• 機台型號：";
+                DisplayData.MachineInfos[0].Value = cnc.MachineNumber;
+                DisplayData.MachineInfos[1].Name = "• 機台狀態：";
+                DisplayData.MachineInfos[1].Value = cnc.MachineStatus;
+                DisplayData.MachineInfos[2].Name = "• 使用刀具：";
+                DisplayData.MachineInfos[2].Value = cnc.ToolName;
+                DisplayData.MachineInfos[3].Name = "• 加工程式：";
+                DisplayData.MachineInfos[3].Value = cnc.MachiningCode;
+                DisplayData.MachineInfos[4].Name = "• 加工時間：";
+                DisplayData.MachineInfos[4].Value = cnc.CycleTime;
+                DisplayData.MachineInfos[5].Name = "• 加工進度：";
+                DisplayData.MachineInfos[5].Value = cnc.MachiningWorkingPercentage;
+                DisplayData.MachineInfos[6].Name = "• 目前工單：";
+                DisplayData.MachineInfos[6].Value = cnc.CurrentWorksheet;
+                DisplayData.MachineInfos[7].Name = "• 刀具號碼：";
+                DisplayData.MachineInfos[7].Value = cnc.MachiningTool;
+                for (int i = 8; i < 16; i++)
+                {
+                    DisplayData.MachineInfos[i].Name = "";
+                    DisplayData.MachineInfos[i].Value = "";
+                }
+                // 座標
+                DisplayData.PositionID = cnc.PositionID;
+                DisplayData.ABS_X = cnc.ABS_X;
+                DisplayData.ABS_Y = cnc.ABS_Y;
+                DisplayData.ABS_Z = cnc.ABS_Z;
+                DisplayData.ABS_A = cnc.ABS_A;
+                DisplayData.ABS_B = cnc.ABS_B;
+                DisplayData.ABS_C = cnc.ABS_C;
+
+                DisplayData.MCH_X = cnc.MCH_X;
+                DisplayData.MCH_Y = cnc.MCH_Y;
+                DisplayData.MCH_Z = cnc.MCH_Z;
+                DisplayData.MCH_A = cnc.MCH_A;
+                DisplayData.MCH_B = cnc.MCH_B;
+                DisplayData.MCH_C = cnc.MCH_C;
+
+                // 加工參數
+                DisplayData.ProcessingParam[0].Name = "進給速度";
+                DisplayData.ProcessingParam[0].Value = cnc.FeedRate;
+                DisplayData.ProcessingParam[1].Name = "主軸轉速";
+                DisplayData.ProcessingParam[1].Value = cnc.SpindleSpeed;
+                for (int i = 2; i < 16; i++)
+                {
+                    DisplayData.ProcessingParam[i].Name = "";
+                    DisplayData.ProcessingParam[i].Value = "";
+                }
+            }
         }
 
         public class TabItemModel
@@ -331,28 +430,42 @@ namespace FMSFrontend.ViewModels
 
         public partial class MachineDisplayData : ObservableObject
         {
+            public MachineDisplayData()
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    ProcessingParam.Add(new ProcessingParam());
+                    MachineInfos.Add(new MachineInfo());
+                } 
+            }
             //機台禁用
             [ObservableProperty] private bool canControl = false;
             //機台資訊
-            [ObservableProperty] private string machineNumber = "";
-            [ObservableProperty] private string machineStatus = "";
-            [ObservableProperty] private string usingElectrode = "";
-            [ObservableProperty] private string machiningCode = "";
-            [ObservableProperty] private string machiningWorkingTime = "";
-            [ObservableProperty] private string machiningWorkingPercentage = "";
-            [ObservableProperty] private string currentWorksheet = "";
-            [ObservableProperty] private string machiningTool = "";
+            [ObservableProperty] private string machineNumber = "";  //機台號碼
+            [ObservableProperty] private string machineStatus = "";  //機台狀態
+            [ObservableProperty] private string usingElectrode = ""; //使用電極(刀具)
+            [ObservableProperty] private string machiningCode = "";  //加工程式
+            [ObservableProperty] private string machiningWorkingTime = ""; //加工持續時間
+            [ObservableProperty] private string machiningWorkingPercentage = ""; //加工進度
+            [ObservableProperty] private string currentWorksheet = ""; //工單編號
+            [ObservableProperty] private string machiningTool = ""; //使用刀具
 
-            [ObservableProperty] private string machineTemperature = "";
-            [ObservableProperty] private string spindleRPM = "";
-            [ObservableProperty] private string oilLevelStatus = "";
-            [ObservableProperty] private string coolantLevel = "";
+            [ObservableProperty] private string machineTemperature = ""; //機台溫度
+            [ObservableProperty] private string spindleRPM = ""; //主軸轉速
+            [ObservableProperty] private string oilLevelStatus = ""; //油位狀態
+            [ObservableProperty] private string coolantLevel = ""; //冷卻液位
+                                                                   //機台資訊
+            public ObservableCollection<MachineInfo> MachineInfos { get; set; } = new ObservableCollection<MachineInfo>();
+
+            // 加工參數
+            public ObservableCollection<ProcessingParam> ProcessingParam { get; set; } = new ObservableCollection<ProcessingParam>();
 
             //座標
-            [ObservableProperty] private string positionID = "";
+            [ObservableProperty] private string positionID = ""; //坐標系
             [ObservableProperty] private string aBS_X = "";
             [ObservableProperty] private string aBS_Y = "";
             [ObservableProperty] private string aBS_Z = "";
+            [ObservableProperty] private string aBS_W = "";
             [ObservableProperty] private string aBS_C = "";
             [ObservableProperty] private string aBS_A = "";
             [ObservableProperty] private string aBS_B = "";
@@ -360,25 +473,20 @@ namespace FMSFrontend.ViewModels
             [ObservableProperty] private string mCH_X = "";
             [ObservableProperty] private string mCH_Y = "";
             [ObservableProperty] private string mCH_Z = "";
-
-            // 加工參數
-            [ObservableProperty] private string speed = "";
-            [ObservableProperty] private string servo = "";
-            [ObservableProperty] private string gap = "";
-            [ObservableProperty] private string oB = "";
-            [ObservableProperty] private string e_SPD = "";
-            [ObservableProperty] private string pol = "";
-            [ObservableProperty] private string pulse = "";
-
-            [ObservableProperty] private string e_Cod = "";
-            [ObservableProperty] private string t_ON = "";
-            [ObservableProperty] private string t_OFF = "";
-            [ObservableProperty] private string lV = "";
-            [ObservableProperty] private string hV = "";
-            [ObservableProperty] private string jT = "";
-            [ObservableProperty] private string jD = "";
-
-
+            [ObservableProperty] private string mCH_W = "";
+            [ObservableProperty] private string mCH_C = "";
+            [ObservableProperty] private string mCH_A = "";
+            [ObservableProperty] private string mCH_B = "";
+        }
+        public partial class MachineInfo : ObservableObject
+        {
+            [ObservableProperty] private string name = "";
+            [ObservableProperty] private string value = "";
+        }
+        public partial class ProcessingParam : ObservableObject
+        {
+            [ObservableProperty] private string name = "";
+            [ObservableProperty] private string value = "";
         }
         public class WorkOrderRow
         {

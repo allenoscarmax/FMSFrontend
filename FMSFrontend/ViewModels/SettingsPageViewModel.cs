@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FMSFrontend.Extensions;   // ← PeriodWindow / PeriodWindowArgs / PeriodSelectionResult / ScheduleMode
+using FMSFrontend.Extensions;   
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
@@ -8,20 +8,13 @@ using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views.Windows;
 using IniFile;
-using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using System.Collections.Generic;
-using System.Windows.Media.Animation;
-using System.Security;
-using System.Windows.Navigation;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace FMSFrontend.ViewModels
 {
@@ -29,28 +22,8 @@ namespace FMSFrontend.ViewModels
     public partial class SettingsPageViewModel : ObservableObject
     {
 
-
-        // ===== 顯示用（你的 XAML 綁在這個上面）=====
-        [ObservableProperty] private string periodDisplay = "不設定";
-
-        // 新增：綁定系統 IP 的輸入欄位
-        [ObservableProperty] private string serverIp = string.Empty;
-        [ObservableProperty] private string robotMaintenanceMsg = "";
-        // ===== 目前的設定（當作下一次開窗的初始值）=====
-        [ObservableProperty] private ScheduleMode selectedMode = ScheduleMode.None;
-
-        public ObservableCollection<int> Weekly { get; } = new();   // 1~7、可負數
-        public ObservableCollection<int> Monthly { get; } = new();   // 1~31、0=last、可負數
-        [ObservableProperty] private int hour = 9;   // 0~23
-        [ObservableProperty] private int minute = 41;  // 0~59
-        [ObservableProperty] private bool isPm = false;
-
-        // ===== 開窗指令 ── 綁到你的 Button =====
-        public IRelayCommand OpenSetPeriodDialogCommand { get; }
-
         private readonly IWindowService _windowService;
         private readonly IHttpService _httpService;
-
         private readonly IMachinesService _machinesService;
         private readonly IRobotService _robotService;
         private readonly IDevicesService _devicesService;
@@ -58,6 +31,7 @@ namespace FMSFrontend.ViewModels
         private readonly IAppointmentMaintenanceService _appointmentMaintenanceService;
         private readonly IMongoDBService _mongoDBService;
         private readonly IAuthorizationService _authorizationService;
+
         public SettingsPageViewModel(IWindowService windowService,
             IHttpService httpService,
             IMachinesService machinesService,
@@ -66,12 +40,10 @@ namespace FMSFrontend.ViewModels
             IWorkerService workerService,
             IAppointmentMaintenanceService appointmentMaintenanceService,
             IMongoDBService mongoDBService,
-            IAuthorizationService authorizationService
-            )
+            IAuthorizationService authorizationService)
         {
             _windowService = windowService;
             _httpService = httpService;
-
             _machinesService = machinesService;
             _robotService = robotService;
             _devicesService = devicesService;
@@ -80,70 +52,43 @@ namespace FMSFrontend.ViewModels
             _mongoDBService = mongoDBService;
             _authorizationService = authorizationService;
 
-            OpenSetPeriodDialogCommand = new RelayCommand(OpenPeriodDialog);
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
 
-            // 初始化 IP 顯示（優先用 IHttpService 的 ServerIp）
-            ServerIp = _httpService.ServerIp ?? string.Empty;
-
-            // 初始化設定值（原本內容保留）
-            AvailableLanguages = new ObservableCollection<string> { "繁體中文", "English", "日本語" };
-            SelectedLanguage = AvailableLanguages[0];
-
-            AvailableThemes = new ObservableCollection<string> { "Light", "Dark", "System Default" };
-            SelectedTheme = AvailableThemes[0];
-
+            //基本設定頁面初始
             AvailablePermissions = new ObservableCollection<string> { "工作人員", "專家" };
             SelectedPermission = AvailablePermissions[0];
+            var keep = ini.Read("Prarm", "KeepLoggedIn");  // 保持登入：開啟時從 Basesitting 讀取
+            KeepLoggedIn = keep == "True";
 
-            // 初始化權限選項
-            AvailablePermissions = new ObservableCollection<string> { "工作人員", "專家" };
-            SelectedPermission = AvailablePermissions[0];
+            //進階設定頁面初始
+            ServerIp = _httpService.ServerIp ?? string.Empty; // 初始化 IP 顯示（優先用 IHttpService 的 ServerIp）
+            RobotMaintenanceMsg = ini.Read("Prarm", "RobotMaintenanceMsg");
 
-            /*
-            MachineList = new ObservableCollection<MachineInfo>{
-                new MachineInfo { MachineId="EDM1", MachineName="EDM1", MachineType="EDM1", IpAddress="192.168.21.232", Port=13101, AssetNo="-", Owner="OscarMax" },
-                new MachineInfo { MachineId="EDM2", MachineName="EDM2", MachineType="EDM2", IpAddress="192.168.21.233", Port=13102, AssetNo="-", Owner="OscarMax" },
-                new MachineInfo { MachineId="EDM3", MachineName="EDM3", MachineType="EDM3", IpAddress="192.168.21.234", Port=13103, AssetNo="-", Owner="OscarMax" },
-                new MachineInfo { MachineId="EDM4", MachineName="EDM4", MachineType="EDM4", IpAddress="192.168.21.235", Port=13104, AssetNo="-", Owner="OscarMax" },
-                new MachineInfo { MachineId="EDM5", MachineName="EDM5", MachineType="EDM5", IpAddress="192.168.21.236", Port=13105, AssetNo="-", Owner="OscarMax" },
-            };
-            */
+            //設備設定頁面初始
             _machinesView = CollectionViewSource.GetDefaultView(MachineList);
             _machinesView.Filter = FilterMachine;        // 設定一次即可
-            /*
-            RobotList = new ObservableCollection<RobotInfo>{
-    new RobotInfo { RobotId="Robot1", RobotName="Robot1", RobotType="Fanuc", IpAddress="192.168.21.6", Owner="OscarMax" },
-};
-            */
             _robotsView = CollectionViewSource.GetDefaultView(RobotList);
             _robotsView.Filter = FilterRobot;        // 設定一次即可
-            /*
-            // Device 假資料（依你的截圖）
-            DeviceList = new ObservableCollection<DeviceInfo>
-            {
-                new() { DeviceId="Delta_IO",      DeviceName="Delta_IO",      IpAddress="192.168.21.239", Port=10001, AssetNo="-", Owner="OscarMax" },
-                new() { DeviceId="Balluff_RFID",  DeviceName="Balluff_RFID",  IpAddress="192.168.21.236", Port=10001, AssetNo="-", Owner="OscarMax" },
-                new() { DeviceId="ESL",           DeviceName="ESL",           IpAddress="192.168.21.238", Port=10001, AssetNo="-", Owner="OscarMax" },
-            };
-            */
-            // 建立 View + Filter
             _devicesView = CollectionViewSource.GetDefaultView(DeviceList);
             _devicesView.Filter = FilterDevice;
 
+            //人員設定頁面初始 
             _workerListView = CollectionViewSource.GetDefaultView(WorkerList);
             _workerListView.Filter = FilterWorker;
-            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-            RobotMaintenanceMsg = ini.Read("Prarm", "RobotMaintenanceMsg");
 
-            // 保持登入：開啟時從 Basesitting 讀取
-            var keep = ini.Read("Prarm", "KeepLoggedIn");
-            KeepLoggedIn = keep == "True";
+            //保養設定頁面初始
+            OpenSetPeriodDialogCommand = new RelayCommand(OpenPeriodDialog);
+
+            //未使用
+            AvailableLanguages = new ObservableCollection<string> { "繁體中文", "English", "日本語" };
+            SelectedLanguage = AvailableLanguages[0];
+            AvailableThemes = new ObservableCollection<string> { "Light", "Dark", "System Default" };
+            SelectedTheme = AvailableThemes[0];
         }
-        // 這就是缺少的屬性，用來綁定 Tab 切換
+        // === 主頁面 ===
+
+        #region 主頁面切換
         [ObservableProperty] private int selectedTabIndexParameter;
-
-        [ObservableProperty] private int selectedSubTabIndexParameter;
-
         partial void OnSelectedTabIndexParameterChanged(int value) //主頁籤切換
         {
             switch (value)
@@ -167,7 +112,180 @@ namespace FMSFrontend.ViewModels
                     break;
             }
         }
-        // 修正：CommunityToolkit 產生的部分方法必須是 partial void；內部以 fire-and-forget 呼叫非同步刷新
+        #endregion
+
+        //===基本設定頁面===
+
+        #region 權限設定
+        [ObservableProperty] private ObservableCollection<string> availablePermissions;
+        [ObservableProperty] private string selectedPermission = "";
+        [ObservableProperty] private bool showPasswordPrompt; // 是否顯示輸入密碼面板
+        [ObservableProperty] private bool isAdvancedEnabled;  // 進階設定 Tab 是否啟用
+        [ObservableProperty] private string password = "";
+        partial void OnSelectedPermissionChanged(string value)
+        {
+            // 選擇權限後觸發：若選擇專家但尚未啟用，顯示密碼輸入面板
+            if (value == "專家")
+            {
+                ShowPasswordPrompt = !IsAdvancedEnabled; // 尚未解鎖才顯示輸入區
+            }
+            else
+            {
+                // 切換回工作人員 -> 關閉進階與密碼面板
+                IsAdvancedEnabled = false;
+                ShowPasswordPrompt = false;
+            }
+        }
+
+        [RelayCommand]
+        private void PermissionClick()
+        {
+            if (SelectedPermission != "專家")
+            {
+                StatusMessage = "⚠️ 請選擇專家模式再輸入密碼";
+                _windowService.ShowMessage("請先選擇專家模式");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Password))
+            {
+                StatusMessage = "❌ 密碼不可為空";
+                _windowService.ShowMessage("請輸入密碼");
+                return;
+            }
+
+            if (Password == "1758")
+            {
+                IsAdvancedEnabled = true;          // 啟用進階設定頁籤
+                ShowPasswordPrompt = false;        // 隱藏密碼輸入面板
+                StatusMessage = "✅ 已開啟專家模式";
+                _windowService.ShowMessage("已開啟專家模式");
+            }
+            else
+            {
+                IsAdvancedEnabled = false;
+                StatusMessage = "❌ 密碼錯誤";
+                _windowService.ShowMessage("密碼錯誤，請再試一次");
+            }
+        }
+        #endregion
+
+        #region 保持登入
+        [ObservableProperty] private bool keepLoggedIn;
+        [RelayCommand]
+        private void ToggleKeepLoggedIn(bool? isChecked)
+        {
+            KeepLoggedIn = isChecked == true; // 交由 OnKeepLoggedInChanged 持久化
+        }
+
+        partial void OnKeepLoggedInChanged(bool value)
+        {
+            try
+            {
+                INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+                ini.Write("Prarm", "KeepLoggedIn", value ? "True" : "False");
+            }
+            catch { }
+        }
+
+        #endregion
+
+        //===進階設定頁面===
+
+        #region 系統IP設定
+        [ObservableProperty] private string serverIp = string.Empty;  //綁定系統 IP 的輸入欄位
+        [RelayCommand]
+        private void SaveIP()
+        {
+            var ip = (ServerIp ?? string.Empty).Trim();
+            if (!(IPAddress.TryParse(ip, out _) || ip == "localhost"))
+            {
+                StatusMessage = "❌ IP 位址格式不正確";
+                _windowService.ShowMessage("IP 位址格式不正確，請輸入有效的 IPv4，例如：192.168.1.100");
+                return;
+            }
+            try
+            {
+                _httpService.UpdateServerIp(ip);
+                StatusMessage = "🤖 設定IP OK";
+                _windowService.ShowMessage($"已設定 IP：{ip}");
+                INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+                ini.Write("Prarm", "IP", ip);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = "❌ 設定 IP 失敗";
+                _windowService.ShowMessage($"設定 IP 失敗：{ex.Message}");
+            }
+        }
+        #endregion
+
+        #region 系統還原
+        [RelayCommand]
+        private void RestoreSystem()
+        {
+            if (!_authorizationService.RequireLoginAndWriteOperation(20))
+                return;
+            // TODO: 加入系統還原邏輯，例如清除資料、表單、日誌等
+            StatusMessage = "⚠️ 系統已還原，所有資料已清除";
+            _windowService.ShowMessage("系統還原完成");
+        }
+        #endregion
+
+        #region 系統備份
+        [ObservableProperty] private bool isBusy;
+        [ObservableProperty] private string busyMessage = "處理中...";
+        private bool CanBackupSystem() => !IsBusy;
+
+        [RelayCommand(CanExecute = nameof(CanBackupSystem))]
+        private async Task BackupSystem()
+        {
+            if (!_authorizationService.RequireLoginAndWriteOperation(29))
+            {
+                return;
+            }
+            IsBusy = true;
+            BusyMessage = "系統備份中，請稍候...";
+            try
+            {
+
+                var ok = await _mongoDBService.BackupDatabaseAsync();
+
+                _windowService.ShowMessage(ok ? "系統備份成功" : "系統備份失敗");
+            }
+            catch (Exception ex)
+            {
+                _windowService.ShowMessage($"系統備份發生例外：{ex.Message}");
+                // 建議也寫 log
+            }
+            finally
+            {
+                IsBusy = false;
+                BackupSystemCommand.NotifyCanExecuteChanged();
+            }
+        }
+        #endregion
+
+        #region 機器手臂維護
+        [ObservableProperty] private string robotMaintenanceMsg = "";
+        [RelayCommand]
+        private void CompleteRobotMaintenance()
+        {
+            if (!_authorizationService.RequireLoginAndWriteOperation(21))
+                return;
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            var today = DateTime.Today.ToString("yyyy/MM/dd");
+            ini.Write("Prarm", "RobotMaintenanceMsg", today);
+            RobotMaintenanceMsg = today;
+            StatusMessage = "🤖 機械手臂維護已標記為完成";
+            _windowService.ShowMessage("維護狀態已更新");
+        }
+        #endregion
+
+        //===設備設定頁面===
+
+        #region 設備設定頁面切換
+        [ObservableProperty] private int selectedSubTabIndexParameter;
         partial void OnSelectedSubTabIndexParameterChanged(int value) //設備資訊子頁籤切換
         {
             switch (value)
@@ -192,6 +310,40 @@ namespace FMSFrontend.ViewModels
                     break;
             }
         }
+        #endregion
+
+        #region 機台頁面
+        public ObservableCollection<MachineInfo> MachineList { get; set; } = new();
+        private readonly ICollectionView _machinesView;
+        private string _searchText = "";
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                // 由 ObservableObject 提供，會幫你 Raise PropertyChanged
+                if (SetProperty(ref _searchText, value))
+                {
+                    _machinesView?.Refresh(); // 每次變更就重新套過濾
+                }
+            }
+        }
+        private bool FilterMachine(object obj)
+        {
+            if (obj is not MachineInfo m) return false;
+
+            var q = (SearchText ?? string.Empty).Trim();
+            if (q.Length == 0) return true;
+
+            var cmp = StringComparison.OrdinalIgnoreCase;
+            return (m.MachineId?.Contains(q, cmp) ?? false)
+                || (m.MachineName?.Contains(q, cmp) ?? false)
+                || (m.MachineType?.Contains(q, cmp) ?? false)
+                || (m.IpAddress?.Contains(q, cmp) ?? false)
+                || m.Port.ToString().Contains(q, cmp);
+        }
+
+        [ObservableProperty] private MachineInfo? selectedMachine;
 
         private async Task MachinesRefresh() //更新Machine資訊
         {
@@ -219,74 +371,7 @@ namespace FMSFrontend.ViewModels
             {
             }
         }
-        private async Task RobotRefresh() //更新Robot資訊
-        {
-            try
-            {
-                List<RobotDto> Dtos = await _robotService.DB_GetAllRobotsAsync() ?? new List<RobotDto>();
-                RobotList.Clear();
-                foreach (var dto in Dtos)
-                {
-                    RobotList.Add(
-                    new RobotInfo
-                    {
-                        RobotId = dto._id,
-                        RobotNo = "1",
-                        RobotName = dto.robotName,
-                        RobotType = "FANUC",
-                        IpAddress = dto.robot_IP,
-                        Owner = dto.setupUser
-                    });
-                }
 
-            }
-            catch { }
-        }
-        private async Task DeviceRefresh() //更新Device資訊
-        {
-            try
-            {
-                List<DevicesDto> dtos = await _devicesService.GetAllDevicesAsync() ?? new List<DevicesDto>();
-                DeviceList.Clear();
-                foreach (var dto in dtos)
-                {
-                    DeviceList.Add(
-                    new DeviceInfo
-                    {
-                        DeviceId = dto.Id,
-                        DeviceNo = dto.DeviceNumber.ToString(),
-                        DeviceName = dto.DeviceName,
-                        IpAddress = dto.DeviceIP,
-                        Port = dto.DevicePort,
-                        Owner = dto.SetupUser
-                    });
-                }
-            }
-            catch { }
-        }
-        private async Task WorkerRefresh() //更新Worker資訊
-        {
-            try
-            {
-                List<WorkerDto> dtos = await _workerService.GetAllWorkerAsync() ?? new();
-
-                WorkerList.Clear();
-                foreach (var dto in dtos)
-                {
-                    WorkerList.Add(
-                    new WorkerInfo
-                    {
-                        Id = dto.Id,
-                        WorkerNumber = dto.WorkerNumber,
-                        WorkerName = dto.WorkerName,
-                        Psssword = dto.Password
-                    });
-                }
-            }
-            catch
-            {
-            }
-        }
         [RelayCommand]
         private async Task EditMachine()
         {
@@ -344,7 +429,63 @@ namespace FMSFrontend.ViewModels
                 await MachinesRefresh();
             }
         }
+        #endregion
+
+        #region 手臂頁面
+        public ObservableCollection<RobotInfo> RobotList { get; set; } = new();
+        private readonly ICollectionView _robotsView;
+        private string _robotSearchText = "";
+        public string RobotSearchText
+        {
+            get => _robotSearchText;
+            set
+            {
+                // 由 ObservableObject 提供，會幫你 Raise PropertyChanged
+                if (SetProperty(ref _robotSearchText, value))
+                {
+                    _robotsView?.Refresh(); // 每次變更就重新套過濾
+                }
+            }
+        }
         [ObservableProperty] private RobotInfo? selectedRobot;
+
+        private bool FilterRobot(object obj)
+        {
+            if (obj is not RobotInfo m) return false;
+
+            var q = (RobotSearchText ?? string.Empty).Trim();
+            if (q.Length == 0) return true;
+
+            var cmp = StringComparison.OrdinalIgnoreCase;
+            return (m.RobotNo?.Contains(q, cmp) ?? false)
+                || (m.RobotName?.Contains(q, cmp) ?? false)
+                || (m.RobotType?.Contains(q, cmp) ?? false)
+                || (m.IpAddress?.Contains(q, cmp) ?? false);
+        }
+        private async Task RobotRefresh() //更新Robot資訊
+        {
+            try
+            {
+                List<RobotDto> Dtos = await _robotService.DB_GetAllRobotsAsync() ?? new List<RobotDto>();
+                RobotList.Clear();
+                foreach (var dto in Dtos)
+                {
+                    RobotList.Add(
+                    new RobotInfo
+                    {
+                        RobotId = dto._id,
+                        RobotNo = "1",
+                        RobotName = dto.robotName,
+                        RobotType = "FANUC",
+                        IpAddress = dto.robot_IP,
+                        Owner = dto.setupUser
+                    });
+                }
+
+            }
+            catch { }
+        }
+
         [RelayCommand]
         private async Task EditRobot()
         {
@@ -394,8 +535,59 @@ namespace FMSFrontend.ViewModels
                 await RobotRefresh();
             }
         }
+        #endregion
+
+        #region Device頁面
+        public ObservableCollection<DeviceInfo> DeviceList { get; set; } = new();
+        private readonly ICollectionView _devicesView;
+        private string _deviceSearchText = "";
+        public string DeviceSearchText
+        {
+            get => _deviceSearchText;
+            set
+            {
+                if (SetProperty(ref _deviceSearchText, value))
+                    _devicesView?.Refresh();
+            }
+        }
+        [ObservableProperty] private DeviceInfo? selectedDevice;
+        private bool FilterDevice(object obj) //過濾Device
+        {
+            if (obj is not DeviceInfo d) return false;
+
+            var q = (DeviceSearchText ?? string.Empty).Trim();
+            if (q.Length == 0) return true;
+
+            var cmp = StringComparison.OrdinalIgnoreCase;
+            return (d.DeviceNo?.Contains(q, cmp) ?? false)
+                || (d.DeviceName?.Contains(q, cmp) ?? false)
+                || (d.IpAddress?.Contains(q, cmp) ?? false)
+                || d.Port.ToString().Contains(q, cmp);
+        }
+        private async Task DeviceRefresh() //更新Device資訊
+        {
+            try
+            {
+                List<DevicesDto> dtos = await _devicesService.GetAllDevicesAsync() ?? new List<DevicesDto>();
+                DeviceList.Clear();
+                foreach (var dto in dtos)
+                {
+                    DeviceList.Add(
+                    new DeviceInfo
+                    {
+                        DeviceId = dto.Id,
+                        DeviceNo = dto.DeviceNumber.ToString(),
+                        DeviceName = dto.DeviceName,
+                        IpAddress = dto.DeviceIP,
+                        Port = dto.DevicePort,
+                        Owner = dto.SetupUser
+                    });
+                }
+            }
+            catch { }
+        }
         [RelayCommand]
-        private async Task EditDevice()
+        private async Task EditDevice() //編輯設備
         {
             if (SelectedDevice == null)
             {
@@ -442,6 +634,63 @@ namespace FMSFrontend.ViewModels
 
                 // 重新載入裝置列表
                 await DeviceRefresh();
+            }
+        }
+
+        #endregion
+
+        //===人員設定頁面===
+
+        #region 人員設定
+        public ObservableCollection<WorkerInfo> WorkerList { get; set; } = new();
+        private readonly ICollectionView _workerListView;
+        private string _workerSearchText = "";
+        public string WorkerSearchText
+        {
+            get => _workerSearchText;
+            set
+            {
+                // 由 ObservableObject 提供，會幫你 Raise PropertyChanged
+                if (SetProperty(ref _workerSearchText, value))
+                {
+                    _workerListView?.Refresh(); // 每次變更就重新套過濾
+                }
+            }
+        }
+        [ObservableProperty] private WorkerInfo selectedWorker = new();
+        private bool FilterWorker(object obj) //過濾使用者列表
+        {
+            if (obj is not WorkerInfo m) return false;
+
+            var q = (WorkerSearchText ?? string.Empty).Trim();
+            if (q.Length == 0) return true;
+
+            var cmp = StringComparison.OrdinalIgnoreCase;
+            return (m.WorkerNumber?.Contains(q, cmp) ?? false)
+                || (m.WorkerName?.Contains(q, cmp) ?? false);
+        }
+
+        private async Task WorkerRefresh() //更新Worker資訊
+        {
+            try
+            {
+                List<WorkerDto> dtos = await _workerService.GetAllWorkerAsync() ?? new();
+
+                WorkerList.Clear();
+                foreach (var dto in dtos)
+                {
+                    WorkerList.Add(
+                    new WorkerInfo
+                    {
+                        Id = dto.Id,
+                        WorkerNumber = dto.WorkerNumber,
+                        WorkerName = dto.WorkerName,
+                        Psssword = dto.Password
+                    });
+                }
+            }
+            catch
+            {
             }
         }
         [RelayCommand]
@@ -541,12 +790,24 @@ namespace FMSFrontend.ViewModels
             }
             catch { }
         }
+        #endregion
+
+        //===保養設定頁面===
+
+        #region 保養設定
+        public ObservableCollection<int> Weekly { get; } = new();   // 1~7、可負數
+        public ObservableCollection<int> Monthly { get; } = new();   // 1~31、0=last、可負數
+        public IRelayCommand OpenSetPeriodDialogCommand { get; }  // ===== 開窗指令
+        [ObservableProperty] private string periodDisplay = "不設定";
+        [ObservableProperty] private ScheduleMode selectedMode = ScheduleMode.None;
+        [ObservableProperty] private int hour = 9;   // 0~23
+        [ObservableProperty] private int minute = 41;  // 0~59
+        [ObservableProperty] private bool isPm = false;
         private async Task AppointmentMaintenanceRefresh()
         {
             try
             {
                 List<AppointmentMaintenanceDto> dtos = await _appointmentMaintenanceService.GetAllAppointmentMaintenanceAsync() ?? new List<AppointmentMaintenanceDto>();
-                //AppointmentMaintenanceList.Clear();
                 if (!dtos[0].IsEnabled)
                 {
                     PeriodDisplay = "不設定";
@@ -572,160 +833,6 @@ namespace FMSFrontend.ViewModels
             }
             catch { }
         }
-
-        [ObservableProperty] private bool isBusy;
-        [ObservableProperty] private string busyMessage = "處理中...";
-        private bool CanBackupSystem() => !IsBusy;
-
-        [RelayCommand(CanExecute = nameof(CanBackupSystem))]
-        private async Task BackupSystem()
-        {
-            if (!_authorizationService.RequireLoginAndWriteOperation(29))
-            {
-                return;
-            }
-            IsBusy = true;
-            BusyMessage = "系統備份中，請稍候...";
-            try
-            {
-
-                var ok = await _mongoDBService.BackupDatabaseAsync();
-
-                _windowService.ShowMessage(ok ? "系統備份成功" : "系統備份失敗");
-            }
-            catch (Exception ex)
-            {
-                _windowService.ShowMessage($"系統備份發生例外：{ex.Message}");
-                // 建議也寫 log
-            }
-            finally
-            {
-                IsBusy = false;
-                BackupSystemCommand.NotifyCanExecuteChanged();
-            }
-        }
-
-        // === 設定屬性 ===
-        [ObservableProperty]
-        private ObservableCollection<string> availableLanguages;
-
-        [ObservableProperty]
-        private string selectedLanguage = "";
-
-        [ObservableProperty]
-        private ObservableCollection<string> availableThemes;
-
-        [ObservableProperty]
-        private string selectedTheme = "";
-
-        [ObservableProperty]
-        private bool enableNotifications = true;
-
-        [ObservableProperty]
-        private bool autoUpdate = true;
-
-        // === 保持登入 ===
-        [ObservableProperty]
-        private bool keepLoggedIn;
-
-        // 當勾選狀態改變時，寫入 Basesitting.ini
-        partial void OnKeepLoggedInChanged(bool value)
-        {
-            try
-            {
-                INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-                ini.Write("Prarm", "KeepLoggedIn", value ? "True" : "False");
-            }
-            catch { }
-        }
-
-        [ObservableProperty]
-        private string statusMessage = "設定尚未儲存";
-        // === 權限相關屬性 ===
-        [ObservableProperty]
-        private ObservableCollection<string> availablePermissions;
-
-        [ObservableProperty]
-        private string selectedPermission = "";
-
-        //MachineList
-        public ObservableCollection<WorkerInfo> WorkerList { get; set; } = new();
-        [ObservableProperty] private WorkerInfo selectedWorker = new();
-        private readonly ICollectionView _workerListView;
-        private string _workerSearchText = "";
-        public string WorkerSearchText
-        {
-            get => _workerSearchText;
-            set
-            {
-                // 由 ObservableObject 提供，會幫你 Raise PropertyChanged
-                if (SetProperty(ref _workerSearchText, value))
-                {
-                    _workerListView?.Refresh(); // 每次變更就重新套過濾
-                }
-            }
-        }
-
-        //MachineList
-        public ObservableCollection<MachineInfo> MachineList { get; set; } = new();
-        private readonly ICollectionView _machinesView;
-        private string _searchText = "";
-        public string SearchText
-        {
-            get => _searchText;
-            set
-            {
-                // 由 ObservableObject 提供，會幫你 Raise PropertyChanged
-                if (SetProperty(ref _searchText, value))
-                {
-                    _machinesView?.Refresh(); // 每次變更就重新套過濾
-                }
-            }
-        }
-        // ★ 新增：選取的機台（供編輯用）
-        [ObservableProperty] private MachineInfo? selectedMachine;
-        //RobotList
-        public ObservableCollection<RobotInfo> RobotList { get; set; } = new();
-        private readonly ICollectionView _robotsView;
-        private string _robotSearchText = "";
-        public string RobotSearchText
-        {
-            get => _robotSearchText;
-            set
-            {
-                // 由 ObservableObject 提供，會幫你 Raise PropertyChanged
-                if (SetProperty(ref _robotSearchText, value))
-                {
-                    _robotsView?.Refresh(); // 每次變更就重新套過濾
-                }
-            }
-        }
-        // ====== Device 區 ======
-
-        // 1) 清單 + 視圖
-        public ObservableCollection<DeviceInfo> DeviceList { get; set; } = new();
-        private readonly ICollectionView _devicesView;
-
-        // 2) 選取項目（可選）
-        private DeviceInfo _selectedDevice = new DeviceInfo();
-        public DeviceInfo SelectedDevice
-        {
-            get => _selectedDevice;
-            set => SetProperty(ref _selectedDevice, value);
-        }
-
-        // 3) 搜尋文字（即時過濾）
-        private string _deviceSearchText = "";
-        public string DeviceSearchText
-        {
-            get => _deviceSearchText;
-            set
-            {
-                if (SetProperty(ref _deviceSearchText, value))
-                    _devicesView?.Refresh();
-            }
-        }
-
         private void OpenPeriodDialog()
         {
             if (!_authorizationService.RequireLogin())
@@ -826,8 +933,24 @@ namespace FMSFrontend.ViewModels
             }
         }
 
+        [RelayCommand]
+        private void ForceLubrication() // 強制潤滑
+        {
+            if (!_authorizationService.RequireLoginAndWriteOperation(28))
+                return;
+            //待增加
+        }
+        #endregion
 
+        #region 其他設定
 
+        [ObservableProperty] private ObservableCollection<string> availableLanguages;
+        [ObservableProperty] private string selectedLanguage = "";
+        [ObservableProperty] private ObservableCollection<string> availableThemes;
+        [ObservableProperty] private string selectedTheme = "";
+        [ObservableProperty] private bool enableNotifications = true;
+        [ObservableProperty] private bool autoUpdate = true;
+        [ObservableProperty] private string statusMessage = "設定尚未儲存";
         // === 命令 ===
         [RelayCommand]
         private async Task SaveSettingsAsync()
@@ -851,117 +974,7 @@ namespace FMSFrontend.ViewModels
             SelectedTabIndexParameter = 0; // 重置到第一個 Tab
             SelectedSubTabIndexParameter = 0; // 重置到第一個 Tab
         }
-        // 點選保持登入時的指令（將目前狀態記錄到 Basesitting）
-        [RelayCommand]
-        private void ToggleKeepLoggedIn(bool? isChecked)
-        {
-            KeepLoggedIn = isChecked == true; // 交由 OnKeepLoggedInChanged 持久化
-        }
-        // === 系統還原 ===
-        [RelayCommand]
-        private void RestoreSystem()
-        {
-            if (!_authorizationService.RequireLoginAndWriteOperation(20))
-                return;
-            // TODO: 加入系統還原邏輯，例如清除資料、表單、日誌等
-            StatusMessage = "⚠️ 系統已還原，所有資料已清除";
-            _windowService.ShowMessage("系統還原完成");
-        }
-
-        // === 機械手臂維護完成 ===
-        [RelayCommand]
-        private void CompleteRobotMaintenance()
-        {
-            if (!_authorizationService.RequireLoginAndWriteOperation(21))
-                return;
-            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-            var today = DateTime.Today.ToString("yyyy/MM/dd");
-            ini.Write("Prarm", "RobotMaintenanceMsg", today);
-            RobotMaintenanceMsg = today;
-            StatusMessage = "🤖 機械手臂維護已標記為完成";
-            _windowService.ShowMessage("維護狀態已更新");
-        }
-        // === 設定IP ===
-        [RelayCommand]
-        private void SaveIP()
-        {
-            var ip = (ServerIp ?? string.Empty).Trim();
-            if (!(IPAddress.TryParse(ip, out _) || ip == "localhost"))
-            {
-                StatusMessage = "❌ IP 位址格式不正確";
-                _windowService.ShowMessage("IP 位址格式不正確，請輸入有效的 IPv4，例如：192.168.1.100");
-                return;
-            }
-            //  try
-            //  {
-            _httpService.UpdateServerIp(ip);
-            StatusMessage = "🤖 設定IP OK";
-            _windowService.ShowMessage($"已設定 IP：{ip}");
-            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-            ini.Write("Prarm", "IP", ip);
-            /*  }
-              catch (Exception ex)
-              {
-                  StatusMessage = "❌ 設定 IP 失敗";
-                  _windowService.ShowMessage($"設定 IP 失敗：{ex.Message}");
-              }
-            */
-        }
-        private bool FilterWorker(object obj)
-        {
-            if (obj is not WorkerInfo m) return false;
-
-            var q = (WorkerSearchText ?? string.Empty).Trim();
-            if (q.Length == 0) return true;
-
-            var cmp = StringComparison.OrdinalIgnoreCase;
-            return (m.WorkerNumber?.Contains(q, cmp) ?? false)
-                || (m.WorkerName?.Contains(q, cmp) ?? false);
-        }
-
-        private bool FilterMachine(object obj)
-        {
-            if (obj is not MachineInfo m) return false;
-
-            var q = (SearchText ?? string.Empty).Trim();
-            if (q.Length == 0) return true;
-
-            var cmp = StringComparison.OrdinalIgnoreCase;
-            return (m.MachineId?.Contains(q, cmp) ?? false)
-                || (m.MachineName?.Contains(q, cmp) ?? false)
-                || (m.MachineType?.Contains(q, cmp) ?? false)
-                || (m.IpAddress?.Contains(q, cmp) ?? false)
-                || m.Port.ToString().Contains(q, cmp);
-        }
-        private bool FilterRobot(object obj)
-        {
-            if (obj is not RobotInfo m) return false;
-
-            var q = (RobotSearchText ?? string.Empty).Trim();
-            if (q.Length == 0) return true;
-
-            var cmp = StringComparison.OrdinalIgnoreCase;
-            return (m.RobotNo?.Contains(q, cmp) ?? false)
-                || (m.RobotName?.Contains(q, cmp) ?? false)
-                || (m.RobotType?.Contains(q, cmp) ?? false)
-                || (m.IpAddress?.Contains(q, cmp) ?? false);
-        }
-        // 4) Filter：任一欄位包含關鍵字就顯示
-        private bool FilterDevice(object obj)
-        {
-            if (obj is not DeviceInfo d) return false;
-
-            var q = (DeviceSearchText ?? string.Empty).Trim();
-            if (q.Length == 0) return true;
-
-            var cmp = StringComparison.OrdinalIgnoreCase;
-            return (d.DeviceNo?.Contains(q, cmp) ?? false)
-                || (d.DeviceName?.Contains(q, cmp) ?? false)
-                || (d.IpAddress?.Contains(q, cmp) ?? false)
-                || d.Port.ToString().Contains(q, cmp);
-        }
-
-
+        #endregion
 
         public class MachineInfo
         {
@@ -973,6 +986,7 @@ namespace FMSFrontend.ViewModels
             public string Port { get; set; } = ""; // reverted to string
             public string Owner { get; set; } = "";
         }
+
         public class RobotInfo
         {
             public string RobotId { get; set; } = "";
@@ -982,6 +996,7 @@ namespace FMSFrontend.ViewModels
             public string IpAddress { get; set; } = "";
             public string Owner { get; set; } = "";
         }
+
         public class DeviceInfo
         {
             public string DeviceId { get; set; } = "";
@@ -991,6 +1006,7 @@ namespace FMSFrontend.ViewModels
             public string Port { get; set; } = ""; // reverted to string
             public string Owner { get; set; } = "";
         }
+
         public class WorkerInfo
         {
             public string Id { get; set; } = "";
@@ -998,69 +1014,5 @@ namespace FMSFrontend.ViewModels
             public string WorkerName { get; set; } = "";
             public string Psssword { get; set; } = "";
         }
-        // === 專家模式相關屬性 ===
-        [ObservableProperty] private bool showPasswordPrompt; // 是否顯示輸入密碼面板
-        [ObservableProperty] private bool isAdvancedEnabled;  // 進階設定 Tab 是否啟用
-
-        partial void OnSelectedPermissionChanged(string value)
-        {
-            // 選擇權限後觸發：若選擇專家但尚未啟用，顯示密碼輸入面板
-            if (value == "專家")
-            {
-                ShowPasswordPrompt = !IsAdvancedEnabled; // 尚未解鎖才顯示輸入區
-            }
-            else
-            {
-                // 切換回工作人員 -> 關閉進階與密碼面板
-                IsAdvancedEnabled = false;
-                ShowPasswordPrompt = false;
-            }
-        }
-        [ObservableProperty] private string password = "";
-        [RelayCommand]
-        private void PermissionClick()
-        {
-            if (SelectedPermission != "專家")
-            {
-                StatusMessage = "⚠️ 請選擇專家模式再輸入密碼";
-                _windowService.ShowMessage("請先選擇專家模式");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(Password))
-            {
-                StatusMessage = "❌ 密碼不可為空";
-                _windowService.ShowMessage("請輸入密碼");
-                return;
-            }
-
-            if (Password == "1758")
-            {
-                IsAdvancedEnabled = true;          // 啟用進階設定頁籤
-                ShowPasswordPrompt = false;        // 隱藏密碼輸入面板
-                StatusMessage = "✅ 已開啟專家模式";
-                _windowService.ShowMessage("已開啟專家模式");
-            }
-            else
-            {
-                IsAdvancedEnabled = false;
-                StatusMessage = "❌ 密碼錯誤";
-                _windowService.ShowMessage("密碼錯誤，請再試一次");
-            }
-        }
-
-
-
-        #region 保養
-        [RelayCommand]
-        private void ForceLubrication()
-        {
-            if (!_authorizationService.RequireLoginAndWriteOperation(28))
-                return;
-            //待增加
-        }
-
-
-        #endregion
     }
 }

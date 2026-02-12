@@ -204,7 +204,7 @@
                         <Border Grid.Column="0" Background="White" CornerRadius="8" Margin="8" BorderBrush="LightGray" BorderThickness="1">
                             <Image Source="{Binding MachineImagePath}" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />
                         </Border>
-
+                        <!-- 機台資訊區 -->
                         <Border Grid.Column="1" Background="White" CornerRadius="10" Margin="8" SnapsToDevicePixels="True">
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
@@ -263,28 +263,28 @@
                                                                     </Grid.RowDefinitions>
 
                                                                     <!-- 左欄標題 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text=" • 機台型號：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text=" • 機台狀態：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text=" • 使用電極：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text=" • 加工程式：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding DisplayData.MachineInfos[0].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding DisplayData.MachineInfos[1].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding DisplayData.MachineInfos[2].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding DisplayData.MachineInfos[3].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
 
                                                                     <!-- 左欄資料 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.MachineNumber}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.MachineStatus}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.UsingElectrode}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.MachiningCode}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.MachineInfos[0].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.MachineInfos[1].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.MachineInfos[2].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.MachineInfos[3].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
 
                                                                     <!-- 右欄標題 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text=" • 加工時間：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text=" • 加工進度：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text=" • 目前工單：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text=" • 刀具號碼：" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding DisplayData.MachineInfos[4].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding DisplayData.MachineInfos[5].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding DisplayData.MachineInfos[6].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding DisplayData.MachineInfos[7].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
 
                                                                     <!-- 右欄資料 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding DisplayData.MachiningWorkingTime}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.MachiningWorkingPercentage}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DisplayData.CurrentWorksheet}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding DisplayData.MachiningTool}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding DisplayData.MachineInfos[4].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.MachineInfos[5].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DisplayData.MachineInfos[6].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding DisplayData.MachineInfos[7].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                 </Grid>
                                                             </DataTemplate>
                                                         </Setter.Value>
@@ -314,16 +314,28 @@
                                                                     </Grid.RowDefinitions>
 
                                                                     <!-- 左側標籤 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text=" • 機台溫度 : " VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text=" • 主軸轉速 : " VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text=" • 油位狀態 : " VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text=" • 冷卻液量 : " VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding DisplayData.MachineInfos[8].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding DisplayData.MachineInfos[9].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding DisplayData.MachineInfos[10].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding DisplayData.MachineInfos[11].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
 
                                                                     <!-- 右側資料 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.MachineTemperature}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.SpindleRPM}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.OilLevelStatus}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.CoolantLevel}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.MachineInfos[8].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.MachineInfos[9].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.MachineInfos[10].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.MachineInfos[11].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                  
+                                                                    <!-- 右欄標題 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding DisplayData.MachineInfos[12].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding DisplayData.MachineInfos[13].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding DisplayData.MachineInfos[14].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding DisplayData.MachineInfos[15].Name}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+
+                                                                    <!-- 右欄資料 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding DisplayData.MachineInfos[12].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.MachineInfos[13].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DisplayData.MachineInfos[14].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding DisplayData.MachineInfos[15].Value}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                 </Grid>
                                                             </DataTemplate>
                                                         </Setter.Value>
@@ -408,9 +420,9 @@
 
                                                                     <!-- 左欄標題 -->
                                                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="• 座標：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="• ABS_X：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="• ABS_Y：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="• ABS_Z：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="• X：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="• Y：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="• Z：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
 
                                                                     <!-- 左欄資料 -->
                                                                     <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.PositionID}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
@@ -419,14 +431,14 @@
                                                                     <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.ABS_Z}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
 
                                                                     <!-- 右欄標題 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="• ABS_C：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="• ABS_A：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="• ABS_B：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="• C：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="• A：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="• B：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
 
                                                                     <!-- 右欄資料 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding DisplayData.ABS_C}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.ABS_A}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DisplayData.ABS_B}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.ABS_C}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DisplayData.ABS_A}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding DisplayData.ABS_B}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
                                                                 </Grid>
                                                             </DataTemplate>
                                                         </Setter.Value>
@@ -454,14 +466,25 @@
                                                                     </Grid.RowDefinitions>
 
                                                                     <!-- 左欄標題 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="• MCH_X：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="• MCH_Y：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="• MCH_Z：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="• " FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="• X：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="• Y：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="• Z：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
 
                                                                     <!-- 左欄資料 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.MCH_X}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.MCH_Y}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.MCH_Z}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.MCH_X}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.MCH_Y}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.MCH_Z}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    
+                                                                    <!-- 右欄標題 -->
+                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="• C：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="• A：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="• B：" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+
+                                                                    <!-- 右欄資料 -->
+                                                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.MCH_C}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DisplayData.MCH_A}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding DisplayData.MCH_B}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
 
                                                                     <!-- 右欄（可擴充） -->
                                                                     <!-- 可加更多 XYZ 或機械座標值 -->
@@ -539,28 +562,28 @@
                                                                     </Grid.RowDefinitions>
 
                                                                     <!-- 左欄標題 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="• TON [μs]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="• TOFF [μs]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="• I [A]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="• Pol：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding DisplayData.ProcessingParam[0].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding DisplayData.ProcessingParam[1].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding DisplayData.ProcessingParam[2].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding DisplayData.ProcessingParam[3].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
 
                                                                     <!-- 左欄資料 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.T_ON}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.T_OFF}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.E_SPD}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.Pol}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.ProcessingParam[0].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.ProcessingParam[1].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.ProcessingParam[2].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.ProcessingParam[3].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
 
                                                                     <!-- 右欄標題 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="• Hv [Seg]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="• Gap [V]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="• Speed：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="• Pulse：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding DisplayData.ProcessingParam[4].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding DisplayData.ProcessingParam[5].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding DisplayData.ProcessingParam[6].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding DisplayData.ProcessingParam[7].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
 
                                                                     <!-- 右欄資料 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding DisplayData.HV}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.Gap}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DisplayData.Speed}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding DisplayData.Pulse}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding DisplayData.ProcessingParam[4].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.ProcessingParam[5].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DisplayData.ProcessingParam[6].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding DisplayData.ProcessingParam[7].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
 
                                                                 </Grid>
                                                             </DataTemplate>
@@ -588,26 +611,28 @@
                                                                     </Grid.RowDefinitions>
 
                                                                     <!-- 左欄標題 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="• Servo [%]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="• JD [mm]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="• Turbo：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="• JT [s]：" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding DisplayData.ProcessingParam[8].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding DisplayData.ProcessingParam[9].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding DisplayData.ProcessingParam[10].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding DisplayData.ProcessingParam[11].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
 
                                                                     <!-- 左欄資料 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.Servo}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.JD}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.OB}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.JT}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.ProcessingParam[8].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.ProcessingParam[9].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.ProcessingParam[10].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.ProcessingParam[11].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
 
-                                                                    <!-- 右欄標題/資料預留 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="2" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="2" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="2" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="2" />
-                                                                    <TextBlock Grid.Row="0" Grid.Column="3" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="3" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="3" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="3" />
+                                                                    <!-- 右欄標題 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding DisplayData.ProcessingParam[12].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding DisplayData.ProcessingParam[13].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding DisplayData.ProcessingParam[14].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding DisplayData.ProcessingParam[15].Name}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    
+                                                                    <!-- 右欄資料 -->
+                                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding DisplayData.ProcessingParam[12].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.ProcessingParam[13].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DisplayData.ProcessingParam[14].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding DisplayData.ProcessingParam[15].Value}" FontSize="18" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
                                                                 </Grid>
                                                             </DataTemplate>
                                                         </Setter.Value>
