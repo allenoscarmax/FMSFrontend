@@ -196,8 +196,8 @@ namespace FMSFrontend.ViewModels
                     SelectedMachine = FilteredMachines[0];
                     _machineLiveUpdater.SelectName = SelectedMachine.MachineName;
 
-                    CurrentMachineDetailContent = SelectedMachine.Type == MachineType.EDM
-                        ? new MachineMainDetailControl(SelectedMachine, this)
+                    CurrentMachineDetailContent = SelectedMachine.Type != MachineType.STATION
+                       ? new MachineMainDetailControl(SelectedMachine, this)
                         : new MachineStationControl(SelectedMachine, this);
                 }
             }
@@ -254,6 +254,7 @@ namespace FMSFrontend.ViewModels
             {
                 "EDM" => MachineType.EDM,
                 "CNC" => MachineType.CNC,
+                "UH500" => MachineType.UH500,
                 _ => MachineType.EDM,
             };
         }
@@ -279,7 +280,7 @@ namespace FMSFrontend.ViewModels
                 disposable.Dispose();
             }
 
-            CurrentMachineDetailContent = card.Type == MachineType.EDM
+            CurrentMachineDetailContent = SelectedMachine.Type != MachineType.STATION
                 ? new MachineMainDetailControl(card, this)
                 : new MachineStationControl(card, this);
         }
@@ -304,7 +305,7 @@ namespace FMSFrontend.ViewModels
                 else if (CurrentMachineDetailContent is IDisposable disposable)
                     disposable.Dispose();
 
-                CurrentMachineDetailContent = SelectedMachine.Type == MachineType.EDM
+                CurrentMachineDetailContent = SelectedMachine.Type != MachineType.STATION
                     ? new MachineMainDetailControl(SelectedMachine, this)
                     : new MachineStationControl(SelectedMachine, this);
             }
@@ -364,6 +365,7 @@ namespace FMSFrontend.ViewModels
             MachineType.ZNC => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/ZNC.png",
             MachineType.ROBOT => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/Robot.png",
             MachineType.STATION => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/FMS.png",
+            MachineType.UH500 => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/UH-500_0.png",
             _ => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/RobotOff.png"
         };
         partial void OnTypeChanged(MachineType value)
@@ -385,7 +387,8 @@ namespace FMSFrontend.ViewModels
         CNC = 1,
         ZNC = 2,
         ROBOT = 3,
-        STATION = 4
+        STATION = 4,
+        UH500 = 5
     }
 }
 
