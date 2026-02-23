@@ -135,6 +135,12 @@
     <Folder Include="AttachedProperties\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="Language\Strings.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 
 
 </Project>

@@ -1,0 +1,54 @@
+x:Key,CN,EN
+Settings_Button_Backup,備份,Backup
+Settings_Button_Confirm,確認,Confirm
+Settings_Button_ForceLubrication,強制潤滑,Force lubrication
+Settings_Button_MaintenanceComplete,維護完成,Maintenance complete
+Settings_Button_Restore,還原,Restore
+Settings_Button_Set,設定,Set
+Settings_Button_SetPeriod,設定週期,Set period
+Settings_Column_DeviceName,裝置名稱,Device Name
+Settings_Column_DeviceNo,裝置編號,Device No.
+Settings_Column_Ip,IP,IP
+Settings_Column_MachineName,機台名稱,Machine Name
+Settings_Column_MachineNo,機台編號,Machine No.
+Settings_Column_MachineType,機台類型,Machine Type
+Settings_Column_Port,Port,Port
+Settings_Column_RobotName,機械手臂名稱,Robot Name
+Settings_Column_RobotNo,機械手臂編號,Robot No.
+Settings_Column_RobotType,機械手臂型號,Robot Model
+Settings_Column_WorkerName,使用者,User
+Settings_Column_WorkerNo,工號,Employee No.
+Settings_Group_KeepLogin,保持登入,Keep signed in
+Settings_Group_Language,語言設定,Language
+Settings_Group_Lubrication,潤滑排程,Lubrication schedule
+Settings_Group_Permission,權限設定,Permissions
+Settings_Group_RobotMaintenance,機器手臂維護,Robot maintenance
+Settings_Group_SystemBackup,系統備份,System backup
+Settings_Group_SystemIp,系統IP位址,System IP
+Settings_Group_SystemRestore,系統還原,System restore
+Settings_Label_IpAddress,IP位址:,IP Address:
+Settings_Label_KeepLogin,開啟程式時，自動登入上次使用者,Automatically sign in the last user when the app starts.
+Settings_Label_LastMaintenance,上次維護時間：,Last maintenance:
+Settings_Label_LubricationPeriod,潤滑週期,Lubrication period
+Settings_Label_Password,密碼：,Password:
+Settings_Label_Permission,權限,Permission
+Settings_Section_Device,設備,Devices
+Settings_Section_DeviceHint,設備的相關設定,Device settings
+Settings_Section_Worker,工作人員,Personnel
+Settings_Section_WorkerHint,系統的工作人員設定,Personnel settings
+Settings_SubTab_Device,設備,Devices
+Settings_SubTab_Machine,機台,Machines
+Settings_SubTab_Robot,機械手臂,Robots
+Settings_Tab_Advanced,進階設定,Advanced
+Settings_Tab_Basic,基本設定,Basic
+Settings_Tab_Device,設備設定,Devices
+Settings_Tab_Maintenance,保養設定,Maintenance
+Settings_Tab_Worker,人員管理,Personnel
+Settings_Text_DoNotClose,請勿關閉程式或中斷電源,Do not close the application or power off.
+Settings_Text_RobotMaintenanceNote,注意：如果系統顯示機器人的維護警報，請聯繫 FANUC 進行維護。,"Note: If a maintenance alert appears, contact FANUC for service."
+Settings_Text_SystemBackupNote,注意：點擊備份資料庫。,Note: Click to back up the database.
+Settings_Text_SystemRestoreNote,注意：點擊還原按鈕以還原系統。此過程將刪除所有材料、表單、日誌和使用情況。,"Note: Click Restore to reset the system. This will remove all materials, forms, logs, and usage data."
+Settings_Title,系統設定,Settings
+Settings_Tooltip_Add,新增,Add
+Settings_Tooltip_Edit,編輯,Edit
+Settings_Tooltip_Remove,刪除,Delete
