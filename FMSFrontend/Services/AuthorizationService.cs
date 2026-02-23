@@ -92,7 +92,13 @@ namespace FMSFrontend.Services
         void ReadMsgTable()
         {
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-            int num = Convert.ToInt16(ini.Read("Prarm", "Language"));
+            int num = 0;
+
+            try
+            {
+                num = Convert.ToInt16(ini.Read("Prarm", "Language"));
+            }
+            catch { }
             string FilePath = AppDomain.CurrentDomain.BaseDirectory + "\\Language\\OperationMessage.csv";
             //從Language//OperationMessage.csv讀取表中的 column =  num + 1的位置到 MsgTable
             if (File.Exists(FilePath))

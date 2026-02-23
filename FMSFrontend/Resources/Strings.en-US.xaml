@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+    <sys:String x:Key="Settings_Title">Settings</sys:String>
+
+    <sys:String x:Key="Settings_Tab_Basic">Basic</sys:String>
+    <sys:String x:Key="Settings_Tab_Advanced">Advanced</sys:String>
+    <sys:String x:Key="Settings_Tab_Device">Devices</sys:String>
+    <sys:String x:Key="Settings_Tab_Worker">Personnel</sys:String>
+    <sys:String x:Key="Settings_Tab_Maintenance">Maintenance</sys:String>
+
+    <sys:String x:Key="Settings_Group_Permission">Permissions</sys:String>
+    <sys:String x:Key="Settings_Label_Permission">Permission</sys:String>
+    <sys:String x:Key="Settings_Label_Password">Password:</sys:String>
+    <sys:String x:Key="Settings_Button_Confirm">Confirm</sys:String>
+
+    <sys:String x:Key="Settings_Group_KeepLogin">Keep signed in</sys:String>
+    <sys:String x:Key="Settings_Label_KeepLogin">Automatically sign in the last user when the app starts.</sys:String>
+
+    <sys:String x:Key="Settings_Group_Language">Language</sys:String>
+
+    <sys:String x:Key="Settings_Group_SystemIp">System IP</sys:String>
+    <sys:String x:Key="Settings_Button_Set">Set</sys:String>
+    <sys:String x:Key="Settings_Label_IpAddress">IP Address:</sys:String>
+
+    <sys:String x:Key="Settings_Group_SystemRestore">System restore</sys:String>
+    <sys:String x:Key="Settings_Button_Restore">Restore</sys:String>
+    <sys:String x:Key="Settings_Text_SystemRestoreNote">Note: Click Restore to reset the system. This will remove all materials, forms, logs, and usage data.</sys:String>
+
+    <sys:String x:Key="Settings_Group_SystemBackup">System backup</sys:String>
+    <sys:String x:Key="Settings_Button_Backup">Backup</sys:String>
+    <sys:String x:Key="Settings_Text_SystemBackupNote">Note: Click to back up the database.</sys:String>
+
+    <sys:String x:Key="Settings_Group_RobotMaintenance">Robot maintenance</sys:String>
+    <sys:String x:Key="Settings_Button_MaintenanceComplete">Maintenance complete</sys:String>
+    <sys:String x:Key="Settings_Text_RobotMaintenanceNote">Note: If a maintenance alert appears, contact FANUC for service.</sys:String>
+    <sys:String x:Key="Settings_Label_LastMaintenance">Last maintenance:</sys:String>
+
+    <sys:String x:Key="Settings_Section_Device">Devices</sys:String>
+    <sys:String x:Key="Settings_Section_DeviceHint">Device settings</sys:String>
+    <sys:String x:Key="Settings_SubTab_Machine">Machines</sys:String>
+    <sys:String x:Key="Settings_SubTab_Robot">Robots</sys:String>
+    <sys:String x:Key="Settings_SubTab_Device">Devices</sys:String>
+    <sys:String x:Key="Settings_Tooltip_Edit">Edit</sys:String>
+
+    <sys:String x:Key="Settings_Column_MachineNo">Machine No.</sys:String>
+    <sys:String x:Key="Settings_Column_MachineName">Machine Name</sys:String>
+    <sys:String x:Key="Settings_Column_MachineType">Machine Type</sys:String>
+    <sys:String x:Key="Settings_Column_Ip">IP</sys:String>
+    <sys:String x:Key="Settings_Column_Port">Port</sys:String>
+
+    <sys:String x:Key="Settings_Column_RobotNo">Robot No.</sys:String>
+    <sys:String x:Key="Settings_Column_RobotName">Robot Name</sys:String>
+    <sys:String x:Key="Settings_Column_RobotType">Robot Model</sys:String>
+
+    <sys:String x:Key="Settings_Column_DeviceNo">Device No.</sys:String>
+    <sys:String x:Key="Settings_Column_DeviceName">Device Name</sys:String>
+
+    <sys:String x:Key="Settings_Section_Worker">Personnel</sys:String>
+    <sys:String x:Key="Settings_Section_WorkerHint">Personnel settings</sys:String>
+    <sys:String x:Key="Settings_Tooltip_Add">Add</sys:String>
+    <sys:String x:Key="Settings_Tooltip_Remove">Delete</sys:String>
+    <sys:String x:Key="Settings_Column_WorkerNo">Employee No.</sys:String>
+    <sys:String x:Key="Settings_Column_WorkerName">User</sys:String>
+
+    <sys:String x:Key="Settings_Group_Lubrication">Lubrication schedule</sys:String>
+    <sys:String x:Key="Settings_Label_LubricationPeriod">Lubrication period</sys:String>
+    <sys:String x:Key="Settings_Button_SetPeriod">Set period</sys:String>
+    <sys:String x:Key="Settings_Button_ForceLubrication">Force lubrication</sys:String>
+
+    <sys:String x:Key="Settings_Text_DoNotClose">Do not close the application or power off.</sys:String>
+</ResourceDictionary>

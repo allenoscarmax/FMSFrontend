@@ -80,8 +80,10 @@ namespace FMSFrontend.ViewModels
             OpenSetPeriodDialogCommand = new RelayCommand(OpenPeriodDialog);
 
             //未使用
-            AvailableLanguages = new ObservableCollection<string> { "繁體中文", "English", "日本語" };
-            SelectedLanguage = AvailableLanguages[0];
+            AvailableLanguages = new ObservableCollection<string> { "繁體中文", "English" };
+            var languageValue = ini.Read("Prarm", "Language");
+            SelectedLanguage = languageValue == "1" ? "English" : "繁體中文";
+            ApplyLanguageResource(SelectedLanguage);
             AvailableThemes = new ObservableCollection<string> { "Light", "Dark", "System Default" };
             SelectedTheme = AvailableThemes[0];
         }
@@ -189,6 +191,59 @@ namespace FMSFrontend.ViewModels
         }
 
         #endregion
+
+        #region 語言設定
+        [ObservableProperty] private ObservableCollection<string> availableLanguages;
+        [ObservableProperty] private string selectedLanguage = "";
+
+        [RelayCommand]
+        private void LanguageClick()  // 切換語言邏輯
+        {
+            //先跳出確認視窗
+            var result = _windowService.ShowYesNoDialog("確認切換語言？");
+            if (result)
+            {
+                ApplyLanguageResource(SelectedLanguage);
+                try
+                {
+
+                    INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+                    ini.Write("Prarm", "Language", SelectedLanguage == "English" ? "1" : "0");
+                }
+                catch { }
+            }
+        }
+        #endregion
+
+        private static void ApplyLanguageResource(string language)
+        {
+            var resourcePath = language == "English"
+                ? "pack://application:,,,/FMSFrontend;component/Resources/Strings.en-US.xaml"
+                : "pack://application:,,,/FMSFrontend;component/Resources/Strings.zh-TW.xaml";
+
+            var appResources = Application.Current?.Resources;
+            if (appResources?.MergedDictionaries == null)
+                return;
+
+            var existing = appResources.MergedDictionaries
+                .FirstOrDefault(d => d.Source != null
+                    && d.Source.OriginalString.Contains("Resources/Strings.", StringComparison.OrdinalIgnoreCase));
+
+            var languageDictionary = new ResourceDictionary
+            {
+                Source = new Uri(resourcePath, UriKind.Absolute)
+            };
+
+            if (existing != null)
+            {
+                var index = appResources.MergedDictionaries.IndexOf(existing);
+                appResources.MergedDictionaries[index] = languageDictionary;
+            }
+            else
+            {
+                appResources.MergedDictionaries.Add(languageDictionary);
+            }
+        }
 
         //===進階設定頁面===
 
@@ -944,8 +999,6 @@ namespace FMSFrontend.ViewModels
 
         #region 其他設定
 
-        [ObservableProperty] private ObservableCollection<string> availableLanguages;
-        [ObservableProperty] private string selectedLanguage = "";
         [ObservableProperty] private ObservableCollection<string> availableThemes;
         [ObservableProperty] private string selectedTheme = "";
         [ObservableProperty] private bool enableNotifications = true;
