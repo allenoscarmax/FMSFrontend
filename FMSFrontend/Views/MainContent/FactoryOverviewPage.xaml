@@ -27,7 +27,7 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
                 <!-- MaterialDesign PackIcon -->
                 <materialDesign:PackIcon Kind="LanConnect" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,4,8,0" />
-                <TextBlock Text="整場總覽" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                <TextBlock Text="{DynamicResource FactoryOverview_Title}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
 
             <!-- 下方左右分欄 -->

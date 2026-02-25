@@ -1,54 +1,677 @@
-x:Key,CN,EN
-Settings_Button_Backup,�ƥ�,Backup
-Settings_Button_Confirm,�T�{,Confirm
-Settings_Button_ForceLubrication,�j�����,Force lubrication
-Settings_Button_MaintenanceComplete,���@����,Maintenance complete
-Settings_Button_Restore,�٭�,Restore
-Settings_Button_Set,�]�w,Set
-Settings_Button_SetPeriod,�]�w�g��,Set period
-Settings_Column_DeviceName,�˸m�W��,Device Name
-Settings_Column_DeviceNo,�˸m�s��,Device No.
+﻿x:Key,CN,EN
+Settings_Button_Backup,備份,Backup
+Settings_Button_Confirm,確認,Confirm
+Settings_Button_ForceLubrication,強制潤滑,Force lubrication
+Settings_Button_MaintenanceComplete,維護完成,Maintenance complete
+Settings_Button_Restore,還原,Restore
+Settings_Button_Set,設定,Set
+Settings_Button_SetPeriod,設定週期,Set period
+Settings_Column_DeviceName,裝置名稱,Device Name
+Settings_Column_DeviceNo,裝置編號,Device No.
 Settings_Column_Ip,IP,IP
-Settings_Column_MachineName,���x�W��,Machine Name
-Settings_Column_MachineNo,���x�s��,Machine No.
-Settings_Column_MachineType,���x����,Machine Type
+Settings_Column_MachineName,機台名稱,Machine Name
+Settings_Column_MachineNo,機台編號,Machine No.
+Settings_Column_MachineType,機台類型,Machine Type
 Settings_Column_Port,Port,Port
-Settings_Column_RobotName,������u�W��,Robot Name
-Settings_Column_RobotNo,������u�s��,Robot No.
-Settings_Column_RobotType,������u����,Robot Model
-Settings_Column_WorkerName,�ϥΪ�,User
-Settings_Column_WorkerNo,�u��,Employee No.
-Settings_Group_KeepLogin,�O���n�J,Keep signed in
-Settings_Group_Language,�y���]�w,Language
-Settings_Group_Lubrication,���ƱƵ{,Lubrication schedule
-Settings_Group_Permission,�v���]�w,Permissions
-Settings_Group_RobotMaintenance,�������u���@,Robot maintenance
-Settings_Group_SystemBackup,�t�γƥ�,System backup
-Settings_Group_SystemIp,�t��IP��},System IP
-Settings_Group_SystemRestore,�t���٭�,System restore
-Settings_Label_IpAddress,IP��}:,IP Address:
-Settings_Label_KeepLogin,�}�ҵ{���ɡA�۰ʵn�J�W���ϥΪ�,Automatically sign in the last user when the app starts.
-Settings_Label_LastMaintenance,�W�����@�ɶ��G,Last maintenance:
-Settings_Label_LubricationPeriod,���ƶg��,Lubrication period
-Settings_Label_Password,�K�X�G,Password:
-Settings_Label_Permission,�v��,Permission
-Settings_Section_Device,�]��,Devices
-Settings_Section_DeviceHint,�]�ƪ������]�w,Device settings
-Settings_Section_Worker,�u�@�H��,Personnel
-Settings_Section_WorkerHint,�t�Ϊ��u�@�H���]�w,Personnel settings
-Settings_SubTab_Device,�]��,Devices
-Settings_SubTab_Machine,���x,Machines
-Settings_SubTab_Robot,������u,Robots
-Settings_Tab_Advanced,�i���]�w,Advanced
-Settings_Tab_Basic,�򥻳]�w,Basic
-Settings_Tab_Device,�]�Ƴ]�w,Devices
-Settings_Tab_Maintenance,�O�i�]�w,Maintenance
-Settings_Tab_Worker,�H���޲z,Personnel
-Settings_Text_DoNotClose,�Ф������{���Τ��_�q��,Do not close the application or power off.
-Settings_Text_RobotMaintenanceNote,�`�N�G�p�G�t����ܾ����H�����@ĵ���A���pô FANUC �i����@�C,"Note: If a maintenance alert appears, contact FANUC for service."
-Settings_Text_SystemBackupNote,�`�N�G�I���ƥ���Ʈw�C,Note: Click to back up the database.
-Settings_Text_SystemRestoreNote,�`�N�G�I���٭���s�H�٭�t�ΡC���L�{�N�R���Ҧ����ơB����B��x�M�ϥα��p�C,"Note: Click Restore to reset the system. This will remove all materials, forms, logs, and usage data."
-Settings_Title,�t�γ]�w,Settings
-Settings_Tooltip_Add,�s�W,Add
-Settings_Tooltip_Edit,�s��,Edit
-Settings_Tooltip_Remove,�R��,Delete
+Settings_Column_RobotName,機械手臂名稱,Robot Name
+Settings_Column_RobotNo,機械手臂編號,Robot No.
+Settings_Column_RobotType,機械手臂型號,Robot Model
+Settings_Column_WorkerName,使用者,User
+Settings_Column_WorkerNo,工號,Employee No.
+Settings_Group_KeepLogin,保持登入,Keep signed in
+Settings_Group_Language,語言設定,Language
+Settings_Group_Lubrication,潤滑排程,Lubrication schedule
+Settings_Group_Permission,權限設定,Permissions
+Settings_Group_RobotMaintenance,機器手臂維護,Robot maintenance
+Settings_Group_SystemBackup,系統備份,System backup
+Settings_Group_SystemIp,系統IP位址,System IP
+Settings_Group_SystemRestore,系統還原,System restore
+Settings_Label_IpAddress,IP位址:,IP Address:
+Settings_Label_KeepLogin,開啟程式時，自動登入上次使用者,Automatically sign in the last user when the app starts.
+Settings_Label_LastMaintenance,上次維護時間：,Last maintenance:
+Settings_Label_LubricationPeriod,潤滑週期,Lubrication period
+Settings_Label_Password,密碼：,Password:
+Settings_Label_Permission,權限,Permission
+Settings_Permission_Staff,工作人員,Staff
+Settings_Permission_Expert,專家,Expert
+Settings_Section_Device,設備,Devices
+Settings_Section_DeviceHint,設備的相關設定,Device settings
+Settings_Section_Worker,工作人員,Personnel
+Settings_Section_WorkerHint,系統的工作人員設定,Personnel settings
+Settings_SubTab_Device,設備,Devices
+Settings_SubTab_Machine,機台,Machines
+Settings_SubTab_Robot,機械手臂,Robots
+Settings_Tab_Advanced,進階設定,Advanced
+Settings_Tab_Basic,基本設定,Basic
+Settings_Tab_Device,設備設定,Devices
+Settings_Tab_Maintenance,保養設定,Maintenance
+Settings_Tab_Worker,人員管理,Personnel
+Settings_Text_DoNotClose,請勿關閉程式或中斷電源,Do not close the application or power off.
+Settings_Text_RobotMaintenanceNote,注意：如果系統顯示機器人的維護警報，請聯繫 FANUC 進行維護。,"Note: If a maintenance alert appears, contact FANUC for service."
+Settings_Text_SystemBackupNote,注意：點擊備份資料庫。,Note: Click to back up the database.
+Settings_Text_SystemRestoreNote,注意：點擊還原按鈕以還原系統。此過程將刪除所有材料、表單、日誌和使用情況。,"Note: Click Restore to reset the system. This will remove all materials, forms, logs, and usage data."
+Settings_Message_SelectExpert,請選擇專家模式再輸入密碼,Please select expert mode before entering the password.
+Settings_Message_SelectExpertPrompt,請先選擇專家模式,Please select expert mode first.
+Settings_Message_EmptyPassword,密碼不可為空,Password cannot be empty.
+Settings_Message_EnterPassword,請輸入密碼,Please enter the password.
+Settings_Message_ExpertEnabled,已開啟專家模式,Expert mode enabled.
+Settings_Message_ExpertEnabledPrompt,已開啟專家模式,Expert mode enabled.
+Settings_Message_InvalidPassword,密碼錯誤,Incorrect password.
+Settings_Message_InvalidPasswordPrompt,密碼錯誤，請再試一次,Incorrect password. Please try again.
+Settings_Confirm_ChangeLanguage,確認切換語言？,Confirm language change?
+Settings_Message_InvalidIp,IP 位址格式不正確,Invalid IP address format.
+Settings_Message_InvalidIpPrompt,IP 位址格式不正確，請輸入有效的 IPv4，例如：192.168.1.100,Invalid IP address format. Enter a valid IPv4 address (e.g., 192.168.1.100).
+Settings_Message_SaveIpOk,設定IP OK,IP saved.
+Settings_Message_IpSaved,已設定 IP：{0},IP set to: {0}
+Settings_Message_SaveIpFailed,設定 IP 失敗,Failed to save IP.
+Settings_Message_SaveIpFailedPrompt,設定 IP 失敗：{0},Failed to save IP: {0}
+Settings_Message_SystemRestored,系統已還原，所有資料已清除,System restored and all data cleared.
+Settings_Message_SystemRestoreCompleted,系統還原完成,System restore completed.
+Settings_Message_Busy,處理中...,Processing...
+Settings_Message_BackupInProgress,系統備份中，請稍候...,System backup in progress. Please wait...
+Settings_Message_BackupSuccess,系統備份成功,System backup succeeded.
+Settings_Message_BackupFailed,系統備份失敗,System backup failed.
+Settings_Message_BackupError,系統備份發生例外：{0},System backup error: {0}
+Settings_Message_RobotMaintenanceCompleted,機械手臂維護已標記為完成,Robot maintenance marked as complete.
+Settings_Message_RobotMaintenanceUpdated,維護狀態已更新,Maintenance status updated.
+Settings_Message_SelectMachine,請先選擇要編輯的機台,Please select a machine to edit.
+Settings_EditMachine_Title_Id,機台編號,Machine ID
+Settings_EditMachine_Title_Name,名稱,Name
+Settings_EditMachine_Title_Type,類型,Type
+Settings_EditMachine_Title_Ip,IP,IP
+Settings_EditMachine_Title_Port,Port,Port
+Settings_EditMachine_WindowTitle,編輯機台連線參數,Edit machine connection parameters
+Settings_Message_MachineNotFound,找不到原始機台資料，更新失敗,Original machine data not found. Update failed.
+Settings_Message_MachineUpdateFailed,機台更新失敗，請稍後再試,Machine update failed. Please try again later.
+Settings_Message_MachineUpdated,機台參數已更新,Machine parameters updated.
+Settings_Message_UpdateError,更新過程發生錯誤,An error occurred during update.
+Settings_Message_SelectRobot,請先選擇要編輯的機械手臂,Please select a robot to edit.
+Settings_EditRobot_Title_Id,機械手臂編號,Robot ID
+Settings_EditRobot_Title_Name,名稱,Name
+Settings_EditRobot_Title_Type,類型,Type
+Settings_EditRobot_Title_Ip,IP,IP
+Settings_EditRobot_WindowTitle,編輯機械手臂連線參數,Edit robot connection parameters
+Settings_Message_RobotNotFound,找不到原始機械手臂資料，更新失敗,Original robot data not found. Update failed.
+Settings_Message_RobotUpdateFailed,機械手臂更新失敗，請稍後再試,Robot update failed. Please try again later.
+Settings_Message_RobotUpdated,機械手臂參數已更新,Robot parameters updated.
+Settings_Message_SelectDevice,請先選擇要編輯的裝置,Please select a device to edit.
+Settings_EditDevice_Title_Id,裝置編號,Device ID
+Settings_EditDevice_Title_Name,名稱,Name
+Settings_EditDevice_Title_Ip,IP,IP
+Settings_EditDevice_Title_Port,Port,Port
+Settings_EditDevice_WindowTitle,編輯裝置連線參數,Edit device connection parameters
+Settings_Message_DeviceNotFound,找不到原始裝置資料，更新失敗,Original device data not found. Update failed.
+Settings_Message_DeviceUpdateFailed,裝置更新失敗，請稍後再試,Device update failed. Please try again later.
+Settings_Message_DeviceUpdated,裝置參數已更新,Device parameters updated.
+Settings_Message_WorkerAddFailed,新增使用者失敗，請稍後再試,Failed to add user. Please try again later.
+Settings_Message_WorkerAddError,新增使用者時發生錯誤,An error occurred while adding a user.
+Settings_Message_SelectWorker,請先選擇要編輯的使用者,Please select a user to edit.
+Settings_Message_WorkerUpdateFailed,使用者更新失敗，請稍後再試,User update failed. Please try again later.
+Settings_Message_WorkerUpdateError,使用者更新時發生錯誤,An error occurred while updating the user.
+Settings_Message_SelectWorkerDelete,請選擇要刪除的使用者,Please select a user to delete.
+Settings_Message_WorkerDeleteFailed,使用者刪除失敗，請稍後再試,User deletion failed. Please try again later.
+Settings_Message_PeriodUpdateFailed,潤滑週期更新失敗，請稍後再試,Lubrication schedule update failed. Please try again later.
+Settings_Message_NoMaintenanceData,無潤滑資料,No lubrication data.
+Settings_Message_Exception,例外狀況,An exception occurred.
+Settings_Message_NotSaved,設定尚未儲存,Settings not saved.
+Settings_Message_SavedAt,設定已儲存於 {0},Settings saved at {0}.
+Settings_Message_SaveSuccess,設定儲存成功,Settings saved successfully.
+Settings_Message_Reset,設定已重置,Settings have been reset.
+DialogMessageWindow_Title,訊息,Message
+DialogMessageWindow_Button_Confirm,確定,OK
+DialogYesNoWindow_Title,確認,Confirm
+DialogYesNoWindow_Message_Default,你確定要執行此操作嗎？,Are you sure you want to proceed?
+DialogYesNoWindow_Button_Yes,是,Yes
+DialogYesNoWindow_Button_No,否,No
+MaterialPairWindow_Title,物料燒錄,Material Pairing
+MaterialPairWindow_Label_RfidConnected,RFID Connected,RFID Connected
+MaterialPairWindow_Label_RfidTag,RFID Tag,RFID Tag
+MaterialPairWindow_Button_Reconnect,重新連線,Reconnect
+MaterialPairWindow_Section_Electrode,電極配對,Electrode pairing
+MaterialPairWindow_Section_Workpiece,工件配對,Workpiece pairing
+MaterialPairWindow_Label_SelectWorkOrder,選擇工單,Select work order
+MaterialPairWindow_Label_SelectElectrode,選擇電極,Select electrode
+MaterialPairWindow_Label_SelectWorkpiece,選擇工件,Select workpiece
+MaterialPairWindow_Label_Lifetime,使用壽命次數：,Lifetime count:
+MaterialPairWindow_Label_Status,狀態：,Status:
+MaterialPairWindow_Label_TagSerial,標籤序號：,Tag serial:
+MaterialPairWindow_Label_PartName,零件名稱：,Part name:
+MaterialPairWindow_Label_EdmProgram,EDM加工程式：,EDM program:
+MaterialPairWindow_Label_TargetEdm,目標EDM：,Target EDM:
+MaterialPairWindow_Button_Pair,PAIR,PAIR
+MaterialTypeSelectWindow_Title,物料燒錄,Material Pairing
+MaterialTypeSelectWindow_Header_Title,物料選擇,Material selection
+MaterialTypeSelectWindow_Button_Electrode,電極,Electrode
+MaterialTypeSelectWindow_Button_Workpiece,工件,Workpiece
+MaterialTypeSelectWindow_Button_Probe,探針,Probe
+SelectItemWindow_Title,選擇,Select
+SelectItemWindow_Button_Confirm,確認,Confirm
+SelectItemWindow_Button_Cancel,取消,Cancel
+Settings_Title,系統設定,Settings
+Settings_Tooltip_Add,新增,Add
+Settings_Tooltip_Edit,編輯,Edit
+Settings_Tooltip_Remove,刪除,Delete
+Inventory_Title,倉儲庫存,Storage
+Inventory_Tab_Workpiece,架上工件,Stored workpieces
+Inventory_Tab_Electrode,架上電極,Stored electrodes
+Inventory_Search_Placeholder,搜尋,Search
+Inventory_Button_Refresh,重新整理,Refresh
+Inventory_Column_SlotCode,倉位編號,Slot code
+Inventory_Column_Status,狀態,Status
+Inventory_Column_Name,名稱,Name
+Inventory_Column_TagSerial,標籤序號,Tag serial
+Inventory_Column_Location,目前位置,Location
+Inventory_Column_Worksheet,工單編號,Work order
+Inventory_Column_Program,加工程式,Program
+OperationHistory_Title,操作紀錄,Operation history
+OperationHistory_Button_Export,匯出,Export
+OperationHistory_Button_Clear,刪除,Delete
+OperationHistory_Column_Time,時間,Time
+OperationHistory_Column_User,使用者,User
+OperationHistory_Column_Message,訊息,Message
+OperationHistory_DateFilter_Today,今天,Today
+OperationHistory_DateFilter_Last7Days,前7天,Last 7 days
+OperationHistory_DateFilter_Custom,自訂,Custom
+OperationHistory_Message_LoadFailed,讀取操作紀錄失敗：{0},Failed to load operation history: {0}
+OperationHistory_Message_DateRangeTooLong,選擇的日期範圍不能超過一個月,Selected date range cannot exceed one month.
+OperationHistory_Confirm_Clear,確定要刪除?,Are you sure you want to delete?
+OperationHistory_Message_NoExportData,目前沒有可匯出的資料。,There is no data to export.
+OperationHistory_Dialog_ExportTitle,匯出操作紀錄,Export operation history
+OperationHistory_Message_ExportSuccess,匯出完成。,Export completed.
+OperationHistory_Message_ExportFailed,匯出失敗：{0},Export failed: {0}
+RFIDBind_Title,RFID 燒錄,RFID Burn
+RFIDBind_Button_Burn,物料燒錄,Burn Material
+RFIDBind_Button_Read,物料讀取,Read Material
+RFIDBind_Button_Reconnect,Tag重新連線,Reconnect Tag
+RFIDBind_Subtitle_History,燒錄歷史資訊,Burn history
+RFIDBind_Button_Clear,刪除,Delete
+RFIDBind_Column_Time,時間,Time
+RFIDBind_Column_MaterialType,物料種類,Material Type
+RFIDBind_Column_SerialNo,工單編號,Work order
+RFIDBind_Column_TagSerial,標籤序號,Tag serial
+RFIDBind_DateFilter_Today,今天,Today
+RFIDBind_DateFilter_Last7Days,前7天,Last 7 days
+RFIDBind_DateFilter_Custom,自訂,Custom
+RFIDBind_Message_DateRangeTooLong,選擇的日期範圍不能超過一個月,Selected date range cannot exceed one month.
+RFIDBind_Message_NoElectrodeData,未讀取到電極資料,No electrode data read.
+RFIDBind_Message_NoWorkpieceData,未讀取到工件資料,No workpiece data read.
+RFIDBind_Message_ResetOk,OK,OK
+RFIDBind_Confirm_Clear,確定要清除所有燒錄歷史紀錄嗎？此動作無法復原。,Are you sure you want to clear all burn history? This action cannot be undone.
+RFIDBind_Message_ClearFailed,清除失敗，請稍後重試,Clear failed. Please try again later.
+RFIDBind_Message_ClearError,清除時發生錯誤：{0},Error while clearing: {0}
+WorkOrder_Title,工單管理,Work orders
+WorkOrder_Tab_New,新工單,New
+WorkOrder_Tab_EDM,EDM,EDM
+WorkOrder_Tab_Failure,失敗工單,Failed
+WorkOrder_Button_Upload,上傳工單,Upload worksheet
+WorkOrder_Column_WorksheetNumber,工單編號,Work order
+WorkOrder_Column_WorkpieceName,工件名稱,Workpiece
+WorkOrder_Column_Status,狀態,Status
+WorkOrder_Column_TargetEDM,目標EDM,Target EDM
+WorkOrder_Column_Coordinate,座標,Coordinate
+WorkOrder_Column_SetupUser,設定者,Setup user
+WorkOrder_Column_Delete,刪除,Delete
+WorkOrder_Tooltip_Delete,刪除,Delete
+WorkOrder_Column_ElectrodeName,電極名稱,Electrode
+WorkOrder_Column_LabelSerial,標籤序號,Tag serial
+WorkOrder_Column_EDMProgram,加工程式,EDM program
+WorkOrder_Column_Offset,補償,Offset
+WorkOrder_Column_IsShare,是否共用電極,Shared
+WorkOrder_Column_ShareElectrode,共用電極名稱,Shared electrode
+WorkOrder_Column_NeedEDM,需EDM,Needs EDM
+WorkOrder_SubTab_Waiting,Waiting,Waiting
+WorkOrder_SubTab_Queueing,Queueing,Queueing
+WorkOrder_SubTab_Processing,Processing,Processing
+WorkOrder_SubTab_Completed,Completed,Completed
+WorkOrder_Button_Revise,流程修正,Revise process
+WorkOrder_Button_Fail,判定失敗,Mark failed
+WorkOrder_DateFilter_Today,今天,Today
+WorkOrder_DateFilter_Last7Days,前7天,Last 7 days
+WorkOrder_DateFilter_Custom,自訂,Custom
+WorkOrder_Message_DateRangeTooLong,選擇的日期範圍不能超過一個月,Selected date range cannot exceed one month.
+WorkOrder_Message_ReviseRobotRunning,請先取消機器人啟動狀態與關閉派工功能後，才能進行流程修正。,Disable robot start/dispatch before revising.
+WorkOrder_Message_SelectWorkOrder,請先選擇一筆工單。,Please select a work order first.
+WorkOrder_Message_BackendFailed,後端連線失敗：{0},Backend connection failed: {0}
+WorkOrder_Message_NoResponse,無回傳資料,No response returned.
+WorkOrder_Message_ReviseFailed,失敗 訊息:{0},Failed message: {0}
+WorkOrder_Message_RemoveElectrodeReminder,請記得手動將電極從機台上移除並重新開啟遠端模式,Remember to remove the electrode and re-enable remote mode.
+WorkOrder_Confirm_Fail,確定要判定為失敗工單,Are you sure you want to mark this as failed?
+WorkOrder_Message_FailResultFailed,回傳失敗 訊息:{0},Failure returned: {0}
+WorkOrder_Confirm_Delete,確定要刪除工單 {0} 嗎？\n注意：此操作會一併刪除該工單底下已建檔的電極與工件。,Delete work order {0}?\nThis will also delete related electrodes and workpieces.
+WorkOrder_Message_MissingWorksheetNumber,找不到工單號 (WorksheetNumber)，無法刪除關聯資料。,Missing worksheet number; unable to delete related data.
+WorkOrder_Message_MissingWorksheetId,找不到工單 ID，無法刪除工單。,Missing worksheet ID; unable to delete work order.
+WorkOrder_Message_DeleteWorkpieceFailed,刪除工件失敗：{0}（已中止刪除工單）,Failed to delete workpiece: {0} (aborted deleting work order).
+WorkOrder_Message_DeleteElectrodeFailed,刪除電極失敗：{0}（已中止刪除工單）,Failed to delete electrode: {0} (aborted deleting work order).
+WorkOrder_Message_DeleteWorkOrderFailed,刪除工單失敗（工單：{0}）。,Failed to delete work order ({0}).
+WorkOrder_Message_DeleteSuccess,已成功刪除工單與關聯的電極/工件。,Work order and related items deleted.
+WorkOrder_Message_DeleteError,刪除工單失敗：{0},Failed to delete work order: {0}
+WorkOrder_EDMStageDisplay_Format,EDM加工階段：{0} / {1},EDM stage: {0} / {1}
+Alarm_Title,警報資訊,Alarm information
+Alarm_Tab_Current,目前警報,Current alarms
+Alarm_Tab_History,歷史警報,Alarm history
+Alarm_Column_Time,時間,Time
+Alarm_Column_Code,錯誤代碼,Error code
+Alarm_Column_Message,訊息內容,Message
+Alarm_DateFilter_Today,今天,Today
+Alarm_DateFilter_Last7Days,前7天,Last 7 days
+Alarm_DateFilter_Custom,自訂,Custom
+Alarm_Button_Export,匯出,Export
+Alarm_Button_Delete,刪除,Delete
+Alarm_Tooltip_FirstPage,移動到最前頁,First page
+Alarm_Tooltip_PrevPage,前一頁,Previous page
+Alarm_Tooltip_NextPage,下一頁,Next page
+Alarm_Tooltip_LastPage,移動到最後頁,Last page
+Alarm_Pagination_Page,Page,Page
+Alarm_Pagination_Of,of,of
+Alarm_Message_DateRangeTooLong,選擇的日期範圍不能超過一個月,Selected date range cannot exceed one month.
+Alarm_Message_NoExportData,目前沒有可匯出的資料。,There is no data to export.
+Alarm_Dialog_ExportTitle,匯出檔案,Export file
+Alarm_Message_ExportSuccess,匯出完成。,Export completed.
+Alarm_Message_ExportFailed,匯出失敗：{0},Export failed: {0}
+Alarm_Confirm_Remove,確定要清除警告,Are you sure you want to clear alarms?
+Alarm_Message_RemoveFailed,刪除歷史警報失敗,Failed to delete alarm history.
+Alarm_Summary_None,目前無提示,No active alerts
+MachineOverview_Title,設備總覽,Machine overview
+MachineOverview_Tab_All,ALL,ALL
+MachineOverview_Tab_EDM,EDM,EDM
+MachineOverview_Tab_Station,工作站,Station
+ProductionLines_Title,產線總覽,Production lines
+ProductionLines_Tooltip_RobotInfo,查看機器人資訊,View robot info
+StorageUnitControlPage_Tooltip_Back,返回,Back
+ProbePairWindow_Title,物料燒錄,Material Pairing
+ProbePairWindow_Label_RfidConnected,RFID Connected,RFID Connected
+ProbePairWindow_Label_RfidTag,RFID Tag,RFID Tag
+ProbePairWindow_Button_Reconnect,重新連線,Reconnect
+ProbePairWindow_Section_Title,探針配對,Probe pairing
+ProbePairWindow_Label_TagSerial,標籤序號：,Tag serial:
+ProbePairWindow_Button_Pair,PAIR,PAIR
+EditGridWindow_Title,編輯,Edit
+EditGridWindow_Button_Edit,編輯,Edit
+EditGridViewModel_Title_Default,編輯,Edit
+LoginWindow_Title,登入,Login
+LoginWindow_Header_Title,系統登入,System login
+LoginWindow_Label_UserName,使用者：,User:
+LoginWindow_Label_Password,密碼：,Password:
+LoginWindow_Button_Login,登入,Login
+LoginViewModel_Message_EmptyUserName,請輸入使用者名稱,Please enter the user name.
+LoginViewModel_Message_EmptyPassword,請輸入密碼,Please enter the password.
+LoginViewModel_Message_UserNotFound,使用者名稱不存在,User name does not exist.
+LoginViewModel_Message_InvalidPassword,密碼錯誤,Incorrect password.
+ReviseProcessWindow_Title,流程修正,Revise process
+ReviseProcessWindow_Undo_Title,撤回本支電極,Undo current electrode
+ReviseProcessWindow_Undo_Description,請將目前在 EDM 機台上的電極卸下，並把與本支同名的電極放回倉。,Remove the current electrode from the EDM machine and return the matching electrode to storage.
+ReviseProcessWindow_SelectNext_Title,選擇下一支電極,Select next electrode
+ReviseProcessWindow_SelectNext_Description,請卸下目前電極並保持該電極不要進倉，系統將安裝下一步所需的正確電極。,Remove the current electrode and keep it out of storage; the system will install the correct next electrode.
+ReviseProcessWindow_ForceComplete_Title,強制完成流程,Force complete process
+ReviseProcessWindow_ForceComplete_Description,請卸下目前電極並保持該電極不要進倉，流程將直接結束完成。,Remove the current electrode and keep it out of storage; the process will finish immediately.
+ReviseProcessWindow_Button_Cancel,取消,Cancel
+ShowMachineWindow_Title,設備資訊,Machine information
+ShowMachineWindow_Header_Title,設備資訊,Machine information
+ShowMachineWindow_Button_ClearWorksheet,清除機台工單,Clear machine work orders
+ShowMachineWindow_Button_ForceElectrodeOut,電極強制出倉,Force electrode out
+ShowMachineWindow_Button_ForceWorkOut,工件強制出倉,Force workpiece out
+ShowMachineWindow_Label_EquipmentName,設備名稱：,Equipment name:
+ShowMachineWindow_Label_EquipmentType,設備類型：,Equipment type:
+ShowMachineWindow_Label_ModelNo,設備型號：,Model no.:
+ShowMachineWindow_Label_MainProgram,當前程式：,Current program:
+ShowMachineWindow_Label_MachineState,機台狀態：,Machine status:
+ShowMachineWindow_Label_CycleTime,狀態持續時間：,Status duration:
+ShowMachineWindow_Label_ElectrodeName,電極名稱：,Electrode name:
+ShowMachineWindow_Label_WorkSheetName,工單名稱：,Work order name:
+ShowMachineWindow_Label_WorkPieceName,工件名稱：,Workpiece name:
+ShowMachineWindow_Section_WorkOrders,工單列表,Work orders
+ShowMachineWindow_DateFilter_Today,今天,Today
+ShowMachineWindow_DateFilter_Last7Days,前7天,Last 7 days
+ShowMachineWindow_DateFilter_Custom,自訂,Custom
+ShowMachineWindow_Column_CreateTime,建立時間,Created time
+ShowMachineWindow_Column_WorksheetNumber,工單編號,Work order
+ShowMachineWindow_Column_WorkStatus,工單狀態,Status
+ShowMachineWindow_Column_ElectrodeName,電極名稱,Electrode name
+ShowMachineWindowViewModel_DeviceName_Default,設備名稱,Machine name
+ShowMachineWindow_Message_DateRangeTooLong,選擇的日期範圍不能超過一個月,Selected date range cannot exceed one month.
+ShowMaterialInformationWindow_Title,物料資訊,Material information
+ShowMaterialInformation_Kind_Electrode,電極,Electrode
+ShowMaterialInformation_Kind_Workpiece,工件,Workpiece
+ShowMaterialInformation_Kind_Probe,探針,Probe
+ShowMaterialInformation_Kind_Material,物料,Material
+ShowMaterialWindow_Title,倉位資訊,Storage information
+ShowMaterialWindow_Label_SlotCode,倉位編號,Slot code
+ShowMaterialWindow_Button_CancelReservation,倉位解除預約,Storage cancel booked
+ShowMaterialWindow_Toggle_Tooltip,禁用 / 啟用,Disable / Enable
+ShowMaterialWindow_Toggle_Disabled,禁用,Disabled
+ShowMaterialWindow_Toggle_Enabled,啟用,Enabled
+ShowMaterialWindow_Section_WorkOrders,工單列表,Work orders
+ShowMaterialWindow_Message_ReturnFailed,回傳失敗,Request failed.
+ShowMaterialWindow_Message_Exception,例外狀況: {0},Exception: {0}
+ShowMaterialWindow_Column_CreateTime,建立時間,Created time
+ShowMaterialWindow_Column_WorksheetNumber,工單編號,Work order
+ShowMaterialWindow_Column_WorkStatus,工單狀態,Status
+ShowMaterialWindow_Column_ElectrodeName,電極名稱,Electrode name
+ShowMaterialWindow_Kind_Electrode,電極,Electrode
+ShowMaterialWindow_Kind_Workpiece,工件,Workpiece
+ShowMaterialWindow_Kind_Material,物料,Material
+ShowRobotWindow_Title,設備資訊 - 機器人,Machine information - Robot
+ShowRobotWindow_Header_Title,設備資訊,Machine information
+ShowRobotWindow_Button_MoveOut,物件移出手臂,Move out of arm
+ShowRobotWindow_Label_EquipmentName,設備名稱：,Equipment name:
+ShowRobotWindow_Label_EquipmentType,設備類型：,Equipment type:
+ShowRobotWindow_Label_EquipmentModel,設備型號：,Equipment model:
+ShowRobotWindow_Label_CurrentProgram,當前程式：,Current program:
+ShowRobotWindow_Label_Status,機台狀態：,Machine status:
+ShowRobotWindow_Label_CurrentMaterial,目前物料：,Current material:
+MaterialPair_Title_Electrode,電極配對,Electrode pairing
+MaterialPair_Title_Workpiece,工件配對,Workpiece pairing
+MaterialPair_Message_SelectElectrode,請選擇電極,Please select an electrode.
+MaterialPair_Message_SelectWorkpiece,請選擇工件,Please select a workpiece.
+MaterialPair_SelectedWorkOrder_Format,{0}（{1}),{0} ({1})
+MaterialPair_Message_SelectWorkOrder,請選擇工單,Please select a work order.
+MaterialPair_Message_ResetOk,OK,OK
+MaterialPair_Message_NoTagSerial,無標籤序號,No tag serial.
+MaterialPair_Message_SelectPairElectrode,請選擇要配對的電極,Please select an electrode to pair.
+MaterialPair_Message_SelectPairWorkOrder,請選擇要配對的工單,Please select a work order to pair.
+MaterialPair_Message_ElectrodeUploadFailed,電極上傳失敗,Electrode upload failed.
+MaterialPair_Message_SelectPairWorkpiece,請先選擇要配對的工件。,Please select a workpiece to pair.
+MaterialPair_Message_WorkpieceUploadFailed,工件上傳失敗,Workpiece upload failed.
+MaterialPair_Message_RfidWriteLogFailed,RFIDWriteLog上傳失敗: ,RFIDWriteLog upload failed: 
+MaterialPair_Message_PairSuccess,{0} OK!,{0} OK!
+MaterialPair_Message_PairError,配對處理發生錯誤: {0},Pairing error: {0}
+MaterialPair_Message_ApiNoData,API 無資料,No data from API.
+MaterialPair_Message_WorkpieceNotFound,找不到工件,Workpiece not found.
+MaterialPair_Message_SelectWorkpieceFailed,工件選擇失敗,Failed to select workpiece.
+MaterialPair_Message_NoElectrodeForWorkOrder,此工單沒有可配對的電極,No electrodes available for this work order.
+MaterialPair_Message_SelectElectrodeFailed,選擇電極失敗,Failed to select electrode.
+MaterialPair_Message_NoAvailableWorkOrders,目前沒有可選擇的工單,No work orders available.
+MaterialPair_Message_SelectWorkOrderFailed,選擇工單失敗,Failed to select work order.
+ProbePairViewModel_Message_Error,發生錯誤,An error occurred.
+ProbePairViewModel_Message_ProbeUploadFailed,Probe上傳失敗,Probe upload failed.
+ProbePairViewModel_Message_RfidWriteLogFailed,RFIDWriteLog上傳失敗: ,RFIDWriteLog upload failed: 
+ProbePairViewModel_Message_ProbeUploadSuccess,Probe上傳成功!,Probe upload succeeded!
+SelectItemWindow_Title_Electrode,選擇電極,Select electrode
+SelectItemWindow_Title_Workpiece,選擇工件,Select workpiece
+SelectItemWindow_Title_Default,選擇物料,Select material
+SelectSharedElectrode_Message_SelectWorkOrder,請選擇工單,Please select a work order.
+SelectSharedElectrode_Message_SelectElectrode,請選擇電極,Please select an electrode.
+SelectSharedElectrode_Message_SelectWorkOrderFailed,選擇工單失敗,Failed to select work order.
+SelectSharedElectrode_Message_SelectElectrodeFailed,選擇電極失敗,Failed to select electrode.
+SelectWorksheetWindow_Title,選擇工單,Select work order
+SelectSharedElectrodeWindow_Title,選擇共用電極,Select shared electrode
+SelectSharedElectrodeWindow_Label_SelectWorkOrder,選擇工單,Select work order
+SelectSharedElectrodeWindow_Label_SelectElectrode,選擇電極,Select electrode
+SelectSharedElectrodeWindow_Button_Confirm,確認,Confirm
+SelectWorksheetWindow_SearchHint,搜尋,Search
+SelectWorksheetWindow_Header_WorkOrder,工件名稱（工單編號）,Workpiece name (work order)
+SelectWorksheetWindow_Button_Confirm,確認,Confirm
+SelectWorksheetWindow_Button_Cancel,取消,Cancel
+AddWorkerWindow_Title,新增工作人員,Add worker
+AddWorkerWindow_Label_WorkerNumber,工號：,Employee No.:
+AddWorkerWindow_Label_UserName,使用者：,User:
+AddWorkerWindow_Label_Password,輸入密碼：,Password:
+AddWorkerWindow_Label_ConfirmPassword,再次確認：,Confirm password:
+AddWorkerWindow_Button_Add,新增,Add
+AddWorkerViewModel_Title_Add,新增使用者,Add user
+AddWorkerViewModel_Title_Edit,編輯使用者,Edit user
+AddWorkerViewModel_Message_EmptyWorkerNumber,請輸入使用者工號,Please enter the employee number.
+AddWorkerViewModel_Message_EmptyWorkerName,請輸入使用者名稱,Please enter the user name.
+AddWorkerViewModel_Message_EmptyPassword,請輸入密碼,Please enter the password.
+AddWorkerViewModel_Message_PasswordMismatch,兩次輸入的密碼不一致,The passwords do not match.
+AddWorkerViewModel_Message_WorkerNameExists,使用者名稱已存在,The user name already exists.
+AddWorkerViewModel_Message_WorkerNumberExists,使用者工號已存在,The employee number already exists.
+ShutdownWindow_Title,關閉確認視窗,Shutdown confirmation
+ShutdownWindow_Text_ShutdownPrefix,即將關閉 ,Shutting down 
+ShutdownWindow_Text_ShutdownSuffix, 控制系統, control system
+ShutdownWindow_Button_Confirm,確定,Confirm
+ShutdownWindow_Button_Cancel,取消,Cancel
+ShutdownWindow_Message_RobotRunning,手臂正在運行中！確定要關機？,The robot is running. Are you sure you want to shut down?
+ShutdownWindow_Message_ConfirmShutdown,確定要關閉控制系統？,Are you sure you want to shut down the control system?
+UploadSheet_DefaultCsvPath,尚未選擇檔案,No file selected
+UploadSheet_Dialog_Filter_Csv,CSV 檔案 (*.csv)|*.csv,CSV files (*.csv)|*.csv
+UploadSheet_Dialog_Title_Workpiece,選擇檔案 (工件),Select file (workpiece)
+UploadSheet_Dialog_Title_Electrode,選擇檔案 (電極),Select file (electrode)
+UploadSheet_Message_FormatError,Format Error,Format Error
+UploadSheet_Message_FileInUse,檔案被其他程式使用中，請先關閉該檔案後再試。,The file is in use. Close it and try again.
+UploadSheet_Message_SelectWorkpieceOrElectrode,請選擇工件或電極,Please select workpieces or electrodes.
+UploadSheet_Message_ProgramSkipped,工單已建立，但以下機台未上傳程式，請手動傳送：{0},Work order created, but programs were not uploaded for:{0}
+UploadSheet_Message_UploadSuccess,上傳成功,Upload succeeded.
+UploadSheet_Message_UploadFailedUnknown,上傳失敗（未知錯誤）,Upload failed (unknown error).
+UploadSheet_Message_UploadFailed,上傳失敗：{0},Upload failed: {0}
+UploadSheetsWindow_Title,上傳工單,Upload work order
+UploadSheetsWindow_Header_Title,上傳工單,Upload work order
+UploadSheetsWindow_Label_Machine,機台,Machine
+UploadSheetsWindow_Label_Coordinate,座標,Coordinate
+UploadSheetsWindow_Group_Workpiece,工件,Workpiece
+UploadSheetsWindow_Group_Electrode,電極,Electrode
+UploadSheetsWindow_Button_SelectFolder,選擇資料夾,Select folder
+UploadSheetsWindow_Column_Select,選取,Select
+UploadSheetsWindow_Column_WorkpieceName,工件名稱,Workpiece name
+UploadSheetsWindow_Column_Status,狀態,Status
+UploadSheetsWindow_Column_MeasurementProgram,量測程式,Measurement program
+UploadSheetsWindow_Column_ElectrodeName,電極名稱,Electrode name
+UploadSheetsWindow_Column_LifeTimes,壽命,Lifetime
+UploadSheetsWindow_Column_Offset,補償,Offset
+UploadSheetsWindow_Column_Program,加工程式,Program
+UploadSheetsWindow_Column_IsShared,是否共用電極,Shared electrode
+UploadSheetsWindow_Column_SharedWorksheet,共用電極工單,Shared work order
+UploadSheetsWindow_Column_SharedElectrode,共用電極名稱,Shared electrode name
+UploadSheetsWindow_Button_Clear,清除,Clear
+UploadSheetsWindow_Button_Upload,上傳,Upload
+UploadSheetsWindow_Message_Uploading,上傳中，請稍候...,Uploading, please wait...
+MachineCard_Tooltip_OpenMachine,查看機器資訊,View machine info
+MachineCard_Label_Disabled,禁用中,Disabled
+MachineDetailCard_Tooltip_OpenMachine,查看機器資訊,View machine info
+MachineDetailCard_Label_Disabled,禁用,Disabled
+FactoryLayout_Title,產線配置,Factory layout
+FactoryLayout_Button_TestMove,測試移動,Test move
+FactoryLayout_Button_Edit,編輯,Edit
+FactoryLayout_Button_Save,儲存,Save
+FactoryLayout_Button_AutoLayout,自動排列,Auto layout
+FactoryLayout_Button_Load,載入舊檔,Load file
+TaskList_Title,任務工作條,Task list
+MachineMainDetail_Label_MachineInfoSuffix, 機台資訊, Machine info
+MachineMainDetail_Button_Reset,重置,Reset
+MachineMainDetail_Toggle_Tooltip,禁用 / 啟用,Disable / Enable
+MachineMainDetail_Toggle_Disabled,禁用,Disabled
+MachineMainDetail_Toggle_Enabled,啟用,Enabled
+MachineMainDetail_Section_MachineInfo,機台資訊區,Machine information
+MachineMainDetail_Section_WorkPosition,工作座標,Work position
+MachineMainDetail_Section_MachiningParams,加工參數,Machining parameters
+MachineMainDetail_Label_Position,座標：,Coordinate:
+MachineMainDetail_Label_X,X：,X:
+MachineMainDetail_Label_Y,Y：,Y:
+MachineMainDetail_Label_Z,Z：,Z:
+MachineMainDetail_Label_A,A：,A:
+MachineMainDetail_Label_B,B：,B:
+MachineMainDetail_Label_C,C：,C:
+MachineMainDetail_Message_DateRangeTooLong,選擇的日期範圍不能超過一個月,Selected date range cannot exceed one month.
+MachineMainDetail_Message_DateFormatError,日期格式錯誤,Invalid date format.
+MachineMainDetail_Tab_Absolute,絕對,Absolute
+MachineMainDetail_Tab_Machine,機械,Machine
+MachineMainDetail_Tab_WorkOrderInfo,工單資訊,Work order info
+MachineMainDetail_Tab_WorkOrderTimeline,工單Timeline,Work order timeline
+MachineMainDetail_Info_MachineNumber,• 機台型號：,Name:
+MachineMainDetail_Info_MachineStatus,• 機台狀態：,Status:
+MachineMainDetail_Info_UsingElectrode,• 使用電極：,Electrode:
+MachineMainDetail_Info_UsingTool,• 使用刀具：,Tool:
+MachineMainDetail_Info_MachiningCode,• 加工程式：,Program:
+MachineMainDetail_Info_CycleTime,• 加工時間：,Cycle time:
+MachineMainDetail_Info_MachiningProgress,• 加工進度：,Progress:
+MachineMainDetail_Info_CurrentWorksheet,• 目前工單：,Work order:
+MachineMainDetail_Info_MachiningTool,• 刀具號碼：,Tool No.:
+MachineMainDetail_Info_MachineTemperature,• 機台溫度 : ,Temperature: 
+MachineMainDetail_Info_SpindleRpm,• 主軸轉速 : ,Spindle RPM: 
+MachineMainDetail_Info_OilLevel,• 油位狀態 : ,Oil level: 
+MachineMainDetail_Info_CoolantLevel,• 冷卻液量 : ,Coolant level: 
+MachineMainDetail_Param_Ton,TON(us):,TON(us):
+MachineMainDetail_Param_Toff,TOFF(us):,TOFF(us):
+MachineMainDetail_Param_Current,I(A):,I(A):
+MachineMainDetail_Param_Polarity,Pol:,Pol:
+MachineMainDetail_Param_Hv,Hv:,Hv:
+MachineMainDetail_Param_Gap,Gap(V):,Gap(V):
+MachineMainDetail_Param_Speed,Speed:,Speed:
+MachineMainDetail_Param_Pulse,Pulse,Pulse
+MachineMainDetail_Param_Servo,Servo(%):,Servo(%):
+MachineMainDetail_Param_Jd,JD(mm):,JD(mm):
+MachineMainDetail_Param_Ob,OB:,OB:
+MachineMainDetail_Param_Jt,JT(s):,JT(s):
+MachineMainDetail_Param_FeedRate,進給速度,Feed rate
+MachineMainDetail_Param_SpindleSpeed,主軸轉速,Spindle speed
+MachineMainDetail_Column_CreateTime,建立時間,Created time
+MachineMainDetail_Column_WorksheetNumber,工單編號,Work order
+MachineMainDetail_Column_WorkStatus,工單狀態,Status
+MachineMainDetail_Column_ElectrodeName,電極名稱,Electrode name
+MachineStation_Label_MachineInfoSuffix, 機台資訊, Machine info
+MachineStation_Section_Info,資訊區,Info
+MachineStation_Label_AirError,空壓異常,Air pressure error
+MachineStation_Label_DoorOpen,門開著,Door open
+MachineStation_Label_RfidAtOrigin,RFID在原點上,RFID at origin
+MachineStation_Label_WorkpieceOnAssembly,工件在組裝站上,Workpiece on assembly station
+MachineStation_Label_IncomingNotification,入料通知,Incoming notification
+MachineStation_Label_WaitWorkpieceReturn,等待工件回來組裝站,Waiting for workpiece return
+MachineStation_Label_Alarm,異常,Alarm
+MachineStation_Label_RequestIncoming,要求入料中,Requesting incoming
+MachineStation_Label_RequestOutcoming,要求出料中,Requesting outgoing
+MachineStation_Label_DoorClosed,門關著,Door closed
+MachineStation_Section_Control,控制區,Control
+MachineStation_Label_AssemblyDoor,組裝站門,Assembly door
+MachineStation_Button_OpenDoor,開門,Open door
+MachineStation_Label_AssemblyLight,組裝站燈,Assembly light
+MachineStation_Button_LightOn,開燈,Light on
+MachineStation_Button_LightOff,關燈,Light off
+MachineStation_Label_Chuck,夾頭,Chuck
+MachineStation_Button_ChuckOpen,開爪,Open chuck
+MachineStation_Button_ChuckClose,關爪,Close chuck
+MachineStation_Label_IncomingPart,取得 (IncomingPart),Incoming part
+MachineStation_Button_Request,要求,Request
+FactoryOverview_Title,整場總覽,Factory Overview
+PeriodWindow_Title,週期設定,Period Settings
+PeriodWindow_Mode_None,不設定,None
+PeriodWindow_Mode_Daily,每日,Daily
+PeriodWindow_Mode_Weekly,每週,Weekly
+PeriodWindow_Mode_Monthly,每月,Monthly
+PeriodWindow_Tooltip_ToggleSign,右鍵切換正/負,Right-click to toggle +/-
+PeriodWindow_Label_TriggerTime,觸發時間,Trigger time
+PeriodWindow_Button_Confirm,確認,Confirm
+PeriodWindow_Button_Cancel,取消,Cancel
+Period_None,不設定,None
+Period_Daily_Format,每日 {0} 進行潤滑,Daily lubrication at {0}
+Period_Weekly_Format,每週 {0} {1} 進行潤滑,Weekly on {0} at {1}
+Period_Monthly_Format,每月 {0} 日 {1} 進行潤滑,Monthly on day {0} at {1}
+Period_Day_Sun,日,Sun
+Period_Day_Mon,一,Mon
+Period_Day_Tue,二,Tue
+Period_Day_Wed,三,Wed
+Period_Day_Thu,四,Thu
+Period_Day_Fri,五,Fri
+Period_Day_Sat,六,Sat
+Period_Day_Last,last,last
+MachineDetailControl_Title,Working Zone Overview,Working Zone Overview
+MachineDetailControl_Tooltip_Back,返回總覽,Back to overview
+MachineOverviewControl_Title,Working Zone Overview,Working Zone Overview
+MachineOverviewControl_Tooltip_Toggle,展開/收合倉儲,Expand/collapse storage
+StorageDetailControl_Tooltip_Back,返回,Back
+StorageDetailControl_Tab_Electrode,電極,Electrode
+StorageDetailControl_Tab_Workpiece,工件,Workpiece
+StorageDetailControl_Status_Waiting,待加工,Waiting
+StorageDetailControl_Status_Processing,加工中,Processing
+StorageDetailControl_Status_Error,異常,Error
+StorageDetailControl_Status_Completed,完成,Completed
+StorageDetailControl_Status_Disabled,禁用,Disabled
+StorageDetailControl_Status_Booked,預約,Booked
+StorageOverviewControl_Title,Storage Overview,Storage Overview
+StorageOverviewControl_Tooltip_Toggle,展開/收合倉儲,Expand/collapse storage
+StorageOverviewControl_Status_Waiting,待加工,Waiting
+StorageOverviewControl_Status_Processing,加工中,Processing
+StorageOverviewControl_Status_Error,異常,Error
+StorageOverviewControl_Status_Completed,完成,Completed
+StorageOverviewControl_Status_Disabled,禁用,Disabled
+StorageOverviewControl_Status_Booked,預約,Booked
+ElectrodeDetailView_Title,電極資訊,Electrode information
+ElectrodeDetailView_Tooltip_Lock,鎖定/解除鎖定,Lock/Unlock
+ElectrodeDetailView_Label_Name,電極名稱,Electrode name
+ElectrodeDetailView_Label_Number,電極編號,Electrode number
+ElectrodeDetailView_Label_Type,電極類型,Electrode type
+ElectrodeDetailView_Label_Status,狀態,Status
+ElectrodeDetailView_Label_TagSerial,標籤序號,Tag serial
+ElectrodeDetailView_Label_MaxDischarge,放電上限次數,Max discharge count
+ElectrodeDetailView_Label_UsageRate,電極使用率,Electrode usage rate
+ElectrodeDetailView_Label_ProcessedCount,被加工次數,Processed count
+ElectrodeDetailView_Label_Compensation,電極補償值,Electrode compensation
+ElectrodeDetailView_Button_ClearReservation,電極解除預約,Electrode cancel booked
+EmptyMaterialView_Title,物料,Material
+EmptyMaterialView_Message_Empty,此倉位目前沒有電極或工件資料。,No electrode or workpiece data in this slot.
+MaterialTimelineView_Title,工作列表,Work list
+PageMenuBar_Label_ProductionLines,產線總覽,Production lines
+PageMenuBar_Label_FactoryOverview,整場總覽,Factory overview
+PageMenuBar_Label_MachineOverview,設備總覽,Machine overview
+PageMenuBar_Label_WorkOrder,工單管理,Work orders
+PageMenuBar_Label_RfidBind,RFID燒錄,RFID burn
+PageMenuBar_Label_OperationHistory,操作紀錄,Operation history
+PageMenuBar_Label_Inventory,倉儲庫存,Storage
+PageMenuBar_Label_Settings,系統設定,Settings
+PageMenuBar_Tooltip_Collapse,收合功能表,Collapse menu
+RobotPositionPanel_Label_CurrentAction,目前動作,Current action
+RobotPositionPanel_Label_NextAction,下一步,Next step
+StorageUnitControl_Label_UpperDoor,上門,Upper
+StorageUnitControl_Label_LowerDoor,下門,Lower
+StorageUnitControl_Button_Open,開啟,Open
+StorageUnitControl_Label_ScanStatus,掃描狀態,Scan status
+StorageUnitControl_Label_DoorStatus,門 狀 態,Door status
+StorageUnitMiniControl_Label_UpperDoor,上門,Upper
+StorageUnitMiniControl_Label_LowerDoor,下門,Lower
+StorageUnitMiniControl_Button_Open,開,Open
+WorkpieceDetailView_Title,工件資訊,Workpiece information
+WorkpieceDetailView_Tooltip_Lock,鎖定/解除鎖定,Lock/Unlock
+WorkpieceDetailView_Label_Name,工件名稱,Workpiece name
+WorkpieceDetailView_Label_Number,工件編號,Workpiece number
+WorkpieceDetailView_Label_Type,工件類型,Workpiece type
+WorkpieceDetailView_Label_PartNo,零件件號,Part number
+WorkpieceDetailView_Label_WorkOrder,工單序號,Work order number
+WorkpieceDetailView_Label_Status,狀態,Status
+WorkpieceDetailView_Label_BatchNo,批號,Batch number
+WorkpieceDetailView_Button_ClearReservation,工件解除預約,Workpiece cancel booked
+MainWindow_Title,FMS 前台,FMS Frontend
+MainWindow_Subtitle, 彈性製造系統,Flexible Manufacturing System
+MainWindow_Summary_Normal,系統正常運作,System operating normally
+MainWindow_Summary_Alarm,系統有警報,System has alarms
+MainWindow_Dispatch_On,派工中,Dispatching
+MainWindow_Dispatch_Off,派工啟動,Start dispatch
+MainWindow_Tooltip_Login,點擊登入,Click to log in
+MainWindow_Tooltip_Logout,登出系統,Log out
+MainWindow_Section_RobotPosition,機械臂目前位置,Robot current position
+MainWindow_Section_ControlUnit,控制單元,Control unit
+MainWindow_Button_RobotStart,手臂啟動,Robot start
+MainWindow_Button_RobotPause,手臂暫停,Robot pause
+MainWindow_Button_RobotStop,手臂停止,Robot stop
+MainWindow_Button_RobotReset,手臂重置,Robot reset
+MainWindow_Section_StorageControl,料倉控制,Storage control
+MainWindow_Summary_Fallback,提示訊息,Message
+MainWindow_Message_ServiceProviderNotReady,ServiceProvider 尚未初始化，無法切換頁面。,Service provider is not initialized; unable to switch pages.
+MainWindow_Message_WaitForRobotScan,請等待手臂掃描完成後再開啟,Please wait for the robot scan to finish before opening.
+MainWindow_Message_ReturnFailed,回傳失敗,Request failed.
+MainWindow_Message_Exception,例外狀況,Exception occurred.
+MainWindow_Message_ExceptionWithDetails,例外狀況: {0},Exception: {0}
+MainWindow_Message_LoggedOut,您已成功登出！,You have been logged out successfully.
+MainWindow_Message_ServerDisconnected,伺服器斷線，請確認,Server disconnected. Please check.
+MainWindow_Message_NoWorkerData,目前無員工資料,No worker data available.
+MainWindow_Message_LoginWelcome,歡迎登入，{0}！,Welcome, {0}!
+MainWindow_Message_LoginError,登入過程發生錯誤,An error occurred during login.
+MainWindow_Message_RobotNotConnectedStart,機器人未連線，無法啟動,Robot is not connected; cannot start.
+MainWindow_Message_RobotNotConnectedAction,機器人未連線，無法執行,Robot is not connected; cannot perform this action.
+MainWindow_Tooltip_NotLoggedIn,尚未登入,Not logged in
+MainWindow_Tooltip_LoggedIn_Format,登入中：{0},Logged in: {0}
+MainWindow_Tooltip_ServerAlive,後台連線正常,Backend connected
+MainWindow_Tooltip_ServerDown,未啟動 / 連線中斷,Not started / disconnected
+MainWindow_Tooltip_LastCheck_Format,Last check: {0:HH:mm:ss},Last check: {0:HH:mm:ss}
+MachineCnc_Message_ApiReturnFailed,API回傳失敗,API response failed.
+MachineCnc_Message_ApiSendFailed,API發送失敗,API request failed.
+MachineStation_Message_ApiReturnFailed,API回傳失敗,API response failed.
+MachineStation_Message_ApiSendFailed,API發送失敗,API request failed.
+MachineOverviewControl_Title,Working Zone Overview,Working Zone Overview
+MachineOverviewControl_Tooltip_Toggle,展開/收合倉儲,Expand/collapse storage
+MachineDetailControl_Title,Working Zone Overview,Working Zone Overview
+MachineDetailControl_Tooltip_Back,返回總覽,Back to overview
+ProductionLines_Message_NoMaterial,無物料,No material.
+ProductionLines_Label_None,—,—
+ProductionLines_Label_Electrode,電極：{0},Electrode: {0}
+ProductionLines_Label_Workpiece,工件：{0},Workpiece: {0}
+LockPillButton_Text_Lock,鎖定,Lock
+LockPillButton_Text_Unlock,解鎖,Unlock

@@ -4,6 +4,7 @@ using FMSFrontend.Extensions;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
+using FMSFrontend.Helpers;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
@@ -13,6 +14,7 @@ using FMSFrontend.Views.Windows;
 using IniFile;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Security.Claims;
 using System.Text.Json; // ← 新增：JsonElement
 using System.Threading.Tasks;
@@ -52,7 +54,7 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private bool _isHint = true;
         [ObservableProperty] private bool _isAlarm = false;
         [ObservableProperty] private Brush summaryMessageBrush = new SolidColorBrush(Colors.Black);
-        [ObservableProperty] private string summaryMessage = "系統正常運作";
+        [ObservableProperty] private string summaryMessage = string.Empty;
         public bool IsLoggedIn => !string.IsNullOrEmpty(LoggedInUser);
         [ObservableProperty] private bool isDispatch;
 
@@ -76,7 +78,7 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private Brush stopForeground = new SolidColorBrush(Color.FromRgb(0x00, 0x4E, 0x79));
         //派工
         [ObservableProperty] private bool dispatchStatus;
-        [ObservableProperty] private string dispatchText = "派工啟動";
+        [ObservableProperty] private string dispatchText = string.Empty;
         [ObservableProperty] private Brush dispatchBackground = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
         [ObservableProperty] private Brush dispatchForeground = new SolidColorBrush(Color.FromRgb(0x00, 0x4E, 0x79));
 
@@ -119,29 +121,18 @@ namespace FMSFrontend.ViewModels
             _globalProperties = globalProperties;
             _userSession = userSession;
 
+            LanguageManager.ApplySavedLanguage();
+
             // 更新時間
             var timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Normal, (s, e) =>
             {
-                if (AlarmGroup.IsAlarm)
-                {
-                    IsAlarm = true;
-                    IsHint = false;
-                    IsIdle = false;
-                    SummaryMessageBrush = new SolidColorBrush(Colors.Red);
-                    SummaryMessage = "系統有警報";
-                }
-                else
-                {
-                    IsAlarm = false;
-                    IsHint = true;
-                    IsIdle = true;
-                    SummaryMessageBrush = new SolidColorBrush(Colors.Black);
-                    SummaryMessage = "系統正常運作";
-                }
-
+                UpdateSummaryMessage();
+                UpdateDispatchText();
                 CurrentDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
             }, Application.Current.Dispatcher);
             timer.Start();
+
+            UpdateSummaryMessage();
 
             //電極倉門初始頁面
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
@@ -213,9 +204,36 @@ namespace FMSFrontend.ViewModels
 
             // Dispatch
             DispatchStatus = r.DispatchEnabled;
-            DispatchText = DispatchStatus ? "派工中" : "派工啟動";
+            UpdateDispatchText();
             DispatchBackground = DispatchStatus ? Dark : Light;
             DispatchForeground = DispatchStatus ? Light : Dark;
+        }
+
+        private void UpdateSummaryMessage()
+        {
+            if (AlarmGroup.IsAlarm)
+            {
+                IsAlarm = true;
+                IsHint = false;
+                IsIdle = false;
+                SummaryMessageBrush = new SolidColorBrush(Colors.Red);
+                SummaryMessage = LanguageManager.GetString("MainWindow_Summary_Alarm", "系統有警報");
+            }
+            else
+            {
+                IsAlarm = false;
+                IsHint = true;
+                IsIdle = true;
+                SummaryMessageBrush = new SolidColorBrush(Colors.Black);
+                SummaryMessage = LanguageManager.GetString("MainWindow_Summary_Normal", "系統正常運作");
+            }
+        }
+
+        private void UpdateDispatchText()
+        {
+            DispatchText = DispatchStatus
+                ? LanguageManager.GetString("MainWindow_Dispatch_On", "派工中")
+                : LanguageManager.GetString("MainWindow_Dispatch_Off", "派工啟動");
         }
 
         #region PageChange
@@ -251,7 +269,7 @@ namespace FMSFrontend.ViewModels
             // 檢查 ServiceProvider 是否為 null
             if (App.ServiceProvider == null)
             {
-                _windowService.ShowMessage("ServiceProvider 尚未初始化，無法切換頁面。");
+                _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_ServiceProviderNotReady", "ServiceProvider 尚未初始化，無法切換頁面。"));
                 return;
             }
             var page = App.ServiceProvider.GetRequiredService<TPage>();
@@ -277,7 +295,7 @@ namespace FMSFrontend.ViewModels
                     //if (!MagazinePara.MagazineParas[0].UpperScanEnable && Robot.CurrentLocation == "W1" && Robot.CurrentAction == "RobotScaning")
                     if (!MagazinePara.MagazineParas[0].UpperScanEnable && StartStatus)
                     {
-                        _windowService.ShowMessage("請等待手臂掃描完成後再開啟");
+                        _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_WaitForRobotScan", "請等待手臂掃描完成後再開啟"));
                         return;
                     }
                     success = await _PlcService.WEMagzineDoorSwitchAsync(0, 0, true);
@@ -286,20 +304,20 @@ namespace FMSFrontend.ViewModels
                 {
                     if (!MagazinePara.MagazineParas[1].UpperScanEnable && StartStatus)
                     {
-                        _windowService.ShowMessage("請等待手臂掃描完成後再開啟");
+                        _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_WaitForRobotScan", "請等待手臂掃描完成後再開啟"));
                         return;
                     }
                     success = await _PlcService.EMagzineDoorSwitchAsync(0, 0, true);
                 } 
                 if (!success)
                 {
-                    _windowService.ShowMessage("回傳失敗");
+                    _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_ReturnFailed", "回傳失敗"));
                     return;
                 }
             }
             catch
             {
-                _windowService.ShowMessage("例外狀況");
+                _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_Exception", "例外狀況"));
             }
         }
         //開啟下倉門
@@ -315,7 +333,7 @@ namespace FMSFrontend.ViewModels
                 {
                     if (!MagazinePara.MagazineParas[0].LowerScanEnable && StartStatus)
                     {
-                        _windowService.ShowMessage("請等待手臂掃描完成後再開啟");
+                        _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_WaitForRobotScan", "請等待手臂掃描完成後再開啟"));
                         return;
                     }
                     success = await _PlcService.WEMagzineDoorSwitchAsync(0, 1, true);
@@ -324,20 +342,20 @@ namespace FMSFrontend.ViewModels
                 {
                     if (!MagazinePara.MagazineParas[1].LowerScanEnable && StartStatus)
                     {
-                        _windowService.ShowMessage("請等待手臂掃描完成後再開啟");
+                        _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_WaitForRobotScan", "請等待手臂掃描完成後再開啟"));
                         return;
                     }
                     success = await _PlcService.EMagzineDoorSwitchAsync(0, 1, true);
                 }
                 if (!success)
                 {
-                    _windowService.ShowMessage("回傳失敗");
+                    _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_ReturnFailed", "回傳失敗"));
                     return;
                 }
             }
             catch
             {
-                _windowService.ShowMessage("例外狀況");
+                _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_Exception", "例外狀況"));
             }
         }
         //開啟倉門燈
@@ -353,13 +371,13 @@ namespace FMSFrontend.ViewModels
                 success = await _PlcService.EMagzineDoorLightSwitchAsync(0, isChecked);
                 if (!success)
                 {
-                    _windowService.ShowMessage("回傳失敗");
+                    _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_ReturnFailed", "回傳失敗"));
                     return;
                 }
             }
             catch
             {
-                _windowService.ShowMessage("例外狀況");
+                _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_Exception", "例外狀況"));
             }
         }
         //顯示詳細倉門
@@ -368,7 +386,7 @@ namespace FMSFrontend.ViewModels
         {
             if (App.ServiceProvider == null)
             {
-                _windowService.ShowMessage("ServiceProvider 尚未初始化，無法切換頁面。");
+                _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_ServiceProviderNotReady", "ServiceProvider 尚未初始化，無法切換頁面。"));
                 return;
             }
             var detailPage = App.ServiceProvider.GetRequiredService<StorageUnitControlPage>();
@@ -387,7 +405,7 @@ namespace FMSFrontend.ViewModels
         {
             if (App.ServiceProvider == null)
             {
-                _windowService.ShowMessage("ServiceProvider 尚未初始化，無法切換頁面。");
+                _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_ServiceProviderNotReady", "ServiceProvider 尚未初始化，無法切換頁面。"));
                 return;
             }
             var page = App.ServiceProvider.GetRequiredService<StorageUnitMiniControlPage>();
@@ -411,7 +429,7 @@ namespace FMSFrontend.ViewModels
         {
             _auth.RequireLoginAndWriteOperation(2);
             _userSession.SignOut();
-            _windowService.ShowMessage("您已成功登出！");
+            _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_LoggedOut", "您已成功登出！"));
         }
         #endregion
 
@@ -458,7 +476,7 @@ namespace FMSFrontend.ViewModels
         {
             if(!_globalProperties.IsServerAlive)
             {
-                _windowService.ShowMessage("伺服器斷線，請確認");
+                _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_ServerDisconnected", "伺服器斷線，請確認"));
                 return;
             }
             try
@@ -467,7 +485,7 @@ namespace FMSFrontend.ViewModels
 
                 if (dtos.Count == 0)
                 {
-                    _windowService.ShowMessage("目前無員工資料");
+                    _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_NoWorkerData", "目前無員工資料"));
                     return;
                 }
 
@@ -485,7 +503,11 @@ namespace FMSFrontend.ViewModels
                 if (!string.IsNullOrWhiteSpace(loginName))
                 {
                     _userSession.SignIn(loginName);
-                    _windowService.ShowMessage($"歡迎登入，{loginName}！");
+                    var message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        LanguageManager.GetString("MainWindow_Message_LoginWelcome", "歡迎登入，{0}！"),
+                        loginName);
+                    _windowService.ShowMessage(message);
                     INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
                     ini.Write("Login", "LastLoginName", loginName);
                 }
@@ -493,7 +515,7 @@ namespace FMSFrontend.ViewModels
             }
             catch 
             {
-                _windowService.ShowMessage("登入過程發生錯誤");
+                _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_LoginError", "登入過程發生錯誤"));
             }
         }
 
@@ -505,7 +527,7 @@ namespace FMSFrontend.ViewModels
         {
             if (!Robot.IsRobotConnected)
             {
-                 _windowService.ShowMessage("機器人未連線，無法啟動");
+                 _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_RobotNotConnectedStart", "機器人未連線，無法啟動"));
                 return;
             }
             if (!StartStatus)
@@ -519,7 +541,7 @@ namespace FMSFrontend.ViewModels
                     var success = await _robotService.SetRobotStartAsync();
                     if (!success)
                     {
-                        _windowService.ShowMessage("回傳失敗");
+                        _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_ReturnFailed", "回傳失敗"));
                         return;
                     }
                     // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
@@ -527,7 +549,11 @@ namespace FMSFrontend.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                    var message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        LanguageManager.GetString("MainWindow_Message_ExceptionWithDetails", "例外狀況: {0}"),
+                        ex.Message);
+                    _windowService.ShowMessage(message);
                 }
             }
         }
@@ -536,7 +562,7 @@ namespace FMSFrontend.ViewModels
         {
             if (!Robot.IsRobotConnected)
             {
-                _windowService.ShowMessage("機器人未連線，無法執行");
+                _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_RobotNotConnectedAction", "機器人未連線，無法執行"));
                 return;
             }
             if (!PauseStatus)
@@ -550,7 +576,7 @@ namespace FMSFrontend.ViewModels
                     var success = await _robotService.SetRobotPauseAsync();
                     if (!success)
                     {
-                        _windowService.ShowMessage("回傳失敗");
+                        _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_ReturnFailed", "回傳失敗"));
                         return;
                     }
                     // 這裡可以選擇樂觀更新，或等 Updater 自動刷新
@@ -558,7 +584,11 @@ namespace FMSFrontend.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                    var message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        LanguageManager.GetString("MainWindow_Message_ExceptionWithDetails", "例外狀況: {0}"),
+                        ex.Message);
+                    _windowService.ShowMessage(message);
                 }
             }
         }
@@ -567,7 +597,7 @@ namespace FMSFrontend.ViewModels
         {
             if (!Robot.IsRobotConnected)
             {
-                _windowService.ShowMessage("機器人未連線，無法執行");
+                _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_RobotNotConnectedAction", "機器人未連線，無法執行"));
                 return;
             }
             if (!StopStatus)
@@ -581,7 +611,7 @@ namespace FMSFrontend.ViewModels
                     var success = await _robotService.SetRobotStopAsync();
                     if (!success)
                     {
-                        _windowService.ShowMessage("回傳失敗");
+                        _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_ReturnFailed", "回傳失敗"));
                         return;
                     }
 
@@ -590,7 +620,11 @@ namespace FMSFrontend.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                    var message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        LanguageManager.GetString("MainWindow_Message_ExceptionWithDetails", "例外狀況: {0}"),
+                        ex.Message);
+                    _windowService.ShowMessage(message);
                 }
             }
         }
@@ -599,7 +633,7 @@ namespace FMSFrontend.ViewModels
         {
             if (!Robot.IsRobotConnected)
             {
-                _windowService.ShowMessage("機器人未連線，無法執行");
+                _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_RobotNotConnectedAction", "機器人未連線，無法執行"));
                 return;
             }
             if (!_auth.RequireLoginAndWriteOperation(6))
@@ -609,13 +643,17 @@ namespace FMSFrontend.ViewModels
                 var success = await _robotService.ASRSRobotResetStatusAsync(0);
                 if (!success)
                 {
-                    _windowService.ShowMessage("回傳失敗");
+                    _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_ReturnFailed", "回傳失敗"));
                     return;
                 }
             }
             catch (Exception ex)
             {
-                _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    LanguageManager.GetString("MainWindow_Message_ExceptionWithDetails", "例外狀況: {0}"),
+                    ex.Message);
+                _windowService.ShowMessage(message);
             }
         }
         [RelayCommand]
@@ -629,13 +667,17 @@ namespace FMSFrontend.ViewModels
                 var ok = await _robotService.SetASRSDispatchSwitchAsync(target);
                 if (!ok)
                 {
-                    _windowService.ShowMessage("回傳失敗");
+                    _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_ReturnFailed", "回傳失敗"));
                     return;
                 }
             }
             catch (Exception ex)
             {
-                _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    LanguageManager.GetString("MainWindow_Message_ExceptionWithDetails", "例外狀況: {0}"),
+                    ex.Message);
+                _windowService.ShowMessage(message);
             }
         }
         #endregion

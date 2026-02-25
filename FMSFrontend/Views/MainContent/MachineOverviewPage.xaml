@@ -22,7 +22,7 @@
             <!-- Title 區塊 -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2">
                 <materialDesign:PackIcon Kind="ViewDashboard" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,4,4,0" />
-                <TextBlock Text="設備總覽" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                <TextBlock Text="{DynamicResource MachineOverview_Title}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" />
             </StackPanel>
 
             <!-- 下半部區塊：Tab + 卡片 + 主內容 -->
@@ -49,9 +49,9 @@
                 <!-- TabControl 區塊 -->
                 <TabControl SelectedIndex="{Binding SelectedTabIndex}" Style="{StaticResource FlatTabControlStyle}" Height="40" Padding="0" Margin="0,8,0,0" Background="Transparent" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}">
 
-                    <TabItem Header="ALL" Tag="#2779AE" />
-                    <TabItem Header="EDM" Tag="#2779AE" />
-                    <TabItem Header="工作站" Tag="#2779AE" /> 
+                    <TabItem Header="{DynamicResource MachineOverview_Tab_All}" Tag="#2779AE" />
+                    <TabItem Header="{DynamicResource MachineOverview_Tab_EDM}" Tag="#2779AE" />
+                    <TabItem Header="{DynamicResource MachineOverview_Tab_Station}" Tag="#2779AE" /> 
                  <!--   <TabItem Header="ROBOT" Tag="#4CAF50" /> -->
                 </TabControl>
 

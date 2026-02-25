@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Messaging.Messages;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Dtos.Apps;
 using FMSFrontend.Features.Services;
+using FMSFrontend.Helpers;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Interfaces;
@@ -16,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -83,30 +85,29 @@ namespace FMSFrontend.ViewModels
             _ = FetchAndBindByStatusAsync();
         }
         // ===== 日期篩選 =====
-        public ObservableCollection<string> DateFilterOptions { get; set; } = new() { "今天", "前7天", "自訂" };
-        [ObservableProperty] private string selectedFilterOption = "今天";
+        [ObservableProperty] private int selectedFilterIndex = -1;
         [ObservableProperty] private DateTime? fromDate = DateTime.Today;
         [ObservableProperty] private DateTime? toDate = DateTime.Today;
         [ObservableProperty] private bool isCustomDateMode;
 
         private bool _updatingDate;
-        partial void OnSelectedFilterOptionChanged(string value)
+        partial void OnSelectedFilterIndexChanged(int value)
         {
-            IsCustomDateMode = value == "自訂";
-            ApplyDateFilter();
+            IsCustomDateMode = value == 2;
+            ApplyDateFilter(value);
             // 切換日期篩選選項後立即重新抓資料
             _ = FetchAndBindByStatusAsync();
         }
-        private void ApplyDateFilter()
+        private void ApplyDateFilter(int filterIndex)
         {
             _updatingDate = true;
-            switch (SelectedFilterOption)
+            switch (filterIndex)
             {
-                case "今天":
+                case 0:
                     FromDate = DateTime.Today; ToDate = DateTime.Today; break;
-                case "前7天":
+                case 1:
                     FromDate = DateTime.Today.AddDays(-6); ToDate = DateTime.Today; break;
-                case "自訂":
+                case 2:
                     FromDate = DateTime.Today.AddMonths(-1); ToDate = DateTime.Today; break;
                 default: break; // 保留使用者輸入
             }
@@ -128,7 +129,7 @@ namespace FMSFrontend.ViewModels
                 if (from > to) to = from.AddMonths(1);  // 如果開始日大於結束日，調整結束日為開始日加一個月
                 if (to > from.AddMonths(1))             // 一個月範圍限制
                 {
-                    _WindowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    _WindowService.ShowMessage(LanguageManager.GetString("WorkOrder_Message_DateRangeTooLong", "選擇的日期範圍不能超過一個月"));
                     to = from.AddMonths(1);
                 }
                 if (to > today) to = today; // 避免被 AddMonths 推到未來
@@ -162,7 +163,7 @@ namespace FMSFrontend.ViewModels
                 if (to < from) from = to.AddMonths(-1); // 如果結束日小於開始日，調整開始日為結束日減一個月
                 if (from < to.AddMonths(-1)) // 一個月範圍限制
                 {
-                    _WindowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    _WindowService.ShowMessage(LanguageManager.GetString("WorkOrder_Message_DateRangeTooLong", "選擇的日期範圍不能超過一個月"));
                     from = to.AddMonths(-1);
                 }
                 if (from > today) from = today; // 避免 from 被推到未來（理論上不會，但保險）
@@ -204,6 +205,8 @@ namespace FMSFrontend.ViewModels
             _auth = auth;
             _robotStore = robotStore;
             _userSession = userSession;
+            LanguageManager.ApplySavedLanguage();
+            SelectedFilterIndex = 0;
             // 使用非同步方法刪除：保留 RelayCommand，但在內部啟動 async Task
             DeleteCommand = new RelayCommand<WorkOrderData>(item =>
             {
@@ -238,12 +241,12 @@ namespace FMSFrontend.ViewModels
 
             if (_robot.DispatchEnabled || _robot.IsStarted)
             {
-                _WindowService.ShowMessage("請先取消機器人啟動狀態與關閉派工功能後，才能進行流程修正。");
+                _WindowService.ShowMessage(LanguageManager.GetString("WorkOrder_Message_ReviseRobotRunning", "請先取消機器人啟動狀態與關閉派工功能後，才能進行流程修正。"));
                 return;
             }
             if (SelectedEDMQueueItem is null)
             {
-                _WindowService.ShowMessage("請先選擇一筆工單。");
+                _WindowService.ShowMessage(LanguageManager.GetString("WorkOrder_Message_SelectWorkOrder", "請先選擇一筆工單。"));
                 return;
             }
 
@@ -266,39 +269,47 @@ namespace FMSFrontend.ViewModels
             }
             catch (Exception ex)
             {
-                _WindowService.ShowMessage("後端連線失敗：" + ex.Message);
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    LanguageManager.GetString("WorkOrder_Message_BackendFailed", "後端連線失敗：{0}"),
+                    ex.Message);
+                _WindowService.ShowMessage(message);
                 return;
             }
             if (result == null)
             {
-                _WindowService.ShowMessage("無回傳資料");
+                _WindowService.ShowMessage(LanguageManager.GetString("WorkOrder_Message_NoResponse", "無回傳資料"));
             }
             else if (!result.success)
             {
-                _WindowService.ShowMessage("失敗 訊息:" + result.message);
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    LanguageManager.GetString("WorkOrder_Message_ReviseFailed", "失敗 訊息:{0}"),
+                    result.message);
+                _WindowService.ShowMessage(message);
             }
             else
             {
                 _WindowService.ShowMessage(result.message);
-                _WindowService.ShowMessage("請記得手動將電極從機台上移除並重新開啟遠端模式");
+                _WindowService.ShowMessage(LanguageManager.GetString("WorkOrder_Message_RemoveElectrodeReminder", "請記得手動將電極從機台上移除並重新開啟遠端模式"));
             }
         }
         [RelayCommand(CanExecute = nameof(CanFail))]
         private async Task Fail()
         {
             if (!_auth.RequireLogin()) return;
-            bool confirm = _WindowService.ShowYesNoDialog("確定要判定為失敗工單");
+            bool confirm = _WindowService.ShowYesNoDialog(LanguageManager.GetString("WorkOrder_Confirm_Fail", "確定要判定為失敗工單"));
             if (!confirm) return;
 
             if (_robot.DispatchEnabled || _robot.IsStarted)
             {
-                _WindowService.ShowMessage("請先取消機器人啟動狀態與關閉派工功能後，才能進行流程修正。");
+                _WindowService.ShowMessage(LanguageManager.GetString("WorkOrder_Message_ReviseRobotRunning", "請先取消機器人啟動狀態與關閉派工功能後，才能進行流程修正。"));
                 return;
             }
 
             if (SelectedEDMQueueItem is null)
             {
-                _WindowService.ShowMessage("請先選擇一筆工單。");
+                _WindowService.ShowMessage(LanguageManager.GetString("WorkOrder_Message_SelectWorkOrder", "請先選擇一筆工單。"));
                 return;
             }
 
@@ -315,22 +326,30 @@ namespace FMSFrontend.ViewModels
             }
             catch (Exception ex)
             {
-                _WindowService.ShowMessage("後端連線失敗：" + ex.Message);
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    LanguageManager.GetString("WorkOrder_Message_BackendFailed", "後端連線失敗：{0}"),
+                    ex.Message);
+                _WindowService.ShowMessage(message);
                 return;
             }
 
             if (result == null)
             {
-                _WindowService.ShowMessage("無回傳資料");
+                _WindowService.ShowMessage(LanguageManager.GetString("WorkOrder_Message_NoResponse", "無回傳資料"));
             }
             else if (!result.success)
             {
-                _WindowService.ShowMessage("回傳失敗 訊息:" + result.message);
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    LanguageManager.GetString("WorkOrder_Message_FailResultFailed", "回傳失敗 訊息:{0}"),
+                    result.message);
+                _WindowService.ShowMessage(message);
             }
             else
             {
                 _WindowService.ShowMessage(result.message);
-                _WindowService.ShowMessage("請記得手動將電極從機台上移除並重新開啟遠端模式");
+                _WindowService.ShowMessage(LanguageManager.GetString("WorkOrder_Message_RemoveElectrodeReminder", "請記得手動將電極從機台上移除並重新開啟遠端模式"));
             }
             _ = FetchAndBindByStatusAsync();
         }
@@ -443,20 +462,22 @@ namespace FMSFrontend.ViewModels
             try
             {
                 bool yes = _WindowService.ShowYesNoDialog(
-                    $"確定要刪除工單 {item.WorksheetNumber} 嗎？\n" +
-                    $"注意：此操作會一併刪除該工單底下已建檔的電極與工件。");
+                    string.Format(
+                        CultureInfo.CurrentCulture,
+                        LanguageManager.GetString("WorkOrder_Confirm_Delete", "確定要刪除工單 {0} 嗎？\n注意：此操作會一併刪除該工單底下已建檔的電極與工件。"),
+                        item.WorksheetNumber));
 
                 if (!yes) return;
 
                 if (string.IsNullOrWhiteSpace(item.WorksheetNumber))
                 {
-                    _WindowService.ShowMessage("找不到工單號 (WorksheetNumber)，無法刪除關聯資料。");
+                    _WindowService.ShowMessage(LanguageManager.GetString("WorkOrder_Message_MissingWorksheetNumber", "找不到工單號 (WorksheetNumber)，無法刪除關聯資料。"));
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(item.Id))
                 {
-                    _WindowService.ShowMessage("找不到工單 ID，無法刪除工單。");
+                    _WindowService.ShowMessage(LanguageManager.GetString("WorkOrder_Message_MissingWorksheetId", "找不到工單 ID，無法刪除工單。"));
                     return;
                 }
 
@@ -470,14 +491,22 @@ namespace FMSFrontend.ViewModels
 
                     if (string.IsNullOrWhiteSpace(workpieces._id))
                     {
-                        _WindowService.ShowMessage($"刪除工件失敗：{workpieces.workpieceName}（已中止刪除工單）");
+                        var message = string.Format(
+                            CultureInfo.CurrentCulture,
+                            LanguageManager.GetString("WorkOrder_Message_DeleteWorkpieceFailed", "刪除工件失敗：{0}（已中止刪除工單）"),
+                            workpieces.workpieceName);
+                        _WindowService.ShowMessage(message);
                         return;
                     }
 
                     bool ok = await _WorkpieceService.DeleteWorkpieceDataByIdAsync(workpieces._id);
                     if (!ok)
                     {
-                        _WindowService.ShowMessage($"刪除工件失敗：{workpieces.workpieceName}（已中止刪除工單）");
+                        var message = string.Format(
+                            CultureInfo.CurrentCulture,
+                            LanguageManager.GetString("WorkOrder_Message_DeleteWorkpieceFailed", "刪除工件失敗：{0}（已中止刪除工單）"),
+                            workpieces.workpieceName);
+                        _WindowService.ShowMessage(message);
                         return;
                     }
                 }
@@ -492,7 +521,11 @@ namespace FMSFrontend.ViewModels
                         bool ok = await _ElectrodeService.DB_DeleteElectrodeDataByIdAsync(el._id);
                         if (!ok)
                         {
-                            _WindowService.ShowMessage($"刪除電極失敗：{el.electrodeName}（已中止刪除工單）");
+                            var message = string.Format(
+                                CultureInfo.CurrentCulture,
+                                LanguageManager.GetString("WorkOrder_Message_DeleteElectrodeFailed", "刪除電極失敗：{0}（已中止刪除工單）"),
+                                el.electrodeName);
+                            _WindowService.ShowMessage(message);
                             return;
                         }
 
@@ -526,16 +559,24 @@ namespace FMSFrontend.ViewModels
                 bool wsOk = await _WorksheetsService.DeleteWorkSheetDataByIdAsync(item.Id);
                 if (!wsOk)
                 {
-                    _WindowService.ShowMessage($"刪除工單失敗（工單：{item.WorksheetNumber}）。");
+                    var message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        LanguageManager.GetString("WorkOrder_Message_DeleteWorkOrderFailed", "刪除工單失敗（工單：{0}）。"),
+                        item.WorksheetNumber);
+                    _WindowService.ShowMessage(message);
                     return;
                 }
 
                 WorkOrderList.Remove(item);
-                _WindowService.ShowMessage("已成功刪除工單與關聯的電極/工件。");
+                _WindowService.ShowMessage(LanguageManager.GetString("WorkOrder_Message_DeleteSuccess", "已成功刪除工單與關聯的電極/工件。"));
             }
             catch (Exception ex)
             {
-                _WindowService.ShowMessage($"刪除工單失敗：{ex.Message}");
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    LanguageManager.GetString("WorkOrder_Message_DeleteError", "刪除工單失敗：{0}"),
+                    ex.Message);
+                _WindowService.ShowMessage(message);
             }
 
             _ = FetchAndBindByStatusAsync();
@@ -615,7 +656,11 @@ namespace FMSFrontend.ViewModels
 
 
         public double EDMStageProgress => TotalProcessStep == 0 ? 0 : (100.0 * ProcessStep / TotalProcessStep);  // 進度條百分比（回傳 double）
-        public string EDMStageDisplay => $"EDM加工階段：{ProcessStep} / {TotalProcessStep}"; // 顯示文字，如 "EDM加工階段：1 / 3"
+        public string EDMStageDisplay => string.Format(
+            CultureInfo.CurrentCulture,
+            LanguageManager.GetString("WorkOrder_EDMStageDisplay_Format", "EDM加工階段：{0} / {1}"),
+            ProcessStep,
+            TotalProcessStep); // 顯示文字，如 "EDM加工階段：1 / 3"
         public ObservableCollection<EDMDetail> EDMDetails { get; set; } = new ObservableCollection<EDMDetail>();
 
         private bool _isExpanded;

@@ -25,7 +25,7 @@
         <DockPanel Grid.Row="0" VerticalAlignment="Center" Margin="10,10,10,0">
             <!-- 你指定要有的圖示（白色 20x20，Dock 左側） -->
             <materialDesign:PackIcon Kind="ReportProblem" Width="24" Height="24" Margin="0,1,0,0" Foreground="Black" DockPanel.Dock="Left" VerticalAlignment="Center" />
-            <TextBlock Text="警報資訊" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="6,0,0,0" />
+            <TextBlock Text="{DynamicResource Alarm_Title}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="6,0,0,0" />
         </DockPanel>
 
 
@@ -41,8 +41,8 @@
 
             <!-- Tabs -->
             <TabControl Grid.Row="0" Tag="MainTab" Margin="0,5,0,0" SelectedIndex="{Binding SelectedTabIndexParameter}" Style="{StaticResource FlatTabControlStyle}" Background="Transparent" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}">
-                <TabItem Header="目前警報" Tag="#2779A7" />
-                <TabItem Header="歷史警報" Tag="#2779A7" />
+                <TabItem Header="{DynamicResource Alarm_Tab_Current}" Tag="#2779A7" />
+                <TabItem Header="{DynamicResource Alarm_Tab_History}" Tag="#2779A7" />
             </TabControl>
 
             <!-- 外部已經統一套好卡片框 -->
@@ -114,16 +114,16 @@
                                                         <!-- 欄位 -->
                                                         <DataGrid.Columns>
                                                             <!-- 時間 -->
-                                                            <DataGridTextColumn Header="時間" Width="240" FontSize="20" Binding="{Binding Time, StringFormat=\{0:yyyy/MM/dd HH:mm:ss\}}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                            <DataGridTextColumn Header="{DynamicResource Alarm_Column_Time}" Width="240" FontSize="20" Binding="{Binding Time, StringFormat=\{0:yyyy/MM/dd HH:mm:ss\}}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
                                                             <!-- 錯誤代碼（膠囊＋圖示，依 Level 變色） -->
-                                                            <DataGridTemplateColumn Header="錯誤代碼" Width="160">
+                                                            <DataGridTemplateColumn Header="{DynamicResource Alarm_Column_Code}" Width="160">
                                                                 <!-- Header 也放個小圖示 -->
                                                                 <DataGridTemplateColumn.HeaderTemplate>
                                                                     <DataTemplate>
                                                                         <StackPanel Orientation="Horizontal">
                                                                             <materialDesign:PackIcon Kind="AlarmLightOutline" Width="16" Height="16" Margin="0,3,6,0" />
-                                                                            <TextBlock Text="錯誤代碼" />
+                                                                            <TextBlock Text="{DynamicResource Alarm_Column_Code}" />
                                                                         </StackPanel>
                                                                     </DataTemplate>
                                                                 </DataGridTemplateColumn.HeaderTemplate>
@@ -165,7 +165,7 @@
                                                             </DataGridTemplateColumn>
 
                                                             <!-- 訊息內容 -->
-                                                            <DataGridTextColumn Header="訊息內容" Width="*"  Binding="{Binding Message}" FontSize="20" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
+                                                            <DataGridTextColumn Header="{DynamicResource Alarm_Column_Message}" Width="*"  Binding="{Binding Message}" FontSize="20" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}"/>
                                                             <!-- 若要加來源/機台，取消以下註解
                             <DataGridTextColumn Header="來源/機台"
                                                 Width="180"
@@ -204,7 +204,11 @@
 
                                                             <!-- 左：日期篩選 -->
                                                             <StackPanel Orientation="Horizontal">
-                                                                <ComboBox Width="120" Height="32" Margin="10,0,0,0" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
+                                                                <ComboBox Width="140" Height="32" Margin="10,0,0,0" SelectedIndex="{Binding SelectedFilterIndex}" Style="{StaticResource PillComboBoxStyle}">
+                                                                    <ComboBoxItem Content="{DynamicResource Alarm_DateFilter_Today}" />
+                                                                    <ComboBoxItem Content="{DynamicResource Alarm_DateFilter_Last7Days}" />
+                                                                    <ComboBoxItem Content="{DynamicResource Alarm_DateFilter_Custom}" />
+                                                                </ComboBox>
                                                                 <StackPanel Orientation="Horizontal" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVisibilityConverter}}">
                                                                     <DatePicker Width="180" Height="32" Margin="8,0,0,0" SelectedDate="{Binding FromDate}"  IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}" />
                                                                     <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
@@ -217,14 +221,14 @@
                                                                 <Button Style="{StaticResource PrimaryButtonStyle}" Width="120" Command="{Binding ExportAlarmsCommand}">
                                                                     <StackPanel Orientation="Horizontal">
                                                                         <materialDesign:PackIcon Kind="Export" Width="18" Height="18" Margin="0,0,6,0" />
-                                                                        <TextBlock Text="匯出" />
+                                                                        <TextBlock Text="{DynamicResource Alarm_Button_Export}" />
                                                                     </StackPanel>
                                                                 </Button>
 
                                                                 <Button Style="{StaticResource PrimaryButtonStyle}" Width="120" Background="#444444" Margin="10,0,10,0" Command="{Binding RemoveSelectedAlarmsCommand}">
                                                                     <StackPanel Orientation="Horizontal">
                                                                         <materialDesign:PackIcon Kind="TrashCanOutline" Width="18" Height="18" Margin="0,0,6,0" />
-                                                                        <TextBlock Text="刪除" />
+                                                                        <TextBlock Text="{DynamicResource Alarm_Button_Delete}" />
                                                                     </StackPanel>
                                                                 </Button>
                                                             </StackPanel>
@@ -278,15 +282,15 @@
 
                                                             <DataGrid.Columns>
                                                                 <!-- 時間（與目前警報一致的寬度/樣式） -->
-                                                                <DataGridTextColumn Header="時間" Width="240" FontSize="20" Binding="{Binding Time, StringFormat=\{0:yyyy/MM/dd HH:mm:ss\}}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Header="{DynamicResource Alarm_Column_Time}" Width="240" FontSize="20" Binding="{Binding Time, StringFormat=\{0:yyyy/MM/dd HH:mm:ss\}}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
                                                                 <!-- 錯誤代碼（膠囊＋圖示，樣式與目前警報一致） -->
-                                                                <DataGridTemplateColumn Header="錯誤代碼" Width="160">
+                                                                <DataGridTemplateColumn Header="{DynamicResource Alarm_Column_Code}" Width="160">
                                                                     <DataGridTemplateColumn.HeaderTemplate>
                                                                         <DataTemplate>
                                                                             <StackPanel Orientation="Horizontal">
                                                                                 <materialDesign:PackIcon Kind="AlarmLightOutline" Width="16" Height="16" Margin="0,3,6,0" />
-                                                                                <TextBlock Text="錯誤代碼" />
+                                                                                <TextBlock Text="{DynamicResource Alarm_Column_Code}" />
                                                                             </StackPanel>
                                                                         </DataTemplate>
                                                                     </DataGridTemplateColumn.HeaderTemplate>
@@ -323,7 +327,7 @@
                                                                 </DataGridTemplateColumn>
 
                                                                 <!-- 訊息內容（字型/置中樣式與目前警報一致） -->
-                                                                <DataGridTextColumn Header="訊息內容" Width="*" Binding="{Binding Message}" FontSize="20" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Header="{DynamicResource Alarm_Column_Message}" Width="*" Binding="{Binding Message}" FontSize="20" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                             </DataGrid.Columns>
                                                         </DataGrid>
 
@@ -345,30 +349,30 @@
                                                                 </Grid.ColumnDefinitions>
 
                                                                 <!-- 移動到最前頁 -->
-                                                                <Button Grid.Column="0" Width="36" Height="36" Margin="0,0,8,0" Command="{Binding GoFirstPageCommand}" IsEnabled="{Binding CanGoPrev}" ToolTip="移動到最前頁" Style="{StaticResource RoundedShadowButtonStyle}">
+                                                                <Button Grid.Column="0" Width="36" Height="36" Margin="0,0,8,0" Command="{Binding GoFirstPageCommand}" IsEnabled="{Binding CanGoPrev}" ToolTip="{DynamicResource Alarm_Tooltip_FirstPage}" Style="{StaticResource RoundedShadowButtonStyle}">
                                                                     <materialDesign:PackIcon Kind="ChevronDoubleLeft" Width="18" Height="18" />
                                                                 </Button>
 
                                                                 <!-- 前一頁 -->
-                                                                <Button Grid.Column="1" Width="36" Height="36" Margin="0,0,24,0" Command="{Binding GoPrevPageCommand}" IsEnabled="{Binding CanGoPrev}" ToolTip="前一頁" Style="{StaticResource RoundedShadowButtonStyle}">
+                                                                <Button Grid.Column="1" Width="36" Height="36" Margin="0,0,24,0" Command="{Binding GoPrevPageCommand}" IsEnabled="{Binding CanGoPrev}" ToolTip="{DynamicResource Alarm_Tooltip_PrevPage}" Style="{StaticResource RoundedShadowButtonStyle}">
                                                                     <materialDesign:PackIcon Kind="ChevronLeft" Width="18" Height="18" />
                                                                 </Button>
 
                                                                 <!-- Page X of Y（置中顯示） -->
                                                                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                                                                    <TextBlock Text="Page" FontSize="16" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="{DynamicResource Alarm_Pagination_Page}" FontSize="16" VerticalAlignment="Center" />
                                                                     <TextBlock Text="{Binding CurrentPage}" FontSize="16" FontWeight="Bold" Margin="6,0,6,0" VerticalAlignment="Center" />
-                                                                    <TextBlock Text="of" FontSize="16" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="{DynamicResource Alarm_Pagination_Of}" FontSize="16" VerticalAlignment="Center" />
                                                                     <TextBlock Text="{Binding TotalPages}" FontSize="16" FontWeight="Bold" Margin="6,0,0,0" VerticalAlignment="Center" />
                                                                 </StackPanel>
 
                                                                 <!-- 下一頁 -->
-                                                                <Button Grid.Column="3" Width="36" Height="36" Margin="24,0,0,0" Command="{Binding GoNextPageCommand}" IsEnabled="{Binding CanGoNext}" ToolTip="下一頁" Style="{StaticResource RoundedShadowButtonStyle}">
+                                                                <Button Grid.Column="3" Width="36" Height="36" Margin="24,0,0,0" Command="{Binding GoNextPageCommand}" IsEnabled="{Binding CanGoNext}" ToolTip="{DynamicResource Alarm_Tooltip_NextPage}" Style="{StaticResource RoundedShadowButtonStyle}">
                                                                     <materialDesign:PackIcon Kind="ChevronRight" Width="18" Height="18" />
                                                                 </Button>
 
                                                                 <!-- 移動到最後頁 -->
-                                                                <Button Grid.Column="4" Width="36" Height="36" Margin="8,0,0,0" Command="{Binding GoLastPageCommand}" IsEnabled="{Binding CanGoNext}" ToolTip="移動到最後頁" Style="{StaticResource RoundedShadowButtonStyle}">
+                                                                <Button Grid.Column="4" Width="36" Height="36" Margin="8,0,0,0" Command="{Binding GoLastPageCommand}" IsEnabled="{Binding CanGoNext}" ToolTip="{DynamicResource Alarm_Tooltip_LastPage}" Style="{StaticResource RoundedShadowButtonStyle}">
                                                                     <materialDesign:PackIcon Kind="ChevronDoubleRight" Width="18" Height="18" />
                                                                 </Button>
                                                             </Grid>

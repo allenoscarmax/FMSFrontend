@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" Title="編輯" Height="480" Width="560" ResizeMode="NoResize"
+        mc:Ignorable="d" Title="{DynamicResource EditGridWindow_Title}" Height="480" Width="560" ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True"
         Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown">
     <Window.Resources>
@@ -68,7 +68,7 @@
 
             <!-- 底部按鈕 -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
-                <Button Content="編輯" Style="{StaticResource EditButtonStyle}" Command="{Binding EditClickCommand}" />
+                <Button Content="{DynamicResource EditGridWindow_Button_Edit}" Style="{StaticResource EditButtonStyle}" Command="{Binding EditClickCommand}" />
             </StackPanel>
         </Grid>
     </Border>

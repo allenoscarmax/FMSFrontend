@@ -39,12 +39,14 @@
 
             <!-- ⬅️ 上門控制區 -->
             <Grid Grid.Row="1" Grid.Column="0" Margin="5">
-                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,10">
-                    <TextBlock Text="上門" VerticalAlignment="Center" Margin="-10,0,15,0" FontSize="20px" FontWeight="Bold"/>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,5">
+                    <TextBlock Text="{DynamicResource StorageUnitControl_Label_UpperDoor}" 
+                               VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" 
+                               Width="70" Margin="-10,0,0,0" FontSize="20" FontWeight="Bold" />
                     <Button Style="{StaticResource RoundedShadowButtonStyle}"
-                            Content="開啟"
+                            Content="{DynamicResource StorageUnitControl_Button_Open}"
                             FontWeight="Bold"
-                            FontSize="20px"
+                            FontSize="20"
                             Width="80"
                             Command="{Binding UpperDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                             CommandParameter="{Binding StorageId, RelativeSource={RelativeSource AncestorType=UserControl}}" />
@@ -56,25 +58,27 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,2">
-                    <TextBlock Text="掃描狀態" Width="80" FontSize="16" FontWeight="Bold"/>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="3">
                     <Ellipse Width="10" Height="10" Stroke="Black" StrokeThickness="1" Fill="{Binding UpperScanStatus, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    <TextBlock Text="{DynamicResource StorageUnitControl_Label_ScanStatus}" Width="Auto" MaxWidth="110" FontSize="16" FontWeight="Bold" Margin="10,0,0,0"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,2">
-                    <TextBlock Text="門 狀 態" Width="80" FontSize="16" FontWeight="Bold" />
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="3">
                     <Ellipse Width="10" Height="10" Stroke="Black" StrokeThickness="1" Fill="{Binding UpperDoorStatus, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    <TextBlock Text="{DynamicResource StorageUnitControl_Label_DoorStatus}" Width="Auto" MaxWidth="110" FontSize="16" FontWeight="Bold"  Margin="10,0,0,0"/>
                 </StackPanel>
             </Grid>
 
             <!-- ➡️ 下門控制區 -->
             <Grid Grid.Row="1" Grid.Column="1" Margin="5">
-                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,10">
-                    <TextBlock Text="下門" VerticalAlignment="Center" Margin="-10,0,15,0" FontSize="20px" FontWeight="Bold" />
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,5">
+                    <TextBlock Text="{DynamicResource StorageUnitControl_Label_LowerDoor}"
+                               VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
+                               Width="70" Margin="-10,0,0,0"  FontSize="20" FontWeight="Bold" />
                     <Button Style="{StaticResource RoundedShadowButtonStyle}"
-                            Content="開啟"
+                            Content="{DynamicResource StorageUnitControl_Button_Open}"
                             FontWeight="Bold"
-                            FontSize="20px"
+                            FontSize="20"
                             Width="80"
                             Command="{Binding LowerDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                             CommandParameter="{Binding StorageId, RelativeSource={RelativeSource AncestorType=UserControl}}" />
@@ -87,13 +91,13 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,2">
-                    <TextBlock Text="掃描狀態" Width="80" FontSize="16" FontWeight="Bold" />
                     <Ellipse Width="10" Height="10" Stroke="Black" StrokeThickness="1" Fill="{Binding LowerScanStatus, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    <TextBlock Text="{DynamicResource StorageUnitControl_Label_ScanStatus}" Width="Auto" MaxWidth="110"  FontSize="16" FontWeight="Bold"  Margin="10,0,0,0"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,2">
-                    <TextBlock Text="門 狀 態" Width="80" FontSize="16" FontWeight="Bold" />
                     <Ellipse Width="10" Height="10" Stroke="Black" StrokeThickness="1" Fill="{Binding LowerDoorStatus, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    <TextBlock Text="{DynamicResource StorageUnitControl_Label_DoorStatus}" Width="Auto" MaxWidth="110" FontSize="16" FontWeight="Bold"  Margin="10,0,0,0"/>
                 </StackPanel>
             </Grid>
             <!-- 這段放在 Grid 容器內 -->
@@ -105,3 +109,5 @@
         </Grid>
     </Border>
 </UserControl>
+
+

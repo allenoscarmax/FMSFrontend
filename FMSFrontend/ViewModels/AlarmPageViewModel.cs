@@ -4,6 +4,7 @@ using FMSFrontend.Features.Dtos.Database;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
+using FMSFrontend.Helpers;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
@@ -32,7 +33,7 @@ namespace FMSFrontend.ViewModels
 
         // —— 新增：MainWindow 要綁的三個摘要屬性 ——
         [ObservableProperty] private AlarmSeverity summarySeverity = AlarmSeverity.None;
-        [ObservableProperty] private string summaryMessage = "目前無提示";
+        [ObservableProperty] private string summaryMessage = "";
         [ObservableProperty] private int unreadCount = 0;
 
 
@@ -41,8 +42,7 @@ namespace FMSFrontend.ViewModels
         private int selectedTabIndexParameter = 0; // 預設選「目前警報」
 
         // ===== 日期篩選 =====
-        public ObservableCollection<string> DateFilterOptions { get; } = new() { "今天", "前7天", "自訂" }; 
-        [ObservableProperty] private string selectedFilterOption = "今天"; 
+        [ObservableProperty] private int selectedFilterIndex = -1;
         [ObservableProperty] private DateTime? fromDate = DateTime.Today;  
         [ObservableProperty] private DateTime? toDate = DateTime.Today;
         [ObservableProperty] private bool isCustomDateMode;               
@@ -102,6 +102,7 @@ namespace FMSFrontend.ViewModels
             IAuthorizationService authorizationService, 
             AlarmStore alarmStore)
         {
+            LanguageManager.ApplySavedLanguage();
             _windowService = windowService;
             _alarmService = alarmService;
 
@@ -123,7 +124,8 @@ namespace FMSFrontend.ViewModels
             HistoryAlarms.CollectionChanged += (_, __) => ApplyFilter();
 
             // 預設區間 + 初次過濾/分頁
-            ApplyDateFilter();
+            SelectedFilterIndex = 0;
+            ApplyDateFilter(SelectedFilterIndex);
             ApplyFilter();
 
 
@@ -196,23 +198,23 @@ namespace FMSFrontend.ViewModels
 
         // ====== 日期篩選 ======
         private bool _updatingDate;
-        partial void OnSelectedFilterOptionChanged(string value) //選擇 今日、7日 或 自訂
+        partial void OnSelectedFilterIndexChanged(int value) //選擇 今日、7日 或 自訂
         {
-            IsCustomDateMode = value == "自訂";
-            ApplyDateFilter(); //設定日期
+            IsCustomDateMode = value == 2;
+            ApplyDateFilter(value); //設定日期
             ApplyFilter();
             _ = RefreshFromDate();
         }
-        private void ApplyDateFilter()
+        private void ApplyDateFilter(int filterIndex)
         {
             _updatingDate = true;
-            switch (SelectedFilterOption)
+            switch (filterIndex)
             {
-                case "今天":
+                case 0:
                     FromDate = DateTime.Today; ToDate = DateTime.Today; break;
-                case "前7天":
+                case 1:
                     FromDate = DateTime.Today.AddDays(-6); ToDate = DateTime.Today; break;
-                case "自訂":
+                case 2:
                     FromDate = DateTime.Today.AddMonths(-1); ToDate = DateTime.Today; break;
                 default: break; // 保留使用者輸入
             }
@@ -233,7 +235,7 @@ namespace FMSFrontend.ViewModels
                 if (from > to) to = from.AddMonths(1);  // 如果開始日大於結束日，調整結束日為開始日加一個月
                 if (to > from.AddMonths(1))             // 一個月範圍限制
                 {
-                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    _windowService.ShowMessage(LanguageManager.GetString("Alarm_Message_DateRangeTooLong", "選擇的日期範圍不能超過一個月"));
                     to = from.AddMonths(1);
                 }
                 if (to > today) to = today; // 避免被 AddMonths 推到未來
@@ -260,7 +262,7 @@ namespace FMSFrontend.ViewModels
                 if (to < from) from = to.AddMonths(-1); // 如果結束日小於開始日，調整開始日為結束日減一個月
                 if (from < to.AddMonths(-1)) // 一個月範圍限制
                 {
-                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    _windowService.ShowMessage(LanguageManager.GetString("Alarm_Message_DateRangeTooLong", "選擇的日期範圍不能超過一個月"));
                     from = to.AddMonths(-1);
                 }
                 if (from > today) from = today; // 避免 from 被推到未來（理論上不會，但保險）
@@ -292,13 +294,13 @@ namespace FMSFrontend.ViewModels
             var rows = _historyView.Cast<AlarmItem>().ToList();
             if (rows.Count == 0)
             {
-                _windowService.ShowMessage("目前沒有可匯出的資料。");
+                _windowService.ShowMessage(LanguageManager.GetString("Alarm_Message_NoExportData", "目前沒有可匯出的資料。"));
                 return;
             }
 
             var dlg = new SaveFileDialog
             {
-                Title = "匯出檔案",
+                Title = LanguageManager.GetString("Alarm_Dialog_ExportTitle", "匯出檔案"),
                 Filter = "CSV 檔 (*.csv)|*.csv",
                 FileName = $"AlarmHistory_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
             };
@@ -310,7 +312,11 @@ namespace FMSFrontend.ViewModels
                     using var sw = new StreamWriter(dlg.FileName, false, System.Text.Encoding.UTF8);
                     // 讀取 標題列 然後寫入 
                     // 寫入正確的標頭
-                    sw.WriteLine("時間,錯誤代碼,訊息內容");
+                    var header = string.Join(",",
+                        LanguageManager.GetString("Alarm_Column_Time", "時間"),
+                        LanguageManager.GetString("Alarm_Column_Code", "錯誤代碼"),
+                        LanguageManager.GetString("Alarm_Column_Message", "訊息內容"));
+                    sw.WriteLine(header);
 
                     foreach (var r in rows)
                     {
@@ -321,11 +327,15 @@ namespace FMSFrontend.ViewModels
                         sw.WriteLine($"\"{t}\",\"{code}\",\"{message}\"");
                     }
 
-                    _windowService.ShowMessage("匯出完成。");
+                    _windowService.ShowMessage(LanguageManager.GetString("Alarm_Message_ExportSuccess", "匯出完成。"));
                 }
                 catch (Exception ex)
                 {
-                    _windowService.ShowMessage($"匯出失敗：{ex.Message}");
+                    var message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        LanguageManager.GetString("Alarm_Message_ExportFailed", "匯出失敗：{0}"),
+                        ex.Message);
+                    _windowService.ShowMessage(message);
                 }
             }
         }
@@ -340,7 +350,7 @@ namespace FMSFrontend.ViewModels
         private async Task RemoveSelectedAlarms()
         {
             //確認是否刪除
-            bool confirm = _windowService.ShowYesNoDialog("確定要清除警告");
+            bool confirm = _windowService.ShowYesNoDialog(LanguageManager.GetString("Alarm_Confirm_Remove", "確定要清除警告"));
             if (!confirm) return;
             if (FromDate != null && ToDate != null)
             {
@@ -349,7 +359,7 @@ namespace FMSFrontend.ViewModels
                 bool ok = await _alarmService.RemoveErrorMessageLogByDateTimeAsync(FromDate.Value, ToDate.Value);
                 if (!ok)
                 {
-                    _windowService.ShowMessage("刪除歷史警報失敗");
+                    _windowService.ShowMessage(LanguageManager.GetString("Alarm_Message_RemoveFailed", "刪除歷史警報失敗"));
                     return;
                 }
             }
@@ -419,7 +429,7 @@ namespace FMSFrontend.ViewModels
             if (CurrentAlarms.Count == 0)
             {
                 SummarySeverity = AlarmSeverity.None;
-                SummaryMessage = "目前無提示";
+                SummaryMessage = LanguageManager.GetString("Alarm_Summary_None", "目前無提示");
                 UnreadCount = 0;
                 return;
             }

@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using ControlzEx.Standard;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
+using FMSFrontend.Helpers;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Models;
@@ -50,6 +51,8 @@ namespace FMSFrontend.ViewModels
             _storageService = storageService;
             _storageStore = storageStore;
             _storageLiveUpdater = storageLiveUpdater;
+
+            LanguageManager.ApplySavedLanguage();
 
             InventoryList = CollectionViewSource.GetDefaultView(AllItems);
             InventoryList.Filter = FilterRow;

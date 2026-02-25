@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
+using FMSFrontend.Helpers;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 
@@ -29,7 +30,7 @@ namespace FMSFrontend.ViewModels.Windows
         private readonly IWorkpieceService _workpieceService;
         private readonly IAuthorizationService _authorizationService;
 
-        [ObservableProperty] private string deviceName = "設備名稱";
+        [ObservableProperty] private string deviceName = string.Empty;
         [ObservableProperty] private MachineInfo info = new();
         public ObservableCollection<WorkOrderRow> WorkOrders { get; } = new();
         public ShowMachineWindowViewModel(
@@ -44,13 +45,16 @@ namespace FMSFrontend.ViewModels.Windows
             _machinesService = machinesService;
             _authorizationService = authorizationService;
             _workpieceService = workpieceService;
+            SelectedFilterIndex = 0;
+            ApplyDateFilter(SelectedFilterIndex);
         }
         /// <summary>
         /// 由 WindowService / 呼叫端注入哪一台機台的卡片。
         /// </summary>
         public void Initialize(MachineCardViewModel m)
         {
-            DeviceName = m.MachineName ?? "設備名稱";
+            DeviceName = m.MachineName
+                ?? LanguageManager.GetString("ShowMachineWindowViewModel_DeviceName_Default", "設備名稱");
             Info.MachineTypeName = m.MachineTypeName;
             Info.EquipmentName = m.MachineName ?? "";
             Info.EquipmentType = m.Type.ToString();
@@ -66,28 +70,27 @@ namespace FMSFrontend.ViewModels.Windows
             // 去填 WorkOrders
         }
         // 日期篩選選項
-        public ObservableCollection<string> DateFilterOptions { get; } = new() { "今天", "前7天", "自訂" };
-        [ObservableProperty] private string selectedFilterOption = "今天";
+        [ObservableProperty] private int selectedFilterIndex = -1;
         [ObservableProperty] private DateTime? fromDate = DateTime.Today;
         [ObservableProperty] private DateTime? toDate = DateTime.Today;
         [ObservableProperty] private bool isCustomDateMode;
         private bool _updatingDate;
-        partial void OnSelectedFilterOptionChanged(string value) //選擇
+        partial void OnSelectedFilterIndexChanged(int value) //選擇
         {
-            IsCustomDateMode = value == "自訂";
-            ApplyDateFilter(); //設定日期
+            IsCustomDateMode = value == 2;
+            ApplyDateFilter(value); //設定日期
             _ = RefreshFetch();
         }
-        private void ApplyDateFilter()
+        private void ApplyDateFilter(int filterIndex)
         {
             _updatingDate = true;
-            switch (SelectedFilterOption)
+            switch (filterIndex)
             {
-                case "今天":
+                case 0:
                     FromDate = DateTime.Today; ToDate = DateTime.Today; break;
-                case "前7天":
+                case 1:
                     FromDate = DateTime.Today.AddDays(-6); ToDate = DateTime.Today; break;
-                case "自訂":
+                case 2:
                     FromDate = DateTime.Today.AddMonths(-1); ToDate = DateTime.Today; break;
                 default: break; // 保留使用者輸入
             }
@@ -108,7 +111,7 @@ namespace FMSFrontend.ViewModels.Windows
                 if (from > to) to = from.AddMonths(1);  // 如果開始日大於結束日，調整結束日為開始日加一個月
                 if (to > from.AddMonths(1))             // 一個月範圍限制
                 {
-                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    _windowService.ShowMessage(LanguageManager.GetString("ShowMachineWindow_Message_DateRangeTooLong", "選擇的日期範圍不能超過一個月"));
                     to = from.AddMonths(1);
                 }
                 if (to > today) to = today; // 避免被 AddMonths 推到未來
@@ -134,7 +137,7 @@ namespace FMSFrontend.ViewModels.Windows
                 if (to < from) from = to.AddMonths(-1); // 如果結束日小於開始日，調整開始日為結束日減一個月
                 if (from < to.AddMonths(-1)) // 一個月範圍限制
                 {
-                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    _windowService.ShowMessage(LanguageManager.GetString("ShowMachineWindow_Message_DateRangeTooLong", "選擇的日期範圍不能超過一個月"));
                     from = to.AddMonths(-1);
                 }
                 if (from > today) from = today; // 避免 from 被推到未來（理論上不會，但保險）

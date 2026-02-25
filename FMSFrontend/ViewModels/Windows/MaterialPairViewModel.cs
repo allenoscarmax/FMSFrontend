@@ -13,12 +13,14 @@ using MaterialDesignThemes.Wpf.Transitions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using FMSFrontend.Features.Services;
+using FMSFrontend.Helpers;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
 using FMSFrontend.Features.Dtos;
@@ -112,20 +114,28 @@ public partial class MaterialPairViewModel : ObservableObject
     ElectrodeDto electrode = new ElectrodeDto();
     WorkpieceDto workpiece = new WorkpieceDto();
     // 方便 UI 綁定顯示文字（可選）
-    public string CurrentTitle => ShowElectrodeSection ? "電極配對" : "工件配對";
+    public string CurrentTitle => ShowElectrodeSection
+        ? LanguageManager.GetString("MaterialPair_Title_Electrode", "電極配對")
+        : LanguageManager.GetString("MaterialPair_Title_Workpiece", "工件配對");
 
 
     // 顯示用屬性（還沒選時有預設文字）
     public string SelectedElectrodeNameDisplay =>
-        SelectedElectrodeItem?.MaterialName ?? "請選擇電極";
+        SelectedElectrodeItem?.MaterialName
+        ?? LanguageManager.GetString("MaterialPair_Message_SelectElectrode", "請選擇電極");
 
     public string SelectedWorkpieceNameDisplay =>
-        SelectedWorkpieceItem?.MaterialName ?? "請選擇工件";
+        SelectedWorkpieceItem?.MaterialName
+        ?? LanguageManager.GetString("MaterialPair_Message_SelectWorkpiece", "請選擇工件");
     // ★ 改用 WorksheetItem 欄位
     public string SelectedWorkOrderName =>
         SelectedWorksheetItem != null
-            ? $"{SelectedWorksheetItem.PartName}（{SelectedWorksheetItem.WorkOrderNo}）"
-            : "請選擇工單";
+            ? string.Format(
+                CultureInfo.CurrentCulture,
+                LanguageManager.GetString("MaterialPair_SelectedWorkOrder_Format", "{0}（{1}）"),
+                SelectedWorksheetItem.PartName,
+                SelectedWorksheetItem.WorkOrderNo)
+            : LanguageManager.GetString("MaterialPair_Message_SelectWorkOrder", "請選擇工單");
 
     partial void OnSelectedElectrodeItemChanged(SelectItem? value)
     {
@@ -157,7 +167,7 @@ public partial class MaterialPairViewModel : ObservableObject
             await Task.Delay(300);
             ok = await _rfidService.RFID_to_connect(0);
 
-            _windowService.ShowMessage("OK");
+            _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_ResetOk", "OK"));
         }
         catch { }
     }
@@ -171,7 +181,7 @@ public partial class MaterialPairViewModel : ObservableObject
             bool ok = false;
             if (RfidBindmodel.TagSerial == null || RfidBindmodel.TagSerial == "")
             {
-                _windowService.ShowMessage("無標籤序號");
+                _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_NoTagSerial", "無標籤序號"));
                 return;
             }
             if (ShowElectrodeSection)
@@ -179,12 +189,12 @@ public partial class MaterialPairViewModel : ObservableObject
                 // 電極配對頁面：更新 / 上傳電極資料
                 if (SelectedElectrodeItem == null)
                 {
-                    _windowService.ShowMessage("請選擇要配對的電極");
+                    _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_SelectPairElectrode", "請選擇要配對的電極"));
                     return;
                 }
                 else if (SelectedWorksheetItem == null)
                 {
-                    _windowService.ShowMessage("請選擇要配對的工單");
+                    _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_SelectPairWorkOrder", "請選擇要配對的工單"));
                     return;
                 }
 
@@ -204,7 +214,7 @@ public partial class MaterialPairViewModel : ObservableObject
                                 ok = await _electrodeService.DB_UpdateElectrodeDataAsync(dto);
                                 if (!ok)
                                 {
-                                    _windowService.ShowMessage("電極上傳失敗");
+                                    _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_ElectrodeUploadFailed", "電極上傳失敗"));
                                     return;
                                 }
                             }
@@ -224,7 +234,7 @@ public partial class MaterialPairViewModel : ObservableObject
                     ok = await _electrodeService.DB_UpdateElectrodeDataAsync(electrode);
                     if (!ok)
                     {
-                        _windowService.ShowMessage("電極上傳失敗");
+                        _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_ElectrodeUploadFailed", "電極上傳失敗"));
                         return;
                     }
                 }
@@ -235,12 +245,12 @@ public partial class MaterialPairViewModel : ObservableObject
                 // 工件配對頁面：更新 / 上傳工件資料
                 if (SelectedWorkpieceItem == null)
                 {
-                    _windowService.ShowMessage("請先選擇要配對的工件。");
+                    _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_SelectPairWorkpiece", "請先選擇要配對的工件。"));
                     return;
                 }
                 else if (SelectedWorksheetItem == null)
                 {
-                    _windowService.ShowMessage("請選擇要配對的工單");
+                    _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_SelectPairWorkOrder", "請選擇要配對的工單"));
                     return;
                 }
                     // 解除既有工件的 TagSerial 綁定
@@ -256,7 +266,7 @@ public partial class MaterialPairViewModel : ObservableObject
                         ok = await _workpieceService.UpdateWorkpieceDataAsync(existingWp);
                         if (!ok)
                         {
-                            _windowService.ShowMessage("電極上傳失敗");
+                            _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_ElectrodeUploadFailed", "電極上傳失敗"));
                             return;
                         }
                     }
@@ -272,7 +282,7 @@ public partial class MaterialPairViewModel : ObservableObject
                 ok = await _workpieceService.UpdateWorkpieceDataAsync(workpiece);
                 if (!ok)
                 {
-                    _windowService.ShowMessage("工件上傳失敗");
+                    _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_WorkpieceUploadFailed", "工件上傳失敗"));
                     return;
                 }
 
@@ -286,7 +296,7 @@ public partial class MaterialPairViewModel : ObservableObject
                         ok = await _worksheetService.UpdateWorkSheetDataAsync(existingWorksheet);
                         if (!ok)
                         {
-                            _windowService.ShowMessage("電極上傳失敗");
+                            _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_ElectrodeUploadFailed", "電極上傳失敗"));
                             return;
                         }
                     }
@@ -306,14 +316,22 @@ public partial class MaterialPairViewModel : ObservableObject
             ok = await _rfidService.InsertNewRFIDWriteLogDataAsync(RFIDWriteLog);
             if (!ok)
             {
-                _windowService.ShowMessage("RFIDWriteLog上傳失敗: ");
+                _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_RfidWriteLogFailed", "RFIDWriteLog上傳失敗: "));
                 return;
             }
-            _windowService.ShowMessage($"{CurrentTitle} OK!");
+            var successMessage = string.Format(
+                CultureInfo.CurrentCulture,
+                LanguageManager.GetString("MaterialPair_Message_PairSuccess", "{0} OK!"),
+                CurrentTitle);
+            _windowService.ShowMessage(successMessage);
         }
         catch (Exception ex)
         {
-            _windowService.ShowMessage("配對處理發生錯誤: " + ex.Message);
+            var message = string.Format(
+                CultureInfo.CurrentCulture,
+                LanguageManager.GetString("MaterialPair_Message_PairError", "配對處理發生錯誤: {0}"),
+                ex.Message);
+            _windowService.ShowMessage(message);
         }
     }
 
@@ -371,7 +389,7 @@ public partial class MaterialPairViewModel : ObservableObject
         {
             if (SelectedWorksheetItem == null)
             {
-                _windowService.ShowMessage("請選擇工單");
+                _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_SelectWorkOrder", "請選擇工單"));
                 return;
             }
 
@@ -390,7 +408,7 @@ public partial class MaterialPairViewModel : ObservableObject
             }
             else
             {
-                _windowService.ShowMessage("API 無資料");
+                _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_ApiNoData", "API 無資料"));
                 return;
             }
 
@@ -414,12 +432,12 @@ public partial class MaterialPairViewModel : ObservableObject
             }
             else
             {
-                _windowService.ShowMessage("找不到工件");
+                _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_WorkpieceNotFound", "找不到工件"));
             }
         }
         catch
         {
-            _windowService.ShowMessage("工件選擇失敗");
+            _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_SelectWorkpieceFailed", "工件選擇失敗"));
         }
     }
 
@@ -429,7 +447,7 @@ public partial class MaterialPairViewModel : ObservableObject
     {
         if (SelectedWorksheetItem == null)
         {
-            _windowService.ShowMessage("請選擇工單");
+            _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_SelectWorkOrder", "請選擇工單"));
             return;
         }
 
@@ -456,7 +474,7 @@ public partial class MaterialPairViewModel : ObservableObject
 
             if (items.Count == 0)
             {
-                _windowService.ShowMessage("此工單沒有可配對的電極");
+                _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_NoElectrodeForWorkOrder", "此工單沒有可配對的電極"));
                 return;
             }
 
@@ -481,7 +499,7 @@ public partial class MaterialPairViewModel : ObservableObject
         }
         catch
         {
-            _windowService.ShowMessage("選擇電極失敗");
+            _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_SelectElectrodeFailed", "選擇電極失敗"));
         }
     }
     // 取得尾碼：預設回傳 "02"（不帶連字號）；若你想帶 "-02" 改 return parts[^1] 前面加 "-"
@@ -519,7 +537,7 @@ public partial class MaterialPairViewModel : ObservableObject
             }
             if (items.Count == 0)
             {
-                _windowService.ShowMessage("目前沒有可選擇的工單");
+                _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_NoAvailableWorkOrders", "目前沒有可選擇的工單"));
                 return;
             }
 
@@ -532,7 +550,7 @@ public partial class MaterialPairViewModel : ObservableObject
         }
         catch 
         {
-            _windowService.ShowMessage("選擇工單失敗");
+            _windowService.ShowMessage(LanguageManager.GetString("MaterialPair_Message_SelectWorkOrderFailed", "選擇工單失敗"));
         }
         SelectedElectrodeItem = null;
         SelectedWorkpieceItem = null;

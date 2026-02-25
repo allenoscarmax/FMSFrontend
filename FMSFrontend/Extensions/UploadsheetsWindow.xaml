@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:FMSFrontend.Extensions" 
         xmlns:covs="clr-namespace:FMSFrontend.Converters" 
         mc:Ignorable="d"
-        Title="上傳工單"
+        Title="{DynamicResource UploadSheetsWindow_Title}"
         Width="1280"
         Height="824"
         ResizeMode="NoResize"
@@ -46,7 +46,7 @@
                         <ColumnDefinition Width="48" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="📋 上傳工單" VerticalAlignment="Center" Margin="20,0,0,0" Foreground="White" FontSize="24" FontWeight="Bold" />
+                    <TextBlock Text="{DynamicResource UploadSheetsWindow_Header_Title}" VerticalAlignment="Center" Margin="20,0,0,0" Foreground="White" FontSize="24" FontWeight="Bold" />
 
                     <!-- 關閉按鈕 -->
                     <Button Grid.Column="1" Content="✕" Background="Transparent" Foreground="White" BorderThickness="0" FontSize="16" FontWeight="Bold" Cursor="Hand" Click="Close_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="32" Height="32" />
@@ -66,24 +66,28 @@
                     <!-- 四控件 Grid：移到工件群組之外的上方 -->
                     <Grid Grid.Row="0" Margin="10,10,10,0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="60" />
-                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="60" />
                             <ColumnDefinition Width="150" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="機台" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="SemiBold" FontSize="18"/>
+                        <TextBlock Grid.Column="0" Margin="0,0,10,0" Text="{DynamicResource UploadSheetsWindow_Label_Machine}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="SemiBold" FontSize="18"/>
                         <ComboBox  Grid.Column="1" Height="30" FontSize="18" HorizontalAlignment="Center" ItemsSource="{Binding AvailableEdms}"   SelectedItem="{Binding SelectedEdm}" Margin="0,0,0,0" Width="150"/>
-                        <TextBlock Visibility="Hidden" Grid.Column="3" Text="座標" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8,0,0,0" FontWeight="SemiBold" FontSize="18"/>
+                        <TextBlock Visibility="Hidden" Grid.Column="3" Text="{DynamicResource UploadSheetsWindow_Label_Coordinate}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8,0,0,0" FontWeight="SemiBold" FontSize="18"/>
                         <ComboBox  Visibility="Hidden" Grid.Column="4" Height="30" FontSize="18" HorizontalAlignment="Center" ItemsSource="{Binding AvailableCoordinates}" SelectedItem="{Binding SelectedCoordinate}" Margin="0,0,0,0" Width="150" />
                     </Grid>
 
                     <!-- 工件 -->
-                    <GroupBox Header="工件" FontWeight="Bold" FontSize="14" Grid.Row="1">
+                    <GroupBox Header="{DynamicResource UploadSheetsWindow_Group_Workpiece}" FontWeight="Bold" FontSize="14" Grid.Row="1">
                         <StackPanel>
                             <DockPanel LastChildFill="True" Margin="10,10,10,0">
-                                <Button Width="120" Height="36" Cursor="Hand" Background="#EFE9DD" Foreground="Black" BorderBrush="Transparent" FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0" VerticalAlignment="Top" Content="📁 選擇資料夾" Command="{Binding SelectCsvFileCommand}" CommandParameter="Work">
+                                <Button Width="Auto" Height="36" Cursor="Hand" Background="#EFE9DD" Foreground="Black" BorderBrush="Transparent" FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0" VerticalAlignment="Top" Command="{Binding SelectCsvFileCommand}" CommandParameter="Work">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0">
+                                        <materialDesign:PackIcon Kind="FolderOpen" Width="16" Height="16" Margin="0,0,6,0" />
+                                        <TextBlock Text="{DynamicResource UploadSheetsWindow_Button_SelectFolder}" />
+                                    </StackPanel>
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="8" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
@@ -105,7 +109,7 @@
                                         </ControlTemplate>
                                     </Button.Template>
                                 </Button>
-                                <TextBlock Text="{Binding SelectedWorkCsvPath}"  d:Text="C:\OSCARMAX\PGM_Program\Workpiece\PGM_Example_Workpiece_2.csv" VerticalAlignment="Center" Margin="10,0,0,0" />
+                                <TextBlock Text="{Binding SelectedWorkCsvPath}"  d:Text="C:\OSCARMAX\PGM_Program\Workpiece\PGM_Example_Workpiece_2.csv" VerticalAlignment="Center" Margin="10,8,0,0"/>
                             </DockPanel>
 
                             <!-- 綁定到 WorkItems，並提供 6 欄 -->
@@ -115,20 +119,24 @@
                                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#FF111111" />
                                 </DataGrid.Resources>
                                 <DataGrid.Columns>
-                                    <DataGridCheckBoxColumn Header="選取" Binding="{Binding IsSelected}" Width="Auto" />
-                                    <DataGridTextColumn Header="工件名稱" Binding="{Binding WorkpieceName}" Width="2*" IsReadOnly="True" />
-                                    <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="Auto" IsReadOnly="True" />
-                                    <DataGridTextColumn Header="量測程式" Binding="{Binding MeasurementProgram}" Width="2*" IsReadOnly="True" />
+                                    <DataGridCheckBoxColumn Header="{DynamicResource UploadSheetsWindow_Column_Select}" Binding="{Binding IsSelected}" Width="Auto" />
+                                    <DataGridTextColumn Header="{DynamicResource UploadSheetsWindow_Column_WorkpieceName}" Binding="{Binding WorkpieceName}" Width="2*" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="{DynamicResource UploadSheetsWindow_Column_Status}" Binding="{Binding Status}" Width="Auto" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="{DynamicResource UploadSheetsWindow_Column_MeasurementProgram}" Binding="{Binding MeasurementProgram}" Width="2*" IsReadOnly="True" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
                     </GroupBox>
 
                     <!-- 電極 -->
-                    <GroupBox Header="電極" FontWeight="Bold" FontSize="14" Grid.Row="2">
+                    <GroupBox Header="{DynamicResource UploadSheetsWindow_Group_Electrode}" FontWeight="Bold" FontSize="14" Grid.Row="2">
                         <StackPanel>
                             <DockPanel LastChildFill="True" Margin="10,10,10,0">
-                                <Button Width="120" Height="36" Cursor="Hand" Background="#EFE9DD" Foreground="Black" BorderBrush="Transparent" FontSize="14" FontWeight="SemiBold" Padding="10,4" Content="📁 選擇資料夾" Command="{Binding SelectCsvFileCommand}" CommandParameter="Ele">
+                                <Button Width="Auto" Height="36" Cursor="Hand" Background="#EFE9DD" Foreground="Black" BorderBrush="Transparent" FontSize="14" FontWeight="SemiBold" Padding="0,4" Command="{Binding SelectCsvFileCommand}" CommandParameter="Ele">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0">
+                                        <materialDesign:PackIcon Kind="FolderOpen" Width="16" Height="16" Margin="0,0,6,0" />
+                                        <TextBlock Text="{DynamicResource UploadSheetsWindow_Button_SelectFolder}" />
+                                    </StackPanel>
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="8" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
@@ -161,15 +169,15 @@
                                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#FF111111" />
                                 </DataGrid.Resources>
                                 <DataGrid.Columns >
-                                    <DataGridCheckBoxColumn Header="選取" Binding="{Binding IsSelected}" Width="Auto" MinWidth="40"/>
-                                    <DataGridTextColumn Header="電極名稱" Binding="{Binding ElectrodeName}" Width="*" />
-                                    <DataGridTextColumn Header="壽命" Binding="{Binding LifeTimes}" Width="Auto" MinWidth="50"/>
-                                    <DataGridTextColumn Header="補償" Binding="{Binding OffsetStatus}" Width="Auto" MinWidth="50"/>
-                                    <DataGridTextColumn Header="狀態" Binding="{Binding State}" Width="Auto" MinWidth="50"/>
-                                    <DataGridTextColumn Header="加工程式" Binding="{Binding MeasurementProgram}" Width="*" />
+                                    <DataGridCheckBoxColumn Header="{DynamicResource UploadSheetsWindow_Column_Select}" Binding="{Binding IsSelected}" Width="Auto" MinWidth="40"/>
+                                    <DataGridTextColumn Header="{DynamicResource UploadSheetsWindow_Column_ElectrodeName}" Binding="{Binding ElectrodeName}" Width="*" />
+                                    <DataGridTextColumn Header="{DynamicResource UploadSheetsWindow_Column_LifeTimes}" Binding="{Binding LifeTimes}" Width="Auto" MinWidth="50"/>
+                                    <DataGridTextColumn Header="{DynamicResource UploadSheetsWindow_Column_Offset}" Binding="{Binding OffsetStatus}" Width="Auto" MinWidth="50"/>
+                                    <DataGridTextColumn Header="{DynamicResource UploadSheetsWindow_Column_Status}" Binding="{Binding State}" Width="Auto" MinWidth="50"/>
+                                    <DataGridTextColumn Header="{DynamicResource UploadSheetsWindow_Column_Program}" Binding="{Binding MeasurementProgram}" Width="*" />
 
                                     <!-- 操作欄：只保留 Share 按鈕，Command 綁到 ViewModel 的 ShareCommand，參數為該列的 ElectrodeItem -->
-                                    <DataGridTemplateColumn Header="是否共用電極" Width="100">
+                                    <DataGridTemplateColumn Header="{DynamicResource UploadSheetsWindow_Column_IsShared}" Width="100">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0">
@@ -179,13 +187,13 @@
                                                             CommandParameter="{Binding}"
                                                             Width="80" Height="28" Margin="3"
                                                             Visibility="{Binding CanShare, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                                            ToolTip="{Binding CanShare, Converter={StaticResource BoolToToolTipConverter}, FallbackValue='僅尾碼為 02 的電極可分享'}"/>
+                                                            ToolTip="{Binding CanShare, Converter={StaticResource BoolToToolTipConverter}}"/>
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    <DataGridTextColumn Header="共用電極工單" Binding="{Binding ShareWorksheet}" Width="*" />
-                                    <DataGridTextColumn Header="共用電極名稱" Binding="{Binding ShareElectrode}" Width="*" />
+                                    <DataGridTextColumn Header="{DynamicResource UploadSheetsWindow_Column_SharedWorksheet}" Binding="{Binding ShareWorksheet}" Width="*" />
+                                    <DataGridTextColumn Header="{DynamicResource UploadSheetsWindow_Column_SharedElectrode}" Binding="{Binding ShareElectrode}" Width="*" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
@@ -196,15 +204,25 @@
             <!-- 下方按鈕 -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0" Cursor="Hand">
                 <!--按鈕:清除 -->
-                <Button Content="🗑 Clear/清除" Width="180" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="Gray" Margin="0,0,10,0" Command="{Binding ClearButtonCommand}" />
+                <Button Width="180" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="Gray" Margin="0,0,10,0" Command="{Binding ClearButtonCommand}">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <materialDesign:PackIcon Kind="Delete" Width="16" Height="16" Margin="0,2,6,0" />
+                        <TextBlock Text="{DynamicResource UploadSheetsWindow_Button_Clear}" />
+                    </StackPanel>
+                </Button>
                 <!-- 按鈕:上傳 -->
-                <Button Content="⏫ Upload/上傳" Width="180" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Command="{Binding UpdataButtonCommand}" IsEnabled="{Binding IsUploading, Converter={StaticResource InverseBoolConverter}}" />
+                <Button Width="180" Height="42" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Command="{Binding UpdataButtonCommand}" IsEnabled="{Binding IsUploading, Converter={StaticResource InverseBoolConverter}}">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <materialDesign:PackIcon Kind="Upload" Width="16" Height="16" Margin="0,2,6,0" />
+                        <TextBlock Text="{DynamicResource UploadSheetsWindow_Button_Upload}" />
+                    </StackPanel>
+                </Button>
             </StackPanel>
 
             <!-- 上傳中遮罩 -->
             <Grid Background="#80000000" Visibility="{Binding IsUploading, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Row="1">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF333333">
-                    <TextBlock Text="上傳中，請稍候..." Foreground="White" FontSize="16" Margin="0,0,0,10" HorizontalAlignment="Center" />
+                    <TextBlock Text="{DynamicResource UploadSheetsWindow_Message_Uploading}" Foreground="White" FontSize="16" Margin="0,0,0,10" HorizontalAlignment="Center" />
                     <ProgressBar IsIndeterminate="True" Width="200" Height="6" />
                 </StackPanel>
             </Grid>

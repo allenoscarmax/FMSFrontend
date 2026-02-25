@@ -3,7 +3,7 @@
     <UserControl.Resources>
         <!-- 標籤（左欄）樣式 -->
         <Style x:Key="LabelText" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontSize" Value="16" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Foreground" Value="#111" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -13,7 +13,7 @@
 
         <!-- 冒號（中欄）樣式 -->
         <Style x:Key="ColonText" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontSize" Value="16" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Foreground" Value="#111" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -23,7 +23,7 @@
 
         <!-- 值（右欄）樣式 -->
         <Style x:Key="ValueText" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontSize" Value="16" />
             <Setter Property="Foreground" Value="#111" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="0,8,0,8" />
@@ -48,9 +48,9 @@
             <!-- 標題列 -->
             <Border Grid.Row="0" Background="#D3D3D3" CornerRadius="18,18,0,0" BorderBrush="#DDDDDD" BorderThickness="0,0,0,1">
                 <Grid>
-                    <TextBlock Text="工件資訊" Margin="16,0" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="#111" />
+                    <TextBlock Text="{DynamicResource WorkpieceDetailView_Title}" Margin="16,0" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="#111" />
                     <!-- 右上角鎖定膠囊 -->
-                    <ToggleButton  Name ="WorkRestriction" Command="{Binding DataContext.UpdataWorkpieceCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource LockPillButton}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0" ToolTip="鎖定/解除鎖定" IsChecked="{Binding DataContext.IsLocked, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}" />
+                    <ToggleButton  Name ="WorkRestriction" Command="{Binding DataContext.UpdataWorkpieceCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource LockPillButton}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0" ToolTip="{DynamicResource WorkpieceDetailView_Tooltip_Lock}" IsChecked="{Binding DataContext.IsLocked, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}" />
                 </Grid>
             </Border>
 
@@ -61,7 +61,7 @@
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,4,0,2" Grid.RowSpan="2">
                 <Grid Margin="10,6,16,20">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="140" />
+                        <ColumnDefinition Width="Auto" />
                         <!-- Label -->
                         <ColumnDefinition Width="18" />
                         <!-- ： -->
@@ -86,37 +86,37 @@
                     </Grid.RowDefinitions>
 
                     <!-- 1 -->
-                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="工件名稱" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="{DynamicResource WorkpieceDetailView_Label_Name}" />
                     <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource ColonText}" />
                     <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding WorkName}" />
 
                     <!-- 2 -->
-                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text="工件編號" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text="{DynamicResource WorkpieceDetailView_Label_Number}" />
                     <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource ColonText}" />
                     <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding WorkNo}" />
 
                     <!-- 3 -->
-                    <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="工件類型" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="{DynamicResource WorkpieceDetailView_Label_Type}" />
                     <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource ColonText}" />
                     <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding WorkType}" />
 
                     <!-- 4 -->
-                    <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="零件件號" />
+                    <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="{DynamicResource WorkpieceDetailView_Label_PartNo}" />
                     <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource ColonText}" />
                     <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding PartNo}" />
 
                     <!-- 5 -->
-                    <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="工單序號" />
+                    <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="{DynamicResource WorkpieceDetailView_Label_WorkOrder}" />
                     <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource ColonText}" />
                     <TextBlock Grid.Row="4" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding OrderNo}" />
 
                     <!-- 6 -->
-                    <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource LabelText}" Text="狀態" />
+                    <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource LabelText}" Text="{DynamicResource WorkpieceDetailView_Label_Status}" />
                     <TextBlock Grid.Row="5" Grid.Column="1" Style="{StaticResource ColonText}" />
                     <TextBlock Grid.Row="5" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding Status}" />
 
                     <!-- 7 -->
-                    <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource LabelText}" Text="批號" />
+                    <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource LabelText}" Text="{DynamicResource WorkpieceDetailView_Label_BatchNo}" />
                     <TextBlock Grid.Row="6" Grid.Column="1" Style="{StaticResource ColonText}" />
                     <TextBlock Grid.Row="6" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding BatchNo}" />
 
@@ -126,7 +126,7 @@
             <Border Grid.Row="3" Padding="8,1,8,10" Background="{x:Null}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
                     <WrapPanel Margin="0,0,0,8">
-                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#E58C2C" Foreground="White" Width="120" Height="40" Margin="8,0,8,0" FontSize="14" Content="工件解除預約" Command="{Binding DataContext.WorkpieceClearBookedCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Background="#E58C2C" Foreground="White" Width="Auto" Height="40" Margin="8,0,8,0" FontSize="14" Content="{DynamicResource WorkpieceDetailView_Button_ClearReservation}" Command="{Binding DataContext.WorkpieceClearBookedCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                         <!--<Button Style="{StaticResource PrimaryButtonStyle}" Background="#C0392B" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="解除異常" Command="{Binding ClearAbnormalCommand}" />
                         <Button Style="{StaticResource PrimaryButtonStyle}" Background="#9C27B0" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="修改補償值" Command="{Binding EditCompensationCommand}" />
                         <Button Style="{StaticResource PrimaryButtonStyle}" Background="#56C06C" Foreground="White" Width="100" Height="40" Margin="8,0,8,0" FontSize="16" Content="電極再使用" Command="{Binding ReuseElectrodeAltCommand}" />-->
@@ -141,3 +141,4 @@
         </Grid>
     </Border>
 </UserControl>
+

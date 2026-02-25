@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
+using FMSFrontend.Helpers;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using FMSFrontend.ViewModels;
@@ -163,11 +164,13 @@ namespace FMSFrontend.ViewModels.Windows
                         ((ElectrodeDetailViewModel)DetailViewModel).Status = "Verified";
                     }
                     if (!ok)
-                        _windowService.ShowMessage("回傳失敗");
+                        _windowService.ShowMessage(LanguageManager.GetString("ShowMaterialWindow_Message_ReturnFailed", "回傳失敗"));
                 }
                 catch (Exception ex)
                 {
-                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                    _windowService.ShowMessage(string.Format(
+                        LanguageManager.GetString("ShowMaterialWindow_Message_Exception", "例外狀況: {0}"),
+                        ex.Message));
                 }
             }
         }
@@ -204,7 +207,7 @@ namespace FMSFrontend.ViewModels.Windows
                     ok = await _workpieceService.UpdateWorkpieceDataAsync(dto);
                     if (!ok)
                     {
-                        _windowService.ShowMessage("回傳失敗");
+                        _windowService.ShowMessage(LanguageManager.GetString("ShowMaterialWindow_Message_ReturnFailed", "回傳失敗"));
                         return;
                     }
                     // 回傳更新UI
@@ -212,7 +215,9 @@ namespace FMSFrontend.ViewModels.Windows
                 }
                 catch (Exception ex)
                 {
-                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                    _windowService.ShowMessage(string.Format(
+                        LanguageManager.GetString("ShowMaterialWindow_Message_Exception", "例外狀況: {0}"),
+                        ex.Message));
                 }
             }
         }
@@ -240,11 +245,13 @@ namespace FMSFrontend.ViewModels.Windows
                     else
                         ok = await _electrodeService.DB_SetElectrodeRestrictionByTagSerialAsync(e.TagSerial, IsLocked);
                     if (!ok)
-                        _windowService.ShowMessage("回傳失敗");
+                        _windowService.ShowMessage(LanguageManager.GetString("ShowMaterialWindow_Message_ReturnFailed", "回傳失敗"));
                 }
                 catch (Exception ex)
                 {
-                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                    _windowService.ShowMessage(string.Format(
+                        LanguageManager.GetString("ShowMaterialWindow_Message_Exception", "例外狀況: {0}"),
+                        ex.Message));
                 }
             }
         }
@@ -264,11 +271,13 @@ namespace FMSFrontend.ViewModels.Windows
                     }
                     var ok = await _workpieceService.SetWorkpieceRestrictionByTagSerialAsync(w.SerialCode, IsLocked);
                     if (!ok)
-                        _windowService.ShowMessage("回傳失敗");
+                        _windowService.ShowMessage(LanguageManager.GetString("ShowMaterialWindow_Message_ReturnFailed", "回傳失敗"));
                 }
                 catch (Exception ex)
                 {
-                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                    _windowService.ShowMessage(string.Format(
+                        LanguageManager.GetString("ShowMaterialWindow_Message_Exception", "例外狀況: {0}"),
+                        ex.Message));
                 }
             }
         }
@@ -294,11 +303,13 @@ namespace FMSFrontend.ViewModels.Windows
                     int row = int.Parse(code[4]);
                     var ok = await _storageService.SetRestrictionByLocationAsync(storageName, storageNumber, region, column, row, IsDisabled);
                     if (!ok)
-                        _windowService.ShowMessage("回傳失敗");
+                        _windowService.ShowMessage(LanguageManager.GetString("ShowMaterialWindow_Message_ReturnFailed", "回傳失敗"));
                 }
                 catch (Exception ex)
                 {
-                    _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                    _windowService.ShowMessage(string.Format(
+                        LanguageManager.GetString("ShowMaterialWindow_Message_Exception", "例外狀況: {0}"),
+                        ex.Message));
                 }
             }
         }
@@ -346,20 +357,22 @@ namespace FMSFrontend.ViewModels.Windows
                         CurrentStorageState = StorageStateEnum.Vacant.ToString(); // 立刻讓按鈕 disabled
                     }
                     else
-                        _windowService.ShowMessage("回傳失敗");
+                        _windowService.ShowMessage(LanguageManager.GetString("ShowMaterialWindow_Message_ReturnFailed", "回傳失敗"));
                 }
             }
             catch (Exception ex)
             {
-                _windowService.ShowMessage($"例外狀況: {ex.Message}");
+                _windowService.ShowMessage(string.Format(
+                    LanguageManager.GetString("ShowMaterialWindow_Message_Exception", "例外狀況: {0}"),
+                    ex.Message));
             }
         }
 
         public string KindText => Kind switch
         {
-            MaterialKind.Electrode => "電極",
-            MaterialKind.Workpiece => "工件",
-            _ => "物料"
+            MaterialKind.Electrode => LanguageManager.GetString("ShowMaterialWindow_Kind_Electrode", "電極"),
+            MaterialKind.Workpiece => LanguageManager.GetString("ShowMaterialWindow_Kind_Workpiece", "工件"),
+            _ => LanguageManager.GetString("ShowMaterialWindow_Kind_Material", "物料")
         };
 
     }

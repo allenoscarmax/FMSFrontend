@@ -5,6 +5,7 @@ using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
+using FMSFrontend.Helpers;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
@@ -137,11 +138,11 @@ namespace FMSFrontend.ViewModels
                 // 取消前一次仍在執行的更新,逾時設定1秒
                 bool ok = await _plcService.ASE_OpenDoorAsync();
                 if (!ok)
-                    throw new System.Exception("API回傳失敗");
+                    throw new System.Exception(LanguageManager.GetString("MachineStation_Message_ApiReturnFailed", "API回傳失敗"));
             }
             catch
             {
-                new DialogMessageWindow("API發送失敗").ShowDialog();
+                new DialogMessageWindow(LanguageManager.GetString("MachineStation_Message_ApiSendFailed", "API發送失敗")).ShowDialog();
             }
         }
 
@@ -154,11 +155,11 @@ namespace FMSFrontend.ViewModels
                 // 取消前一次仍在執行的更新,逾時設定1秒
                 bool ok = await _plcService.ASE_OpenDoorLightAsync(open == "True");
                 if (!ok)
-                    throw new System.Exception("API回傳失敗");
+                    throw new System.Exception(LanguageManager.GetString("MachineStation_Message_ApiReturnFailed", "API回傳失敗"));
             }
             catch
             {
-                new DialogMessageWindow("API發送失敗").ShowDialog();
+                new DialogMessageWindow(LanguageManager.GetString("MachineStation_Message_ApiSendFailed", "API發送失敗")).ShowDialog();
             }
         }
 
@@ -171,11 +172,11 @@ namespace FMSFrontend.ViewModels
                 // 取消前一次仍在執行的更新,逾時設定1秒
                 bool ok = await _plcService.ASE_OpenChuckAsync(open == "True");
                 if (!ok)
-                    throw new System.Exception("API回傳失敗");
+                    throw new System.Exception(LanguageManager.GetString("MachineStation_Message_ApiReturnFailed", "API回傳失敗"));
             }
             catch
             {
-                new DialogMessageWindow("API發送失敗").ShowDialog();
+                new DialogMessageWindow(LanguageManager.GetString("MachineStation_Message_ApiSendFailed", "API發送失敗")).ShowDialog();
             }
         }
 
@@ -187,11 +188,11 @@ namespace FMSFrontend.ViewModels
                 // 取消前一次仍在執行的更新,逾時設定1秒
                 bool ok = await _plcService.ASE_Require_OutcomingPartAsync(open == "True");
                 if (!ok)
-                    throw new System.Exception("API回傳失敗");
+                    throw new System.Exception(LanguageManager.GetString("MachineStation_Message_ApiReturnFailed", "API回傳失敗"));
             }
             catch
             {
-                new DialogMessageWindow("API發送失敗").ShowDialog();
+                new DialogMessageWindow(LanguageManager.GetString("MachineStation_Message_ApiSendFailed", "API發送失敗")).ShowDialog();
             }
         }
 
@@ -204,11 +205,11 @@ namespace FMSFrontend.ViewModels
                 // 取消前一次仍在執行的更新,逾時設定1秒
                 bool ok = await _plcService.ASE_Require_IncomingPartAsync(open == "True");
                 if (!ok)
-                    throw new System.Exception("API回傳失敗");
+                    throw new System.Exception(LanguageManager.GetString("MachineStation_Message_ApiReturnFailed", "API回傳失敗"));
             }
             catch
             {
-                new DialogMessageWindow("API發送失敗").ShowDialog();
+                new DialogMessageWindow(LanguageManager.GetString("MachineStation_Message_ApiSendFailed", "API發送失敗")).ShowDialog();
             }
         }
 

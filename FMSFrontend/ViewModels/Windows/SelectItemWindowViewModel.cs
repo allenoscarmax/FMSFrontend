@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Helpers;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,7 +14,7 @@ namespace FMSFrontend.Extensions
     {
         public SelectItemType Type { get; private set; }
 
-        [ObservableProperty] private string title = "選擇物料";
+        [ObservableProperty] private string title = string.Empty;
         [ObservableProperty] private Brush titleBrush = Brushes.SlateGray;
 
         [ObservableProperty] private string searchText = "";
@@ -55,17 +56,17 @@ namespace FMSFrontend.Extensions
             switch (type)
             {
                 case SelectItemType.Electrode:
-                    Title = "選擇電極";
+                    Title = LanguageManager.GetString("SelectItemWindow_Title_Electrode", "選擇電極");
                     TitleBrush = BrushFrom("#4078B3");
                     break;
 
                 case SelectItemType.Workpiece:
-                    Title = "選擇工件";
+                    Title = LanguageManager.GetString("SelectItemWindow_Title_Workpiece", "選擇工件");
                     TitleBrush = BrushFrom("#E27B35");
                     break;
 
                 default:
-                    Title = "選擇物料";
+                    Title = LanguageManager.GetString("SelectItemWindow_Title_Default", "選擇物料");
                     TitleBrush = Brushes.SlateGray;
                     break;
             }

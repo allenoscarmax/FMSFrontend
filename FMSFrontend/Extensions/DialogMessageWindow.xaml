@@ -1,4 +1,4 @@
-﻿<Window x:Class="FMSFrontend.Extensions.DialogMessageWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="DialogMessageWindow" Width="456" Height="230" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None" Background="Transparent" AllowsTransparency="True">
+﻿<Window x:Class="FMSFrontend.Extensions.DialogMessageWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="{DynamicResource DialogMessageWindow_Title}" Width="456" Height="230" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None" Background="Transparent" AllowsTransparency="True">
     <Window.Resources>
         <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
     </Window.Resources>
@@ -29,7 +29,7 @@
                 </ScrollViewer>
 
                 <!-- 按鈕區：永遠固定在底部 -->
-                <Button Grid.Row="1" Width="120" Height="42" Margin="0,0,0,10" Content="確定" Foreground="White" Background="#2779A7" BorderBrush="{x:Null}" FontSize="16" FontWeight="SemiBold" Cursor="Hand" Click="Close_Click" IsDefault="True" HorizontalAlignment="Center">
+                <Button Grid.Row="1" Width="120" Height="42" Margin="0,0,0,10" Content="{DynamicResource DialogMessageWindow_Button_Confirm}" Foreground="White" Background="#2779A7" BorderBrush="{x:Null}" FontSize="16" FontWeight="SemiBold" Cursor="Hand" Click="Close_Click" IsDefault="True" HorizontalAlignment="Center">
                     <!-- 你的 Template 原封不動貼回來 -->
                     <Button.Template>
                         <ControlTemplate TargetType="Button">

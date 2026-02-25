@@ -3,7 +3,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:local="clr-namespace:FMSFrontend.Extensions" 
         xmlns:conv="clr-namespace:FMSFrontend.Converters" xmlns:vm="clr-namespace:FMSFrontend.ViewModels.Windows"
-        mc:Ignorable="d" Title="PeriodWindow" Width="532" Height="520" WindowStartupLocation="CenterScreen" 
+        mc:Ignorable="d" Title="{DynamicResource PeriodWindow_Title}" Width="532" Height="520" WindowStartupLocation="CenterScreen" 
         WindowStyle="None" ResizeMode="NoResize" Background="Transparent" AllowsTransparency="True">
 
     <Window.Resources>
@@ -169,7 +169,7 @@
                 <!-- 1) 模式按鈕（用 DataTrigger 比 SelectedMode 高亮） -->
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5,8,0,0" Grid.ColumnSpan="2">
                     <!-- 三顆模式按鈕 -->
-                    <Button Content="不設定" Command="{Binding SelectModeCommand}" CommandParameter="{x:Static vm:ScheduleMode.None}">
+                    <Button Content="{DynamicResource PeriodWindow_Mode_None}" Command="{Binding SelectModeCommand}" CommandParameter="{x:Static vm:ScheduleMode.None}">
                         <Button.Style>
                             <Style BasedOn="{StaticResource ModeButtonBase}" TargetType="Button">
                                 <Style.Triggers>
@@ -181,7 +181,7 @@
                             </Style>
                         </Button.Style>
                     </Button>
-                    <Button Content="每日" Command="{Binding SelectModeCommand}" CommandParameter="{x:Static vm:ScheduleMode.Daily}">
+                    <Button Content="{DynamicResource PeriodWindow_Mode_Daily}" Command="{Binding SelectModeCommand}" CommandParameter="{x:Static vm:ScheduleMode.Daily}">
                         <Button.Style>
                             <Style BasedOn="{StaticResource ModeButtonBase}" TargetType="Button">
                                 <Style.Triggers>
@@ -193,7 +193,7 @@
                             </Style>
                         </Button.Style>
                     </Button>
-                    <Button Content="每週" Command="{Binding SelectModeCommand}" CommandParameter="{x:Static vm:ScheduleMode.Weekly}">
+                    <Button Content="{DynamicResource PeriodWindow_Mode_Weekly}" Command="{Binding SelectModeCommand}" CommandParameter="{x:Static vm:ScheduleMode.Weekly}">
                         <Button.Style>
                             <Style BasedOn="{StaticResource ModeButtonBase}" TargetType="Button">
                                 <Style.Triggers>
@@ -206,7 +206,7 @@
                         </Button.Style>
                     </Button>
 
-                    <Button Content="每月" Command="{Binding SelectModeCommand}" CommandParameter="{x:Static vm:ScheduleMode.Monthly}">
+                    <Button Content="{DynamicResource PeriodWindow_Mode_Monthly}" Command="{Binding SelectModeCommand}" CommandParameter="{x:Static vm:ScheduleMode.Monthly}">
                         <Button.Style>
                             <Style BasedOn="{StaticResource ModeButtonBase}" TargetType="Button">
                                 <Style.Triggers>
@@ -248,7 +248,7 @@
                                                         </ItemsControl.ItemsPanel>
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
-                                                                <ToggleButton Style="{StaticResource ChipToggleWeek}" IsChecked="{Binding IsSelected}" Content="{Binding Display}" ToolTip="右鍵切換正/負">
+                                                                <ToggleButton Style="{StaticResource ChipToggleWeek}" IsChecked="{Binding IsSelected}" Content="{Binding Display}" ToolTip="{DynamicResource PeriodWindow_Tooltip_ToggleSign}">
                                                                     <ToggleButton.InputBindings>
                                                                         <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.ToggleNegativeCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
                                                                     </ToggleButton.InputBindings>
@@ -274,7 +274,7 @@
                                                         </ItemsControl.ItemsPanel>
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
-                                                                <ToggleButton Style="{StaticResource ChipToggleMonth}" IsChecked="{Binding IsSelected}" Content="{Binding Display}" ToolTip="右鍵切換正/負">
+                                                                <ToggleButton Style="{StaticResource ChipToggleMonth}" IsChecked="{Binding IsSelected}" Content="{Binding Display}" ToolTip="{DynamicResource PeriodWindow_Tooltip_ToggleSign}">
                                                                     <ToggleButton.InputBindings>
                                                                         <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.ToggleNegativeCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
                                                                     </ToggleButton.InputBindings>
@@ -303,7 +303,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="觸發時間" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,4" />
+                    <TextBlock Grid.Column="0" Text="{DynamicResource PeriodWindow_Label_TriggerTime}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,4" />
                     <Border Grid.Column="2" Background="#E9E9EE" CornerRadius="10" Padding="10,6">
                         <Border.Style>
                             <Style TargetType="Border">
@@ -333,8 +333,8 @@
 
                 <!-- 4) 確認/取消 -->
                 <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left" Margin="123,18,0,0">
-                    <Button Content="確認" Width="110" Height="44" Margin="16,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ConfirmCommand}" />
-                    <Button Content="取消" Width="110" Height="44" Margin="16,0" Background="#EFEFEF" Foreground="Black" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding CancelCommand}" />
+                    <Button Content="{DynamicResource PeriodWindow_Button_Confirm}" Width="110" Height="44" Margin="16,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ConfirmCommand}" />
+                    <Button Content="{DynamicResource PeriodWindow_Button_Cancel}" Width="110" Height="44" Margin="16,0" Background="#EFEFEF" Foreground="Black" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding CancelCommand}" />
                 </StackPanel>
             </Grid>
         </Grid>

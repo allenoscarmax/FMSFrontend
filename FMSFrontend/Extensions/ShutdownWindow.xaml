@@ -5,7 +5,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
         xmlns:local="clr-namespace:FMSFrontend.Extensions" 
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        mc:Ignorable="d" Title="關閉確認視窗" Height="280" Width="456" WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" 
+        mc:Ignorable="d" Title="{DynamicResource ShutdownWindow_Title}" Height="280" Width="456" WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" 
         WindowStartupLocation="CenterScreen" Background="Transparent">
 
     <Window.Effect>
@@ -21,15 +21,15 @@
 
             <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Stretch" Background="#FF555555" Height="40" VerticalAlignment="Top">
                 <materialDesign:PackIcon Kind="AlertCircle" Width="24" Height="24" VerticalAlignment="Center" Margin="16,0,8,0" Foreground="White" />
-                <TextBlock Text="關閉確認視窗" VerticalAlignment="Center" FontSize="18" FontWeight="SemiBold" Foreground="White" FontFamily="微軟正黑體" />
+                <TextBlock Text="{DynamicResource ShutdownWindow_Title}" VerticalAlignment="Center" FontSize="18" FontWeight="SemiBold" Foreground="White" FontFamily="微軟正黑體" />
             </StackPanel>
 
             <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="16,0,16,16">
                 <TextBlock HorizontalAlignment="Center" TextAlignment="Center" FontFamily="Eras Bold ITC">
-                    <Run Text="即將關閉 " FontSize="20" Foreground="#333333" />
+                    <Run Text="{DynamicResource ShutdownWindow_Text_ShutdownPrefix}" FontSize="20" Foreground="#333333" />
                     <Run Text="OSCAR" FontSize="20" FontWeight="Bold" Foreground="#333333" />
                     <Run Text="FMS" FontSize="20" FontWeight="Bold" Foreground="#E50000" />
-                    <Run Text=" 控制系統" FontSize="20" Foreground="#333333" />
+                    <Run Text="{DynamicResource ShutdownWindow_Text_ShutdownSuffix}" FontSize="20" Foreground="#333333" />
                     <LineBreak />
                     <Run d:Text="手臂正在運行中！確定要關機？" Text="{Binding ShutdownMessage}" FontSize="20" Foreground="#333333" />
                 </TextBlock>
@@ -41,7 +41,7 @@
                                 <i:InvokeCommandAction Command="{Binding ShutdownComfirmCommand}" />
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
-                        <TextBlock Text="確定" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource ShutdownWindow_Button_Confirm}" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
                     </Button>
 
                     <Button Name="CancelButton" Width="100" Height="40" Style="{StaticResource PrimaryButtonStyle}" Background="Gray">
@@ -50,7 +50,7 @@
                                 <i:InvokeCommandAction Command="{Binding CloseWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
-                        <TextBlock Text="取消" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource ShutdownWindow_Button_Cancel}" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
                     </Button>
                 </StackPanel>
             </StackPanel>

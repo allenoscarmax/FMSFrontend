@@ -35,7 +35,7 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
                 <!-- MaterialDesign PackIcon -->
                 <materialDesign:PackIcon Kind="Factory" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,4,3,0" />
-                <TextBlock Text="產線總覽" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                <TextBlock Text="{DynamicResource ProductionLines_Title}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
             
             <!-- ✅ 中間：內容容器 -->
@@ -71,7 +71,7 @@
                                 <TranslateTransform x:Name="RobotTransform" />
                             </StackPanel.RenderTransform>
 
-                            <Button Style="{StaticResource ImageButton}" Command="{Binding OpenRobotWindowCommand}" ToolTip="查看機器人資訊">
+                            <Button Style="{StaticResource ImageButton}" Command="{Binding OpenRobotWindowCommand}" ToolTip="{DynamicResource ProductionLines_Tooltip_RobotInfo}">
                                 <Image Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/Robot.png" Width="71" Height="79" Margin="0,3,0,0" />
                             </Button>
 

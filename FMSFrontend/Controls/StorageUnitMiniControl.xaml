@@ -57,22 +57,26 @@
 
             <!-- 上門控制 -->
             <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="3,0">
-                <TextBlock Text="上門" VerticalAlignment="Center" />
+                <TextBlock Text="{DynamicResource StorageUnitMiniControl_Label_UpperDoor}" 
+                           Width="45"
+                           VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" />
                 <Button Style="{StaticResource RoundedShadowButtonStyle}"
-                        Content="開"
+                        Content="{DynamicResource StorageUnitMiniControl_Button_Open}"
                         Width="48"
-                        Margin="15,0"
+                        Margin="3,0"
                         Command="{Binding UpperDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         CommandParameter="{Binding StorageId, RelativeSource={RelativeSource AncestorType=UserControl}}" />
             </StackPanel>
 
             <!-- 下門控制 -->
             <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="3,0">
-                <TextBlock Text="下門" VerticalAlignment="Center" />
+                <TextBlock Text="{DynamicResource StorageUnitMiniControl_Label_LowerDoor}" 
+                           Width="45" 
+                           VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" />
                 <Button Style="{StaticResource RoundedShadowButtonStyle}"
-                        Content="開"
+                        Content="{DynamicResource StorageUnitMiniControl_Button_Open}"
                         Width="48"
-                        Margin="15,0"
+                        Margin="3,0"
                         Command="{Binding LowerDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         CommandParameter="{Binding StorageId, RelativeSource={RelativeSource AncestorType=UserControl}}" />
             </StackPanel>

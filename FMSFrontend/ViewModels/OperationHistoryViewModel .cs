@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Features.Services;
+using FMSFrontend.Helpers;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
@@ -27,19 +28,17 @@ namespace FMSFrontend.ViewModels
         private readonly ObservableCollection<OperationRecord> _allRecords = new();
         private readonly IWindowService _windowService;
         private readonly IOperationMessageLogService _operationService;
-
         public OperationHistoryViewModel(IWindowService windowService, IOperationMessageLogService operationService)
         {
             _windowService = windowService;
+            LanguageManager.ApplySavedLanguage();
 
-            // 假資料（你可改成實際資料來源）
-            SeedSample();
-
-            // 準備 View + 篩選器
             OperationRecords = CollectionViewSource.GetDefaultView(_allRecords);
             OperationRecords.Filter = FilterByDate;
             _operationService = operationService;
-            _ = Refresh();
+
+            SelectedFilterIndex = 0;
+            OnSelectedFilterIndexChanged(0);
         }
         private async Task Refresh() //讀取記錄檔案
         {
@@ -71,34 +70,37 @@ namespace FMSFrontend.ViewModels
             }
             catch (Exception ex)
             {
-                _windowService.ShowMessage($"讀取操作紀錄失敗：{ex.Message}");
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    LanguageManager.GetString("OperationHistory_Message_LoadFailed", "讀取操作紀錄失敗：{0}"),
+                    ex.Message);
+                _windowService.ShowMessage(message);
             }
         }
         #region 日期篩選
         // ===== 日期篩選 =====
-        public ObservableCollection<string> DateFilterOptions { get; } = new() { "今天", "前7天", "自訂" };
-        [ObservableProperty] private string selectedFilterOption = "今天";
         [ObservableProperty] private DateTime? fromDate = DateTime.Today;
         [ObservableProperty] private DateTime? toDate = DateTime.Today;
         [ObservableProperty] private bool isCustomDateMode;
+        [ObservableProperty] private int selectedFilterIndex;
 
         private bool _updatingDate;
-        partial void OnSelectedFilterOptionChanged(string value)
+        partial void OnSelectedFilterIndexChanged(int value)
         {
-            IsCustomDateMode = value == "自訂";
-            ApplyDateFilter(); //設定日期
+            IsCustomDateMode = value == 2;
+            ApplyDateFilter(value);
             _ = Refresh();
         }
-        private void ApplyDateFilter()
+        private void ApplyDateFilter(int filterIndex)
         {
             _updatingDate = true;
-            switch (SelectedFilterOption)
+            switch (filterIndex)
             {
-                case "今天":
+                case 0:
                     FromDate = DateTime.Today; ToDate = DateTime.Today; break;
-                case "前7天":
+                case 1:
                     FromDate = DateTime.Today.AddDays(-6); ToDate = DateTime.Today; break;
-                case "自訂":
+                case 2:
                     FromDate = DateTime.Today.AddMonths(-1); ToDate = DateTime.Today; break;
                 default: break; // 保留使用者輸入
             }
@@ -119,7 +121,7 @@ namespace FMSFrontend.ViewModels
                 if (from > to) to = from.AddMonths(1);  // 如果開始日大於結束日，調整結束日為開始日加一個月
                 if (to > from.AddMonths(1))             // 一個月範圍限制
                 {
-                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    _windowService.ShowMessage(LanguageManager.GetString("OperationHistory_Message_DateRangeTooLong", "選擇的日期範圍不能超過一個月"));
                     to = from.AddMonths(1);
                 }
                 if (to > today) to = today; // 避免被 AddMonths 推到未來
@@ -145,7 +147,7 @@ namespace FMSFrontend.ViewModels
                 if (to < from) from = to.AddMonths(-1); // 如果結束日小於開始日，調整開始日為結束日減一個月
                 if (from < to.AddMonths(-1)) // 一個月範圍限制
                 {
-                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    _windowService.ShowMessage(LanguageManager.GetString("OperationHistory_Message_DateRangeTooLong", "選擇的日期範圍不能超過一個月"));
                     from = to.AddMonths(-1);
                 }
                 if (from > today) from = today; // 避免 from 被推到未來（理論上不會，但保險）
@@ -176,7 +178,7 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void Clear()
         {
-            bool confirm = _windowService.ShowYesNoDialog("確定要刪除?");
+            bool confirm = _windowService.ShowYesNoDialog(LanguageManager.GetString("OperationHistory_Confirm_Clear", "確定要刪除?"));
             if (!confirm) return;
             _operationService.DeleteAllOperationMessageLogDataAsync();
             _ = Refresh();
@@ -189,13 +191,13 @@ namespace FMSFrontend.ViewModels
             var rows = OperationRecords.Cast<OperationRecord>().ToList();
             if (rows.Count == 0)
             {
-                _windowService.ShowMessage("目前沒有可匯出的資料。");
+                _windowService.ShowMessage(LanguageManager.GetString("OperationHistory_Message_NoExportData", "目前沒有可匯出的資料。"));
                 return;
             }
 
             var dlg = new SaveFileDialog
             {
-                Title = "匯出操作紀錄",
+                Title = LanguageManager.GetString("OperationHistory_Dialog_ExportTitle", "匯出操作紀錄"),
                 Filter = "CSV 檔 (*.csv)|*.csv",
                 FileName = $"OperationHistory_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
             };
@@ -206,7 +208,11 @@ namespace FMSFrontend.ViewModels
                 {
                     using var sw = new StreamWriter(dlg.FileName, false, System.Text.Encoding.UTF8);
                     // 標題列
-                    sw.WriteLine("時間,使用者,訊息");
+                    var header = string.Join(",",
+                        LanguageManager.GetString("OperationHistory_Column_Time", "時間"),
+                        LanguageManager.GetString("OperationHistory_Column_User", "使用者"),
+                        LanguageManager.GetString("OperationHistory_Column_Message", "訊息"));
+                    sw.WriteLine(header);
 
                     foreach (var r in rows)
                     {
@@ -217,11 +223,15 @@ namespace FMSFrontend.ViewModels
                         sw.WriteLine($"\"{t}\",\"{u}\",\"{m}\"");
                     }
 
-                    _windowService.ShowMessage("匯出完成。");
+                    _windowService.ShowMessage(LanguageManager.GetString("OperationHistory_Message_ExportSuccess", "匯出完成。"));
                 }
                 catch (Exception ex)
                 {
-                    _windowService.ShowMessage($"匯出失敗：{ex.Message}");
+                    var message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        LanguageManager.GetString("OperationHistory_Message_ExportFailed", "匯出失敗：{0}"),
+                        ex.Message);
+                    _windowService.ShowMessage(message);
                 }
             }
         }

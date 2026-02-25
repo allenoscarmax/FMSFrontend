@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows;
 // no need: using System.Windows.Input;
 
 namespace FMSFrontend.ViewModels.Windows
@@ -79,12 +80,31 @@ namespace FMSFrontend.ViewModels.Windows
         public PeriodWindowViewModel()
         {
             // 週一~週日 (Mon=1)
-            string[] days = { "週日", "週一", "週二", "週三", "週四", "週五", "週六" };
+            string[] days =
+            {
+                GetString("Period_Day_Sun", "週日"),
+                GetString("Period_Day_Mon", "週一"),
+                GetString("Period_Day_Tue", "週二"),
+                GetString("Period_Day_Wed", "週三"),
+                GetString("Period_Day_Thu", "週四"),
+                GetString("Period_Day_Fri", "週五"),
+                GetString("Period_Day_Sat", "週六")
+            };
             for (int i = 0; i < 7; i++) WeeklyOptions.Add(new OptionItem(i + 1, days[i]));
 
             // 1~31 + last=0
             for (int i = 1; i <= 31; i++) MonthlyOptions.Add(new OptionItem(i, i.ToString()));
             MonthlyOptions.Add(new OptionItem(0, "last"));
+        }
+
+        private static string GetString(string key, string fallback)
+        {
+            if (Application.Current != null && Application.Current.TryFindResource(key) is string value)
+            {
+                return value;
+            }
+
+            return fallback;
         }
 
         // ===== RelayCommand 版本（自動產生 SelectModeCommand、ToggleNegativeCommand、ConfirmCommand、CancelCommand） =====

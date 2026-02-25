@@ -5,7 +5,7 @@
         xmlns:ext="clr-namespace:FMSFrontend.Extensions" 
         xmlns:controls="clr-namespace:FMSFrontend.Controls" 
         xmlns:views="clr-namespace:FMSFrontend.Views" 
-        mc:Ignorable="d" Title="FMS 前台" Height="1080" Width="1920" WindowStartupLocation="CenterScreen" WindowStyle="None" WindowState="Maximized">
+        mc:Ignorable="d" Title="{DynamicResource MainWindow_Title}" Height="1080" Width="1920" WindowStartupLocation="CenterScreen" WindowStyle="None" WindowState="Maximized">
     <Window.Resources>
         <Storyboard x:Key="CollapseMenuBar">
             <ext:GridLengthAnimation Storyboard.TargetName="PageMenuBarRow" Storyboard.TargetProperty="Height" From="100" To="0" Duration="0:0:0.3" />
@@ -31,7 +31,7 @@
                             <Run Text="OSCAR" />
                             <Run Text="FMS" Foreground="#FF0000" />
                         </TextBlock>
-                        <TextBlock Text=" 彈性製造系統" Foreground="White" VerticalAlignment="Center" Margin="20,0" FontSize="22" FontWeight="Bold" FontFamily="Segoe UI" />
+                        <TextBlock Text="{DynamicResource MainWindow_Subtitle}" Foreground="White" VerticalAlignment="Center" Margin="20,0" FontSize="22" FontWeight="Bold" FontFamily="Segoe UI" />
                     </StackPanel>
                     <Button Width="40" Height="40" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0" Background="Transparent" BorderBrush="{x:Null}" Cursor="Hand">
                         <i:Interaction.Triggers>
@@ -107,7 +107,7 @@
                                     <materialDesign:PackIcon Kind="AccountOutline" Width="24" Height="24" Foreground="#808080" VerticalAlignment="Center" Margin="0,0,5,0" />
                                     <Button Width="36" Height="36" Background="#A7A7A780" BorderBrush="{x:Null}" Command="{Binding LoginCommand}">
                                         <Button.ToolTip>
-                                            <TextBlock Text="點擊登入" />
+                                            <TextBlock Text="{DynamicResource MainWindow_Tooltip_Login}" />
                                         </Button.ToolTip>
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
@@ -137,7 +137,7 @@
                                     <TextBlock Text="{Binding UserSession.UserName}" VerticalAlignment="Center" FontSize="16" Foreground="White" Margin="0,0,5,0" />
                                     <Button Width="36" Height="36" Background="#A7A7A780" BorderBrush="{x:Null}" Command="{Binding LogoutCommand}">
                                         <Button.ToolTip>
-                                            <TextBlock Text="登出系統" />
+                                            <TextBlock Text="{DynamicResource MainWindow_Tooltip_Logout}" />
                                         </Button.ToolTip>
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
@@ -157,7 +157,7 @@
                     <Border Grid.Row="1" Background="{DynamicResource ControlPanelBackgroundBrush}">
                         <StackPanel>
                             <!-- 標題 -->
-                            <controls:GradientTextBlock Text="機械臂目前位置" FontSize="24" FontWeight="Bold" HorizontalAlignment="Stretch" />
+                            <controls:GradientTextBlock Text="{DynamicResource MainWindow_Section_RobotPosition}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Stretch" />
 
                             <!-- 機械臂面板 -->
                             <controls:RobotPositionPanel SelectedRobot="{Binding Robot}"  Margin="0,0,0,0" />
@@ -165,7 +165,7 @@
                     </Border>
                     <Border Grid.Row="2" Background="{DynamicResource  ControlPanelBackgroundBrush}">
                         <StackPanel >
-                            <controls:GradientTextBlock Text="控制單元" FontSize="24" FontWeight="Bold" HorizontalAlignment="Stretch" />
+                            <controls:GradientTextBlock Text="{DynamicResource MainWindow_Section_ControlUnit}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Stretch" />
                             <!-- 按鈕區 -->
                             <Border Padding="10" HorizontalAlignment="Center">
                                 <WrapPanel HorizontalAlignment="Center" ItemWidth="120" ItemHeight="120" Orientation="Horizontal">
@@ -193,7 +193,7 @@
                                         </Button.Template>
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                             <materialDesign:PackIcon Kind="Play" Width="60" Height="60" Margin="0,0,0,3" HorizontalAlignment="Center" Foreground="{Binding StartForeground}" />
-                                            <TextBlock Text="手臂啟動" FontSize="16" HorizontalAlignment="Center" Foreground="{Binding StartForeground}" />
+                                            <TextBlock Text="{DynamicResource MainWindow_Button_RobotStart}" FontSize="16" HorizontalAlignment="Center" Foreground="{Binding StartForeground}" />
                                         </StackPanel>
                                     </Button>
 
@@ -220,7 +220,7 @@
                                         </Button.Template>
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                             <materialDesign:PackIcon Kind="Pause" Width="60" Height="60" Margin="0,0,0,5" Foreground="{Binding PauseForeground}" HorizontalAlignment="Center" />
-                                            <TextBlock Text="手臂暫停" FontSize="16" HorizontalAlignment="Center" Foreground="{Binding PauseForeground}" />
+                                            <TextBlock Text="{DynamicResource MainWindow_Button_RobotPause}" FontSize="16" HorizontalAlignment="Center" Foreground="{Binding PauseForeground}" />
                                         </StackPanel>
                                     </Button>
 
@@ -247,7 +247,7 @@
                                         </Button.Template>
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                             <materialDesign:PackIcon Kind="Stop" Width="60" Height="60" Margin="0,0,0,5" Foreground="{Binding StopForeground}" HorizontalAlignment="Center" />
-                                            <TextBlock Text="手臂停止" FontSize="16" HorizontalAlignment="Center" Foreground="{Binding StopForeground}" />
+                                            <TextBlock Text="{DynamicResource MainWindow_Button_RobotStop}" FontSize="16" HorizontalAlignment="Center" Foreground="{Binding StopForeground}" />
                                         </StackPanel>
                                     </Button>
 
@@ -264,8 +264,11 @@
                                             </ControlTemplate>
                                         </Button.Template>
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                            <materialDesign:PackIcon Kind="Refresh" Width="60" Height="60" Margin="0,0,0,5" Foreground="#004E79     " HorizontalAlignment="Center" />
-                                            <TextBlock Text="手臂重置" FontSize="16" HorizontalAlignment="Center" Foreground="#004E79" />
+                                            <materialDesign:PackIcon Kind="Refresh" Width="60" Height="50" Margin="0,0,0,5" Foreground="#004E79     " HorizontalAlignment="Center" />
+                                            <TextBlock Text="{DynamicResource MainWindow_Button_RobotReset}" 
+                                                       TextWrapping="Wrap" Width="90"
+                                                       HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center" 
+                                                       Foreground="#004E79" />
                                         </StackPanel>
                                     </Button>
 
@@ -282,8 +285,11 @@
                                             </ControlTemplate>
                                         </Button.Template>
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                            <materialDesign:PackIcon Kind="CogPlay" Width="60" Height="60" Margin="0,0,0,5" Foreground="{Binding DispatchForeground}" HorizontalAlignment="Center" />
-                                            <TextBlock Text="{Binding DispatchText}" FontSize="16" HorizontalAlignment="Center" Foreground="{Binding DispatchForeground}" />
+                                            <materialDesign:PackIcon Kind="CogPlay" Width="60" Height="50" Margin="0,0,0,5" Foreground="{Binding DispatchForeground}" HorizontalAlignment="Center" />
+                                            <TextBlock Text="{Binding DispatchText}" FontSize="16" 
+                                                       TextWrapping="Wrap" Width="90"
+                                                       HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center" 
+                                                       Foreground="{Binding DispatchForeground}" />
                                         </StackPanel>
                                     </Button>
                                 </WrapPanel>
@@ -301,7 +307,7 @@
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0">
                                 <!-- 料倉控制標題 -->
-                                <controls:GradientTextBlock Text="料倉控制" FontSize="24" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="55" />
+                                <controls:GradientTextBlock Text="{DynamicResource MainWindow_Section_StorageControl}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="55" />
                                 <!-- 滑動按鈕 -->
                                 <ToggleButton x:Name="ToggleLight" Width="136" Height="40" HorizontalAlignment="Right" Margin="0,0,30,0" 
                                                 IsChecked="{Binding  MagazinePara.IsDoorLightOn, Mode=TwoWay}"
@@ -454,7 +460,7 @@
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <Border x:Name="bd" CornerRadius="4" Background="{TemplateBinding Background}">
-                                            <TextBlock x:Name="lbl" Text="{Binding SummaryMessage, FallbackValue='提示訊息'}" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" Foreground="{Binding SummaryMessageBrush}" />
+                                            <TextBlock x:Name="lbl" Text="{Binding SummaryMessage, FallbackValue={StaticResource MainWindow_Summary_Fallback}}" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" Foreground="{Binding SummaryMessageBrush}" />
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
@@ -478,13 +484,23 @@
                                         <Style TargetType="materialDesign:PackIcon">
                                             <!-- 未登入 -->
                                             <Setter Property="Foreground" Value="Gray" />
-                                            <Setter Property="ToolTip" Value="尚未登入" />
+                                            <Setter Property="ToolTip" Value="{DynamicResource MainWindow_Tooltip_NotLoggedIn}" />
 
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding UserSession.IsLoggedIn}" Value="True">
                                                     <Setter Property="Foreground" Value="White" />
-                                                    <Setter Property="ToolTip" Value="{Binding UserSession.UserName,
-                                            StringFormat=登入中：{0}}" />
+                                                    <Setter Property="ToolTip">
+                                                        <Setter.Value>
+                                                            <TextBlock Tag="{DynamicResource MainWindow_Tooltip_LoggedIn_Format}">
+                                                                <TextBlock.Text>
+                                                                    <MultiBinding StringFormat="{}{0}">
+                                                                        <Binding Path="Tag" RelativeSource="{RelativeSource Self}" />
+                                                                        <Binding Path="UserSession.UserName" />
+                                                                    </MultiBinding>
+                                                                </TextBlock.Text>
+                                                            </TextBlock>
+                                                        </Setter.Value>
+                                                    </Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -505,9 +521,15 @@
                                                     <Setter Property="ToolTip">
                                                         <Setter.Value>
                                                             <StackPanel>
-                                                                <TextBlock Text="後台連線正常" FontWeight="SemiBold" />
-                                                                <TextBlock Text="{Binding _globalProperties.LastCheckedAt,
-                                                  StringFormat=Last check: {0:HH:mm:ss}}" Opacity="0.8" />
+                                                                <TextBlock Text="{DynamicResource MainWindow_Tooltip_ServerAlive}" FontWeight="SemiBold" />
+                                                                <TextBlock Opacity="0.8" Tag="{DynamicResource MainWindow_Tooltip_LastCheck_Format}">
+                                                                    <TextBlock.Text>
+                                                                        <MultiBinding StringFormat="{}{0}">
+                                                                            <Binding Path="Tag" RelativeSource="{RelativeSource Self}" />
+                                                                            <Binding Path="_globalProperties.LastCheckedAt" />
+                                                                        </MultiBinding>
+                                                                    </TextBlock.Text>
+                                                                </TextBlock>
                                                             </StackPanel>
                                                         </Setter.Value>
                                                     </Setter>
@@ -519,9 +541,15 @@
                                                     <Setter Property="ToolTip">
                                                         <Setter.Value>
                                                             <StackPanel>
-                                                                <TextBlock Text="未啟動 / 連線中斷" FontWeight="SemiBold" />
-                                                                <TextBlock Text="{Binding _globalProperties.LastCheckedAt,
-                                                  StringFormat=Last check: {0:HH:mm:ss}}" Opacity="0.8" />
+                                                                <TextBlock Text="{DynamicResource MainWindow_Tooltip_ServerDown}" FontWeight="SemiBold" />
+                                                                <TextBlock Opacity="0.8" Tag="{DynamicResource MainWindow_Tooltip_LastCheck_Format}">
+                                                                    <TextBlock.Text>
+                                                                        <MultiBinding StringFormat="{}{0}">
+                                                                            <Binding Path="Tag" RelativeSource="{RelativeSource Self}" />
+                                                                            <Binding Path="_globalProperties.LastCheckedAt" />
+                                                                        </MultiBinding>
+                                                                    </TextBlock.Text>
+                                                                </TextBlock>
                                                             </StackPanel>
                                                         </Setter.Value>
                                                     </Setter>
@@ -556,3 +584,6 @@
         </Grid>
     </Viewbox>
 </Window>
+
+
+

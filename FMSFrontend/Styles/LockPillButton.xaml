@@ -35,7 +35,7 @@
                                 </TextBlock.Foreground>
                             </TextBlock>
                             <!-- 文字共用同一把 Foreground Brush -->
-                            <TextBlock x:Name="Text" Text="鎖定" FontSize="14" FontWeight="SemiBold" Foreground="{Binding ElementName=Icon, Path=Foreground}" />
+                            <TextBlock x:Name="Text" Text="{DynamicResource LockPillButton_Text_Lock}" FontSize="14" FontWeight="SemiBold" Foreground="{Binding ElementName=Icon, Path=Foreground}" />
                         </StackPanel>
 
                         <!-- 視覺狀態與動畫 -->
@@ -84,11 +84,11 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="Icon" Property="Text" Value="🔓" />
-                            <Setter TargetName="Text" Property="Text" Value="解鎖" />
+                            <Setter TargetName="Text" Property="Text" Value="{DynamicResource LockPillButton_Text_Unlock}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="False">
                             <Setter TargetName="Icon" Property="Text" Value="🔒" />
-                            <Setter TargetName="Text" Property="Text" Value="鎖定" />
+                            <Setter TargetName="Text" Property="Text" Value="{DynamicResource LockPillButton_Text_Lock}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

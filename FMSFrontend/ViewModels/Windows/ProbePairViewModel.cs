@@ -5,6 +5,7 @@ using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
+using FMSFrontend.Helpers;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
@@ -88,18 +89,18 @@ namespace FMSFrontend.ViewModels.Windows
                 if (List == null) return;
                 probe = List.FirstOrDefault() ?? new ProbeDto();
             }
-            catch { _windowService.ShowMessage("發生錯誤"); }
+            catch { _windowService.ShowMessage(LanguageManager.GetString("ProbePairViewModel_Message_Error", "發生錯誤")); }
             try
             {
                 probe.tagSerial = RfidBindmodel.TagSerial ?? "";
                 OK = await _ProbeService.DB_UpdateProbeDataAsync(probe);
                 if (!OK)
                 {
-                    _windowService.ShowMessage("Probe上傳失敗");
+                    _windowService.ShowMessage(LanguageManager.GetString("ProbePairViewModel_Message_ProbeUploadFailed", "Probe上傳失敗"));
                     return;
                 }
             }
-            catch { _windowService.ShowMessage("發生錯誤"); }
+            catch { _windowService.ShowMessage(LanguageManager.GetString("ProbePairViewModel_Message_Error", "發生錯誤")); }
             try
             {
                 var RFIDWriteLog = new RFIDWriteLogDto
@@ -113,13 +114,13 @@ namespace FMSFrontend.ViewModels.Windows
                 OK = await _RfidService.InsertNewRFIDWriteLogDataAsync(RFIDWriteLog);
                 if (!OK)
                 {
-                    _windowService.ShowMessage("RFIDWriteLog上傳失敗: ");
+                    _windowService.ShowMessage(LanguageManager.GetString("ProbePairViewModel_Message_RfidWriteLogFailed", "RFIDWriteLog上傳失敗: "));
                     return;
                 }
-                _windowService.ShowMessage($"Probe上傳成功!");
+                _windowService.ShowMessage(LanguageManager.GetString("ProbePairViewModel_Message_ProbeUploadSuccess", "Probe上傳成功!"));
                 CloseAction?.Invoke();
             }
-            catch { _windowService.ShowMessage("發生錯誤"); }
+            catch { _windowService.ShowMessage(LanguageManager.GetString("ProbePairViewModel_Message_Error", "發生錯誤")); }
         }
         public Action? CloseAction { get; set; }
         [RelayCommand]

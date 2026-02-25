@@ -80,7 +80,10 @@
 
                                                                 <!-- 內容 -->
                                                                 <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                                    <ComboBox Width="250" Height="40" FontSize="20" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding AvailablePermissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}" HorizontalAlignment="Left" />
+                                                                    <ComboBox Width="250" Height="40" FontSize="20" Style="{StaticResource ComboBoxStyle}" SelectedValuePath="Content" SelectedValue="{Binding SelectedPermission, Mode=TwoWay}" HorizontalAlignment="Left">
+                                                                        <ComboBoxItem Content="{DynamicResource Settings_Permission_Staff}" />
+                                                                        <ComboBoxItem Content="{DynamicResource Settings_Permission_Expert}" />
+                                                                    </ComboBox>
                                                                     <StackPanel Orientation="Horizontal" Margin="20,0,0,0" VerticalAlignment="Center" Visibility="{Binding ShowPasswordPrompt, Converter={StaticResource BooleanToVisibilityConverter}}">
                                                                         <TextBlock FontSize="20" Text="{DynamicResource Settings_Label_Password}"  VerticalAlignment="Center" FontWeight="Bold" Margin="0,0,8,0" />
                                                                         <PasswordBox x:Name="ExpertPasswordBox" FontSize="20" Width="180"  Height="40" VerticalAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" PasswordChar="*" materialDesign:TextFieldAssist.DecorationVisibility="Hidden" helpers:PasswordBoxAssistant.BindPassword="True" helpers:PasswordBoxAssistant.BoundPassword="{Binding Password, Mode=TwoWay}" />
@@ -115,7 +118,7 @@
                                                         <GroupBox Header="{DynamicResource Settings_Group_Language}" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
                                                             <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0" VerticalAlignment="Center">
                                                                 <ComboBox Width="250" Height="40" FontSize="20" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding AvailableLanguages}" SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" HorizontalAlignment="Left" />
-                                                                <Button Content="{DynamicResource Settings_Button_Confirm}" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding LanguageClickCommand}" />
+                                                                <Button Content="{DynamicResource Settings_Button_Confirm}" Width="Auto" MinWidth="120" Height="40" FontSize="20" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding LanguageClickCommand}" />
                                                             </StackPanel>
                                                         </GroupBox>
                                                     </StackPanel>
@@ -139,7 +142,7 @@
                                                                     <ColumnDefinition Width="Auto" />
                                                                     <ColumnDefinition Width="Auto" />
                                                                 </Grid.ColumnDefinitions>
-                                                                <Button Grid.Column="0" Content="{DynamicResource Settings_Button_Set}" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding SaveIPCommand}" />
+                                                                <Button Grid.Column="0" Width="120" Height="40" FontSize ="16" Content="{DynamicResource Settings_Button_Set}" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding SaveIPCommand}" />
                                                                 <Border Grid.Column="1" Background="Black" />
                                                                 <TextBlock Grid.Column="2" Text="{DynamicResource Settings_Label_IpAddress}" TextWrapping="Wrap" VerticalAlignment="Center"  FontSize="20"  FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="10,0,20,0"/>
                                                                 <TextBox Grid.Column="3"  Width="200" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontSize="20" Text="{Binding ServerIp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="Black" Padding="5,0" Style="{StaticResource UnderlineTextBoxStyle}" />
@@ -153,7 +156,7 @@
                                                                     <ColumnDefinition Width="1.5" />
                                                                     <ColumnDefinition Width="*" />
                                                                 </Grid.ColumnDefinitions>
-                                                                <Button Grid.Column="0" Content="{DynamicResource Settings_Button_Restore}" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding RestoreSystemCommand}" />
+                                                                <Button Grid.Column="0" Width="120" Height="40" Content="{DynamicResource Settings_Button_Restore}" FontSize="16" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding RestoreSystemCommand}" />
                                                                 <Border Grid.Column="1" Background="Black" />
                                                                 <TextBlock Grid.Column="2" Text="{DynamicResource Settings_Text_SystemRestoreNote}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
                                                             </Grid>
@@ -167,7 +170,7 @@
                                                                     <ColumnDefinition Width="*" />
                                                                 </Grid.ColumnDefinitions>
 
-                                                                <Button Grid.Column="0" Content="{DynamicResource Settings_Button_Backup}" Width="120" Height="40"  FontSize="20" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding BackupSystemCommand}" />
+                                                                <Button Grid.Column="0" Width="120" Height="40" Content="{DynamicResource Settings_Button_Backup}" FontSize="16" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding BackupSystemCommand}" />
 
                                                                 <Border Grid.Column="1" Background="Black" />
 
@@ -218,7 +221,7 @@
                                                                     <ColumnDefinition Width="1.5" />
                                                                     <ColumnDefinition Width="*" />
                                                                 </Grid.ColumnDefinitions>
-                                                                <Button Grid.Column="0" Content="{DynamicResource Settings_Button_MaintenanceComplete}" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding CompleteRobotMaintenanceCommand}" />
+                                                                <Button Grid.Column="0" Width="120" Height="40" Content="{DynamicResource Settings_Button_MaintenanceComplete}" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding CompleteRobotMaintenanceCommand}" />
                                                                 <Border Grid.Column="1" Background="Black" />
                                                                 <StackPanel Grid.Column="2" Orientation="Vertical" Margin="8,0,0,0">
                                                                     <TextBlock Text="{DynamicResource Settings_Text_RobotMaintenanceNote}" TextWrapping="Wrap" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" />
@@ -754,10 +757,10 @@
                                                                 <!-- 🔘 按鈕區 -->
                                                                 <StackPanel Grid.Row="2" Orientation="Horizontal">
                                                                     <!-- 左灰：設定週期 -->
-                                                                    <Button Content="{DynamicResource Settings_Button_SetPeriod}" Width="120" Height="40" Margin="0,0,12,0" FontSize="20" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding OpenSetPeriodDialogCommand}" />
+                                                                    <Button Content="{DynamicResource Settings_Button_SetPeriod}" MinWidth="120" Height="40" Margin="0,0,12,0" FontSize="20" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding OpenSetPeriodDialogCommand}" />
 
                                                                     <!-- 右藍：強制潤滑 -->
-                                                                    <Button Content="{DynamicResource Settings_Button_ForceLubrication}" Width="120" Height="40" FontSize="20" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ForceLubricationCommand}" />
+                                                                    <Button Content="{DynamicResource Settings_Button_ForceLubrication}" MinWidth="120" Height="40" FontSize="20" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ForceLubricationCommand}" />
                                                                 </StackPanel>
                                                             </Grid>
                                                         </GroupBox>

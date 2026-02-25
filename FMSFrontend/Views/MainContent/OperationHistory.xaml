@@ -60,7 +60,7 @@
             <!-- 標題列 -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
                 <materialDesign:PackIcon Kind="History" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,4,4,0" />
-                <TextBlock Text="操作紀錄" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                <TextBlock Text="{DynamicResource OperationHistory_Title}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
 
             <!-- 工具列 -->
@@ -73,7 +73,11 @@
 
                 <!-- 選擇日期 -->
                 <StackPanel  Grid.Column="0" Orientation="Horizontal">
-                    <ComboBox Width="120" Height="32" Margin="10,0,0,0" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
+                    <ComboBox Width="140" Height="32" Margin="10,0,0,0" SelectedIndex="{Binding SelectedFilterIndex}" Style="{StaticResource PillComboBoxStyle}">
+                        <ComboBoxItem Content="{DynamicResource OperationHistory_DateFilter_Today}" />
+                        <ComboBoxItem Content="{DynamicResource OperationHistory_DateFilter_Last7Days}" />
+                        <ComboBoxItem Content="{DynamicResource OperationHistory_DateFilter_Custom}" />
+                    </ComboBox>
                     <StackPanel Orientation="Horizontal" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVisibilityConverter}}">
                         <DatePicker Width="180" Height="32" Margin="8,0,0,0" SelectedDate="{Binding FromDate}"  IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}" />
                         <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
@@ -85,7 +89,7 @@
                 <Button Grid.Column="1" Margin="5,0" Command="{Binding ExportCommand}" Background="#1976D2" Foreground="White" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <materialDesign:PackIcon Kind="Export" Width="18" Height="18" Margin="0,0,6,0" />
-                        <TextBlock Text="匯出" />
+                        <TextBlock Text="{DynamicResource OperationHistory_Button_Export}" />
                     </StackPanel>
                 </Button>
 
@@ -93,7 +97,7 @@
                 <Button Grid.Column="2"  Margin="5,0" Command="{Binding ClearCommand}" Background="#444444" Foreground="White" Padding="10,0" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <materialDesign:PackIcon Kind="Delete" Width="18" Height="18" Margin="0,0,6,0" />
-                        <TextBlock Text="刪除" />
+                        <TextBlock Text="{DynamicResource OperationHistory_Button_Clear}" />
                     </StackPanel>
                 </Button>
             </Grid>
@@ -123,13 +127,13 @@
 
                     <DataGrid.Columns>
                         <!-- 時間：置中 -->
-                        <DataGridTextColumn Header="時間" Binding="{Binding TimeText}" Width="260" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                        <DataGridTextColumn Header="{DynamicResource OperationHistory_Column_Time}" Binding="{Binding TimeText}" Width="260" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
                         <!-- 使用者：置中 -->
-                        <DataGridTextColumn Header="使用者" Binding="{Binding User}" Width="180" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                        <DataGridTextColumn Header="{DynamicResource OperationHistory_Column_User}" Binding="{Binding User}" Width="180" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
                         <!-- 訊息：置左、可撐滿 -->
-                        <DataGridTextColumn Header="訊息" Binding="{Binding Message}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                        <DataGridTextColumn Header="{DynamicResource OperationHistory_Column_Message}" Binding="{Binding Message}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Border>

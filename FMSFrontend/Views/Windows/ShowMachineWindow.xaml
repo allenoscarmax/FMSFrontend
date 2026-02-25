@@ -1,4 +1,4 @@
-﻿<Window x:Class="FMSFrontend.Views.Windows.ShowMachineWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:conv="clr-namespace:FMSFrontend.Converters" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" mc:Ignorable="d" Title="設備資訊" Height="740" Width="1080" WindowStartupLocation="CenterOwner" WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+﻿<Window x:Class="FMSFrontend.Views.Windows.ShowMachineWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:conv="clr-namespace:FMSFrontend.Converters" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" mc:Ignorable="d" Title="{DynamicResource ShowMachineWindow_Title}" Height="740" Width="1080" WindowStartupLocation="CenterOwner" WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown">
 
     <Window.InputBindings>
         <!-- 按 ESC 關閉 -->
@@ -47,7 +47,7 @@
                             <ColumnDefinition Width="48" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="⚙️ 設備資訊" Foreground="White" FontSize="24" FontWeight="Bold" VerticalAlignment="Center" Margin="20,0,0,0" />
+                        <TextBlock Text="{DynamicResource ShowMachineWindow_Header_Title}" Foreground="White" FontSize="24" FontWeight="Bold" VerticalAlignment="Center" Margin="20,0,0,0" />
 
                         <!-- 改用 Command 關閉 -->
                         <Button Grid.Column="1" Content="✕" Background="Transparent" Foreground="White" BorderThickness="0" FontSize="25" FontWeight="Bold" Width="32" Height="32" Cursor="Hand" Command="{Binding CloseWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -64,17 +64,17 @@
                     <TextBlock Text="{Binding DeviceName, FallbackValue=設備名稱}" FontSize="26" FontWeight="SemiBold" FontFamily="微軟正黑體" VerticalAlignment="Center" />
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Style="{StaticResource PrimaryButtonStyle}" Content="清除機台工單" Command="{Binding ClearWorkSheetCommand}" Margin="0,0,10,0" Background="#444444" />
-                        <Button Style="{StaticResource PrimaryButtonStyle}" Content="電極強制出倉" Command="{Binding ForceElectrodeOutCommand}" Margin="0,0,10,0" />
-                        <Button Style="{StaticResource PrimaryButtonStyle}" Content="工件強制出倉" Command="{Binding ForceWorkOutCommand}" Background="#E08E45" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Content="{DynamicResource ShowMachineWindow_Button_ClearWorksheet}" Command="{Binding ClearWorkSheetCommand}" Margin="0,0,10,0" Background="#444444" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Content="{DynamicResource ShowMachineWindow_Button_ForceElectrodeOut}" Command="{Binding ForceElectrodeOutCommand}" Margin="0,0,10,0" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Content="{DynamicResource ShowMachineWindow_Button_ForceWorkOut}" Command="{Binding ForceWorkOutCommand}" Background="#E08E45" />
                     </StackPanel>
 
                     <!-- 下方分隔線 -->
-                    <Border Grid.ColumnSpan="2" Background="#D9D9D9" Height="1" VerticalAlignment="Bottom" Margin="0,12,0,0" />
+                    <Border Grid.ColumnSpan="2" Background="White" Height="1" VerticalAlignment="Bottom" Margin="0,12,0,-5" />
                 </Grid>
 
                 <!-- Row 2：主內容 -->
-                <Grid Grid.Row="2" Margin="16,8,16,16">
+                <Grid Grid.Row="2" Margin="16,0,16,16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*" />
                         <!-- 左資訊卡 -->
@@ -120,35 +120,35 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180" />
+                                    <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="設備名稱：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource ShowMachineWindow_Label_EquipmentName}" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Info.EquipmentName}" FontSize="20" Margin="0,6" />
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="設備類型：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource ShowMachineWindow_Label_EquipmentType}" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Info.EquipmentType}" FontSize="20" Margin="0,6" />
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="設備型號：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource ShowMachineWindow_Label_ModelNo}" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Info.ModelNo}" FontSize="20" Margin="0,6" />
 
-                                <TextBlock Grid.Row="3" Grid.Column="0" Text="當前程式：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource ShowMachineWindow_Label_MainProgram}" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Info.MainProgramName}" FontSize="20" Margin="0,6" />
 
-                                <TextBlock Grid.Row="4" Grid.Column="0" Text="機台狀態：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource ShowMachineWindow_Label_MachineState}" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Info.MachineState}" FontSize="20" Margin="0,6" />
 
-                                <TextBlock Grid.Row="5" Grid.Column="0" Text="狀態持續時間：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="{DynamicResource ShowMachineWindow_Label_CycleTime}" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Info.CycleTime}" FontSize="20" Margin="0,6" />
 
-                                <TextBlock Grid.Row="6" Grid.Column="0" Text="電極名稱：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="6" Grid.Column="0" Text="{DynamicResource ShowMachineWindow_Label_ElectrodeName}" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding Info.ElectrodeName}" FontSize="20" Margin="0,6" />
 
-                                <TextBlock Grid.Row="7" Grid.Column="0" Text="工單名稱：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="7" Grid.Column="0" Text="{DynamicResource ShowMachineWindow_Label_WorkSheetName}" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding Info.WorkSheetName}" FontSize="20" Margin="0,6" />
 
-                                <TextBlock Grid.Row="8" Grid.Column="0" Text="工件名稱：" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="8" Grid.Column="0" Text="{DynamicResource ShowMachineWindow_Label_WorkPieceName}" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding Info.WorkPieceName}" FontSize="20" Margin="0,6" />
 
                               <!--  
@@ -176,14 +176,18 @@
 
                             <!-- 卡片標題列（灰底） -->
                             <Border Grid.Row="0" Background="#D9D9D9" CornerRadius="8,8,0,0" Padding="16,10">
-                                <TextBlock Text="工單列表" FontSize="18" FontWeight="SemiBold" />
+                                <TextBlock Text="{DynamicResource ShowMachineWindow_Section_WorkOrders}" FontSize="18" FontWeight="SemiBold" />
                             </Border>
 
                             <!-- 篩選列 -->
                             <!-- 左側新增：日期篩選區域 -->
                             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="18,10,0,0" VerticalAlignment="Center">
                                 <DockPanel LastChildFill="True" Margin="0,0,0,0" VerticalAlignment="Center">
-                                    <ComboBox Width="120" Height="32" Margin="10,0,0,0" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
+                                    <ComboBox Width="140" Height="32" Margin="10,0,0,0" SelectedIndex="{Binding SelectedFilterIndex}" Style="{StaticResource PillComboBoxStyle}">
+                                        <ComboBoxItem Content="{DynamicResource ShowMachineWindow_DateFilter_Today}" />
+                                        <ComboBoxItem Content="{DynamicResource ShowMachineWindow_DateFilter_Last7Days}" />
+                                        <ComboBoxItem Content="{DynamicResource ShowMachineWindow_DateFilter_Custom}" />
+                                    </ComboBox>
 
                                     <!-- 僅在 IsCustomDateMode = true 時顯示 -->
                                     <StackPanel Orientation="Horizontal"
@@ -209,10 +213,10 @@
                                     <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource BlueHeader}" />
                                 </DataGrid.Resources>
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="建立時間" Binding="{Binding CreatTime}" Width="100" />
-                                    <DataGridTextColumn Header="工單編號" Binding="{Binding WorksheetNumber}" Width="*" MinWidth="100"/>
-                                    <DataGridTextColumn Header="工單狀態" Binding="{Binding WorkStatus}"      Width="*" MinWidth="100"/>
-                                    <DataGridTextColumn Header="電極名稱" Binding="{Binding ElectrodeName}"   Width="*" MinWidth="100"/>
+                                    <DataGridTextColumn Header="{DynamicResource ShowMachineWindow_Column_CreateTime}" Binding="{Binding CreatTime}" Width="100" />
+                                    <DataGridTextColumn Header="{DynamicResource ShowMachineWindow_Column_WorksheetNumber}" Binding="{Binding WorksheetNumber}" Width="*" MinWidth="100"/>
+                                    <DataGridTextColumn Header="{DynamicResource ShowMachineWindow_Column_WorkStatus}" Binding="{Binding WorkStatus}" Width="*" MinWidth="100"/>
+                                    <DataGridTextColumn Header="{DynamicResource ShowMachineWindow_Column_ElectrodeName}" Binding="{Binding ElectrodeName}" Width="*" MinWidth="100"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>

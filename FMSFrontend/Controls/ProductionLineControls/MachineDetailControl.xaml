@@ -18,8 +18,8 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Working Zone Overview" FontSize="16" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" Margin="20,0,0,0" />
-                    <Button Grid.Column="1" Width="28" Height="28" Margin="0,0,20,0" HorizontalAlignment="Right" Background="Transparent" BorderBrush="{x:Null}" ToolTip="返回總覽" Command="{Binding BackToOverviewCommand}">
+                    <TextBlock Text="{DynamicResource MachineDetailControl_Title}" FontSize="16" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" Margin="20,0,0,0" />
+                    <Button Grid.Column="1" Width="28" Height="28" Margin="0,0,20,0" HorizontalAlignment="Right" Background="Transparent" BorderBrush="{x:Null}" ToolTip="{DynamicResource MachineDetailControl_Tooltip_Back}" Command="{Binding BackToOverviewCommand}">
                         <materialDesign:PackIcon Kind="SubdirectoryArrowLeft" Width="24" Height="24" Foreground="#555" />
                         <Button.Style>
                             <Style TargetType="Button">

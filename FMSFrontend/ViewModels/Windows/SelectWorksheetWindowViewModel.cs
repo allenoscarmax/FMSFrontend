@@ -7,6 +7,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Helpers;
 
 namespace FMSFrontend.ViewModels.Windows
 {
@@ -20,7 +21,7 @@ namespace FMSFrontend.ViewModels.Windows
     public class SelectWorksheetWindowViewModel : ObservableObject
     {
         // ===== 標題列 =====
-        private string _title = "選擇工單";
+        private string _title = string.Empty;
         public string Title
         {
             get => _title;
@@ -72,6 +73,7 @@ namespace FMSFrontend.ViewModels.Windows
 
         public SelectWorksheetWindowViewModel(IEnumerable<WorksheetItem>? items = null)
         {
+            Title = LanguageManager.GetString("SelectWorksheetWindow_Title", "選擇工單");
             WorksheetItems = new ObservableCollection<WorksheetItem>();
             ItemsView = CollectionViewSource.GetDefaultView(WorksheetItems);
             ItemsView.Filter = FilterItem;

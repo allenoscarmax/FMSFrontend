@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 using FMSFrontend.Extensions;
+using FMSFrontend.Helpers;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
@@ -15,7 +16,7 @@ using FMSFrontend.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -46,6 +47,7 @@ namespace FMSFrontend.ViewModels
         RFIDBindStore rfidBindStore,
         RFIDBindLiveUpdater rfidUpdater)
         {
+            LanguageManager.ApplySavedLanguage();
             _windowService = windowService;
             _httpService = httpService;
             _plcService = plcService;
@@ -54,32 +56,32 @@ namespace FMSFrontend.ViewModels
             _rfidUpdater = rfidUpdater;
             _rfidUpdater.ReadTagFlag = true;
             _auth = auth;
+            SelectedFilterIndex = 0;
         }
 
         // ====== 日期篩選 ======
-        public ObservableCollection<string> DateFilterOptions { get; } = new() { "今天", "前7天", "自訂" };
-        [ObservableProperty] private string selectedFilterOption = "今天";
+        [ObservableProperty] private int selectedFilterIndex = -1;
         [ObservableProperty] private DateTime? fromDate = DateTime.Today;
         [ObservableProperty] private DateTime? toDate = DateTime.Today;
         [ObservableProperty] private bool isCustomDateMode;
 
         private bool _updatingDate;
-        partial void OnSelectedFilterOptionChanged(string value)
+        partial void OnSelectedFilterIndexChanged(int value)
         {
-            IsCustomDateMode = value == "自訂";
-            ApplyDateFilter(); //設定日期
+            IsCustomDateMode = value == 2;
+            ApplyDateFilter(value); //設定日期
             RefreshFetch();
         }
-        private void ApplyDateFilter()
+        private void ApplyDateFilter(int filterIndex)
         {
             _updatingDate = true;
-            switch (SelectedFilterOption)
+            switch (filterIndex)
             {
-                case "今天":
+                case 0:
                     FromDate = DateTime.Today; ToDate = DateTime.Today; break;
-                case "前7天":
+                case 1:
                     FromDate = DateTime.Today.AddDays(-6); ToDate = DateTime.Today; break;
-                case "自訂":
+                case 2:
                     FromDate = DateTime.Today.AddMonths(-1); ToDate = DateTime.Today; break;
                 default: break; // 保留使用者輸入
             }
@@ -100,7 +102,7 @@ namespace FMSFrontend.ViewModels
                 if (from > to) to = from.AddMonths(1);  // 如果開始日大於結束日，調整結束日為開始日加一個月
                 if (to > from.AddMonths(1))             // 一個月範圍限制
                 {
-                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    _windowService.ShowMessage(LanguageManager.GetString("RFIDBind_Message_DateRangeTooLong", "選擇的日期範圍不能超過一個月"));
                     to = from.AddMonths(1);
                 }
                 if (to > today) to = today; // 避免被 AddMonths 推到未來
@@ -126,7 +128,7 @@ namespace FMSFrontend.ViewModels
                 if (to < from) from = to.AddMonths(-1); // 如果結束日小於開始日，調整開始日為結束日減一個月
                 if (from < to.AddMonths(-1)) // 一個月範圍限制
                 {
-                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    _windowService.ShowMessage(LanguageManager.GetString("RFIDBind_Message_DateRangeTooLong", "選擇的日期範圍不能超過一個月"));
                     from = to.AddMonths(-1);
                 }
                 if (from > today) from = today; // 避免 from 被推到未來（理論上不會，但保險）
@@ -159,13 +161,13 @@ namespace FMSFrontend.ViewModels
                     if (rFIDBindmodel.ReadElectrodeFlag)
                         _windowService.ShowMaterialInformation(rFIDBindmodel.electrode, rFIDBindmodel.Timeline);
                     else
-                        ShowWarning("未讀取到電極資料");
+                        ShowWarning(LanguageManager.GetString("RFIDBind_Message_NoElectrodeData", "未讀取到電極資料"));
                     break;
                 case MaterialKind.Workpiece:
                     if (rFIDBindmodel.ReadWorkpieceFlag)
                         _windowService.ShowMaterialInformation(rFIDBindmodel.workpiece, rFIDBindmodel.Timeline);
                     else
-                        ShowWarning("未讀取到工件資料");
+                        ShowWarning(LanguageManager.GetString("RFIDBind_Message_NoWorkpieceData", "未讀取到工件資料"));
                     break;
                 default:
                     return;
@@ -224,7 +226,7 @@ namespace FMSFrontend.ViewModels
                 await Task.Delay(300);
                 ok = await _rfidService.RFID_to_connect(0);
 
-                _windowService.ShowMessage("OK");
+                _windowService.ShowMessage(LanguageManager.GetString("RFIDBind_Message_ResetOk", "OK"));
             }
             catch { }
         }
@@ -235,7 +237,7 @@ namespace FMSFrontend.ViewModels
             try
             {
                 // 先顯示確認對話
-                bool confirm = _windowService.ShowYesNoDialog("確定要清除所有燒錄歷史紀錄嗎？此動作無法復原。");
+                bool confirm = _windowService.ShowYesNoDialog(LanguageManager.GetString("RFIDBind_Confirm_Clear", "確定要清除所有燒錄歷史紀錄嗎？此動作無法復原。"));
                 if (!confirm) return;
 
                 bool ok = await _rfidService.DeleteAllRFIDWriteLogDataAsync();
@@ -247,12 +249,16 @@ namespace FMSFrontend.ViewModels
                 }
                 else
                 {
-                    _windowService.ShowMessage("清除失敗，請稍後重試");
+                    _windowService.ShowMessage(LanguageManager.GetString("RFIDBind_Message_ClearFailed", "清除失敗，請稍後重試"));
                 }
             }
             catch (Exception ex)
             {
-                _windowService.ShowMessage($"清除時發生錯誤：{ex.Message}");
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    LanguageManager.GetString("RFIDBind_Message_ClearError", "清除時發生錯誤：{0}"),
+                    ex.Message);
+                _windowService.ShowMessage(message);
             }
         }
 

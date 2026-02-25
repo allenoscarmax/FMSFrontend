@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-        mc:Ignorable="d" Title="新增工作人員" Height="370" Width="456" ResizeMode="NoResize" 
+        mc:Ignorable="d" Title="{DynamicResource AddWorkerWindow_Title}" Height="370" Width="456" ResizeMode="NoResize" 
         WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True" 
         Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown">
     <Window.Resources>
@@ -58,16 +58,16 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="20" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="工號：" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="28" FontWeight="Bold" />
-                    <TextBox Grid.Row="0" Grid.Column="1" Width="250" Text="{Binding WorkerNumber}" IsEnabled="{Binding IsEnable}" FontSize="28" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="使用者：" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="28" FontWeight="Bold" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Width="250" Text="{Binding WorkerName}" IsEnabled="{Binding IsEnable}" FontSize="28" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" />
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="輸入密碼：" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="28" FontWeight="Bold" />
-                    <PasswordBox x:Name="PasswordInput" Grid.Row="2" Grid.Column="1" Width="250" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="28" FontWeight="Bold" PasswordChar="*" PasswordChanged="PasswordBox_PasswordChanged" />
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="再次確認：" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="28" FontWeight="Bold" />
-                    <PasswordBox x:Name="ConfirmPasswordInput" Grid.Row="3" Grid.Column="1" Width="250"  VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="28" FontWeight="Bold" PasswordChar="*" PasswordChanged="PasswordBox_PasswordChanged" />
-                    <TextBlock Grid.Row="4" Grid.Column="0"  Grid.ColumnSpan="2"  Text="{Binding Message}" Foreground="Red" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" />
-                    <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Content="新增" Style="{StaticResource LoginButtonStyle}" Command="{Binding AddWorkerClickCommand}" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource AddWorkerWindow_Label_WorkerNumber}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" />
+                    <TextBox Grid.Row="0" Grid.Column="1" Width="250" Height="32" Text="{Binding WorkerNumber}" IsEnabled="{Binding IsEnable}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource AddWorkerWindow_Label_UserName}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Width="250" Height="32" Text="{Binding WorkerName}" IsEnabled="{Binding IsEnable}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource AddWorkerWindow_Label_Password}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" />
+                    <PasswordBox x:Name="PasswordInput" Grid.Row="2" Grid.Column="1" Width="250" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" PasswordChar="*" PasswordChanged="PasswordBox_PasswordChanged" />
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource AddWorkerWindow_Label_ConfirmPassword}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" />
+                    <PasswordBox x:Name="ConfirmPasswordInput" Grid.Row="3" Grid.Column="1" Width="250" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" PasswordChar="*" PasswordChanged="PasswordBox_PasswordChanged" />
+                    <TextBlock Grid.Row="4" Grid.Column="0"  Grid.ColumnSpan="2"  Text="{Binding Message}" Foreground="Red" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" />
+                    <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Content="{DynamicResource AddWorkerWindow_Button_Add}" Style="{StaticResource LoginButtonStyle}" Command="{Binding AddWorkerClickCommand}" />
                 </Grid>
             </Border>
         </Grid>

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -35,23 +36,23 @@ namespace FMSFrontend.ViewModels.Windows
         {
             if (string.IsNullOrWhiteSpace(Name))
             {
-                Message = "請輸入使用者名稱";
+                Message = LanguageManager.GetString("LoginViewModel_Message_EmptyUserName", "請輸入使用者名稱");
                 return;
             }
             if (string.IsNullOrWhiteSpace(Password))
             {
-                Message = "請輸入密碼";
+                Message = LanguageManager.GetString("LoginViewModel_Message_EmptyPassword", "請輸入密碼");
                 return;
             }
             var user = Workers.FirstOrDefault(w => w.Name == Name);
             if (user == null)
             {
-                Message = "使用者名稱不存在";
+                Message = LanguageManager.GetString("LoginViewModel_Message_UserNotFound", "使用者名稱不存在");
                 return;
             }
             if (user.Password != Password)
             {
-                Message = "密碼錯誤";   
+                Message = LanguageManager.GetString("LoginViewModel_Message_InvalidPassword", "密碼錯誤");
                 return;
             }
             if (Application.Current.Windows != null)
