@@ -30,7 +30,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <!-- TabControl -->
-                    <RowDefinition Height="82" />
+                    <RowDefinition Height="105" />
                     <!-- 卡片列 -->
                     <RowDefinition Height="*" />
                     <!-- 主內容 -->
@@ -51,12 +51,17 @@
 
                     <TabItem Header="{DynamicResource MachineOverview_Tab_All}" Tag="#2779AE" />
                     <TabItem Header="{DynamicResource MachineOverview_Tab_EDM}" Tag="#2779AE" />
+                    <TabItem Header="CNC" Tag="#2779AE" />
                     <TabItem Header="{DynamicResource MachineOverview_Tab_Station}" Tag="#2779AE" /> 
                  <!--   <TabItem Header="ROBOT" Tag="#4CAF50" /> -->
                 </TabControl>
 
                 <!-- 卡片列 -->
-                <ScrollViewer Grid.Row="1" Margin="0,8,0,0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                <Border Grid.Row="1"  CornerRadius ="10,10,10,10" Margin="0,5,0,5" Background="{DynamicResource PageViewBrush}" BorderThickness="0,0,0,0" BorderBrush="#555">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
+                    </Border.Effect>
+                    <ScrollViewer Grid.Row="1" Margin="0,5,0,5" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" >
                     <ItemsControl ItemsSource="{Binding FilteredMachines}" Opacity="{Binding CardOpacity}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -71,14 +76,21 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         Padding="0"
-                                        Cursor="Hand">
+                                        Cursor="Hand"
+                                        FocusVisualStyle="{x:Null}"
+                                        OverridesDefaultStyle="True">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <ContentPresenter />
+                                        </ControlTemplate>
+                                    </Button.Template>
                                     <controls:MachineOverviewCardControl Margin="6,0,6,0" />
                                 </Button>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
-
+                </Border>
                 <!-- 主內容顯示區 -->
                 <Border Grid.Row="2" CornerRadius="8">
                     <ContentControl x:Name="MachineDetailContent" Content="{Binding CurrentMachineDetailContent}" />

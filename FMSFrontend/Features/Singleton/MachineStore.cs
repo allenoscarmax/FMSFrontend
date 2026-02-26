@@ -2,6 +2,7 @@
 using FMSFrontend.Features.Dtos;                      
 using FMSFrontend.Features.Mappings;              
 using FMSFrontend.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;                              
@@ -19,13 +20,23 @@ namespace FMSFrontend.Features.Singleton
             {
                 for (int i = 0; i < dtos.Count; i++)
                 {
-                    if (Machines.Count == i) Machines.Add(new MachineModel());
+                    //if (Machines.Count == i) Machines.Add(new MachineModel());
+                    if (!Machines.Any(m => string.Equals(m.MachineName, dtos[i].machineName, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        Machines.Add(new MachineModel());
+                    }
                     dtos[i].ApplyMachinesDto(Machines[i]);
                 }
-                while (Machines.Count > dtos.Count)
+                //TMTS展覽機
+                if (!Machines.Any(m => string.Equals(m.MachineName, "CNC1", StringComparison.OrdinalIgnoreCase)))
                 {
-                    Machines.RemoveAt(Machines.Count - 1);
+                    Machines.Add(new MachineModel { MachineName = "CNC1", Type = "CNC1" });
                 }
+                if (!Machines.Any(m => string.Equals(m.MachineName, "CNC2", StringComparison.OrdinalIgnoreCase)))
+                {
+                    Machines.Add(new MachineModel { MachineName = "CNC2", Type = "CNC2" });
+                }
+
             }
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();

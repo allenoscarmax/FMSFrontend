@@ -27,7 +27,7 @@ namespace FMSFrontend.Features.Threading
 
         public bool IsElectrode = false; //標籤狀態
         public int ElectrodeTagNumber = 1; //Tag讀頭 鋐興:1 佑義:2
-        public int WorkpieceTagNumber = 1; //Tag讀頭 鋐興:1 佑義:3
+        public int WorkpieceTagNumber = 1; //Tag讀頭 鋐興:1 佑義:1
         //private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
         private bool _isUpdating; // 用於避免重入的旗標
         public RFIDBindLiveUpdater(IRfidService svc, IElectrodeService electrodeService, IWorkpieceService workpieceService, RFIDBindStore store)
@@ -121,12 +121,9 @@ namespace FMSFrontend.Features.Threading
                 }
                 return true;
             }
-            catch //(Exception ex)
+            catch
             {
                 return false;
-                // TODO: 可加 log
-                // ex.Message 或紀錄至 LogService
-                //return false;
             }
         } 
 

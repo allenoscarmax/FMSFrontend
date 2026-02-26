@@ -3,8 +3,11 @@
         <selectors:TabItemBackgroundSelector x:Key="TabtemColorSelector" />
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
-    <Border BorderBrush="#000000" BorderThickness="1" CornerRadius="0">
-        <Grid Background="{DynamicResource PageViewBrush}" Loaded="ToggleRoot_Loaded">
+    <Border BorderBrush="#000000" BorderThickness="0" CornerRadius="10,10,10,10" Margin="0,5,0,0" Background="{DynamicResource PageViewBrush}" >
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
+        </Border.Effect>
+        <Grid Background="Transparent" Loaded="ToggleRoot_Loaded">
 
             <!-- 🧩 頂層切 2 Row：標題 + 內容 -->
             <Grid.RowDefinitions>
@@ -15,7 +18,7 @@
             </Grid.RowDefinitions>
 
             <!-- 🔹 標題區塊 -->
-            <Border Grid.Row="0" Background="#CCCCCC" BorderThickness="1" BorderBrush="#000000">
+            <Border Grid.Row="0" Background="#CCCCCC" BorderThickness="0" BorderBrush="#000000" CornerRadius="10,10,0,0">
                 <!-- 修正：使用 Grid 分三欄，避免在無 Grid 的 Border 內使用 Grid.Column -->
                 <Grid Margin="12,0">
                     <Grid.ColumnDefinitions>
@@ -26,8 +29,8 @@
 
                     <!-- 左側原資訊 -->
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <materialDesign:PackIcon Kind="MonitorDashboard" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
-                        <TextBlock Text="{Binding MachineName}" d:Text="EDM1" TextDecorations="Underline" FontSize="20" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                        <materialDesign:PackIcon Kind="MonitorDashboard" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding MachineName}" d:Text="EDM1" TextDecorations="Underline" FontSize="30" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="10,0,20,0" />
                         <TextBlock Text="{DynamicResource MachineMainDetail_Label_MachineInfoSuffix}" FontSize="20" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
                     </StackPanel>
 
@@ -183,7 +186,7 @@
             </Border>
 
             <!-- 🔸 下方內容區 -->
-            <Grid Grid.Row="1" Margin="16">
+            <Grid Grid.Row="1" Margin="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="550" />
@@ -202,7 +205,10 @@
                         </Grid.ColumnDefinitions>
                         <!-- 🔹 左上圖片 -->
                         <Border Grid.Column="0" Background="White" CornerRadius="8" Margin="8" BorderBrush="LightGray" BorderThickness="1">
-                            <Image Source="{Binding MachineImagePath}" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
+                            </Border.Effect>
+                            <Image Source="{Binding MachineImagePath}" Margin="10" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />
                         </Border>
                         <!-- 機台資訊區 -->
                         <Border Grid.Column="1" Background="White" CornerRadius="10" Margin="8" SnapsToDevicePixels="True">
@@ -406,10 +412,10 @@
                                                             <DataTemplate>
                                                                 <Grid>
                                                                     <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition Width="2*" />
-                                                                        <ColumnDefinition Width="2*" />
-                                                                        <ColumnDefinition Width="2*" />
-                                                                        <ColumnDefinition Width="2*" />
+                                                                        <ColumnDefinition Width="Auto" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="Auto" />
+                                                                        <ColumnDefinition Width="*" />
                                                                     </Grid.ColumnDefinitions>
                                                                     <Grid.RowDefinitions>
                                                                         <RowDefinition Height="*" />
@@ -418,26 +424,31 @@
                                                                         <RowDefinition Height="*" />
                                                                     </Grid.RowDefinitions>
 
-                                                                    <!-- 左欄標題 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_Position}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <!-- 坐標系統 -->
+                                                                    <StackPanel  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+                                                                        <TextBlock Text="{DynamicResource MachineMainDetail_Label_Position}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                        <TextBlock Text="G54" FontSize="20" FontWeight="Bold" Margin="20,0,0,0" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    </StackPanel>
+                                                                    <!--以下座標-->
                                                                     <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_X}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_Y}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_Z}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-
-                                                                    <!-- 左欄資料 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayData.PositionID}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
                                                                     <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.ABS_X}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_Y}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.ABS_Y}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_Z}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.ABS_Z}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
 
-                                                                    <!-- 右欄標題 -->
-                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{DynamicResource MachineMainDetail_Label_C}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{DynamicResource MachineMainDetail_Label_A}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{DynamicResource MachineMainDetail_Label_B}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{DynamicResource MachineMainDetail_Label_W}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding DisplayData.ABS_W}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
 
-                                                                    <!-- 右欄資料 -->
+                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{DynamicResource MachineMainDetail_Label_C}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.ABS_C}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                           
+                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{DynamicResource MachineMainDetail_Label_A}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DisplayData.ABS_A}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                    
+                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{DynamicResource MachineMainDetail_Label_B}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding DisplayData.ABS_B}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
                                                                 </Grid>
                                                             </DataTemplate>
@@ -453,10 +464,10 @@
                                                                 <!-- 範例內容，請依照實際欄位名稱自行修改 -->
                                                                 <Grid>
                                                                     <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition Width="2*" />
-                                                                        <ColumnDefinition Width="3*" />
-                                                                        <ColumnDefinition Width="2*" />
-                                                                        <ColumnDefinition Width="3*" />
+                                                                        <ColumnDefinition Width="Auto" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="Auto" />
+                                                                        <ColumnDefinition Width="*" />
                                                                     </Grid.ColumnDefinitions>
                                                                     <Grid.RowDefinitions>
                                                                         <RowDefinition Height="*" />
@@ -466,7 +477,7 @@
                                                                     </Grid.RowDefinitions>
 
                                                                     <!-- 左欄標題 -->
-                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="• " FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_X}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_Y}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_Z}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
@@ -713,16 +724,20 @@
                                                                 <!-- 🔹 篩選區塊 -->
                                                                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5,10,0,0" VerticalAlignment="Center">
                                                                     <DockPanel LastChildFill="True" Margin="0,0,0,0" VerticalAlignment="Center">
-                                                                        <ComboBox Width="100" Height="32" Margin="10,0,0,0" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
+                                                                        <ComboBox Width="140" Height="32" Margin="3,0,0,0" SelectedIndex="{Binding SelectedFilterIndex}" Style="{StaticResource PillComboBoxStyle}">
+                                                                            <ComboBoxItem Content="{DynamicResource MachineMainDetail_DateFilter_Today}" />
+                                                                            <ComboBoxItem Content="{DynamicResource MachineMainDetail_DateFilter_Last7Days}" />
+                                                                            <ComboBoxItem Content="{DynamicResource MachineMainDetail_DateFilter_Custom}" />
+                                                                        </ComboBox>
                                                                         <!-- 僅在 IsCustomDateMode = true 時顯示 -->
                                                                         <StackPanel Orientation="Horizontal"
                                                                             Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                                            <DatePicker Width="180" Height="32" Margin="8,0,0,0"
+                                                                            <DatePicker Width="160" Height="32" Margin="8,0,0,0"
                                                                              SelectedDate="{Binding FromDate}"
                                                                              IsEnabled="{Binding IsCustomDateMode}"
                                                                              Style="{StaticResource CustomDatePickerStyle}" />
                                                                             <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
-                                                                            <DatePicker Width="180" Height="32"
+                                                                            <DatePicker Width="160" Height="32"
                                                                              SelectedDate="{Binding ToDate}"
                                                                              IsEnabled="{Binding IsCustomDateMode}"
                                                                              Style="{StaticResource CustomDatePickerStyle}" />
@@ -734,7 +749,7 @@
                                                                           ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
 
                                                                     <DataGrid.Columns>
-                                                                        <DataGridTextColumn Header="{DynamicResource MachineMainDetail_Column_CreateTime}" Binding="{Binding CreatTime}" Width="100"  MinWidth="100"/>
+                                                                        <DataGridTextColumn Header="{DynamicResource MachineMainDetail_Column_CreateTime}" Binding="{Binding CreatTime}" Width="SizeToCells"  MinWidth="100"/>
                                                                         <DataGridTextColumn Header="{DynamicResource MachineMainDetail_Column_WorksheetNumber}" Binding="{Binding WorksheetNumber}" Width="SizeToCells" MinWidth="125"/>
                                                                         <DataGridTextColumn Header="{DynamicResource MachineMainDetail_Column_WorkStatus}" Binding="{Binding WorkStatus}" Width="SizeToCells" MinWidth="125"/>
                                                                         <DataGridTextColumn Header="{DynamicResource MachineMainDetail_Column_ElectrodeName}" Binding="{Binding EoectrodeName}" Width="SizeToCells" MinWidth="125"/>

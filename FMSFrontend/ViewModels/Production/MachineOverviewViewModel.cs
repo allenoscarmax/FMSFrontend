@@ -143,13 +143,17 @@ namespace FMSFrontend.ViewModels.Production
         }
         private static MachineType MapToMachineType(string s)
         {
-            return s switch
+            if (s.IndexOf("EDM") != -1)
+                return MachineType.EDM; // default value
+            else
             {
-                "EDM" => MachineType.EDM,
-                "CNC" => MachineType.CNC,
-                "ZNC" => MachineType.ZNC,
-                _ => MachineType.EDM,
-            };
+                return s switch
+                {
+                    "CNC1" => MachineType.CNC1,
+                    "CNC2" => MachineType.CNC2,
+                    _ => MachineType.EDM,
+                };
+            }
         }
         [RelayCommand]
         private void ToggleExpand()
@@ -219,7 +223,10 @@ namespace FMSFrontend.ViewModels.Production
     {
         EDM = 0,
         ZNC = 1,
-        CNC = 2
+        CNC = 2,
+        CNC1 = 3,
+        CNC2 = 4,
+        Null = 99
     }
 
 }

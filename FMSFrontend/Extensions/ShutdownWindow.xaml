@@ -1,59 +1,140 @@
-﻿<Window x:Class="FMSFrontend.Extensions.ShutdownWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+﻿<Window x:Class="FMSFrontend.Extensions.ShutdownWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
-        xmlns:local="clr-namespace:FMSFrontend.Extensions" 
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        mc:Ignorable="d" Title="{DynamicResource ShutdownWindow_Title}" Height="280" Width="456" WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" 
-        WindowStartupLocation="CenterScreen" Background="Transparent">
+        mc:Ignorable="d"
+        Title="{DynamicResource ShutdownWindow_Title}"
+        Height="280"
+        Width="456"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent">
 
-    <Window.Effect>
-        <DropShadowEffect Color="#000000" Opacity="0.25" BlurRadius="4" Direction="270" ShadowDepth="4" />
-    </Window.Effect>
+    <!-- ✅ 外圍留空間給陰影，不然會被裁切 -->
+    <Grid Margin="12">
 
-    <Border CornerRadius="10" Background="#F8F5EE" BorderBrush="#E5E5E5" BorderThickness="1">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+        <Border CornerRadius="10"
+                Background="#F8F5EE"
+                BorderBrush="#E5E5E5"
+                BorderThickness="1"
+                SnapsToDevicePixels="True">
 
-            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Stretch" Background="#FF555555" Height="40" VerticalAlignment="Top">
-                <materialDesign:PackIcon Kind="AlertCircle" Width="24" Height="24" VerticalAlignment="Center" Margin="16,0,8,0" Foreground="White" />
-                <TextBlock Text="{DynamicResource ShutdownWindow_Title}" VerticalAlignment="Center" FontSize="18" FontWeight="SemiBold" Foreground="White" FontFamily="微軟正黑體" />
-            </StackPanel>
+            <!-- ✅ 陰影掛在 Border（不要掛 Window.Effect） -->
+            <Border.Effect>
+                <DropShadowEffect Color="#000000"
+                                  Opacity="0.25"
+                                  BlurRadius="14"
+                                  Direction="270"
+                                  ShadowDepth="6" />
+            </Border.Effect>
 
-            <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="16,0,16,16">
-                <TextBlock HorizontalAlignment="Center" TextAlignment="Center" FontFamily="Eras Bold ITC">
-                    <Run Text="{DynamicResource ShutdownWindow_Text_ShutdownPrefix}" FontSize="20" Foreground="#333333" />
-                    <Run Text="OSCAR" FontSize="20" FontWeight="Bold" Foreground="#333333" />
-                    <Run Text="FMS" FontSize="20" FontWeight="Bold" Foreground="#E50000" />
-                    <Run Text="{DynamicResource ShutdownWindow_Text_ShutdownSuffix}" FontSize="20" Foreground="#333333" />
-                    <LineBreak />
-                    <Run d:Text="手臂正在運行中！確定要關機？" Text="{Binding ShutdownMessage}" FontSize="20" Foreground="#333333" />
-                </TextBlock>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,60,0,0">
-                    <Button Name="ComfirmButton" Width="100" Height="40" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,24,0">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="Click">
-                                <i:InvokeCommandAction Command="{Binding ShutdownComfirmCommand}" />
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                        <TextBlock Text="{DynamicResource ShutdownWindow_Button_Confirm}" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Button>
+                <!-- Header -->
+                <Border Grid.Row="0"
+                        Background="#FF555555"
+                        Height="40"
+                        VerticalAlignment="Top"
+                        CornerRadius="10,10,0,0"
+                        ClipToBounds="True">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <materialDesign:PackIcon Kind="AlertCircle"
+                                                 Width="24"
+                                                 Height="24"
+                                                 VerticalAlignment="Center"
+                                                 Margin="16,0,8,0"
+                                                 Foreground="White" />
+                        <TextBlock Text="{DynamicResource ShutdownWindow_Title}"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="White"
+                                   FontFamily="微軟正黑體" />
+                    </StackPanel>
+                </Border>
 
-                    <Button Name="CancelButton" Width="100" Height="40" Style="{StaticResource PrimaryButtonStyle}" Background="Gray">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="Click">
-                                <i:InvokeCommandAction Command="{Binding CloseWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                        <TextBlock Text="{DynamicResource ShutdownWindow_Button_Cancel}" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Button>
-                </StackPanel>
-            </StackPanel>
-        </Grid>
-    </Border>
+                <!-- Content -->
+                <Grid Grid.Row="1" Margin="16,12,16,16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- ✅ 文字區：不被砍 + 太長自動縮小 -->
+                    <Viewbox Grid.Row="0"
+                             Stretch="Uniform"
+                             StretchDirection="DownOnly"
+                             MaxHeight="120"
+                             VerticalAlignment="Center"
+                             HorizontalAlignment="Center">
+                        <!-- 用 Width 鎖定排版寬度，搭配 Wrap -->
+                        <TextBlock TextAlignment="Center"
+                                   FontFamily="Eras Bold ITC"
+                                   TextWrapping="Wrap"
+                                   Width="380">
+                            <Run Text="{DynamicResource ShutdownWindow_Text_ShutdownPrefix}" FontSize="20" Foreground="#333333" />
+                            <Run Text="OSCAR" FontSize="20" FontWeight="Bold" Foreground="#333333" />
+                            <Run Text="FMS" FontSize="20" FontWeight="Bold" Foreground="#E50000" />
+                            <Run Text="{DynamicResource ShutdownWindow_Text_ShutdownSuffix}" FontSize="20" Foreground="#333333" />
+                            <LineBreak />
+                            <Run d:Text="手臂正在運行中！確定要關機？"
+                                 Text="{Binding ShutdownMessage}"
+                                 FontSize="20"
+                                 Foreground="#333333" />
+                        </TextBlock>
+                    </Viewbox>
+
+                    <!-- Buttons -->
+                    <StackPanel Grid.Row="1"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                Margin="0,16,0,0">
+                        <Button Name="ComfirmButton"
+                                Width="100"
+                                Height="40"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Margin="0,0,24,0">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <i:InvokeCommandAction Command="{Binding ShutdownComfirmCommand}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                            <TextBlock Text="{DynamicResource ShutdownWindow_Button_Confirm}"
+                                       FontSize="18"
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center" />
+                        </Button>
+
+                        <Button Name="CancelButton"
+                                Width="100"
+                                Height="40"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Background="Gray">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <i:InvokeCommandAction Command="{Binding CloseWindowCommand}"
+                                                           CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                            <TextBlock Text="{DynamicResource ShutdownWindow_Button_Cancel}"
+                                       FontSize="18"
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
 </Window>

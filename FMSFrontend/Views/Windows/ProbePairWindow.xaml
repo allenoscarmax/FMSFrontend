@@ -27,7 +27,7 @@
         </Style>
     </Window.Resources>
 
-    <Border Background="White" CornerRadius="10" Effect="{StaticResource ShadowEffect}">
+    <Border Background="White" CornerRadius="10" Effect="{StaticResource ShadowEffect}" Margin="10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="56" />

@@ -5,6 +5,7 @@
     <UserControl.Resources>
         <selectors:TabItemBackgroundSelector x:Key="TabItemColorSelector" />
         <conv:KeyDownEnterOnlyConverter x:Key="KeyDownEnterOnlyConverter" />
+        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
     </UserControl.Resources>
 
     <Border Background="{DynamicResource PageViewBrush}">
@@ -59,69 +60,79 @@
                     -->
                 </TabControl>
 
-                <!-- 工具列（可選）：搜索 + 重新整理；若不需要可整段刪除 -->
-                <Grid Grid.Row="1" Margin="0,10,0,8">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                <!-- 使用一個 Border 包住 工具列 與 主內容 -->
+                <Border Grid.Row="1" Grid.RowSpan="2" Margin="0,0,0,0" CornerRadius="0,0,10,10" Padding="16,16,16,16" Background="White" Effect="{StaticResource ShadowEffect}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
 
-                    <!-- 搜尋框：左側 icon + 下底線 TextBox（Enter 才觸發搜尋） -->
-                    <Grid Height="40" VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                        <!-- 工具列（可選）：搜索 + 重新整理；若不需要可整段刪除 -->
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
 
-                        <!-- 放大鏡圖示 -->
-                        <materialDesign:PackIcon Grid.Column="0" Kind="Magnify" Width="18" Height="18" Foreground="#6B7280" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <!-- 搜尋框：左側 icon + 下底線 TextBox（Enter 才觸發搜尋） -->
+                            <Grid Height="40" VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
 
-                        <!-- 下底線輸入框（依參考寫法） -->
-                        <Border Grid.Column="1" BorderThickness="0,0,0,1" BorderBrush="#222" VerticalAlignment="Center" Width="300" HorizontalAlignment="Left"> 
-                            <TextBox BorderThickness="0" Padding="4,4,4,6" FontSize="16" Foreground="#888" Background="Transparent" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Tag="{DynamicResource Inventory_Search_Placeholder}">
-                                <!-- 按 Enter 才呼叫 SearchCommand -->
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="KeyDown">
-                                        <i:InvokeCommandAction Command="{Binding SearchCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" EventArgsConverter="{StaticResource KeyDownEnterOnlyConverter}" />
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </TextBox>
+                                <!-- 放大鏡圖示 -->
+                                <materialDesign:PackIcon Grid.Column="0" Kind="Magnify" Width="18" Height="18" Foreground="#6B7280" VerticalAlignment="Center" Margin="0,0,8,0" />
+
+                                <!-- 下底線輸入框（依參考寫法） -->
+                                <Border Grid.Column="1" BorderThickness="0,0,0,1" BorderBrush="#222" VerticalAlignment="Center" Width="300" HorizontalAlignment="Left"> 
+                                    <TextBox BorderThickness="0" Padding="4,4,4,6" FontSize="16" Foreground="#888" Background="Transparent" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Tag="{DynamicResource Inventory_Search_Placeholder}">
+                                        <!-- 按 Enter 才呼叫 SearchCommand -->
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="KeyDown">
+                                                <i:InvokeCommandAction Command="{Binding SearchCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" EventArgsConverter="{StaticResource KeyDownEnterOnlyConverter}" />
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </TextBox>
+                                </Border>
+                            </Grid>
+
+                            <Button Grid.Column="1" Content="{DynamicResource Inventory_Button_Refresh}" Margin="12,0,0,0" Width="120" Height="40" Command="{Binding RefreshCommand}" Foreground="White" Background="#1976D2" BorderBrush="#E5E7EB" BorderThickness="1" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}"/>
+                        </Grid>
+
+                        <!-- 主內容：表格（完全依你提供的樣式與寫法） -->
+                        <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,10,0,0">
+                            <DataGrid  ColumnWidth="SizeToCells" ItemsSource="{Binding InventoryList}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="16" Style="{StaticResource ModernFlatDataGridStyle}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
+
+                                <!-- Cell / Row Style：移除邊框與多餘間距 -->
+                                <DataGrid.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="BorderThickness" Value="0" />
+                                        <Setter Property="Padding" Value="6,0,6,0" />
+                                    </Style>
+                                </DataGrid.CellStyle>
+                                <DataGrid.RowStyle>
+                                    <Style TargetType="DataGridRow">
+                                        <Setter Property="Margin" Value="0" />
+                                        <Setter Property="BorderThickness" Value="0" />
+                                        <Setter Property="SnapsToDevicePixels" Value="True" />
+                                    </Style>
+                                </DataGrid.RowStyle>
+
+                                <!-- 依畫面欄位命名替換你的 Binding -->
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="{DynamicResource Inventory_Column_SlotCode}" Binding="{Binding SlotCode}"  Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                    <DataGridTextColumn Header="{DynamicResource Inventory_Column_Status}" Binding="{Binding Status}"        Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                    <DataGridTextColumn Header="{DynamicResource Inventory_Column_Name}" Binding="{Binding Name}"          Width="Auto" MinWidth="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                    <DataGridTextColumn Header="{DynamicResource Inventory_Column_TagSerial}" Binding="{Binding TagSerial}"     Width="Auto" MinWidth="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                    <DataGridTextColumn Header="{DynamicResource Inventory_Column_Location}" Binding="{Binding Location}"  Width="Auto" MinWidth="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                    <DataGridTextColumn Header="{DynamicResource Inventory_Column_Worksheet}" Binding="{Binding Worksheet}" Width="170" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                    <DataGridTextColumn Header="{DynamicResource Inventory_Column_Program}" Binding="{Binding Program}"   Width="*" MinWidth="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
                         </Border>
                     </Grid>
-
-                    <Button Grid.Column="1" Content="{DynamicResource Inventory_Button_Refresh}" Margin="12,0,0,0" Width="120" Height="40" Command="{Binding RefreshCommand}" Foreground="White" Background="#1976D2" BorderBrush="#E5E7EB" BorderThickness="1" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}"/>
-                </Grid>
-
-                <!-- 主內容：表格（完全依你提供的樣式與寫法） -->
-                <Border Grid.Row="2" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,0">
-                    <DataGrid  ColumnWidth="SizeToCells" ItemsSource="{Binding InventoryList}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="16" Style="{StaticResource ModernFlatDataGridStyle}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
-
-                        <!-- Cell / Row Style：移除邊框與多餘間距 -->
-                        <DataGrid.CellStyle>
-                            <Style TargetType="DataGridCell">
-                                <Setter Property="BorderThickness" Value="0" />
-                                <Setter Property="Padding" Value="6,0,6,0" />
-                            </Style>
-                        </DataGrid.CellStyle>
-                        <DataGrid.RowStyle>
-                            <Style TargetType="DataGridRow">
-                                <Setter Property="Margin" Value="0" />
-                                <Setter Property="BorderThickness" Value="0" />
-                                <Setter Property="SnapsToDevicePixels" Value="True" />
-                            </Style>
-                        </DataGrid.RowStyle>
-
-                        <!-- 依畫面欄位命名替換你的 Binding -->
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="{DynamicResource Inventory_Column_SlotCode}" Binding="{Binding SlotCode}"  Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="{DynamicResource Inventory_Column_Status}" Binding="{Binding Status}"        Width="120" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="{DynamicResource Inventory_Column_Name}" Binding="{Binding Name}"          Width="Auto" MinWidth="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="{DynamicResource Inventory_Column_TagSerial}" Binding="{Binding TagSerial}"     Width="Auto" MinWidth="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="{DynamicResource Inventory_Column_Location}" Binding="{Binding Location}"  Width="Auto" MinWidth="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="{DynamicResource Inventory_Column_Worksheet}" Binding="{Binding Worksheet}" Width="170" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                            <DataGridTextColumn Header="{DynamicResource Inventory_Column_Program}" Binding="{Binding Program}"   Width="*" MinWidth="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
                 </Border>
             </Grid>
         </Grid>

@@ -53,6 +53,7 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private int selectedTabIndex = 0; // 預設選 EDM
 
 
+
         [ObservableProperty] private double cardOpacity = 1.0; // 卡片透明度（用於淡入效果）
 
         // 讓 Content 能通知 UI 更新（使用手動屬性確保型別為 UserControl）
@@ -153,7 +154,8 @@ namespace FMSFrontend.ViewModels
                 }
             }
 
-            // 2) Station 卡（單一張）
+            // 2)
+            // Station 卡（單一張）
 
             if (AllMachines.Count > 0 && StationCount != 0)
             {
@@ -162,8 +164,28 @@ namespace FMSFrontend.ViewModels
                 {
                     AllMachines.Add(new MachineOverviewCard
                     {
-                        MachineName = "工作站",
+                        MachineName = "STATION",
                         Type = MachineType.STATION,
+                        Status = Station != null ? "Running" : ""
+                    });
+                }
+                else
+                {
+                    stationCard.Status = Station != null ? "Running" : "";
+                }
+            }
+
+            //CMM卡（單一張）
+
+            if (AllMachines.Count > 0)
+            {
+                var stationCard = AllMachines.FirstOrDefault(c => c.Type == MachineType.CMM);
+                if (stationCard == null)
+                {
+                    AllMachines.Add(new MachineOverviewCard
+                    {
+                        MachineName = "CMM",
+                        Type = MachineType.CMM,
                         Status = Station != null ? "Running" : ""
                     });
                 }
@@ -210,53 +232,33 @@ namespace FMSFrontend.ViewModels
             {
                 0 => AllMachines, // ALL
                 1 => AllMachines.Where(m => m.Type == MachineType.EDM),
-                2 => AllMachines.Where(m => m.Type == MachineType.STATION),
+                2 => AllMachines.Where(m => (m.Type == MachineType.CNC || m.Type == MachineType.UH500)),
+                3 => AllMachines.Where(m => m.Type == MachineType.STATION),
                 _ => AllMachines
             };
 
             foreach (var m in source)
                 FilteredMachines.Add(m);
         }
-
-        /* 先前版本
-        int FilterCnt = 0;
-        void FilteredMachinesInit()
-        {
-            FilterCnt = 0;
-        }
-        void UpdataFilteredMachines(MachineType type)
-        {
-            for (int i = 0; i < AllMachines.Count; i++)
-            {
-                if (AllMachines[i].Type == type) //更新資料
-                {
-                    if (FilteredMachines.Count == FilterCnt)
-                    {
-                        FilteredMachines.Add(new MachineOverviewCard());
-                    }
-                    FilteredMachines[FilterCnt].MachineName = AllMachines[i].MachineName;
-                    FilteredMachines[FilterCnt].Type = AllMachines[i].Type;
-                    FilteredMachines[FilterCnt].Status = AllMachines[i].Status;
-                    FilterCnt++;
-                }
-            }
-        }
-        void RemoveFilteredMachines()
-        {
-            while (FilteredMachines.Count > FilterCnt)
-            {
-                FilteredMachines.RemoveAt(FilteredMachines.Count - 1); 
-            }
-        }*/
         private static MachineType MapToMachineType(string s)
         {
-            return s switch
+            if (s.IndexOf("EDM") != -1) return MachineType.EDM;
+            else
             {
-                "EDM" => MachineType.EDM,
-                "CNC" => MachineType.CNC,
-                "UH500" => MachineType.UH500,
-                _ => MachineType.EDM,
-            };
+                switch (s)
+                {
+                    case "CNC1":
+                        return MachineType.CNC;
+                    case "CNC2":
+                        return MachineType.UH500;
+                    case "CMM":
+                        return MachineType.CMM;
+                    case "STATION":
+                        return MachineType.STATION;
+                    default:
+                        return MachineType.NULL;
+                }
+            }
         }
 
         [RelayCommand]
@@ -365,7 +367,8 @@ namespace FMSFrontend.ViewModels
             MachineType.ZNC => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/ZNC.png",
             MachineType.ROBOT => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/Robot.png",
             MachineType.STATION => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/FMS.png",
-            MachineType.UH500 => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/UH-500_0.png",
+            MachineType.UH500 => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/UH500.png",
+            MachineType.CMM => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/CMM.png",
             _ => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/RobotOff.png"
         };
         partial void OnTypeChanged(MachineType value)
@@ -388,7 +391,9 @@ namespace FMSFrontend.ViewModels
         ZNC = 2,
         ROBOT = 3,
         STATION = 4,
-        UH500 = 5
+        UH500 = 5,
+        CMM = 6,
+        NULL = 99
     }
 }
 

@@ -118,7 +118,7 @@
                                                         <GroupBox Header="{DynamicResource Settings_Group_Language}" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
                                                             <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0" VerticalAlignment="Center">
                                                                 <ComboBox Width="250" Height="40" FontSize="20" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding AvailableLanguages}" SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" HorizontalAlignment="Left" />
-                                                                <Button Content="{DynamicResource Settings_Button_Confirm}" Width="Auto" MinWidth="120" Height="40" FontSize="20" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding LanguageClickCommand}" />
+                                                                <Button Content="{DynamicResource Settings_Button_Confirm}" Width="Auto" MinWidth="120" Height="40" FontSize="16" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding LanguageClickCommand}" />
                                                             </StackPanel>
                                                         </GroupBox>
                                                     </StackPanel>
@@ -757,10 +757,10 @@
                                                                 <!-- 🔘 按鈕區 -->
                                                                 <StackPanel Grid.Row="2" Orientation="Horizontal">
                                                                     <!-- 左灰：設定週期 -->
-                                                                    <Button Content="{DynamicResource Settings_Button_SetPeriod}" MinWidth="120" Height="40" Margin="0,0,12,0" FontSize="20" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding OpenSetPeriodDialogCommand}" />
+                                                                    <Button Content="{DynamicResource Settings_Button_SetPeriod}" MinWidth="120" Height="40" Margin="0,0,12,0" FontSize="16" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding OpenSetPeriodDialogCommand}" />
 
                                                                     <!-- 右藍：強制潤滑 -->
-                                                                    <Button Content="{DynamicResource Settings_Button_ForceLubrication}" MinWidth="120" Height="40" FontSize="20" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ForceLubricationCommand}" />
+                                                                    <Button Content="{DynamicResource Settings_Button_ForceLubrication}" MinWidth="120" Height="40" FontSize="16" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ForceLubricationCommand}" />
                                                                 </StackPanel>
                                                             </Grid>
                                                         </GroupBox>

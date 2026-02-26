@@ -144,7 +144,7 @@
             </Grid>
 
             <!-- 📦 主內容區 -->
-            <Border Grid.Row="2" Background="#FFFFFF" CornerRadius="10" Padding="15" BorderBrush="#DDD" BorderThickness="1" Margin="0,10,0,0" Grid.ColumnSpan="2">
+            <Border Grid.Row="2" Background="#FFFFFF" CornerRadius="10" Padding="15" BorderBrush="#DDD" BorderThickness="1" Margin="0,10,0,0" Grid.ColumnSpan="2"  Effect="{StaticResource ShadowEffect}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="44" />
@@ -211,7 +211,6 @@
 
                     <!-- 📑 表格 -->
                     <Border Grid.Row="2" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,10,0,0">
-
                         <DataGrid ItemsSource="{Binding rFIDBindmodel.BurnHistoryList}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="16" Style="{StaticResource ModernFlatDataGridStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
                             <DataGrid.ColumnHeaderStyle>
                                 <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource CompactDataGridColumnHeaderStyle}">

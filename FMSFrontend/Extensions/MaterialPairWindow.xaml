@@ -1,11 +1,11 @@
-﻿<Window x:Class="FMSFrontend.Extensions.MaterialPairWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" mc:Ignorable="d" Title="{DynamicResource MaterialPairWindow_Title}" Width="880" Height="616" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+﻿<Window x:Class="FMSFrontend.Extensions.MaterialPairWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" mc:Ignorable="d" Title="{DynamicResource MaterialPairWindow_Title}" Width="890" Height="626" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown">
 
     <Window.Resources>
         <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
 
-    <Border Background="White" CornerRadius="10" Effect="{StaticResource ShadowEffect}">
+    <Border Background="White" CornerRadius="10" Effect="{StaticResource ShadowEffect}" Margin="10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="56" />

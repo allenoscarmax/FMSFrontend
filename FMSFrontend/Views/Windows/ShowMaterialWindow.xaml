@@ -5,7 +5,7 @@
     </Window.Resources>
 
     <!-- 外框：白底 + 圓角 + 陰影 + 16px 內距 -->
-    <Border CornerRadius="10" Background="#FFFFFF">
+    <Border CornerRadius="10" Background="#FFFFFF" Margin="10">
         <Border.Effect>
             <DropShadowEffect BlurRadius="4" ShadowDepth="4" Opacity="0.25" />
         </Border.Effect>
@@ -59,7 +59,7 @@
                 <!-- 右：解除預約 / 禁用 -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,10,0">
 
-                    <Button  Name ="CancelBook" Command="{Binding CancelBookStorageCommand}" FontSize="14" Content="{DynamicResource ShowMaterialWindow_Button_CancelReservation}" Padding="16,8" Style="{StaticResource PrimaryButtonStyle}" Background="#E58C2C" Foreground="White" BorderBrush="#E58C2C" BorderThickness="1" FontWeight="Bold" Cursor="Hand" Margin="0,0,10,0" />
+                    <Button  Name ="CancelBook" Command="{Binding CancelBookStorageCommand}" FontSize="14" Content="{DynamicResource ShowMaterialWindow_Button_CancelReservation}" Padding="16,8" Style="{StaticResource PrimaryButtonStyle}" Background="#E58C2C" Foreground="White" BorderBrush="#E58C2C" BorderThickness="1" FontWeight="Bold" Cursor="Hand" MinWidth="120" Margin="0,0,10,0" />
 
                     <!-- 滑動開關版本：IsChecked=False=禁用(左)；IsChecked=True=啟用(右) -->
                     <ToggleButton x:Name="DisableToggle" Cursor="Hand" HorizontalAlignment="Left" ToolTip="{DynamicResource ShowMaterialWindow_Toggle_Tooltip}" Command="{Binding UpdataStorageCommand}" IsChecked="{Binding IsDisabled, Mode=TwoWay, Converter={StaticResource InverseBoolConverter}}">

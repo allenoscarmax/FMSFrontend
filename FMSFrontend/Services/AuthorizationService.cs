@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using FMSFrontend.Helpers;
 
 namespace FMSFrontend.Services
 {
@@ -52,12 +53,12 @@ namespace FMSFrontend.Services
                     _operationService.InsertNewOperationMessageLogDataAsync(payload); // 記錄操作
                     return true;
                 }
-                _windowService.ShowMessage("請先登入");
+                _windowService.ShowMessage(LanguageManager.GetString("Authorization_Message_RequireLogin", "請先登入"));
                 return false;
             }
             catch
             {
-                _windowService.ShowMessage("寫入失敗");
+                _windowService.ShowMessage(LanguageManager.GetString("Authorization_Message_WriteFailed", "寫入失敗"));
                 return false;
             }
         }
@@ -67,7 +68,7 @@ namespace FMSFrontend.Services
             {
                 return true;
             }
-            _windowService.ShowMessage("請先登入");
+            _windowService.ShowMessage(LanguageManager.GetString("Authorization_Message_RequireLogin", "請先登入"));
             return false;
 
         }
@@ -86,7 +87,7 @@ namespace FMSFrontend.Services
             }
             catch
             {
-                _windowService.ShowMessage("寫入失敗");
+                _windowService.ShowMessage(LanguageManager.GetString("Authorization_Message_WriteFailed", "寫入失敗"));
             }
         }
         void ReadMsgTable()
