@@ -25,7 +25,7 @@
             <!-- 🔠 主標題 -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
                 <materialDesign:PackIcon Kind="QrCodeScan" VerticalAlignment="Center" Width="24" Height="24" Margin="0,0,8,0" Foreground="{DynamicResource PrimaryTextBrush}" />
-                <TextBlock Text="RFID 燒錄" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                <TextBlock Text="{DynamicResource RFIDBind_Title}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
 
             <!-- 🔘 按鈕列 -->
@@ -68,7 +68,7 @@
                         <!-- 內容區 -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <materialDesign:PackIcon Kind="DatabaseImport" Width="36" Height="36" Margin="0,0,10,0" />
-                            <TextBlock Text="物料燒錄" VerticalAlignment="Center" FontSize="24" />
+                            <TextBlock Text="{DynamicResource RFIDBind_Button_Burn}" VerticalAlignment="Center" FontSize="24" />
                         </StackPanel>
                     </Button>
 
@@ -102,7 +102,7 @@
                         <!-- 內容 -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <materialDesign:PackIcon Kind="BarcodeScan" Width="36" Height="36" Margin="0,0,10,0" />
-                            <TextBlock Text="物料讀取" VerticalAlignment="Center" FontSize="24" />
+                            <TextBlock Text="{DynamicResource RFIDBind_Button_Read}" VerticalAlignment="Center" FontSize="24" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -138,13 +138,13 @@
                     <!-- 內容 -->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <materialDesign:PackIcon Kind="Refresh" Width="36" Height="36" Margin="0,0,10,0" />
-                        <TextBlock Text="Tag重新連線" VerticalAlignment="Center" FontSize="24" />
+                        <TextBlock Text="{DynamicResource RFIDBind_Button_Reconnect}" VerticalAlignment="Center" FontSize="24" />
                     </StackPanel>
                 </Button>
             </Grid>
 
             <!-- 📦 主內容區 -->
-            <Border Grid.Row="2" Background="#FFFFFF" CornerRadius="10" Padding="15" BorderBrush="#DDD" BorderThickness="1" Margin="0,10,0,0" Grid.ColumnSpan="2">
+            <Border Grid.Row="2" Background="#FFFFFF" CornerRadius="10" Padding="15" BorderBrush="#DDD" BorderThickness="1" Margin="0,10,0,0" Grid.ColumnSpan="2"  Effect="{StaticResource ShadowEffect}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="44" />
@@ -156,12 +156,16 @@
                     </Grid.RowDefinitions>
 
                     <!-- 📋 子標題 -->
-                    <TextBlock Text="燒錄歷史資訊" FontSize="22" FontWeight="Bold" Background="#FFFFFF" Foreground="Black" Margin="0,0,0,16" />
+                    <TextBlock Text="{DynamicResource RFIDBind_Subtitle_History}" FontSize="22" FontWeight="Bold" Background="#FFFFFF" Foreground="Black" Margin="0,0,0,16" />
 
                     <!-- 🔍 篩選與清除 -->
                     <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12" VerticalAlignment="Center">
                         <DockPanel LastChildFill="True" Margin="0,0,0,0" VerticalAlignment="Center">
-                            <ComboBox Width="120" Height="32" Margin="10,0,0,0" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
+                            <ComboBox Width="140" Height="32" Margin="10,0,0,0" SelectedIndex="{Binding SelectedFilterIndex}" Style="{StaticResource PillComboBoxStyle}">
+                                <ComboBoxItem Content="{DynamicResource RFIDBind_DateFilter_Today}" />
+                                <ComboBoxItem Content="{DynamicResource RFIDBind_DateFilter_Last7Days}" />
+                                <ComboBoxItem Content="{DynamicResource RFIDBind_DateFilter_Custom}" />
+                            </ComboBox>
                             <StackPanel Orientation="Horizontal" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <DatePicker Width="180" Height="32" Margin="8,0,0,0" SelectedDate="{Binding FromDate}"  IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}" />
                                 <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
@@ -201,13 +205,12 @@
                         <!-- Icon + Text -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <materialDesign:PackIcon Kind="Delete" Width="18" Height="18" Margin="0,2,06,0" />
-                            <TextBlock Text="刪除" FontSize="18" VerticalAlignment="Center" />
+                            <TextBlock Text="{DynamicResource RFIDBind_Button_Clear}" FontSize="18" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
 
                     <!-- 📑 表格 -->
                     <Border Grid.Row="2" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,10,0,0">
-
                         <DataGrid ItemsSource="{Binding rFIDBindmodel.BurnHistoryList}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="16" Style="{StaticResource ModernFlatDataGridStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
                             <DataGrid.ColumnHeaderStyle>
                                 <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource CompactDataGridColumnHeaderStyle}">
@@ -235,10 +238,10 @@
                             </DataGrid.RowStyle>
 
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="時間" Binding="{Binding Time}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                <DataGridTextColumn Header="物料種類" Binding="{Binding MaterialType}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                <DataGridTextColumn Header="工單編號" Binding="{Binding SerialNo}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                <DataGridTextColumn Header="標籤序號" Binding="{Binding TagSerial}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                <DataGridTextColumn Header="{DynamicResource RFIDBind_Column_Time}" Binding="{Binding Time}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                <DataGridTextColumn Header="{DynamicResource RFIDBind_Column_MaterialType}" Binding="{Binding MaterialType}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                <DataGridTextColumn Header="{DynamicResource RFIDBind_Column_SerialNo}" Binding="{Binding SerialNo}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                <DataGridTextColumn Header="{DynamicResource RFIDBind_Column_TagSerial}" Binding="{Binding TagSerial}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                             </DataGrid.Columns>
                         </DataGrid>
 

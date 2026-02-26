@@ -88,14 +88,14 @@
 
                     <Border Grid.Row="1" BorderThickness="1" BorderBrush="Black" CornerRadius="5" Margin="0,25,0,20">
                         <StackPanel>
-                            <TextBlock Text="目前動作" FontSize="16" Background="Transparent" Padding="0,2" TextAlignment="Left" Margin="10,0,0,0" />
+                            <TextBlock Text="{DynamicResource RobotPositionPanel_Label_CurrentAction}" FontSize="16" Background="Transparent" Padding="0,2" TextAlignment="Left" Margin="10,0,0,0" />
                             <TextBlock Text="{Binding SelectedRobot.CurrentAction, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="14" Background="#444" Foreground="White" Padding="5,2" TextAlignment="Center" d:Text="result" />
                         </StackPanel>
                     </Border>
 
                     <Border Grid.Row="2" BorderThickness="1" BorderBrush="Black" CornerRadius="5">
                         <StackPanel>
-                            <TextBlock Text="下一步" FontSize="16" Background="Transparent" Padding="5,2" TextAlignment="Left" Margin="10,0,0,0" />
+                            <TextBlock Text="{DynamicResource RobotPositionPanel_Label_NextAction}" FontSize="16" Background="Transparent" Padding="5,2" TextAlignment="Left" Margin="10,0,0,0" />
                             <TextBlock Text="{Binding SelectedRobot.NextAction, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="14" Background="#444" Foreground="White" Padding="5,2" TextAlignment="Center" d:Text="next" RenderTransformOrigin="0.495,4.568" />
                         </StackPanel>
                     </Border>

@@ -1,7 +1,8 @@
 ﻿<UserControl x:Class="FMSFrontend.Views.OperationHistory" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" mc:Ignorable="d" d:DesignHeight="912" d:DesignWidth="1532">
 
     <UserControl.Resources>
-        <!-- 白底卡片外觀 -->
+        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
+            <!-- 白底卡片外觀 -->
         <Style x:Key="CardStyle" TargetType="Border">
             <Setter Property="CornerRadius" Value="12" />
             <Setter Property="Background" Value="White" />
@@ -60,80 +61,95 @@
             <!-- 標題列 -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
                 <materialDesign:PackIcon Kind="History" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,4,4,0" />
-                <TextBlock Text="操作紀錄" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                <TextBlock Text="{DynamicResource OperationHistory_Title}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
 
-            <!-- 工具列 -->
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="130" />
-                    <ColumnDefinition Width="130" />
-                </Grid.ColumnDefinitions>
+            <!-- 將 工具列 與 主內容 用單一白色 Border 包起來，跨兩列 -->
+            <Border Grid.Row="1" Grid.RowSpan="2" CornerRadius="10" Margin="0,8,0,0"  Background="White" Padding="16"  Effect="{StaticResource ShadowEffect}" >
+               
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40" />
+                            <!-- 工具列 -->
+                            <RowDefinition Height="*" />
+                            <!-- 主內容 -->
+                        </Grid.RowDefinitions>
 
-                <!-- 選擇日期 -->
-                <StackPanel  Grid.Column="0" Orientation="Horizontal">
-                    <ComboBox Width="120" Height="32" Margin="10,0,0,0" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
-                    <StackPanel Orientation="Horizontal" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <DatePicker Width="180" Height="32" Margin="8,0,0,0" SelectedDate="{Binding FromDate}"  IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}" />
-                        <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
-                        <DatePicker Width="180" Height="32" SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}" />
-                    </StackPanel>
-                </StackPanel>
-                
-                <!-- 匯出 -->
-                <Button Grid.Column="1" Margin="5,0" Command="{Binding ExportCommand}" Background="#1976D2" Foreground="White" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <materialDesign:PackIcon Kind="Export" Width="18" Height="18" Margin="0,0,6,0" />
-                        <TextBlock Text="匯出" />
-                    </StackPanel>
-                </Button>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="130" />
+                                <ColumnDefinition Width="130" />
+                            </Grid.ColumnDefinitions>
 
-                <!-- 清除 -->
-                <Button Grid.Column="2"  Margin="5,0" Command="{Binding ClearCommand}" Background="#444444" Foreground="White" Padding="10,0" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <materialDesign:PackIcon Kind="Delete" Width="18" Height="18" Margin="0,0,6,0" />
-                        <TextBlock Text="刪除" />
-                    </StackPanel>
-                </Button>
-            </Grid>
+                            <!-- 選擇日期 -->
+                            <StackPanel  Grid.Column="0" Orientation="Horizontal">
+                                <ComboBox Width="140" Height="32" Margin="10,0,0,0" SelectedIndex="{Binding SelectedFilterIndex}" Style="{StaticResource PillComboBoxStyle}">
+                                    <ComboBoxItem Content="{DynamicResource OperationHistory_DateFilter_Today}" />
+                                    <ComboBoxItem Content="{DynamicResource OperationHistory_DateFilter_Last7Days}" />
+                                    <ComboBoxItem Content="{DynamicResource OperationHistory_DateFilter_Custom}" />
+                                </ComboBox>
+                                <StackPanel Orientation="Horizontal" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <DatePicker Width="180" Height="32" Margin="8,0,0,0" SelectedDate="{Binding FromDate}"  IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}" />
+                                    <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
+                                    <DatePicker Width="180" Height="32" SelectedDate="{Binding ToDate}" IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}" />
+                                </StackPanel>
+                            </StackPanel>
 
-            <!-- 📑 表格（改用與 RFID 相同風格） -->
-            <Border Grid.Row="2" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,20,0,0">
+                            <!-- 匯出 -->
+                            <Button Grid.Column="1" Margin="5,0" Command="{Binding ExportCommand}" Background="#1976D2" Foreground="White" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <materialDesign:PackIcon Kind="Export" Width="18" Height="18" Margin="0,0,6,0" />
+                                    <TextBlock Text="{DynamicResource OperationHistory_Button_Export}" />
+                                </StackPanel>
+                            </Button>
 
-                <DataGrid ItemsSource="{Binding OperationRecords}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="16" Style="{StaticResource ModernFlatDataGridStyle}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
+                            <!-- 清除 -->
+                            <Button Grid.Column="2"  Margin="5,0" Command="{Binding ClearCommand}" Background="#444444" Foreground="White" Padding="10,0" Cursor="Hand" Style="{StaticResource PrimaryButtonStyle}">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <materialDesign:PackIcon Kind="Delete" Width="18" Height="18" Margin="0,0,6,0" />
+                                    <TextBlock Text="{DynamicResource OperationHistory_Button_Clear}" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
 
-                    <!-- Cell 邊框/內距 -->
-                    <DataGrid.CellStyle>
-                        <Style TargetType="DataGridCell">
-                            <Setter Property="BorderThickness" Value="0" />
-                            <Setter Property="Padding" Value="6,0,6,0" />
-                            <Setter Property="SnapsToDevicePixels" Value="True" />
-                        </Style>
-                    </DataGrid.CellStyle>
+                        <!-- 📑 表格（改用與 RFID 相同風格） -->
+                        <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="Transparent" SnapsToDevicePixels="True" Margin="0,8,0,0">
 
-                    <!-- Row 邊框/間距 -->
-                    <DataGrid.RowStyle>
-                        <Style TargetType="DataGridRow">
-                            <Setter Property="Margin" Value="0" />
-                            <Setter Property="BorderThickness" Value="0" />
-                            <Setter Property="SnapsToDevicePixels" Value="True" />
-                        </Style>
-                    </DataGrid.RowStyle>
+                            <DataGrid ItemsSource="{Binding OperationRecords}" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="36" ColumnHeaderHeight="40" FontSize="16" Style="{StaticResource ModernFlatDataGridStyle}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" GridLinesVisibility="None" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" SnapsToDevicePixels="True">
 
-                    <DataGrid.Columns>
-                        <!-- 時間：置中 -->
-                        <DataGridTextColumn Header="時間" Binding="{Binding TimeText}" Width="260" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                <!-- Cell 邊框/內距 -->
+                                <DataGrid.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="BorderThickness" Value="0" />
+                                        <Setter Property="Padding" Value="6,0,6,0" />
+                                        <Setter Property="SnapsToDevicePixels" Value="True" />
+                                    </Style>
+                                </DataGrid.CellStyle>
 
-                        <!-- 使用者：置中 -->
-                        <DataGridTextColumn Header="使用者" Binding="{Binding User}" Width="180" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                <!-- Row 邊框/間距 -->
+                                <DataGrid.RowStyle>
+                                    <Style TargetType="DataGridRow">
+                                        <Setter Property="Margin" Value="0" />
+                                        <Setter Property="BorderThickness" Value="0" />
+                                        <Setter Property="SnapsToDevicePixels" Value="True" />
+                                    </Style>
+                                </DataGrid.RowStyle>
 
-                        <!-- 訊息：置左、可撐滿 -->
-                        <DataGridTextColumn Header="訊息" Binding="{Binding Message}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                                <DataGrid.Columns>
+                                    <!-- 時間：置中 -->
+                                    <DataGridTextColumn Header="{DynamicResource OperationHistory_Column_Time}" Binding="{Binding TimeText}" Width="260" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+
+                                    <!-- 使用者：置中 -->
+                                    <DataGridTextColumn Header="{DynamicResource OperationHistory_Column_User}" Binding="{Binding User}" Width="180" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+
+                                    <!-- 訊息：置左、可撐滿 -->
+                                    <DataGridTextColumn Header="{DynamicResource OperationHistory_Column_Message}" Binding="{Binding Message}" Width="*" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
+                    </Grid>
             </Border>
-
         </Grid>
     </Border>
 </UserControl>

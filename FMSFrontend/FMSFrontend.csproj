@@ -47,6 +47,7 @@
     <None Remove="Image\MachineIcons\RobotOff.png" />
     <None Remove="Image\MachineIcons\short-track.png" />
     <None Remove="Image\MachineIcons\ZNC.png" />
+    <None Remove="Language\Strings.csv" />
   </ItemGroup>
 
   <ItemGroup>
@@ -133,6 +134,12 @@
 
   <ItemGroup>
     <Folder Include="AttachedProperties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Language\Strings.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 

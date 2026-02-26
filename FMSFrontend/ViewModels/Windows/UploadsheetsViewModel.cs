@@ -4,12 +4,14 @@ using FMSFrontend.Extensions;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Dtos.Apps;
 using FMSFrontend.Features.Services;
+using FMSFrontend.Helpers;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -20,6 +22,7 @@ namespace FMSFrontend.ViewModels.Windows
     public partial class UploadSheetViewModel : ObservableObject
     {
         private readonly IWindowService _windowService;
+        private readonly string _defaultCsvPath;
 
         private readonly IElectrodeService  _electrodeService;
         private readonly IWorkpieceService  _workpieceService;
@@ -41,6 +44,9 @@ namespace FMSFrontend.ViewModels.Windows
             _workpieceService = workpieceService;
             _worksheetAppService = worksheetAppService;
             _machinesService = machinesService;
+            _defaultCsvPath = LanguageManager.GetString("UploadSheet_DefaultCsvPath", "尚未選擇檔案");
+            SelectedWorkCsvPath = _defaultCsvPath;
+            SelectedEleCsvPath = _defaultCsvPath;
             _ = GetMachineList();
         }
         private async Task GetMachineList()
@@ -70,10 +76,10 @@ namespace FMSFrontend.ViewModels.Windows
             }
         }
         [ObservableProperty]
-        private string selectedWorkCsvPath = "尚未選擇檔案";
+        private string selectedWorkCsvPath = string.Empty;
 
         [ObservableProperty]
-        private string selectedEleCsvPath = "尚未選擇檔案";
+        private string selectedEleCsvPath = string.Empty;
 
         [ObservableProperty]
         private bool showElectrodeSection;
@@ -111,8 +117,10 @@ namespace FMSFrontend.ViewModels.Windows
         {
             var dialog = new OpenFileDialog
             {
-                Filter = "CSV 檔案 (*.csv)|*.csv",
-                Title = type == "Work"? "選擇檔案 (工件)" : "選擇檔案 (電極)",
+                Filter = LanguageManager.GetString("UploadSheet_Dialog_Filter_Csv", "CSV 檔案 (*.csv)|*.csv"),
+                Title = type == "Work"
+                    ? LanguageManager.GetString("UploadSheet_Dialog_Title_Workpiece", "選擇檔案 (工件)")
+                    : LanguageManager.GetString("UploadSheet_Dialog_Title_Electrode", "選擇檔案 (電極)"),
                 Multiselect = false
             };
 
@@ -146,7 +154,7 @@ namespace FMSFrontend.ViewModels.Windows
 
             if (!hasWorkpiecesFolder || !hasAnyNcd)
             {
-                new DialogMessageWindow("Format Error").ShowDialog();
+                new DialogMessageWindow(LanguageManager.GetString("UploadSheet_Message_FormatError", "Format Error")).ShowDialog();
                 return;
             }
 
@@ -189,7 +197,8 @@ namespace FMSFrontend.ViewModels.Windows
             }
             catch (IOException)
             {
-                new DialogMessageWindow("檔案被其他程式使用中，請先關閉該檔案後再試。").ShowDialog();
+                new DialogMessageWindow(LanguageManager.GetString("UploadSheet_Message_FileInUse", "檔案被其他程式使用中，請先關閉該檔案後再試。"))
+                    .ShowDialog();
                 return;
             }
 
@@ -257,7 +266,7 @@ namespace FMSFrontend.ViewModels.Windows
                 // 若找不到或找到的檔案與候選名稱不符 -> 視為格式錯誤
                 if (string.IsNullOrEmpty(found) || !IsMatchToCandidate(found, candidate))
                 {
-                    new DialogMessageWindow("Format Error").ShowDialog();
+                    new DialogMessageWindow(LanguageManager.GetString("UploadSheet_Message_FormatError", "Format Error")).ShowDialog();
                     return;
                 }
 
@@ -289,7 +298,7 @@ namespace FMSFrontend.ViewModels.Windows
 
             if (!hasElectrodesFolder || !hasAnyNcd)
             {
-                new DialogMessageWindow("Format Error").ShowDialog();
+                new DialogMessageWindow(LanguageManager.GetString("UploadSheet_Message_FormatError", "Format Error")).ShowDialog();
                 return;
             }
 
@@ -331,7 +340,8 @@ namespace FMSFrontend.ViewModels.Windows
             }
             catch (IOException)
             {
-                new DialogMessageWindow("檔案被其他程式使用中，請先關閉該檔案後再試。").ShowDialog();
+                new DialogMessageWindow(LanguageManager.GetString("UploadSheet_Message_FileInUse", "檔案被其他程式使用中，請先關閉該檔案後再試。"))
+                    .ShowDialog();
                 return;
             }
 
@@ -416,7 +426,7 @@ namespace FMSFrontend.ViewModels.Windows
                 // 若找不到或找到的檔案與候選名稱不符 -> 視為格式錯誤
                 if (string.IsNullOrEmpty(found) || !IsMatchToCandidate(found, candidate))
                 {
-                    new DialogMessageWindow("Format Error").ShowDialog();
+                    new DialogMessageWindow(LanguageManager.GetString("UploadSheet_Message_FormatError", "Format Error")).ShowDialog();
                     return;
                 }
 
@@ -454,8 +464,8 @@ namespace FMSFrontend.ViewModels.Windows
         {
             ElectrodeItems.Clear();
             WorkItems.Clear();
-            selectedWorkCsvPath = "尚未選擇檔案";
-            selectedEleCsvPath = "尚未選擇檔案";
+            selectedWorkCsvPath = _defaultCsvPath;
+            selectedEleCsvPath = _defaultCsvPath;
         }
         bool isFileNameUnique = true; //鋐興需求: 工件名稱重複只上傳一次
         [RelayCommand]
@@ -484,7 +494,7 @@ namespace FMSFrontend.ViewModels.Windows
 
             if (!selectedWorks.Any() && !selectedEles.Any())
             {
-                _windowService.ShowMessage("請選擇工件或電極");
+                _windowService.ShowMessage(LanguageManager.GetString("UploadSheet_Message_SelectWorkpieceOrElectrode", "請選擇工件或電極"));
                 return;
             }
 
@@ -496,8 +506,8 @@ namespace FMSFrontend.ViewModels.Windows
                 workItems = selectedWorks,
                 electrodeItems = selectedEles,
                 // 把 UI 綁定的兩個路徑送到後端
-                workpieceCsvPath = selectedWorkCsvPath != "尚未選擇檔案" ? selectedWorkCsvPath : null,
-                electrodeCsvPath = selectedEleCsvPath != "尚未選擇檔案" ? selectedEleCsvPath : null,
+                workpieceCsvPath = selectedWorkCsvPath != _defaultCsvPath ? selectedWorkCsvPath : null,
+                electrodeCsvPath = selectedEleCsvPath != _defaultCsvPath ? selectedEleCsvPath : null,
 
 
 
@@ -516,21 +526,25 @@ namespace FMSFrontend.ViewModels.Windows
                     if (result.programSkippedMachines != null &&
                         result.programSkippedMachines.Count > 0)
                     {
-                        var warningMsg =
-                        "工單已建立，但以下機台未上傳程式，請手動傳送：" + Environment.NewLine +
-                        string.Join(Environment.NewLine, result.programSkippedMachines);
-
-
+                        var warningMsg = string.Format(
+                            CultureInfo.CurrentCulture,
+                            LanguageManager.GetString("UploadSheet_Message_ProgramSkipped", "工單已建立，但以下機台未上傳程式，請手動傳送：{0}"),
+                            Environment.NewLine + string.Join(Environment.NewLine, result.programSkippedMachines));
                         _windowService.ShowMessage(warningMsg);
                     }
                     else
                     {
-                        _windowService.ShowMessage("上傳成功");
+                        _windowService.ShowMessage(LanguageManager.GetString("UploadSheet_Message_UploadSuccess", "上傳成功"));
                     }
                 }
                 else
                 {
-                    var msg = string.IsNullOrWhiteSpace(result?.message) ? "上傳失敗（未知錯誤）" : $"上傳失敗：{result.message}";
+                    var msg = string.IsNullOrWhiteSpace(result?.message)
+                        ? LanguageManager.GetString("UploadSheet_Message_UploadFailedUnknown", "上傳失敗（未知錯誤）")
+                        : string.Format(
+                            CultureInfo.CurrentCulture,
+                            LanguageManager.GetString("UploadSheet_Message_UploadFailed", "上傳失敗：{0}"),
+                            result.message);
                     _windowService.ShowMessage(msg);
                 }
             }

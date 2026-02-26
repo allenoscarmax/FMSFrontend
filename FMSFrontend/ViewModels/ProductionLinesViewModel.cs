@@ -7,6 +7,7 @@ using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
+using FMSFrontend.Helpers;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.Services; // ← 新增
@@ -161,7 +162,7 @@ namespace FMSFrontend.ViewModels
             {
                 if (openMode == MaterialOpenMode.Information)
                 {
-                    _windowService.ShowMessage("無物料"); // 你自己的 API
+                    _windowService.ShowMessage(LanguageManager.GetString("ProductionLines_Message_NoMaterial", "無物料"));
                     return;
                 }
 
@@ -421,10 +422,14 @@ namespace FMSFrontend.ViewModels
             get
             {
                 var m = SelectedSlot?.Material;
-                if (m == null) return "—";
+                if (m == null) return LanguageManager.GetString("ProductionLines_Label_None", "—");
                 return m.Kind == MaterialKind.Electrode
-                    ? $"電極：{(m.Electrode?.No ?? m.Electrode?.Name ?? "—")}"
-                    : $"工件：{(m.Workpiece?.No ?? m.Workpiece?.Name ?? "—")}";
+                    ? string.Format(
+                        LanguageManager.GetString("ProductionLines_Label_Electrode", "電極：{0}"),
+                        m.Electrode?.No ?? m.Electrode?.Name ?? LanguageManager.GetString("ProductionLines_Label_None", "—"))
+                    : string.Format(
+                        LanguageManager.GetString("ProductionLines_Label_Workpiece", "工件：{0}"),
+                        m.Workpiece?.No ?? m.Workpiece?.Name ?? LanguageManager.GetString("ProductionLines_Label_None", "—"));
             }
         }
 

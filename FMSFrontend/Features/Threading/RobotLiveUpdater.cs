@@ -66,7 +66,7 @@ namespace FMSFrontend.Features.Threading
                         {
                             _store.Robot.MaterialName = ((ElectrodeDto)(e.First())).electrodeName;
                             _store.Robot.MaterialShortName =
-                            "電極 : " + Conversion.ShortNameConversion(true, _store.Robot.MaterialName ?? "");
+                            "E: " + Conversion.ShortNameConversion(true, _store.Robot.MaterialName ?? "");
                             _store.Robot.MaterialKind = "Electrode";
                             return;
                         }
@@ -75,7 +75,7 @@ namespace FMSFrontend.Features.Threading
                         {
                             _store.Robot.MaterialName = ((WorkpieceDto)w).workpieceName;
                             _store.Robot.MaterialShortName =
-                            "工件 : " + Conversion.ShortNameConversion(false, _store.Robot.MaterialName ?? "");
+                            "W: " + Conversion.ShortNameConversion(false, _store.Robot.MaterialName ?? "");
                             _store.Robot.MaterialKind = "Workpiece";
                             return;
                         }
@@ -83,7 +83,7 @@ namespace FMSFrontend.Features.Threading
                         if (p != null) //為探針
                         {
                             _store.Robot.MaterialName = ((ProbeDto)p).probeName;
-                            _store.Robot.MaterialShortName = "探針 : " + _store.Robot.MaterialName;
+                            _store.Robot.MaterialShortName = "Probe:" + _store.Robot.MaterialName;
                             _store.Robot.MaterialKind = "Probe";
                             return;
                         }

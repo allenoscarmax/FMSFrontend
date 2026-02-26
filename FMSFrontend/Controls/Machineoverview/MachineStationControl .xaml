@@ -12,8 +12,11 @@
     <UserControl.Resources>
         <selectors:TabItemBackgroundSelector x:Key="TabtemColorSelector" />
     </UserControl.Resources>
-    <Border BorderBrush="#000000" BorderThickness="1" CornerRadius="6">
-        <Grid Background="{DynamicResource PageViewBrush}">
+    <Border  Margin="0,5,0,0" Background="{DynamicResource PageViewBrush}" CornerRadius="10">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
+        </Border.Effect>
+        <Grid>
             <!-- 🧩 頂層切 2 Row：標題 + 內容 -->
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
@@ -23,7 +26,7 @@
             </Grid.RowDefinitions>
 
             <!-- 🔹 標題區塊 -->
-            <Border Grid.Row="0" Background="#CCCCCC" BorderThickness="1" BorderBrush="#000000">
+            <Border Grid.Row="0" Background="#CCCCCC" CornerRadius="10,10,0,0" Margin="0">
                 <!-- 修正：使用 Grid 分三欄，避免在無 Grid 的 Border 內使用 Grid.Column -->
                 <Grid Margin="12,0">
                     <Grid.ColumnDefinitions>
@@ -34,23 +37,28 @@
 
                     <!-- 左側原資訊 -->
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="{Binding MachineName}" d:Text="EDM1" TextDecorations="Underline" FontSize="20" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
-                        <TextBlock Text=" 機台資訊" FontSize="20" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                        <materialDesign:PackIcon Kind="MonitorDashboard" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding MachineName}" d:Text="EDM1" TextDecorations="Underline" FontSize="30" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="10,0,20,0"/>
+                        <TextBlock Text="{DynamicResource MachineStation_Label_MachineInfoSuffix}" FontSize="20" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
                     </StackPanel>
 
                     <!-- 右側按鈕：刷新 + 自動更新 -->
                 </Grid>
             </Border>
             <!-- 主內容區：移除 RowSpan 以避免覆蓋標題區 -->
-            <Grid Grid.Row="1">
+            <Border Grid.Row="1">
+                <Grid Margin="8">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="227" />
+                    <ColumnDefinition Width="235" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <!-- 🔹 左上圖片 -->
-                <Border Grid.Column="0" Background="White" CornerRadius="8" Margin="8,160,8,160" BorderBrush="LightGray" BorderThickness="1">
-                    <Image Source="{Binding MachineImagePath}" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />
+                <Border Grid.Column="0" Background="White" CornerRadius="10" Margin="8,160,8,160" BorderBrush="LightGray" BorderThickness="1">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
+                    </Border.Effect>
+                    <Image Source="{Binding MachineImagePath}" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"  />
                 </Border>
 
                 <Border Grid.Column="1" Background="White" CornerRadius="10" Margin="8" SnapsToDevicePixels="True">
@@ -63,10 +71,10 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <!-- 區塊標題 -->
-                        <Border Grid.Row="0"  Background="#444" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
-                            <TextBlock Text="資訊區" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <Border Grid.Row="0"  Background="#444" CornerRadius="10,10,0,0" VerticalAlignment="Stretch">
+                            <TextBlock Text="{DynamicResource MachineStation_Section_Info}" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
                         </Border>
-                        <Border Grid.Row="1"  Background="#FFFFFF" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
+                        <Border Grid.Row="1"  Background="#FFFFFF" CornerRadius="0,0,10,10" VerticalAlignment="Stretch">
                             <Grid>
                                 <!-- 2 Columns -->
                                 <Grid.ColumnDefinitions>
@@ -113,43 +121,43 @@
                                 </Grid.Resources>
 
                                 <!-- Row1~Row10 -->
-                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="空壓異常"/>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="{DynamicResource MachineStation_Label_AirError}"/>
                                 <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Air_error}"/>
                                 <Border Grid.Row="0" Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 
-                                <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource LabelText}" Text="門開著"/>
+                                <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource LabelText}" Text="{DynamicResource MachineStation_Label_DoorOpen}"/>
                                 <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.DoorisOpen}"/>
                                 <Border Grid.Row="0" Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text="RFID在原點上"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text="{DynamicResource MachineStation_Label_RfidAtOrigin}"/>
                                 <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.RFIDisPolarization						}"/>
                                 <Border Grid.Row="1" Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 
-                                <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource LabelText}" Text="工件在組裝站上"/>
+                                <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource LabelText}" Text="{DynamicResource MachineStation_Label_WorkpieceOnAssembly}"/>
                                 <TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.WorkpieceOnAssemblyStation}"/>
                                 <Border Grid.Row="1" Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="入料通知"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="{DynamicResource MachineStation_Label_IncomingNotification}"/>
                                 <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Notification_IncomingPart}"/>
                                 <Border Grid.Row="2"  Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 
-                                <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource LabelText}" Text="等待工件回來組裝站"/>
+                                <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource LabelText}" Text="{DynamicResource MachineStation_Label_WaitWorkpieceReturn}"/>
                                 <TextBlock Grid.Row="2" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.Notification_WaitingWorkpieceReturn}"/>
                                 <Border Grid.Row="2" Grid.Column="3"  Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 
-                                <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="異常"/>
+                                <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="{DynamicResource MachineStation_Label_Alarm}"/>
                                 <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Alarm}"/>
                                 <Border Grid.Row="3" Grid.Column="1"  Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 
-                                <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource LabelText}" Text="要求入料中"/>
+                                <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource LabelText}" Text="{DynamicResource MachineStation_Label_RequestIncoming}"/>
                                 <TextBlock Grid.Row="3" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.Require_IncomingPart}"/>
                                 <Border Grid.Row="3" Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 
-                                <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="要求出料中"/>
+                                <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="{DynamicResource MachineStation_Label_RequestOutcoming}"/>
                                 <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource DataText}"  Text="{Binding displayData.Require_OutcomingPart}"/>
                                 <Border Grid.Row="4"  Grid.Column="1" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
 
-                                <TextBlock Grid.Row="4" Grid.Column="2" Style="{StaticResource LabelText}" Text="門關著"/>
+                                <TextBlock Grid.Row="4" Grid.Column="2" Style="{StaticResource LabelText}" Text="{DynamicResource MachineStation_Label_DoorClosed}"/>
                                 <TextBlock Grid.Row="4" Grid.Column="3" Style="{StaticResource DataText}"  Text="{Binding displayData.Notification_Doorislocked}"/>
                                 <Border Grid.Row="4"  Grid.Column="3" Margin="3,0,3,0" Grid.ColumnSpan="1" Height="2" Background="#555555" VerticalAlignment="Bottom" />
                             </Grid>
@@ -166,10 +174,10 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <!-- 區塊標題 -->
-                        <Border Grid.Row="0"  Background="#444" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
-                            <TextBlock Text="控制區" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <Border Grid.Row="0"  Background="#444" CornerRadius="10,10,0,0" VerticalAlignment="Stretch">
+                            <TextBlock Text="{DynamicResource MachineStation_Section_Control}" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
                         </Border>
-                        <Border Grid.Row="1"  Background="#FFFFFF" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
+                        <Border Grid.Row="1"  Background="#FFFFFF" CornerRadius="0,0,10,10" VerticalAlignment="Stretch">
                             <Grid>
                                 <!-- 2 Columns -->
                                 <Grid.ColumnDefinitions>
@@ -238,28 +246,28 @@
                                 </Grid.Resources>
 
                                 <!-- 開門 -->
-                                <TextBlock Grid.Row="0" Grid.Column="0" FontSize="18" Text="組裝站門" VerticalAlignment="Center" Margin="5"/>
+                                <TextBlock Grid.Row="0" Grid.Column="0" FontSize="18" Text="{DynamicResource MachineStation_Label_AssemblyDoor}" VerticalAlignment="Center" Margin="5"/>
                                 <Button    Grid.Row="0" Grid.Column="1" FontSize="18" Style="{StaticResource BlueButton}"
-											Content="開門" Command="{Binding OpenDoorClickCommand}" Margin="5"/>
+										Content="{DynamicResource MachineStation_Button_OpenDoor}" Command="{Binding OpenDoorClickCommand}" Margin="5"/>
 
                                 <!-- 開燈 -->
-                                <TextBlock Grid.Row="1" Grid.Column="0" FontSize="18" Text="組裝站燈" VerticalAlignment="Center" Margin="5"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" FontSize="18" Text="{DynamicResource MachineStation_Label_AssemblyLight}" VerticalAlignment="Center" Margin="5"/>
                                 <Button    Grid.Row="1" Grid.Column="1" FontSize="18" Style="{StaticResource BlueButton}"
-											Content="開燈" Command="{Binding OpenDoorLightClickCommand}" CommandParameter="True" Margin="5"/>
+										Content="{DynamicResource MachineStation_Button_LightOn}" Command="{Binding OpenDoorLightClickCommand}" CommandParameter="True" Margin="5"/>
                                 <Button    Grid.Row="1" Grid.Column="2" FontSize="18" Style="{StaticResource BlueButton}"
-											Content="關燈" Command="{Binding OpenDoorLightClickCommand}" CommandParameter="False" Margin="5"/>
+										Content="{DynamicResource MachineStation_Button_LightOff}" Command="{Binding OpenDoorLightClickCommand}" CommandParameter="False" Margin="5"/>
 
                                 <!-- 夾頭 -->
-                                <TextBlock Grid.Row="2" Grid.Column="0" FontSize="18" Text="夾頭" VerticalAlignment="Center" Margin="5"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" FontSize="18" Text="{DynamicResource MachineStation_Label_Chuck}" VerticalAlignment="Center" Margin="5"/>
                                 <Button    Grid.Row="2" Grid.Column="1" FontSize="18" Style="{StaticResource BlueButton}"
-											Content="開爪" Command="{Binding OpenChuckClickCommand}" CommandParameter="True" Margin="5"/>
+										Content="{DynamicResource MachineStation_Button_ChuckOpen}" Command="{Binding OpenChuckClickCommand}" CommandParameter="True" Margin="5"/>
                                 <Button    Grid.Row="2" Grid.Column="2" FontSize="18" Style="{StaticResource BlueButton}"
-											Content="關爪" Command="{Binding OpenChuckClickCommand}" CommandParameter="False" Margin="5"/>
+										Content="{DynamicResource MachineStation_Button_ChuckClose}" Command="{Binding OpenChuckClickCommand}" CommandParameter="False" Margin="5"/>
 
                                 <!-- IncomingPart -->
-                                <TextBlock Grid.Row="3" Grid.Column="0" FontSize="18" Text="取得 (IncomingPart)" VerticalAlignment="Center" Margin="5"/>
+                                <TextBlock Grid.Row="3" Grid.Column="0" FontSize="18" Text="{DynamicResource MachineStation_Label_IncomingPart}" VerticalAlignment="Center" Margin="5"/>
                                 <Button    Grid.Row="3" Grid.Column="1" FontSize="18" Style="{StaticResource BlueButton}"
-											Content="要求" Command="{Binding IncomingPartClickCommand}" CommandParameter="True" Margin="5"/>
+										Content="{DynamicResource MachineStation_Button_Request}" Command="{Binding IncomingPartClickCommand}" CommandParameter="True" Margin="5"/>
                                 <Button    Grid.Row="3" Grid.Column="2" FontSize="18" Style="{StaticResource BlueButton}" Content="Close" Command="{Binding IncomingPartClickCommand}" CommandParameter="False" Margin="5" Visibility="Hidden" />
 
                             </Grid>
@@ -267,6 +275,8 @@
                     </Grid>
                 </Border>
             </Grid>
-        </Grid>
+             </Border>
+
+    </Grid>
     </Border>
 </UserControl>

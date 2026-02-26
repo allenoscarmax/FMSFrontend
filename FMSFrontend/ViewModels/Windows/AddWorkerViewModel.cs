@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Helpers;
 using System.Collections.Generic;
 using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace FMSFrontend.ViewModels.Windows
             {
                 // 新增模式
                 IsEnable = true;
-                Title = "新增使用者";
+                Title = LanguageManager.GetString("AddWorkerViewModel_Title_Add", "新增使用者");
                 WorkerNumber = string.Empty;
                 WorkerName = string.Empty;
             }
@@ -45,7 +46,7 @@ namespace FMSFrontend.ViewModels.Windows
             {
                 // 編輯模式
                 IsEnable = false;              // 帳號不可改
-                Title = "編輯使用者";
+                Title = LanguageManager.GetString("AddWorkerViewModel_Title_Edit", "編輯使用者");
                 WorkerNumber = selectNumber;
                 WorkerName = selectName;
             }
@@ -57,33 +58,33 @@ namespace FMSFrontend.ViewModels.Windows
         {
             if (string.IsNullOrWhiteSpace(WorkerNumber))     // 檢查工號
             {
-                Message = "請輸入使用者工號";
+                Message = LanguageManager.GetString("AddWorkerViewModel_Message_EmptyWorkerNumber", "請輸入使用者工號");
                 return;
             }
             if (string.IsNullOrWhiteSpace(WorkerName))     // 使用者名稱檢查
             {
-                Message = "請輸入使用者名稱";
+                Message = LanguageManager.GetString("AddWorkerViewModel_Message_EmptyWorkerName", "請輸入使用者名稱");
                 return;
             }
             if (string.IsNullOrWhiteSpace(Password)) // 密碼檢查
             {
-                Message = "請輸入密碼";
+                Message = LanguageManager.GetString("AddWorkerViewModel_Message_EmptyPassword", "請輸入密碼");
                 return;
             }
             if (Password != ConfirmPassword)// 確認密碼檢查
             {
-                Message = "兩次輸入的密碼不一致";
+                Message = LanguageManager.GetString("AddWorkerViewModel_Message_PasswordMismatch", "兩次輸入的密碼不一致");
                 return;
             }
             if (ExistingWorkers.Any(w => w.Name == WorkerName) && IsEnable) // 只有在新增使用者時才檢查名稱是否存在
             {
-                Message = "使用者名稱已存在";
+                Message = LanguageManager.GetString("AddWorkerViewModel_Message_WorkerNameExists", "使用者名稱已存在");
                 return;
             }
             // 工號不得重複（以工號作為登入帳號）
             if (ExistingWorkers.Any(w => w.Name == WorkerNumber) && IsEnable)
             {
-                Message = "使用者工號已存在";
+                Message = LanguageManager.GetString("AddWorkerViewModel_Message_WorkerNumberExists", "使用者工號已存在");
                 return;
             }
             // 這裡可改為呼叫後端 API 新增使用者

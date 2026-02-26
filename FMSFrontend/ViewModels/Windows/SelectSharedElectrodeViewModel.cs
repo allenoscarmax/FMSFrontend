@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using FMSFrontend.Extensions;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
+using FMSFrontend.Helpers;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;          // WorksheetItem、SelectItem
 using FMSFrontend.Services;       // IWorksheetService、IElectrodeService
@@ -26,8 +27,8 @@ namespace FMSFrontend.ViewModels.Windows
         public string _targetElectrodeName; // Share 時傳入的電極名稱
 
         // 🔹 顯示文字用屬性
-        [ObservableProperty] private string? selectedWorkOrderName = "請選擇工單";
-        [ObservableProperty] private string? selectedElectrodeNameDisplay = "請選擇電極";
+        [ObservableProperty] private string? selectedWorkOrderName = string.Empty;
+        [ObservableProperty] private string? selectedElectrodeNameDisplay = string.Empty;
 
         // 🔹 內部狀態
         public WorksheetItem? SelectedWorksheetItem { get; private set; }
@@ -56,6 +57,8 @@ namespace FMSFrontend.ViewModels.Windows
         public void Initialize(string electrodeName)
         {
             _targetElectrodeName = electrodeName;
+            SelectedWorkOrderName = LanguageManager.GetString("SelectSharedElectrode_Message_SelectWorkOrder", "請選擇工單");
+            SelectedElectrodeNameDisplay = LanguageManager.GetString("SelectSharedElectrode_Message_SelectElectrode", "請選擇電極");
             // 如果這裡要做資料讀取，也能一併觸發
         }
 
@@ -127,15 +130,16 @@ namespace FMSFrontend.ViewModels.Windows
                     return;
 
                 SelectedWorksheetItem = selected;
-                SelectedWorkOrderName = SelectedWorksheetItem.WorkOrderNo ?? "請選擇工單";
+                SelectedWorkOrderName = SelectedWorksheetItem.WorkOrderNo
+                    ?? LanguageManager.GetString("SelectSharedElectrode_Message_SelectWorkOrder", "請選擇工單");
 
                 // 清空電極
                 SelectedElectrodeItem = null;
-                SelectedElectrodeNameDisplay = "請選擇電極";
+                SelectedElectrodeNameDisplay = LanguageManager.GetString("SelectSharedElectrode_Message_SelectElectrode", "請選擇電極");
             }
             catch
             {
-                _windowService.ShowMessage("選擇工單失敗");
+                _windowService.ShowMessage(LanguageManager.GetString("SelectSharedElectrode_Message_SelectWorkOrderFailed", "選擇工單失敗"));
             }
         }
 
@@ -187,11 +191,12 @@ namespace FMSFrontend.ViewModels.Windows
                     return;
 
                 SelectedElectrodeItem = selected;
-                SelectedElectrodeNameDisplay = SelectedElectrodeItem.MaterialName ?? "請選擇電極";
+                SelectedElectrodeNameDisplay = SelectedElectrodeItem.MaterialName
+                    ?? LanguageManager.GetString("SelectSharedElectrode_Message_SelectElectrode", "請選擇電極");
             }
             catch
             {
-                _windowService.ShowMessage("選擇電極失敗");
+                _windowService.ShowMessage(LanguageManager.GetString("SelectSharedElectrode_Message_SelectElectrodeFailed", "選擇電極失敗"));
             }
         }
 

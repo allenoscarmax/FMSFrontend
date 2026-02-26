@@ -1,4 +1,4 @@
-﻿<Window x:Class="FMSFrontend.Extensions.SelectWorksheetWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:conv="clr-namespace:FMSFrontend.Converters" Title="選擇工單" Width="480" Height="576" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None" AllowsTransparency="True" Background="Transparent">
+﻿<Window x:Class="FMSFrontend.Extensions.SelectWorksheetWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:conv="clr-namespace:FMSFrontend.Converters" Title="{DynamicResource SelectWorksheetWindow_Title}" Width="490" Height="586" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None" AllowsTransparency="True" Background="Transparent">
 
     <Window.Resources>
         <!-- 你現有的 Enter-only 轉換器 -->
@@ -6,7 +6,7 @@
     </Window.Resources>
 
     <!-- 外框 + 陰影 -->
-    <Border CornerRadius="10" Background="White" BorderBrush="#DDD" BorderThickness="1">
+    <Border CornerRadius="10" Background="White" BorderBrush="#DDD" BorderThickness="1" Margin="10">
         <Border.Effect>
             <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.25" />
         </Border.Effect>
@@ -26,7 +26,7 @@
 
             <!-- Title Bar（深灰；也可綁定 TitleBrush，這裡加 FallbackValue） -->
             <Border Grid.Row="0" CornerRadius="10,10,0,0" Background="{Binding TitleBrush, FallbackValue=#555555}">
-                <TextBlock Text="選擇工單" Foreground="White" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Margin="16,0" />
+                <TextBlock Text="{DynamicResource SelectWorksheetWindow_Title}" Foreground="White" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Margin="16,0" />
             </Border>
 
             <!-- 搜尋列：左 ICON + 底線 TextBox（顯示提示文字「搜尋」） -->
@@ -40,7 +40,7 @@
 
                 <Border Grid.Column="1" BorderThickness="0,0,0,1" BorderBrush="#222" VerticalAlignment="Center">
                     <!-- 綁定 SearchText，UpdateSourceTrigger=PropertyChanged => 輸入即觸發 ViewModel 的 ItemsView.Refresh() -->
-                    <TextBox BorderThickness="0" Padding="0,2,0,6" FontSize="16" Foreground="#222" materialDesign:HintAssist.Hint="搜尋" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox BorderThickness="0" Padding="0,2,0,6" FontSize="16" Foreground="#222" materialDesign:HintAssist.Hint="{DynamicResource SelectWorksheetWindow_SearchHint}" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
                 </Border>
             </Grid>
 
@@ -56,7 +56,7 @@
 
                     <!-- Header Bar -->
                     <Border Grid.Row="0" Background="#666" CornerRadius="10,10,0,0" Margin="24,16,24,0">
-                        <TextBlock Text="工件名稱（工單編號）" Foreground="White" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource SelectWorksheetWindow_Header_WorkOrder}" Foreground="White" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
 
                     <!-- List -->
@@ -105,8 +105,8 @@
 
             <!-- Footer -->
             <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,16">
-                <Button Content="確認" Width="108" Height="40" Margin="16,0" Command="{Binding ConfirmCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource PrimaryButtonStyle}" Background="Gray" />
-                <Button Content="取消" Width="108" Height="40" Margin="16,0" Command="{Binding CancelCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource PrimaryButtonStyle}" Background="Gray" />
+                <Button Content="{DynamicResource SelectWorksheetWindow_Button_Confirm}" Width="108" Height="40" Margin="16,0" Command="{Binding ConfirmCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource PrimaryButtonStyle}" Background="Gray" />
+                <Button Content="{DynamicResource SelectWorksheetWindow_Button_Cancel}" Width="108" Height="40" Margin="16,0" Command="{Binding CancelCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource PrimaryButtonStyle}" Background="Gray" />
             </StackPanel>
         </Grid>
     </Border>

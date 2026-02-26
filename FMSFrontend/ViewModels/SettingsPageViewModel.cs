@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FMSFrontend.Extensions;   
+using FMSFrontend.Extensions;
+using FMSFrontend.Helpers;
 using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
@@ -11,6 +12,7 @@ using IniFile;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Windows;
@@ -53,10 +55,11 @@ namespace FMSFrontend.ViewModels
             _authorizationService = authorizationService;
 
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            SelectedLanguage = LanguageManager.ApplySavedLanguage();
 
             //基本設定頁面初始
-            AvailablePermissions = new ObservableCollection<string> { "工作人員", "專家" };
-            SelectedPermission = AvailablePermissions[0];
+            AvailablePermissions = new ObservableCollection<string>();
+            SelectedPermission = LanguageManager.GetString("Settings_Permission_Staff", "工作人員");
             var keep = ini.Read("Prarm", "KeepLoggedIn");  // 保持登入：開啟時從 Basesitting 讀取
             KeepLoggedIn = keep == "True";
 
@@ -80,8 +83,8 @@ namespace FMSFrontend.ViewModels
             OpenSetPeriodDialogCommand = new RelayCommand(OpenPeriodDialog);
 
             //未使用
-            AvailableLanguages = new ObservableCollection<string> { "繁體中文", "English", "日本語" };
-            SelectedLanguage = AvailableLanguages[0];
+            AvailableLanguages = new ObservableCollection<string> { "繁體中文", "English" };
+
             AvailableThemes = new ObservableCollection<string> { "Light", "Dark", "System Default" };
             SelectedTheme = AvailableThemes[0];
         }
@@ -125,7 +128,7 @@ namespace FMSFrontend.ViewModels
         partial void OnSelectedPermissionChanged(string value)
         {
             // 選擇權限後觸發：若選擇專家但尚未啟用，顯示密碼輸入面板
-            if (value == "專家")
+            if (value == LanguageManager.GetString("Settings_Permission_Expert", "專家"))
             {
                 ShowPasswordPrompt = !IsAdvancedEnabled; // 尚未解鎖才顯示輸入區
             }
@@ -140,17 +143,17 @@ namespace FMSFrontend.ViewModels
         [RelayCommand]
         private void PermissionClick()
         {
-            if (SelectedPermission != "專家")
+            if (SelectedPermission != LanguageManager.GetString("Settings_Permission_Expert", "專家"))
             {
-                StatusMessage = "⚠️ 請選擇專家模式再輸入密碼";
-                _windowService.ShowMessage("請先選擇專家模式");
+                StatusMessage = LanguageManager.GetString("Settings_Message_SelectExpert", "⚠️ 請選擇專家模式再輸入密碼");
+                _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_SelectExpertPrompt", "請先選擇專家模式"));
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(Password))
             {
-                StatusMessage = "❌ 密碼不可為空";
-                _windowService.ShowMessage("請輸入密碼");
+                StatusMessage = LanguageManager.GetString("Settings_Message_EmptyPassword", "❌ 密碼不可為空");
+                _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_EnterPassword", "請輸入密碼"));
                 return;
             }
 
@@ -158,14 +161,14 @@ namespace FMSFrontend.ViewModels
             {
                 IsAdvancedEnabled = true;          // 啟用進階設定頁籤
                 ShowPasswordPrompt = false;        // 隱藏密碼輸入面板
-                StatusMessage = "✅ 已開啟專家模式";
-                _windowService.ShowMessage("已開啟專家模式");
+                StatusMessage = LanguageManager.GetString("Settings_Message_ExpertEnabled", "✅ 已開啟專家模式");
+                _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_ExpertEnabledPrompt", "已開啟專家模式"));
             }
             else
             {
                 IsAdvancedEnabled = false;
-                StatusMessage = "❌ 密碼錯誤";
-                _windowService.ShowMessage("密碼錯誤，請再試一次");
+                StatusMessage = LanguageManager.GetString("Settings_Message_InvalidPassword", "❌ 密碼錯誤");
+                _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_InvalidPasswordPrompt", "密碼錯誤，請再試一次"));
             }
         }
         #endregion
@@ -190,6 +193,31 @@ namespace FMSFrontend.ViewModels
 
         #endregion
 
+        #region 語言設定
+        [ObservableProperty] private ObservableCollection<string> availableLanguages;
+        [ObservableProperty] private string selectedLanguage = "";
+
+        [RelayCommand]
+        private void LanguageClick()  // 切換語言邏輯
+        {
+            //先跳出確認視窗
+            var result = _windowService.ShowYesNoDialog(LanguageManager.GetString("Settings_Confirm_ChangeLanguage", "確認切換語言？"));
+            if (result)
+            {
+                LanguageManager.ApplyLanguageResource(SelectedLanguage);
+                try
+                {
+
+                    INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+                    ini.Write("Prarm", "Language", SelectedLanguage == "English" ? "1" : "0");
+                }
+                catch { }
+            }
+        }
+        #endregion
+
+        
+
         //===進階設定頁面===
 
         #region 系統IP設定
@@ -200,22 +228,30 @@ namespace FMSFrontend.ViewModels
             var ip = (ServerIp ?? string.Empty).Trim();
             if (!(IPAddress.TryParse(ip, out _) || ip == "localhost"))
             {
-                StatusMessage = "❌ IP 位址格式不正確";
-                _windowService.ShowMessage("IP 位址格式不正確，請輸入有效的 IPv4，例如：192.168.1.100");
+                StatusMessage = LanguageManager.GetString("Settings_Message_InvalidIp", "❌ IP 位址格式不正確");
+                _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_InvalidIpPrompt", "IP 位址格式不正確，請輸入有效的 IPv4，例如：192.168.1.100"));
                 return;
             }
             try
             {
                 _httpService.UpdateServerIp(ip);
-                StatusMessage = "🤖 設定IP OK";
-                _windowService.ShowMessage($"已設定 IP：{ip}");
+                StatusMessage = LanguageManager.GetString("Settings_Message_SaveIpOk", "🤖 設定IP OK");
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    LanguageManager.GetString("Settings_Message_IpSaved", "已設定 IP：{0}"),
+                    ip);
+                _windowService.ShowMessage(message);
                 INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
                 ini.Write("Prarm", "IP", ip);
             }
             catch (Exception ex)
             {
-                StatusMessage = "❌ 設定 IP 失敗";
-                _windowService.ShowMessage($"設定 IP 失敗：{ex.Message}");
+                StatusMessage = LanguageManager.GetString("Settings_Message_SaveIpFailed", "❌ 設定 IP 失敗");
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    LanguageManager.GetString("Settings_Message_SaveIpFailedPrompt", "設定 IP 失敗：{0}"),
+                    ex.Message);
+                _windowService.ShowMessage(message);
             }
         }
         #endregion
@@ -227,14 +263,14 @@ namespace FMSFrontend.ViewModels
             if (!_authorizationService.RequireLoginAndWriteOperation(20))
                 return;
             // TODO: 加入系統還原邏輯，例如清除資料、表單、日誌等
-            StatusMessage = "⚠️ 系統已還原，所有資料已清除";
-            _windowService.ShowMessage("系統還原完成");
+            StatusMessage = LanguageManager.GetString("Settings_Message_SystemRestored", "⚠️ 系統已還原，所有資料已清除");
+            _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_SystemRestoreCompleted", "系統還原完成"));
         }
         #endregion
 
         #region 系統備份
         [ObservableProperty] private bool isBusy;
-        [ObservableProperty] private string busyMessage = "處理中...";
+        [ObservableProperty] private string busyMessage = LanguageManager.GetString("Settings_Message_Busy", "處理中...");
         private bool CanBackupSystem() => !IsBusy;
 
         [RelayCommand(CanExecute = nameof(CanBackupSystem))]
@@ -245,17 +281,23 @@ namespace FMSFrontend.ViewModels
                 return;
             }
             IsBusy = true;
-            BusyMessage = "系統備份中，請稍候...";
+            BusyMessage = LanguageManager.GetString("Settings_Message_BackupInProgress", "系統備份中，請稍候...");
             try
             {
 
                 var ok = await _mongoDBService.BackupDatabaseAsync();
 
-                _windowService.ShowMessage(ok ? "系統備份成功" : "系統備份失敗");
+                _windowService.ShowMessage(ok
+                    ? LanguageManager.GetString("Settings_Message_BackupSuccess", "系統備份成功")
+                    : LanguageManager.GetString("Settings_Message_BackupFailed", "系統備份失敗"));
             }
             catch (Exception ex)
             {
-                _windowService.ShowMessage($"系統備份發生例外：{ex.Message}");
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    LanguageManager.GetString("Settings_Message_BackupError", "系統備份發生例外：{0}"),
+                    ex.Message);
+                _windowService.ShowMessage(message);
                 // 建議也寫 log
             }
             finally
@@ -277,8 +319,8 @@ namespace FMSFrontend.ViewModels
             var today = DateTime.Today.ToString("yyyy/MM/dd");
             ini.Write("Prarm", "RobotMaintenanceMsg", today);
             RobotMaintenanceMsg = today;
-            StatusMessage = "🤖 機械手臂維護已標記為完成";
-            _windowService.ShowMessage("維護狀態已更新");
+            StatusMessage = LanguageManager.GetString("Settings_Message_RobotMaintenanceCompleted", "🤖 機械手臂維護已標記為完成");
+            _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_RobotMaintenanceUpdated", "維護狀態已更新"));
         }
         #endregion
 
@@ -377,34 +419,34 @@ namespace FMSFrontend.ViewModels
         {
             if (SelectedMachine == null)
             {
-                _windowService.ShowMessage("請先選擇要編輯的機台");
+                _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_SelectMachine", "請先選擇要編輯的機台"));
                 return;
             }
 
             // 動態建立可編輯欄位：IP / Port 可編輯，其餘只顯示
             var items = new List<EditGridViewModel.EditGridInfo>
             {
-                new() { Title = "機台編號", Data = SelectedMachine.MachineId, Enable = false },
-                new() { Title = "名稱", Data = SelectedMachine.MachineName, Enable = false },
-                new() { Title = "類型", Data = SelectedMachine.MachineType, Enable = false },
-                new() { Title = "IP", Data = SelectedMachine.IpAddress, Enable = true },
-                new() { Title = "Port", Data = SelectedMachine.Port, Enable = true }
+                new() { Title = LanguageManager.GetString("Settings_EditMachine_Title_Id", "機台編號"), Data = SelectedMachine.MachineId, Enable = false },
+                new() { Title = LanguageManager.GetString("Settings_EditMachine_Title_Name", "名稱"), Data = SelectedMachine.MachineName, Enable = false },
+                new() { Title = LanguageManager.GetString("Settings_EditMachine_Title_Type", "類型"), Data = SelectedMachine.MachineType, Enable = false },
+                new() { Title = LanguageManager.GetString("Settings_EditMachine_Title_Ip", "IP"), Data = SelectedMachine.IpAddress, Enable = true },
+                new() { Title = LanguageManager.GetString("Settings_EditMachine_Title_Port", "Port"), Data = SelectedMachine.Port, Enable = true }
             };
-            var win = new EditGridWindow(items, "編輯機台連線參數");
+            var win = new EditGridWindow(items, LanguageManager.GetString("Settings_EditMachine_WindowTitle", "編輯機台連線參數"));
             if (win.ShowDialog() == true)
             {
                 try
                 {
                     // 使用顯示集合找出輸入後的值
-                    string newIp = win.ViewModel.Display.First(x => x.Title == "IP").Data.Trim();
-                    string newPort = win.ViewModel.Display.First(x => x.Title == "Port").Data.Trim();
+                    string newIp = win.ViewModel.Display.First(x => x.Title == LanguageManager.GetString("Settings_EditMachine_Title_Ip", "IP")).Data.Trim();
+                    string newPort = win.ViewModel.Display.First(x => x.Title == LanguageManager.GetString("Settings_EditMachine_Title_Port", "Port")).Data.Trim();
 
                     // 取得所有機台，找出欲更新的 DTO
                     var all = await _machinesService.GetMachinesByMachineNameAsync(SelectedMachine.MachineName) ?? new();
                     var dto = all.FirstOrDefault(m => m._id == SelectedMachine.MachineId);
                     if (dto == null)
                     {
-                        _windowService.ShowMessage("找不到原始機台資料，更新失敗");
+                        _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_MachineNotFound", "找不到原始機台資料，更新失敗"));
                         return;
                     }
 
@@ -415,15 +457,15 @@ namespace FMSFrontend.ViewModels
                     bool ok = await _machinesService.UpdateMachinesDataAsync(dto);
                     if (!ok)
                     {
-                        _windowService.ShowMessage("機台更新失敗，請稍後再試");
+                        _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_MachineUpdateFailed", "機台更新失敗，請稍後再試"));
                         return;
                     }
 
-                    StatusMessage = "✅ 機台參數已更新";
+                    StatusMessage = LanguageManager.GetString("Settings_Message_MachineUpdated", "✅ 機台參數已更新");
                 }
                 catch
                 {
-                    _windowService.ShowMessage("更新過程發生錯誤");
+                    _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_UpdateError", "更新過程發生錯誤"));
                 }
                 // 重新載入機台列表
                 await MachinesRefresh();
@@ -491,30 +533,30 @@ namespace FMSFrontend.ViewModels
         {
             if (SelectedRobot == null)
             {
-                _windowService.ShowMessage("請先選擇要編輯的機械手臂");
+                _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_SelectRobot", "請先選擇要編輯的機械手臂"));
                 return;
             }
 
             // 動態建立可編輯欄位：僅 IP 可編輯
             var items = new List<EditGridViewModel.EditGridInfo>
             {
-                new() { Title = "機械手臂編號", Data = SelectedRobot.RobotId, Enable = false },
-                new() { Title = "名稱", Data = SelectedRobot.RobotName, Enable = false },
-                new() { Title = "類型", Data = SelectedRobot.RobotType, Enable = false },
-                new() { Title = "IP", Data = SelectedRobot.IpAddress, Enable = true }
+                new() { Title = LanguageManager.GetString("Settings_EditRobot_Title_Id", "機械手臂編號"), Data = SelectedRobot.RobotId, Enable = false },
+                new() { Title = LanguageManager.GetString("Settings_EditRobot_Title_Name", "名稱"), Data = SelectedRobot.RobotName, Enable = false },
+                new() { Title = LanguageManager.GetString("Settings_EditRobot_Title_Type", "類型"), Data = SelectedRobot.RobotType, Enable = false },
+                new() { Title = LanguageManager.GetString("Settings_EditRobot_Title_Ip", "IP"), Data = SelectedRobot.IpAddress, Enable = true }
             };
-            var win = new EditGridWindow(items, "編輯機械手臂連線參數");
+            var win = new EditGridWindow(items, LanguageManager.GetString("Settings_EditRobot_WindowTitle", "編輯機械手臂連線參數"));
             if (win.ShowDialog() == true)
             {
                 // 使用顯示集合找出輸入後的值
-                string newIp = win.ViewModel.Display.First(x => x.Title == "IP").Data.Trim();
+                string newIp = win.ViewModel.Display.First(x => x.Title == LanguageManager.GetString("Settings_EditRobot_Title_Ip", "IP")).Data.Trim();
 
                 // 取得所有機械手臂，找出欲更新的 DTO
                 var all = await _robotService.DB_GetAllRobotsAsync() ?? new();
                 var dto = all.FirstOrDefault(r => r._id == SelectedRobot.RobotId);
                 if (dto == null)
                 {
-                    _windowService.ShowMessage("找不到原始機械手臂資料，更新失敗");
+                    _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_RobotNotFound", "找不到原始機械手臂資料，更新失敗"));
                     return;
                 }
 
@@ -525,11 +567,11 @@ namespace FMSFrontend.ViewModels
                 bool ok = await _robotService.DB_UpdateRobotDataAsync(dto);
                 if (!ok)
                 {
-                    _windowService.ShowMessage("機械手臂更新失敗，請稍後再試");
+                    _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_RobotUpdateFailed", "機械手臂更新失敗，請稍後再試"));
                     return;
                 }
 
-                StatusMessage = "✅ 機械手臂參數已更新";
+                StatusMessage = LanguageManager.GetString("Settings_Message_RobotUpdated", "✅ 機械手臂參數已更新");
 
                 // 重新載入機械手臂列表
                 await RobotRefresh();
@@ -591,31 +633,31 @@ namespace FMSFrontend.ViewModels
         {
             if (SelectedDevice == null)
             {
-                _windowService.ShowMessage("請先選擇要編輯的裝置");
+                _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_SelectDevice", "請先選擇要編輯的裝置"));
                 return;
             }
 
             // 動態建立可編輯欄位：IP / Port 可編輯，其餘只顯示
             var items = new List<EditGridViewModel.EditGridInfo>
             {
-                new() { Title = "裝置編號", Data = SelectedDevice.DeviceId, Enable = false },
-                new() { Title = "名稱", Data = SelectedDevice.DeviceName, Enable = false },
-                new() { Title = "IP", Data = SelectedDevice.IpAddress, Enable = true },
-                new() { Title = "Port", Data = SelectedDevice.Port, Enable = true }
+                new() { Title = LanguageManager.GetString("Settings_EditDevice_Title_Id", "裝置編號"), Data = SelectedDevice.DeviceId, Enable = false },
+                new() { Title = LanguageManager.GetString("Settings_EditDevice_Title_Name", "名稱"), Data = SelectedDevice.DeviceName, Enable = false },
+                new() { Title = LanguageManager.GetString("Settings_EditDevice_Title_Ip", "IP"), Data = SelectedDevice.IpAddress, Enable = true },
+                new() { Title = LanguageManager.GetString("Settings_EditDevice_Title_Port", "Port"), Data = SelectedDevice.Port, Enable = true }
             };
-            var win = new EditGridWindow(items, "編輯裝置連線參數");
+            var win = new EditGridWindow(items, LanguageManager.GetString("Settings_EditDevice_WindowTitle", "編輯裝置連線參數"));
             if (win.ShowDialog() == true)
             {
                 // 使用顯示集合找出輸入後的值
-                string newIp = win.ViewModel.Display.First(x => x.Title == "IP").Data.Trim();
-                string newPort = win.ViewModel.Display.First(x => x.Title == "Port").Data.Trim();
+                string newIp = win.ViewModel.Display.First(x => x.Title == LanguageManager.GetString("Settings_EditDevice_Title_Ip", "IP")).Data.Trim();
+                string newPort = win.ViewModel.Display.First(x => x.Title == LanguageManager.GetString("Settings_EditDevice_Title_Port", "Port")).Data.Trim();
 
                 // 取得所有裝置，找出欲更新的 DTO
                 var all = await _devicesService.GetAllDevicesAsync() ?? new();
                 var dto = all.FirstOrDefault(d => d.Id == SelectedDevice.DeviceId);
                 if (dto == null)
                 {
-                    _windowService.ShowMessage("找不到原始裝置資料，更新失敗");
+                    _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_DeviceNotFound", "找不到原始裝置資料，更新失敗"));
                     return;
                 }
 
@@ -626,11 +668,11 @@ namespace FMSFrontend.ViewModels
                 bool ok = await _devicesService.UpdateDeviceDataAsync(dto);
                 if (!ok)
                 {
-                    _windowService.ShowMessage("裝置更新失敗，請稍後再試");
+                    _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_DeviceUpdateFailed", "裝置更新失敗，請稍後再試"));
                     return;
                 }
 
-                StatusMessage = "✅ 裝置參數已更新";
+                StatusMessage = LanguageManager.GetString("Settings_Message_DeviceUpdated", "✅ 裝置參數已更新");
 
                 // 重新載入裝置列表
                 await DeviceRefresh();
@@ -716,12 +758,12 @@ namespace FMSFrontend.ViewModels
 
                 if (!ok)
                 {
-                    _windowService.ShowMessage("新增使用者失敗，請稍後再試");
+                    _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_WorkerAddFailed", "新增使用者失敗，請稍後再試"));
                 }
             }
             catch
             {
-                _windowService.ShowMessage("新增使用者時發生錯誤");
+                _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_WorkerAddError", "新增使用者時發生錯誤"));
             }
 
             await WorkerRefresh();
@@ -736,7 +778,7 @@ namespace FMSFrontend.ViewModels
 
             if (SelectedWorker == null || string.IsNullOrWhiteSpace(SelectedWorker.WorkerNumber))
             {
-                _windowService.ShowMessage("請先選擇要編輯的使用者");
+                _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_SelectWorker", "請先選擇要編輯的使用者"));
                 return;
             }
 
@@ -758,12 +800,12 @@ namespace FMSFrontend.ViewModels
 
                 if (!ok)
                 {
-                    _windowService.ShowMessage("使用者更新失敗，請稍後再試");
+                    _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_WorkerUpdateFailed", "使用者更新失敗，請稍後再試"));
                 }
             }
             catch
             {
-                _windowService.ShowMessage("使用者更新時發生錯誤");
+                _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_WorkerUpdateError", "使用者更新時發生錯誤"));
             }
 
             await WorkerRefresh();
@@ -776,7 +818,7 @@ namespace FMSFrontend.ViewModels
             {
                 if (SelectedWorker.WorkerNumber == null || SelectedWorker.WorkerNumber == "")
                 {
-                    _windowService.ShowMessage("請選擇要刪除的使用者");
+                    _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_SelectWorkerDelete", "請選擇要刪除的使用者"));
                     return;
                 }
                 if (!_authorizationService.RequireLoginAndWriteOperation(26))
@@ -784,7 +826,7 @@ namespace FMSFrontend.ViewModels
                 bool ok = await _workerService.DeleteWorkerDataByIdAsync(SelectedWorker.Id);
                 if (!ok)
                 {
-                    _windowService.ShowMessage("使用者刪除失敗，請稍後再試");
+                    _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_WorkerDeleteFailed", "使用者刪除失敗，請稍後再試"));
                 }
                 await WorkerRefresh();
             }
@@ -810,7 +852,7 @@ namespace FMSFrontend.ViewModels
                 List<AppointmentMaintenanceDto> dtos = await _appointmentMaintenanceService.GetAllAppointmentMaintenanceAsync() ?? new List<AppointmentMaintenanceDto>();
                 if (!dtos[0].IsEnabled)
                 {
-                    PeriodDisplay = "不設定";
+                    PeriodDisplay = LanguageManager.GetString("Period_None", "不設定");
                 }
                 else
                 {
@@ -843,7 +885,8 @@ namespace FMSFrontend.ViewModels
             };
 
             var vm = (PeriodWindowViewModel)win.DataContext;
-            vm.ApplyInitial(SelectedMode, Weekly.ToArray(), Monthly.ToArray(), Hour, Minute, IsPm, "潤滑週期");
+            vm.ApplyInitial(SelectedMode, Weekly.ToArray(), Monthly.ToArray(), Hour, Minute, IsPm,
+                LanguageManager.GetString("Settings_Label_LubricationPeriod", "潤滑週期"));
 
             if (win.ShowDialog() == true)
             {
@@ -896,17 +939,17 @@ namespace FMSFrontend.ViewModels
                     bool ok = await _appointmentMaintenanceService.UpdateAppointmentMaintenanceAsync(dtos[0]);
                     if (!ok)
                     {
-                        _windowService.ShowMessage("潤滑週期更新失敗，請稍後再試");
+                        _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_PeriodUpdateFailed", "潤滑週期更新失敗，請稍後再試"));
                     }
                 }
                 else
                 {
-                    _windowService.ShowMessage("無潤滑資料");
+                    _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_NoMaintenanceData", "無潤滑資料"));
                 }
             }
             catch
             {
-                _windowService.ShowMessage("例外狀況");
+                _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_Exception", "例外狀況"));
             }
         }
         private static string BuildPeriodDisplay(ScheduleMode mode, int[] weekly, int[] monthly, int hour, int minute)
@@ -914,22 +957,39 @@ namespace FMSFrontend.ViewModels
             string time = $"{hour:00}:{minute:00}";
             if (mode == ScheduleMode.None)
             {
-                return "不設定";
+                return LanguageManager.GetString("Period_None", "不設定");
             }
             else if (mode == ScheduleMode.Daily)
             {
-                return $"每日 {time} 進行潤滑";
+                var format = LanguageManager.GetString("Period_Daily_Format", "每日 {0} 進行潤滑");
+                return string.Format(format, time);
             }
             else if (mode == ScheduleMode.Weekly)
             {
-                string[] w = { "日", "一", "二", "三", "四", "五", "六" };
+                string[] w =
+                {
+                    LanguageManager.GetString("Period_Day_Sun", "日"),
+                    LanguageManager.GetString("Period_Day_Mon", "一"),
+                    LanguageManager.GetString("Period_Day_Tue", "二"),
+                    LanguageManager.GetString("Period_Day_Wed", "三"),
+                    LanguageManager.GetString("Period_Day_Thu", "四"),
+                    LanguageManager.GetString("Period_Day_Fri", "五"),
+                    LanguageManager.GetString("Period_Day_Sat", "六")
+                };
+                var separator = ",";
+                var format = LanguageManager.GetString("Period_Weekly_Format", "每週 {0} {1} 進行潤滑");
                 string L(int v) => v > 0 ? w[v - 1] : "-" + w[-v - 1];
-                return $"每週 {string.Join("、", weekly.Select(L))} {time} 進行潤滑";
+                var days = string.Join(separator, weekly.Select(L));
+                return string.Format(format, days, time);
             }
             else
             {
-                string L(int v) => v == 0 ? "last" : v.ToString();
-                return $"每月 {string.Join(",", monthly.Select(L))} 日 {time} 進行潤滑";
+                var separator = ",";
+                var last = LanguageManager.GetString("Period_Day_Last", "last");
+                var format = LanguageManager.GetString("Period_Monthly_Format", "每月 {0} 日 {1} 進行潤滑");
+                string L(int v) => v == 0 ? last : v.ToString();
+                var days = string.Join(separator, monthly.Select(L));
+                return string.Format(format, days, time);
             }
         }
 
@@ -944,23 +1004,24 @@ namespace FMSFrontend.ViewModels
 
         #region 其他設定
 
-        [ObservableProperty] private ObservableCollection<string> availableLanguages;
-        [ObservableProperty] private string selectedLanguage = "";
         [ObservableProperty] private ObservableCollection<string> availableThemes;
         [ObservableProperty] private string selectedTheme = "";
         [ObservableProperty] private bool enableNotifications = true;
         [ObservableProperty] private bool autoUpdate = true;
-        [ObservableProperty] private string statusMessage = "設定尚未儲存";
+        [ObservableProperty] private string statusMessage = LanguageManager.GetString("Settings_Message_NotSaved", "設定尚未儲存");
         // === 命令 ===
         [RelayCommand]
         private async Task SaveSettingsAsync()
         {
             // 模擬儲存邏輯，例如呼叫 API 或寫入本地設定檔
             await Task.Delay(500);
-            StatusMessage = "✅ 設定已儲存於 " + DateTime.Now.ToString("HH:mm:ss");
+            StatusMessage = string.Format(
+                CultureInfo.CurrentCulture,
+                LanguageManager.GetString("Settings_Message_SavedAt", "✅ 設定已儲存於 {0}"),
+                DateTime.Now.ToString("HH:mm:ss", CultureInfo.CurrentCulture));
 
             // 透過 WindowService 提示使用者
-            _windowService.ShowMessage("設定儲存成功");
+            _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_SaveSuccess", "設定儲存成功"));
         }
 
         [RelayCommand]
@@ -970,7 +1031,7 @@ namespace FMSFrontend.ViewModels
             SelectedTheme = AvailableThemes[0];
             EnableNotifications = true;
             AutoUpdate = true;
-            StatusMessage = "設定已重置";
+            StatusMessage = LanguageManager.GetString("Settings_Message_Reset", "設定已重置");
             SelectedTabIndexParameter = 0; // 重置到第一個 Tab
             SelectedSubTabIndexParameter = 0; // 重置到第一個 Tab
         }

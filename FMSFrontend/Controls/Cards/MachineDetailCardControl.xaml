@@ -52,7 +52,7 @@
                     <Button Grid.Column="0" 
                             Style="{StaticResource ImageButton}" Command="{Binding DataContext.OpenMachineWindowCommand,
       RelativeSource={RelativeSource AncestorType={x:Type ctrl:MachineDetailControl}}}" 
-                            ToolTip="查看機器資訊" 
+                            ToolTip="{DynamicResource MachineDetailCard_Tooltip_OpenMachine}" 
                             CommandParameter="{Binding}" Cursor="Hand">
                         <Image d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" Source="{Binding MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" Width="140" Height="140" Margin="0,2,0,0" Stretch="Uniform" VerticalAlignment="Top" />
                     </Button>
@@ -78,7 +78,7 @@
                             <DropShadowEffect BlurRadius="6" ShadowDepth="2" Direction="315" Color="Black" Opacity="0.3" />
                         </Path.Effect>
                     </Path>
-                    <TextBlock Text="禁用" Foreground="White" FontWeight="Bold" FontSize="14" Canvas.Right="8" Canvas.Bottom="8" />
+                    <TextBlock Text="{DynamicResource MachineDetailCard_Label_Disabled}" Foreground="White" FontWeight="Bold" FontSize="14" Canvas.Right="8" Canvas.Bottom="8" />
                 </Canvas>
             </Grid>
         </Border>

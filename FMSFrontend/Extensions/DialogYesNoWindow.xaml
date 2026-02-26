@@ -1,4 +1,4 @@
-﻿<Window x:Class="FMSFrontend.Extensions.DialogYesNoWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="DialogYesNoWindow" Width="456" Height="230" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None" Background="Transparent" AllowsTransparency="True">
+﻿<Window x:Class="FMSFrontend.Extensions.DialogYesNoWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="{DynamicResource DialogYesNoWindow_Title}" Width="456" Height="230" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None" Background="Transparent" AllowsTransparency="True">
 
     <Window.Resources>
         <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
@@ -19,7 +19,7 @@
                               Margin="5"
                               MaxHeight="120">
                     <TextBlock x:Name="MessageText"
-                               Text="你確定要執行此操作嗎？"
+                               Text="{DynamicResource DialogYesNoWindow_Message_Default}"
                                FontSize="16"
                                FontWeight="Bold"
                                Foreground="#222"
@@ -33,7 +33,7 @@
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
 
                     <!-- 是 Button -->
-                    <Button Width="100" Height="42" Content="是" Foreground="White" Background="#2779A7" BorderBrush="{x:Null}" FontSize="16" FontWeight="SemiBold" Cursor="Hand" Click="Yes_Click" Margin="5">
+                    <Button Width="100" Height="42" Content="{DynamicResource DialogYesNoWindow_Button_Yes}" Foreground="White" Background="#2779A7" BorderBrush="{x:Null}" FontSize="16" FontWeight="SemiBold" Cursor="Hand" Click="Yes_Click" Margin="5">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="0">
@@ -60,7 +60,7 @@
                     </Button>
 
                     <!-- 否 Button -->
-                    <Button Width="100" Height="42" Content="否" Foreground="White" Background="#999999" BorderBrush="{x:Null}" FontSize="16" FontWeight="SemiBold" Cursor="Hand" Click="No_Click" Margin="5">
+                    <Button Width="100" Height="42" Content="{DynamicResource DialogYesNoWindow_Button_No}" Foreground="White" Background="#999999" BorderBrush="{x:Null}" FontSize="16" FontWeight="SemiBold" Cursor="Hand" Click="No_Click" Margin="5">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="0">

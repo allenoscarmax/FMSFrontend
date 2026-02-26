@@ -28,8 +28,8 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Working Zone Overview" FontSize="16" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" Margin="20,0,0,0" />
-                    <Button Grid.Column="1" Width="28" Height="28" Margin="0,0,20,0" HorizontalAlignment="Right" Background="Transparent" BorderBrush="{x:Null}" ToolTip="展開/收合倉儲" Command="{Binding ToggleExpandCommand}">
+                    <TextBlock Text="{DynamicResource MachineOverviewControl_Title}" FontSize="16" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" Margin="20,0,0,0" />
+                    <Button Grid.Column="1" Width="28" Height="28" Margin="0,0,20,0" HorizontalAlignment="Right" Background="Transparent" BorderBrush="{x:Null}" ToolTip="{DynamicResource MachineOverviewControl_Tooltip_Toggle}" Command="{Binding ToggleExpandCommand}">
                         <materialDesign:PackIcon Kind="ViewGrid" Width="24" Height="24" Foreground="#555" />
                     </Button>
                 </Grid>

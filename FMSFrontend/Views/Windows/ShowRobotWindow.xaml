@@ -1,4 +1,4 @@
-﻿<Window x:Class="FMSFrontend.Views.Windows.ShowRobotWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" Title="設備資訊 - 機器人" Height="416" Width="1074" WindowStartupLocation="CenterOwner" WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown" Cursor="">
+﻿<Window x:Class="FMSFrontend.Views.Windows.ShowRobotWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" Title="{DynamicResource ShowRobotWindow_Title}" Height="416" Width="1074" WindowStartupLocation="CenterOwner" WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown" Cursor="">
 
     <!-- 样式（保留你可用現有 PrimaryButtonStyle；這裡提供一個備用） -->
     <Window.Resources>
@@ -7,7 +7,7 @@
     </Window.Resources>
 
     <Grid >
-        <Border x:Name="Card" Background="White" CornerRadius="10" Padding="0" Effect="{DynamicResource ShadowEffect}" SnapsToDevicePixels="True" BorderBrush="#CCC" BorderThickness="1">
+        <Border x:Name="Card" Background="White" CornerRadius="10" Padding="0" Margin="10" Effect="{DynamicResource ShadowEffect}" SnapsToDevicePixels="True" BorderBrush="#CCC" BorderThickness="1">
            
 
             <!-- 內層真正內容 -->
@@ -32,7 +32,7 @@
                             <ColumnDefinition Width="48" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="⚙️ 設備資訊" VerticalAlignment="Center" Margin="20,0,0,0" Foreground="White" FontSize="24" FontWeight="Bold" />
+                        <TextBlock Text="{DynamicResource ShowRobotWindow_Header_Title}" VerticalAlignment="Center" Margin="20,0,0,0" Foreground="White" FontSize="24" FontWeight="Bold" />
 
                         <!-- 關閉按鈕 -->
                         <Button Grid.Column="1" Content="✕" Background="Transparent" Foreground="White" BorderThickness="0" FontSize="25" FontWeight="Bold" Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center" Width="32" Height="32" Click="Close_Click" />
@@ -50,14 +50,14 @@
                     <TextBlock Text="{Binding DisplayData.RobotName}" d:Text="機器人" FontSize="28" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="微軟正黑體" />
 
                     <!-- 右：膠囊按鈕（綁 Command） -->
-                    <Button Grid.Column="1" Style="{StaticResource PrimaryButtonStyle}" Width="144" Height="40" Background="#F3B407" Content="物件移出手臂" VerticalAlignment="Center" Margin="12,0,0,8" Command="{Binding MoveOutCommand}" />
+                    <Button Grid.Column="1" Style="{StaticResource PrimaryButtonStyle}" MinWidth="144" Height="40" Background="#F3B407" Content="{DynamicResource ShowRobotWindow_Button_MoveOut}" VerticalAlignment="Center" Margin="12,0,0,8" Command="{Binding MoveOutCommand}" />
 
                     <!-- 下方分隔線 -->
                     <Border Grid.ColumnSpan="2" Background="#D9D9D9" Height="1" VerticalAlignment="Bottom" Margin="0,30,0,0" />
                 </Grid>
 
                 <!-- Row 2：主內容（兩欄） -->
-                <Grid Grid.Row="2" Margin="12,8,12,12">
+                <Grid Grid.Row="2" Margin="8,0,8,8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <!-- 圖片 -->
@@ -72,43 +72,50 @@
 
                     <!-- 右：資訊卡（兩欄：欄名 / 值） -->
                     <Border Grid.Column="1" Margin="6" CornerRadius="8" BorderBrush="#E5E7EB" BorderThickness="1" Background="White">
-                        <Grid Margin="24">
+                        <Grid Margin="24,10">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="20" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
                             <!-- 欄位：設備名稱 -->
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="設備名稱：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
-                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Robot.Name}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource ShowRobotWindow_Label_EquipmentName}" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text=" :" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center" />
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Robot.Name}" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center" />
 
                             <!-- 欄位：設備類型 -->
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="設備類型：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
-                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Robot.EquipmentType}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource ShowRobotWindow_Label_EquipmentType}" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text=" :" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Robot.EquipmentType}" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center"/>
 
                             <!-- 欄位：設備型號 -->
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="設備型號：" FontSize="22" Margin="0,8" FontFamily="微軘正黑體" />
-                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Robot.EquipmentModel}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource ShowRobotWindow_Label_EquipmentModel}" FontSize="16" Margin="0,3" FontFamily="微軘正黑體" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text=" :" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center" />
+                            <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Robot.EquipmentModel}" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center"/>
 
                             <!-- 欄位：當前程式 -->
-                            <TextBlock Grid.Row="3" Grid.Column="0" Text="當前程式：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
-                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Robot.CurrentProgram}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource ShowRobotWindow_Label_CurrentProgram}" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text=" :" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Robot.CurrentProgram}" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center"/>
 
                             <!-- 欄位：機台狀態 -->
-                            <TextBlock Grid.Row="4" Grid.Column="0" Text="機台狀態：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
-                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Robot.Status}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource ShowRobotWindow_Label_Status}" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center" />
+                            <TextBlock Grid.Row="4" Grid.Column="1" Text=" :" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding Robot.Status}" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center"/>
 
                             <!-- 欄位：目前物料 -->
-                            <TextBlock Grid.Row="5" Grid.Column="0" Text="目前物料：" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
-                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Robot.materialShortName}" FontSize="22" Margin="0,8" FontFamily="微軟正黑體" />
+                            <TextBlock Grid.Row="5" Grid.Column="0" Text="{DynamicResource ShowRobotWindow_Label_CurrentMaterial}" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="5" Grid.Column="1" Text=" :" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding Robot.materialShortName}" FontSize="16" Margin="0,3" FontFamily="微軟正黑體" VerticalAlignment="Center"/>
                         </Grid>
                     </Border>
                 </Grid>

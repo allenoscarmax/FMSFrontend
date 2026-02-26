@@ -4,6 +4,7 @@ using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Features.Threading;
+using FMSFrontend.Helpers;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
@@ -99,28 +100,28 @@ namespace FMSFrontend.ViewModels
 
         // ===== 日期篩選 =====
         public ObservableCollection<string> DateFilterOptions { get; set; } = new() { "今天", "前7天", "自訂" };
-        [ObservableProperty] private string selectedFilterOption = "今天";
+        [ObservableProperty] private int selectedFilterIndex = -1;
         [ObservableProperty] private DateTime? fromDate = DateTime.Today;
         [ObservableProperty] private DateTime? toDate = DateTime.Today;
         [ObservableProperty] private bool isCustomDateMode;
 
         private bool _updatingDate;
-        partial void OnSelectedFilterOptionChanged(string value)
+        partial void OnSelectedFilterIndexChanged(int value)
         {
-            IsCustomDateMode = value == "自訂";
-            ApplyDateFilter();
+            IsCustomDateMode = value == 2;
+            ApplyDateFilter(value);
             _ = RefreshFetch();
         }
-        private void ApplyDateFilter()
+        private void ApplyDateFilter(int filterIndex)
         {
             _updatingDate = true;
-            switch (SelectedFilterOption)
+            switch (filterIndex)
             {
-                case "今天":
+                case 0:
                     FromDate = DateTime.Today; ToDate = DateTime.Today; break;
-                case "前7天":
+                case 1:
                     FromDate = DateTime.Today.AddDays(-6); ToDate = DateTime.Today; break;
-                case "自訂":
+                case 2:
                     FromDate = DateTime.Today.AddMonths(-1); ToDate = DateTime.Today; break;
                 default: break; // 保留使用者輸入
             }
@@ -141,7 +142,7 @@ namespace FMSFrontend.ViewModels
                 if (from > to) to = from.AddMonths(1);  // 如果開始日大於結束日，調整結束日為開始日加一個月
                 if (to > from.AddMonths(1))             // 一個月範圍限制
                 {
-                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    _windowService.ShowMessage(LanguageManager.GetString("MachineMainDetail_Message_DateRangeTooLong", "選擇的日期範圍不能超過一個月"));
                     to = from.AddMonths(1);
                 }
                 if (to > today) to = today; // 避免被 AddMonths 推到未來
@@ -167,7 +168,7 @@ namespace FMSFrontend.ViewModels
                 if (to < from) from = to.AddMonths(-1); // 如果結束日小於開始日，調整開始日為結束日減一個月
                 if (from < to.AddMonths(-1)) // 一個月範圍限制
                 {
-                    _windowService.ShowMessage("選擇的日期範圍不能超過一個月");
+                    _windowService.ShowMessage(LanguageManager.GetString("MachineMainDetail_Message_DateRangeTooLong", "選擇的日期範圍不能超過一個月"));
                     from = to.AddMonths(-1);
                 }
                 if (from > today) from = today; // 避免 from 被推到未來（理論上不會，但保險）
@@ -211,7 +212,7 @@ namespace FMSFrontend.ViewModels
                 }
                 else
                 {
-                    _windowService.ShowMessage("日期格式錯誤");
+                    _windowService.ShowMessage(LanguageManager.GetString("MachineMainDetail_Message_DateFormatError", "日期格式錯誤"));
                 }
             }
             catch
@@ -240,8 +241,8 @@ namespace FMSFrontend.ViewModels
             };
             TabsPosition = new ObservableCollection<TabItemModel>
             {
-                new TabItemModel { Header = "絕對", TagColor = "#2779A7" },
-                new TabItemModel { Header = "機械", TagColor = "#2779A7" }
+                new TabItemModel { Header = LanguageManager.GetString("MachineMainDetail_Tab_Absolute", "絕對"), TagColor = "#2779A7" },
+                new TabItemModel { Header = LanguageManager.GetString("MachineMainDetail_Tab_Machine", "機械"), TagColor = "#2779A7" }
             };
             tabsParameter = new ObservableCollection<TabItemModel>
             {
@@ -250,12 +251,13 @@ namespace FMSFrontend.ViewModels
             };
             tabsWorkOrder = new ObservableCollection<TabItemModel>
             {
-                new TabItemModel { Header = "工單資訊", TagColor = "#2779A7" },
-                new TabItemModel { Header = "工單Timeline", TagColor = "#2779A7" }
+                new TabItemModel { Header = LanguageManager.GetString("MachineMainDetail_Tab_WorkOrderInfo", "工單資訊"), TagColor = "#2779A7" },
+                new TabItemModel { Header = LanguageManager.GetString("MachineMainDetail_Tab_WorkOrderTimeline", "工單Timeline"), TagColor = "#2779A7" }
             };
 
             DisplayData = new MachineDisplayData();
 
+            SelectedFilterIndex = 0;
             selectedTabIndex = 0; selectedTabIndexPosition = 0; selectedTabIndexParameter = 0; selectedTabIndexWorkOrder = 1;
         }
         public void OnPageActivated()
@@ -282,30 +284,30 @@ namespace FMSFrontend.ViewModels
                 if (canctrlDelay == 0) DisplayData.CanControl = edm.OscarEdm.CanControl;
 
                 // 機台資訊
-                DisplayData.MachineInfos[0].Name = "• 機台型號：";
+                DisplayData.MachineInfos[0].Name = LanguageManager.GetString("MachineMainDetail_EDM_Info1", "機台型號：");
                 DisplayData.MachineInfos[0].Value = edm.OscarEdm.MachineNumber;
-                DisplayData.MachineInfos[1].Name = "• 機台狀態：";
+                DisplayData.MachineInfos[1].Name = LanguageManager.GetString("MachineMainDetail_EDM_Info2", "機台狀態：");
                 DisplayData.MachineInfos[1].Value = edm.OscarEdm.MachineStatus;
-                DisplayData.MachineInfos[2].Name = "• 使用電極：";
+                DisplayData.MachineInfos[2].Name = LanguageManager.GetString("MachineMainDetail_EDM_Info3", "使用電極：");
                 DisplayData.MachineInfos[2].Value = edm.OscarEdm.UsingElectrode;
-                DisplayData.MachineInfos[3].Name = "• 加工程式：";
+                DisplayData.MachineInfos[3].Name = LanguageManager.GetString("MachineMainDetail_EDM_Info4", "加工程式：");
                 DisplayData.MachineInfos[3].Value = edm.OscarEdm.MachiningCode;
-                DisplayData.MachineInfos[4].Name = "• 加工時間：";
+                DisplayData.MachineInfos[4].Name = LanguageManager.GetString("MachineMainDetail_EDM_Info5", "加工時間：");
                 DisplayData.MachineInfos[4].Value = edm.OscarEdm.CycleTime;
-                DisplayData.MachineInfos[5].Name = "• 加工進度：";
+                DisplayData.MachineInfos[5].Name = LanguageManager.GetString("MachineMainDetail_EDM_Info6", "加工進度：");
                 DisplayData.MachineInfos[5].Value = edm.OscarEdm.MachiningWorkingPercentage;
-                DisplayData.MachineInfos[6].Name = "• 目前工單：";
+                DisplayData.MachineInfos[6].Name = LanguageManager.GetString("MachineMainDetail_EDM_Info7", "目前工單：");
                 DisplayData.MachineInfos[6].Value = edm.OscarEdm.CurrentWorksheet;
-                DisplayData.MachineInfos[7].Name = "• 刀具號碼：";
+                DisplayData.MachineInfos[7].Name = LanguageManager.GetString("MachineMainDetail_EDM_Info8", "刀具號碼：");
                 DisplayData.MachineInfos[7].Value = edm.OscarEdm.MachiningTool;
 
-                DisplayData.MachineInfos[8].Name = "• 機台溫度 : ";
+                DisplayData.MachineInfos[8].Name = LanguageManager.GetString("MachineMainDetail_EDM_Info9", "機台溫度 : ");
                 DisplayData.MachineInfos[8].Value = edm.OscarEdm.MachineTemperature;
-                DisplayData.MachineInfos[9].Name = "• 主軸轉速 : ";
+                DisplayData.MachineInfos[9].Name = LanguageManager.GetString("MachineMainDetail_EDM_Info10", "主軸轉速 : ");
                 DisplayData.MachineInfos[9].Value = edm.OscarEdm.SpindleRPM;
-                DisplayData.MachineInfos[10].Name = "• 油位狀態 : ";
+                DisplayData.MachineInfos[10].Name = LanguageManager.GetString("MachineMainDetail_EDM_Info11", "油位狀態 : ");
                 DisplayData.MachineInfos[10].Value = edm.OscarEdm.OilLevelStatus;
-                DisplayData.MachineInfos[11].Name = "• 冷卻液量 : ";
+                DisplayData.MachineInfos[11].Name = LanguageManager.GetString("MachineMainDetail_EDM_Info12", "冷卻液量 : ");
                 DisplayData.MachineInfos[11].Value = edm.OscarEdm.CoolantLevel;
                 for (int i = 12; i < 16; i++)
                 {
@@ -330,29 +332,29 @@ namespace FMSFrontend.ViewModels
                 DisplayData.MCH_C = "";
 
                 // 加工參數
-                DisplayData.ProcessingParam[0].Name = "TON(us):";
+                DisplayData.ProcessingParam[0].Name = LanguageManager.GetString("MachineMainDetail_EDM_Param1", "TON(us):");
                 DisplayData.ProcessingParam[0].Value = edm.OscarEdm.T_ON;
-                DisplayData.ProcessingParam[1].Name = "TOFF(us):";
+                DisplayData.ProcessingParam[1].Name = LanguageManager.GetString("MachineMainDetail_EDM_Param2", "TOFF(us):");
                 DisplayData.ProcessingParam[1].Value = edm.OscarEdm.T_OFF;
-                DisplayData.ProcessingParam[2].Name = "I(A):";
+                DisplayData.ProcessingParam[2].Name = LanguageManager.GetString("MachineMainDetail_EDM_Param3", "I(A):");
                 DisplayData.ProcessingParam[2].Value = edm.OscarEdm.E_SPD; //??
-                DisplayData.ProcessingParam[3].Name = "Pol:";
+                DisplayData.ProcessingParam[3].Name = LanguageManager.GetString("MachineMainDetail_EDM_Param4", "Pol:");
                 DisplayData.ProcessingParam[3].Value = edm.OscarEdm.Pol;
-                DisplayData.ProcessingParam[4].Name = "Hv:";
+                DisplayData.ProcessingParam[4].Name = LanguageManager.GetString("MachineMainDetail_EDM_Param5", "Hv:");
                 DisplayData.ProcessingParam[4].Value = edm.OscarEdm.HV;
-                DisplayData.ProcessingParam[5].Name = "Gap(V):";
+                DisplayData.ProcessingParam[5].Name = LanguageManager.GetString("MachineMainDetail_EDM_Param6", "Gap(V):");
                 DisplayData.ProcessingParam[5].Value = edm.OscarEdm.Gap;
-                DisplayData.ProcessingParam[6].Name = "Speed:";
+                DisplayData.ProcessingParam[6].Name = LanguageManager.GetString("MachineMainDetail_EDM_Param7", "Speed:");
                 DisplayData.ProcessingParam[6].Value = edm.OscarEdm.Speed;
-                DisplayData.ProcessingParam[7].Name = "Pulse";
+                DisplayData.ProcessingParam[7].Name = LanguageManager.GetString("MachineMainDetail_EDM_Param8", "Pulse");
                 DisplayData.ProcessingParam[7].Value = edm.OscarEdm.Pulse;
-                DisplayData.ProcessingParam[8].Name = "Servo(%):";
+                DisplayData.ProcessingParam[8].Name = LanguageManager.GetString("MachineMainDetail_EDM_Param9", "Servo(%):");
                 DisplayData.ProcessingParam[8].Value = edm.OscarEdm.Servo;
-                DisplayData.ProcessingParam[9].Name = "JD(mm):";
+                DisplayData.ProcessingParam[9].Name = LanguageManager.GetString("MachineMainDetail_EDM_Param10", "JD(mm):");
                 DisplayData.ProcessingParam[9].Value = edm.OscarEdm.JD;
-                DisplayData.ProcessingParam[10].Name = "OB:";
+                DisplayData.ProcessingParam[10].Name = LanguageManager.GetString("MachineMainDetail_EDM_Param11", "OB:");
                 DisplayData.ProcessingParam[10].Value = edm.OscarEdm.OB;
-                DisplayData.ProcessingParam[11].Name = "JT(s):";
+                DisplayData.ProcessingParam[11].Name = LanguageManager.GetString("MachineMainDetail_EDM_Param12", "JT(s):");
                 DisplayData.ProcessingParam[11].Value = edm.OscarEdm.JT;
                 for (int i = 12; i < 16; i++)
                 {
@@ -360,7 +362,7 @@ namespace FMSFrontend.ViewModels
                     DisplayData.ProcessingParam[i].Value = "";
                 }
             }
-            else if (MachineName.Contains("UH500"))
+            else if (MachineName.Contains("CNC"))
             {
                 // 從MachinesT取得對應Machine名稱一樣的的機台資料顯示在DisplayData上
                 var machine = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
@@ -371,21 +373,21 @@ namespace FMSFrontend.ViewModels
                 if (canctrlDelay > 0) canctrlDelay--;
                 if (canctrlDelay == 0) DisplayData.CanControl = cnc.CanControl;
                 // 機台資訊
-                DisplayData.MachineInfos[0].Name = "• 機台型號：";
+                DisplayData.MachineInfos[0].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info1", "機台型號：");
                 DisplayData.MachineInfos[0].Value = cnc.MachineNumber;
-                DisplayData.MachineInfos[1].Name = "• 機台狀態：";
+                DisplayData.MachineInfos[1].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info2", "機台狀態：");
                 DisplayData.MachineInfos[1].Value = cnc.MachineStatus;
-                DisplayData.MachineInfos[2].Name = "• 使用刀具：";
+                DisplayData.MachineInfos[2].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info3", "使用刀具：");
                 DisplayData.MachineInfos[2].Value = cnc.ToolName;
-                DisplayData.MachineInfos[3].Name = "• 加工程式：";
+                DisplayData.MachineInfos[3].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info4", "加工程式：");
                 DisplayData.MachineInfos[3].Value = cnc.MachiningCode;
-                DisplayData.MachineInfos[4].Name = "• 加工時間：";
+                DisplayData.MachineInfos[4].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info5", "加工時間：");
                 DisplayData.MachineInfos[4].Value = cnc.CycleTime;
-                DisplayData.MachineInfos[5].Name = "• 加工進度：";
+                DisplayData.MachineInfos[5].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info6", "加工進度：");
                 DisplayData.MachineInfos[5].Value = cnc.MachiningWorkingPercentage;
-                DisplayData.MachineInfos[6].Name = "• 目前工單：";
+                DisplayData.MachineInfos[6].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info7", "目前工單：");
                 DisplayData.MachineInfos[6].Value = cnc.CurrentWorksheet;
-                DisplayData.MachineInfos[7].Name = "• 刀具號碼：";
+                DisplayData.MachineInfos[7].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info8", "刀具號碼：");
                 DisplayData.MachineInfos[7].Value = cnc.MachiningTool;
                 for (int i = 8; i < 16; i++)
                 {
@@ -409,9 +411,9 @@ namespace FMSFrontend.ViewModels
                 DisplayData.MCH_C = cnc.MCH_C;
 
                 // 加工參數
-                DisplayData.ProcessingParam[0].Name = "進給速度";
+                DisplayData.ProcessingParam[0].Name = LanguageManager.GetString("MachineMainDetail_CNC_Param1", "進給速度");
                 DisplayData.ProcessingParam[0].Value = cnc.FeedRate;
-                DisplayData.ProcessingParam[1].Name = "主軸轉速";
+                DisplayData.ProcessingParam[1].Name = LanguageManager.GetString("MachineMainDetail_CNC_Param2", "主軸轉速");
                 DisplayData.ProcessingParam[1].Value = cnc.SpindleSpeed;
                 for (int i = 2; i < 16; i++)
                 {

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Helpers;
 using IniFile;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -43,11 +44,11 @@ namespace FMSFrontend.ViewModels.Windows
         {
             if (IsRobotRunning)
             {
-                ShutdownMessage = "手臂正在運行中！確定要關機？";
+                ShutdownMessage = LanguageManager.GetString("ShutdownWindow_Message_RobotRunning", "手臂正在運行中！確定要關機？");
             }
             else
             {
-                ShutdownMessage = "確定要關閉控制系統？";
+                ShutdownMessage = LanguageManager.GetString("ShutdownWindow_Message_ConfirmShutdown", "確定要關閉控制系統？");
             }
         }
     }

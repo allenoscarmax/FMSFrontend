@@ -70,13 +70,13 @@
                     </DataGrid.RowStyle>
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="電極名稱" Binding="{Binding ElectrodeName}" Width="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                        <DataGridTextColumn Header="標籤序號" Binding="{Binding LabelSerial}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                        <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                        <DataGridTextColumn Header="加工程式" Binding="{Binding EDMProgram}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                        <DataGridTextColumn Header="補償" Binding="{Binding Offset}" Width="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                        <DataGridTextColumn Header="是否共用電極" Binding="{Binding IsShare}" Width="130" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                        <DataGridTextColumn Header="共用電極名稱" Binding="{Binding ShareElectrode}" Width="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                        <DataGridTextColumn Header="{DynamicResource WorkOrder_Column_ElectrodeName}" Binding="{Binding ElectrodeName}" Width="Auto" MinWidth="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                        <DataGridTextColumn Header="{DynamicResource WorkOrder_Column_LabelSerial}" Binding="{Binding LabelSerial}" Width="Auto" MinWidth="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                        <DataGridTextColumn Header="{DynamicResource WorkOrder_Column_Status}" Binding="{Binding Status}" Width="Auto" MinWidth="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                        <DataGridTextColumn Header="{DynamicResource WorkOrder_Column_EDMProgram}" Binding="{Binding EDMProgram}" Width="Auto" MinWidth="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                        <DataGridTextColumn Header="{DynamicResource WorkOrder_Column_Offset}" Binding="{Binding Offset}" Width="Auto" MinWidth="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                        <DataGridTextColumn Header="{DynamicResource WorkOrder_Column_IsShare}" Binding="{Binding IsShare}" Width="Auto" MinWidth="130" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                        <DataGridTextColumn Header="{DynamicResource WorkOrder_Column_ShareElectrode}" Binding="{Binding ShareElectrode}" Width="Auto" MinWidth="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
@@ -98,18 +98,18 @@
             <!-- 標題列 -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <materialDesign:PackIcon Kind="ClipboardListOutline" VerticalAlignment="Center" Width="24" Height="24" Margin="0,0,4,0" Foreground="{DynamicResource PrimaryTextBrush}" />
-                <TextBlock Text="工單管理" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                <TextBlock Text="{DynamicResource WorkOrder_Title}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
 
             <!-- Tabs -->
             <TabControl Grid.Row="1" Tag="MainTab" SelectedIndex="{Binding SelectedTabIndexParameter}" Style="{StaticResource FlatTabControlStyle}" Height="40" Margin="0,8,0,0" Background="Transparent" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}">
-                <TabItem Header="新工單" Tag="#2779A7" />
-                <TabItem Header="EDM" Tag="#2779A7" />
-                <TabItem Header="失敗工單" Tag="#2779A7" />
+                <TabItem Header="{DynamicResource WorkOrder_Tab_New}" Tag="#2779A7" />
+                <TabItem Header="{DynamicResource WorkOrder_Tab_EDM}" Tag="#2779A7" />
+                <TabItem Header="{DynamicResource WorkOrder_Tab_Failure}" Tag="#2779A7" />
             </TabControl>
 
             <!-- 外部已經統一套好卡片框 -->
-            <Border Background="White" CornerRadius="0,0,10,10" Padding="40,16,40,24" Effect="{StaticResource ShadowEffect}" Grid.Row="2">
+            <Border Background="White" CornerRadius="0,0,10,10" Padding="16" Effect="{StaticResource ShadowEffect}" Grid.Row="2">
 
                 <!-- 切換內容區 -->
                 <ContentControl Grid.Row="2" Content="{Binding}">
@@ -130,17 +130,17 @@
                                                         </Grid.RowDefinitions>
 
                                                         <!-- Upload 按鈕 -->
-                                                        <Button Command="{Binding OpenUploadSheetCommand}" Grid.Row="0" HorizontalAlignment="Left" Margin="0,0,0,16" Background="#0070E0" Foreground="White" FontWeight="Bold" Cursor="Hand" BorderThickness="0" Effect="{StaticResource ShadowEffect}" Style="{StaticResource  PrimaryButtonStyle}" Width="180" Height="40">
+                                                        <Button Width="Auto" MinWidth="180" Height="40" Command="{Binding OpenUploadSheetCommand}" Grid.Row="0" HorizontalAlignment="Left" Margin="16,0,0,16" Background="#0070E0" Foreground="White" FontWeight="Bold" Cursor="Hand" BorderThickness="0" Effect="{StaticResource ShadowEffect}" Style="{StaticResource  PrimaryButtonStyle}">
                                                             <Border CornerRadius="8" Background="Transparent">
                                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                                     <materialDesign:PackIcon Kind="Upload" Width="20" Height="20" Margin="0,0,6,0" />
-                                                                    <TextBlock Text="上傳工單" FontSize="18" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="{DynamicResource WorkOrder_Button_Upload}" FontSize="18" VerticalAlignment="Center" />
                                                                 </StackPanel>
                                                             </Border>
                                                         </Button>
 
                                                         <!-- 外框 -->
-                                                        <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,8">
+                                                        <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="16,0,16,16">
                                                             <Grid>
                                                                 <DataGrid Name="NewWorkDataGrid" behaviors:RowDetailsToggleBehavior.IsEnabled="True" behaviors:RowDetailsToggleBehavior.KeepSelection="False" behaviors:RowDetailsToggleBehavior.ToggleOnRowClick="True" behaviors:ExclusiveSelectionBehavior.Group="WorkOrderSelection" SelectionMode="Single" SelectionUnit="FullRow" ItemsSource="{Binding WorkOrderList}" ColumnHeaderStyle="{StaticResource CompactDataGridColumnHeaderStyle}" IsReadOnly="True" AutoGenerateColumns="False" RowDetailsVisibilityMode="Collapsed" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" RowHeight="44">
                                                                     <DataGrid.Style>
@@ -170,8 +170,7 @@
                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                 <DataTemplate>
                                                                                     <Border Tag="ExpandClickArea">
-                                                                                        <!-- ← Tag 是關鍵 -->
-                                                                                        <materialDesign:PackIcon Width="20" Height="20">
+                                                                                        <materialDesign:PackIcon Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
                                                                                             <materialDesign:PackIcon.Style>
                                                                                                 <Style TargetType="materialDesign:PackIcon">
                                                                                                     <Setter Property="Kind" Value="ChevronRight" />
@@ -187,12 +186,9 @@
                                                                                 </DataTemplate>
                                                                             </DataGridTemplateColumn.CellTemplate>
                                                                         </DataGridTemplateColumn>
-
-                                                                        <DataGridTextColumn Header="工單編號" FontSize="18" Binding="{Binding WorksheetNumber}" Width="220" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-
-                                                                        <DataGridTextColumn Header="工件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-
-                                                                        <DataGridTemplateColumn Header="狀態" Width="180">
+                                                                        <DataGridTextColumn Width="Auto" MinWidth="180" Header="{DynamicResource WorkOrder_Column_WorksheetNumber}" FontSize="18" Binding="{Binding WorksheetNumber}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                        <DataGridTextColumn Width="Auto" MinWidth="300" Header="{DynamicResource WorkOrder_Column_WorkpieceName}" FontSize="18" Binding="{Binding WorkpieceName}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                        <DataGridTemplateColumn Width="Auto" MinWidth="180" Header="{DynamicResource WorkOrder_Column_Status}" >
                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                 <DataTemplate>
                                                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -202,24 +198,20 @@
                                                                                 </DataTemplate>
                                                                             </DataGridTemplateColumn.CellTemplate>
                                                                         </DataGridTemplateColumn>
-
-                                                                        <DataGridTextColumn Header="目標EDM" FontSize="18" Binding="{Binding TargetEDM}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-
-                                                                        <DataGridTextColumn Header="座標" FontSize="18" Binding="{Binding Coordinate}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-
-                                                                        <DataGridTextColumn Header="設定者" FontSize="18" Binding="{Binding SetupUser}" Width="110" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-
-                                                                        <DataGridTemplateColumn Header="刪除" Width="60">
+                                                                        <DataGridTextColumn Width="Auto" MinWidth="150" Header="{DynamicResource WorkOrder_Column_TargetEDM}" FontSize="18" Binding="{Binding TargetEDM}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                        <DataGridTextColumn Width="Auto" MinWidth="150"  Header="{DynamicResource WorkOrder_Column_Coordinate}" FontSize="18" Binding="{Binding Coordinate}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                        <DataGridTextColumn Width="Auto" MinWidth="150" Header="{DynamicResource WorkOrder_Column_SetupUser}" FontSize="18" Binding="{Binding SetupUser}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                        <DataGridTemplateColumn Width="Auto" MinWidth="80" Header="{DynamicResource WorkOrder_Column_Delete}">
                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                 <DataTemplate>
-                                                                                    <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" ToolTip="刪除">
+                                                                                    <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" ToolTip="{DynamicResource WorkOrder_Tooltip_Delete}">
                                                                                         <materialDesign:PackIcon Kind="TrashCanOutline" Foreground="#0070E0" Width="20" Height="20" />
                                                                                     </Button>
                                                                                 </DataTemplate>
                                                                             </DataGridTemplateColumn.CellTemplate>
                                                                         </DataGridTemplateColumn>
                                                                     </DataGrid.Columns>
-
+                                                                    
                                                                     <DataGrid.RowDetailsTemplate>
                                                                         <DataTemplate>
                                                                             <StackPanel Margin="0,2,0,2" Background="#DDDDDD">
@@ -227,7 +219,6 @@
                                                                                     <TextBlock Text="{Binding EDMStageDisplay}" FontSize="18" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" Margin="50,0,8,0" />
                                                                                     <ProgressBar Value="{Binding EDMStageProgress, Mode=OneWay}" Height="8" Width="200" VerticalAlignment="Center" />
                                                                                 </StackPanel>
-
                                                                                 <DataGrid IsReadOnly="True" Margin="40,0,40,20" ItemsSource="{Binding EDMDetails}" Style="{StaticResource ModernFlatDataGridStyle}" AutoGenerateColumns="False" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" HeadersVisibility="Column" FontSize="14" >
                                                                                     <DataGrid.ColumnHeaderStyle>
                                                                                         <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource CompactDataGridColumnHeaderStyle}">
@@ -244,13 +235,11 @@
                                                                                             <Setter Property="BorderBrush" Value="Black" />
                                                                                         </Style>
                                                                                     </DataGrid.RowStyle>
-
                                                                                     <DataGrid.Columns>
-                                                                                        <DataGridTextColumn Header="電極名稱" Binding="{Binding ElectrodeName}" Width="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                        <DataGridTextColumn Header="標籤序號" Binding="{Binding LabelSerial}" Width="200" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                        <DataGridTextColumn Header="狀態" Binding="{Binding Status}" Width="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                        <!-- ✅ Read-only, non-interactive checkbox -->
-                                                                                        <DataGridCheckBoxColumn Header="需EDM" Binding="{Binding NeedEDM, Mode=OneWay}" Width="110" IsReadOnly="True">
+                                                                                        <DataGridTextColumn Width="Auto" MinWidth="250" Header="{DynamicResource WorkOrder_Column_ElectrodeName}" Binding="{Binding ElectrodeName}"  ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Width="Auto" MinWidth="200" Header="{DynamicResource WorkOrder_Column_LabelSerial}" Binding="{Binding LabelSerial}"  ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Width="Auto" MinWidth="80"  Header="{DynamicResource WorkOrder_Column_Status}" Binding="{Binding Status}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridCheckBoxColumn Width="Auto" MinWidth="110" Header="{DynamicResource WorkOrder_Column_NeedEDM}" Binding="{Binding NeedEDM, Mode=OneWay}" IsReadOnly="True">
                                                                                             <DataGridCheckBoxColumn.ElementStyle>
                                                                                                 <Style TargetType="CheckBox" BasedOn="{StaticResource CenterAlignedCheckBoxStyle}">
                                                                                                     <Setter Property="IsHitTestVisible" Value="False" />
@@ -258,10 +247,10 @@
                                                                                                 </Style>
                                                                                             </DataGridCheckBoxColumn.ElementStyle>
                                                                                         </DataGridCheckBoxColumn>
-                                                                                        <DataGridTextColumn Header="加工程式" Binding="{Binding EDMProgram}" Width="Auto" MinWidth="150" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                        <DataGridTextColumn Header="補償" Binding="{Binding Offset}" Width="80" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                        <DataGridTextColumn Header="是否共用電極" Binding="{Binding IsShare}" Width="130" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
-                                                                                        <DataGridTextColumn Header="共用電極名稱" Binding="{Binding ShareElectrode}" Width="250" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Width="Auto" MinWidth="150" Header="{DynamicResource WorkOrder_Column_EDMProgram}" Binding="{Binding EDMProgram}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Width="Auto" MinWidth="80"  Header="{DynamicResource WorkOrder_Column_Offset}" Binding="{Binding Offset}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Width="Auto" MinWidth="130" Header="{DynamicResource WorkOrder_Column_IsShare}" Binding="{Binding IsShare}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                        <DataGridTextColumn Width="Auto" MinWidth="250" Header="{DynamicResource WorkOrder_Column_ShareElectrode}" Binding="{Binding ShareElectrode}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
                                                                                     </DataGrid.Columns>
                                                                                 </DataGrid>
                                                                             </StackPanel>
@@ -290,10 +279,10 @@
 
                                                     <!-- EDM 子頁籤 -->
                                                     <TabControl Grid.Row="0" Tag="SubTab" SelectedIndex="{Binding EDMSelectedTab}" Style="{StaticResource FlatTabControlStyle}" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}" Height="40" Margin="0,0,0,8" Background="Transparent">
-                                                        <TabItem Header="Waiting" Tag="#2779A7" />
-                                                        <TabItem Header="Queueing" Tag="#2779A7" />
-                                                        <TabItem Header="Processing" Tag="#2779A7" />
-                                                        <TabItem Header="Completed" Tag="#2779A7" />
+                                                        <TabItem Header="{DynamicResource WorkOrder_SubTab_Waiting}" Tag="#2779A7" />
+                                                        <TabItem Header="{DynamicResource WorkOrder_SubTab_Queueing}" Tag="#2779A7" />
+                                                        <TabItem Header="{DynamicResource WorkOrder_SubTab_Processing}" Tag="#2779A7" />
+                                                        <TabItem Header="{DynamicResource WorkOrder_SubTab_Completed}" Tag="#2779A7" />
                                                     </TabControl>
 
                                                     <!-- 對應 EDMSelectedTab 顯示不同內容 -->
@@ -344,11 +333,11 @@
                                                                                                             </DataGridTemplateColumn.CellTemplate>
                                                                                                         </DataGridTemplateColumn>
 
-                                                                                                        <DataGridTextColumn Header="工單編號" FontSize="18" Binding="{Binding WorksheetNumber}" Width="220" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="220" Header="{DynamicResource WorkOrder_Column_WorksheetNumber}" FontSize="18" Binding="{Binding WorksheetNumber}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="工件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="300" Header="{DynamicResource WorkOrder_Column_WorkpieceName}" FontSize="18" Binding="{Binding WorkpieceName}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTemplateColumn Header="狀態" Width="180">
+                                                                                                        <DataGridTemplateColumn Width="Auto" MinWidth="180" Header="{DynamicResource WorkOrder_Column_Status}">
                                                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                                                 <DataTemplate>
                                                                                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -359,11 +348,11 @@
                                                                                                             </DataGridTemplateColumn.CellTemplate>
                                                                                                         </DataGridTemplateColumn>
 
-                                                                                                        <DataGridTextColumn Header="目標EDM" FontSize="18" Binding="{Binding TargetEDM}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="100" Header="{DynamicResource WorkOrder_Column_TargetEDM}" FontSize="18" Binding="{Binding TargetEDM}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="座標" FontSize="18" Binding="{Binding Coordinate}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="100" Header="{DynamicResource WorkOrder_Column_Coordinate}" FontSize="18" Binding="{Binding Coordinate}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="設定者" FontSize="18" Binding="{Binding SetupUser}" Width="110" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="110" Header="{DynamicResource WorkOrder_Column_SetupUser}" FontSize="18" Binding="{Binding SetupUser}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
                                                                                                     </DataGrid.Columns>
                                                                                                 </DataGrid>
@@ -414,11 +403,11 @@
                                                                                                             </DataGridTemplateColumn.CellTemplate>
                                                                                                         </DataGridTemplateColumn>
 
-                                                                                                        <DataGridTextColumn Header="工單編號" FontSize="18" Binding="{Binding WorksheetNumber}" Width="220" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="220" Header="{DynamicResource WorkOrder_Column_WorksheetNumber}" FontSize="18" Binding="{Binding WorksheetNumber}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="工件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="300" Header="{DynamicResource WorkOrder_Column_WorkpieceName}" FontSize="18" Binding="{Binding WorkpieceName}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTemplateColumn Header="狀態" Width="180">
+                                                                                                        <DataGridTemplateColumn Width="Auto" MinWidth="180" Header="{DynamicResource WorkOrder_Column_Status}">
                                                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                                                 <DataTemplate>
                                                                                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -429,11 +418,11 @@
                                                                                                             </DataGridTemplateColumn.CellTemplate>
                                                                                                         </DataGridTemplateColumn>
 
-                                                                                                        <DataGridTextColumn Header="目標EDM" FontSize="18" Binding="{Binding TargetEDM}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="100" Header="{DynamicResource WorkOrder_Column_TargetEDM}" FontSize="18" Binding="{Binding TargetEDM}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="座標" FontSize="18" Binding="{Binding Coordinate}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="100" Header="{DynamicResource WorkOrder_Column_Coordinate}" FontSize="18" Binding="{Binding Coordinate}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="設定者" FontSize="18" Binding="{Binding SetupUser}" Width="110" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="110" Header="{DynamicResource WorkOrder_Column_SetupUser}" FontSize="18" Binding="{Binding SetupUser}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
                                                                                                     </DataGrid.Columns>
                                                                                                 </DataGrid>
@@ -460,8 +449,8 @@
 
                                                                                             <!-- 上方按鈕區 -->
                                                                                             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                                                                                                <Button Content="流程修正" Width="120" Height="40" Margin ="3,0 " Background="#0070E0" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ReviseCommand}" />
-                                                                                                <Button Content="判定失敗" Width="120" Height="40" Margin ="3,0 " Background="#0070E0" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding FailCommand}" />
+                                                                                                <Button Width="Auto" MinWidth="120" Content="{DynamicResource WorkOrder_Button_Revise}" Height="40" Margin ="3,0 " Background="#0070E0" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ReviseCommand}" />
+                                                                                                <Button Width="Auto" MinWidth="120" Content="{DynamicResource WorkOrder_Button_Fail}" Height="40" Margin ="3,0 " Background="#0070E0" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding FailCommand}" />
                                                                                             </StackPanel>
 
                                                                                             <!-- 表格 -->
@@ -488,11 +477,11 @@
                                                                                                             </DataGridTemplateColumn.CellTemplate>
                                                                                                         </DataGridTemplateColumn>
 
-                                                                                                        <DataGridTextColumn Header="工單編號" FontSize="18" Binding="{Binding WorksheetNumber}" Width="220" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="220" Header="{DynamicResource WorkOrder_Column_WorksheetNumber}" FontSize="18" Binding="{Binding WorksheetNumber}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="工件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="300" Header="{DynamicResource WorkOrder_Column_WorkpieceName}" FontSize="18" Binding="{Binding WorkpieceName}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTemplateColumn Header="狀態" Width="180">
+                                                                                                        <DataGridTemplateColumn Width="Auto" MinWidth="180" Header="{DynamicResource WorkOrder_Column_Status}">
                                                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                                                 <DataTemplate>
                                                                                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -503,11 +492,11 @@
                                                                                                             </DataGridTemplateColumn.CellTemplate>
                                                                                                         </DataGridTemplateColumn>
 
-                                                                                                        <DataGridTextColumn Header="目標EDM" FontSize="18" Binding="{Binding TargetEDM}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="100" Header="{DynamicResource WorkOrder_Column_TargetEDM}" FontSize="18" Binding="{Binding TargetEDM}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="座標" FontSize="18" Binding="{Binding Coordinate}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="100" Header="{DynamicResource WorkOrder_Column_Coordinate}" FontSize="18" Binding="{Binding Coordinate}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="設定者" FontSize="18" Binding="{Binding SetupUser}" Width="110" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="110" Header="{DynamicResource WorkOrder_Column_SetupUser}" FontSize="18" Binding="{Binding SetupUser}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
                                                                                                     </DataGrid.Columns>
                                                                                                 </DataGrid>
@@ -533,7 +522,11 @@
 
                                                                                             <!-- 上方日期篩選器 -->
                                                                                             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
-                                                                                                <ComboBox Width="120" Height="32" Margin="10,0,0,0" ItemsSource="{Binding DateFilterOptions}" SelectedItem="{Binding SelectedFilterOption}" Style="{StaticResource PillComboBoxStyle}" />
+                                                                                                <ComboBox Width="120" Height="32" Margin="10,0,0,0" SelectedIndex="{Binding SelectedFilterIndex}" Style="{StaticResource PillComboBoxStyle}">
+                                                                                                    <ComboBoxItem Content="{DynamicResource WorkOrder_DateFilter_Today}" />
+                                                                                                    <ComboBoxItem Content="{DynamicResource WorkOrder_DateFilter_Last7Days}" />
+                                                                                                    <ComboBoxItem Content="{DynamicResource WorkOrder_DateFilter_Custom}" />
+                                                                                                </ComboBox>
                                                                                                 <StackPanel Orientation="Horizontal" Visibility="{Binding IsCustomDateMode, Converter={StaticResource BoolToVisibilityConverter}}">
                                                                                                     <DatePicker Width="180" Height="32" Margin="8,0,0,0" SelectedDate="{Binding FromDate}"  IsEnabled="{Binding IsCustomDateMode}" Style="{StaticResource CustomDatePickerStyle}" />
                                                                                                     <materialDesign:PackIcon Kind="ArrowRight" Width="18" Height="18" VerticalAlignment="Center" Margin="6,0,6,0" />
@@ -564,11 +557,11 @@
                                                                                                             </DataGridTemplateColumn.CellTemplate>
                                                                                                         </DataGridTemplateColumn>
 
-                                                                                                        <DataGridTextColumn Header="工單編號" FontSize="18" Binding="{Binding WorksheetNumber}" Width="220" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="220" Header="{DynamicResource WorkOrder_Column_WorksheetNumber}" FontSize="18" Binding="{Binding WorksheetNumber}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="工件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="300" Header="{DynamicResource WorkOrder_Column_WorkpieceName}" FontSize="18" Binding="{Binding WorkpieceName}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTemplateColumn Header="狀態" Width="180">
+                                                                                                        <DataGridTemplateColumn Width="Auto" MinWidth="180" Header="{DynamicResource WorkOrder_Column_Status}">
                                                                                                             <DataGridTemplateColumn.CellTemplate>
                                                                                                                 <DataTemplate>
                                                                                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -579,11 +572,11 @@
                                                                                                             </DataGridTemplateColumn.CellTemplate>
                                                                                                         </DataGridTemplateColumn>
 
-                                                                                                        <DataGridTextColumn Header="目標EDM" FontSize="18" Binding="{Binding TargetEDM}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="100" Header="{DynamicResource WorkOrder_Column_TargetEDM}" FontSize="18" Binding="{Binding TargetEDM}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="座標" FontSize="18" Binding="{Binding Coordinate}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="100" Header="{DynamicResource WorkOrder_Column_Coordinate}" FontSize="18" Binding="{Binding Coordinate}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                                                        <DataGridTextColumn Header="設定者" FontSize="18" Binding="{Binding SetupUser}" Width="110" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                                                        <DataGridTextColumn Width="Auto" MinWidth="110" Header="{DynamicResource WorkOrder_Column_SetupUser}" FontSize="18" Binding="{Binding SetupUser}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
                                                                                                     </DataGrid.Columns>
                                                                                                 </DataGrid>
@@ -616,7 +609,7 @@
                                             <DataTemplate>
                                                 <Grid>
                                                     <!-- 外框 -->
-                                                    <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="0,0,0,8">
+                                                    <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True" Margin="16,0,16,16">
                                                         <DataGrid ItemsSource="{Binding FailureWorkOrders}" SelectedItem="{Binding SelectedEDMQueueItem}" behaviors:RowDetailsToggleBehavior.KeepSelection="False" behaviors:RowDetailsToggleBehavior.ToggleOnRowClick="True"  SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource EDMWorkOrderGridStyle}" RowDetailsTemplate="{StaticResource EDMRowDetailsTemplate}">
                                                             <DataGrid.Columns>
                                                                 <!-- 第 0 欄：展開箭頭 -->
@@ -639,11 +632,11 @@
                                                                     </DataGridTemplateColumn.CellTemplate>
                                                                 </DataGridTemplateColumn>
 
-                                                                <DataGridTextColumn Header="工單編號" FontSize="18" Binding="{Binding WorksheetNumber}" Width="220" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Width="Auto" MinWidth="220" Header="{DynamicResource WorkOrder_Column_WorksheetNumber}" FontSize="18" Binding="{Binding WorksheetNumber}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                <DataGridTextColumn Header="工件名稱" FontSize="18" Binding="{Binding WorkpieceName}" Width="300" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Width="Auto" MinWidth="300" Header="{DynamicResource WorkOrder_Column_WorkpieceName}" FontSize="18" Binding="{Binding WorkpieceName}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                <DataGridTemplateColumn Header="狀態" Width="180">
+                                                                <DataGridTemplateColumn Width="Auto" MinWidth="180" Header="{DynamicResource WorkOrder_Column_Status}">
                                                                     <DataGridTemplateColumn.CellTemplate>
                                                                         <DataTemplate>
                                                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -654,11 +647,11 @@
                                                                     </DataGridTemplateColumn.CellTemplate>
                                                                 </DataGridTemplateColumn>
 
-                                                                <DataGridTextColumn Header="目標EDM" FontSize="18" Binding="{Binding TargetEDM}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Width="Auto" MinWidth="100" Header="{DynamicResource WorkOrder_Column_TargetEDM}" FontSize="18" Binding="{Binding TargetEDM}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                <DataGridTextColumn Header="座標" FontSize="18" Binding="{Binding Coordinate}" Width="100" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Width="Auto" MinWidth="100" Header="{DynamicResource WorkOrder_Column_Coordinate}" FontSize="18" Binding="{Binding Coordinate}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
-                                                                <DataGridTextColumn Header="設定者" FontSize="18" Binding="{Binding SetupUser}" Width="110" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
+                                                                <DataGridTextColumn Width="Auto" MinWidth="110" Header="{DynamicResource WorkOrder_Column_SetupUser}" FontSize="18" Binding="{Binding SetupUser}" ElementStyle="{StaticResource CenterAlignedTextStyle}" CellStyle="{StaticResource CenterAlignedCellStyle}" />
 
                                                             </DataGrid.Columns>
                                                         </DataGrid>

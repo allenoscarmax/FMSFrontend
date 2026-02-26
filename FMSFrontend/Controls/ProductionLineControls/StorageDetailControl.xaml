@@ -43,7 +43,7 @@
 
                         <!-- 返回按鈕 -->
                         <Border Grid.Column="0" Background="Transparent" Height="40">
-                            <Button Width="61" Height="40" Command="{Binding ShowOverviewCommand}" ToolTip="返回" BorderThickness="0" Padding="0" Background="Transparent">
+                            <Button Width="61" Height="40" Command="{Binding ShowOverviewCommand}" ToolTip="{DynamicResource StorageDetailControl_Tooltip_Back}" BorderThickness="0" Padding="0" Background="Transparent">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="18,0,0,0" SnapsToDevicePixels="True">
@@ -68,8 +68,8 @@
                         <!-- Tabs -->
                         <TabControl Grid.Column="1" SelectedIndex="{Binding SelectedTabIndex}" Style="{StaticResource FlatTabControlStyle}" Height="40" Padding="0" Margin="0" Background="Transparent" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}">
 
-                            <TabItem Header="電極" Tag="#2779A7"/>
-                            <TabItem Header="工件" Tag="#E08E45" />
+                            <TabItem Header="{DynamicResource StorageDetailControl_Tab_Electrode}" Tag="#2779A7"/>
+                            <TabItem Header="{DynamicResource StorageDetailControl_Tab_Workpiece}" Tag="#E08E45" />
                         </TabControl>
 
                     </Grid>
@@ -90,8 +90,8 @@
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="0" />
-                            <ColumnDefinition Width="800"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
                         <!-- 膠囊樣式（左側貼齊，右側圓角） -->
@@ -100,66 +100,66 @@
                         </Border>
 
                         <!-- 狀態列 -->
-                        <Grid Grid.Column="2" FocusVisualStyle="{x:Null}" HorizontalAlignment="Left" Margin="60,0,0,0">
+                        <Grid Grid.Column="2" FocusVisualStyle="{x:Null}" HorizontalAlignment="Left" Margin="70,4,0,0">
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Right">
                                 <!-- 上排：彩色狀態統計 -->
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
                                     <!--待加工-->
-                                    <Border Name ="BorderWaiting" Background="#E6B93E" CornerRadius="6" Margin="4,0" Padding="12,4">
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="待加工" FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <Border Width="30" Height="30" Background="White" CornerRadius="15" Margin="8,0,0,0" VerticalAlignment="Center">
+                                    <Border MinWidth="80" Name ="BorderWaiting" Background="#E6B93E" CornerRadius="6" Margin="4,0" Padding="4" >
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="{DynamicResource StorageDetailControl_Status_Waiting}"  Height="25" FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                                            <Border Width="50" Height="25" Background="White" CornerRadius="15" Margin="0,0,0,0" VerticalAlignment="Center">
                                                 <TextBlock Text="{Binding SelectStorage.WaitingCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
 
                                     <!--加工中-->
-                                    <Border  Name ="BorderProcessing" Background="#56C06C" CornerRadius="6" Margin="4,0" Padding="12,4">
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="加工中" FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <Border Width="30" Height="30" Background="White" CornerRadius="15" Margin="8,0,0,0" VerticalAlignment="Center">
+                                    <Border  MinWidth="80" Name ="BorderProcessing" Background="#56C06C" CornerRadius="6" Margin="4,0" Padding="4">
+                                        <StackPanel  Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="{DynamicResource StorageDetailControl_Status_Processing}" Height="25" FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                                            <Border Width="50" Height="25" Background="White" CornerRadius="15" Margin="0,0,0,0" VerticalAlignment="Center">
                                                 <TextBlock Text="{Binding SelectStorage.ProcessingCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
 
                                     <!--異常-->
-                                    <Border Name ="BorderError" Background="#C0392B" CornerRadius="6" Margin="4,0" Padding="12,4" >
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="異常"  FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <Border Width="30" Height="30" Background="White" CornerRadius="15" Margin="8,0,0,0" VerticalAlignment="Center">
+                                    <Border MinWidth="80" Name ="BorderError" Background="#C0392B" CornerRadius="6" Margin="4,0" Padding="4" >
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="{DynamicResource StorageDetailControl_Status_Error}"  Height="25" FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                                            <Border Width="50" Height="25" Background="White" CornerRadius="15" Margin="0,0,0,0" VerticalAlignment="Center">
                                                 <TextBlock Text="{Binding SelectStorage.ErrorCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
 
                                     <!--完成-->
-                                    <Border Name ="BorderCompleted" Background="#2F64CF" CornerRadius="6" Margin="4,0" Padding="12,4">
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="完成" FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <Border Width="30" Height="30" Background="White" CornerRadius="15" Margin="8,0,0,0" VerticalAlignment="Center">
+                                    <Border MinWidth="80" Name ="BorderCompleted" Background="#2F64CF" CornerRadius="6" Margin="4,0" Padding="4">
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="{DynamicResource StorageDetailControl_Status_Completed}" Height="25" FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                                            <Border Width="50" Height="25" Background="White" CornerRadius="15" Margin="0,0,0,0" VerticalAlignment="Center">
                                                 <TextBlock Text="{Binding SelectStorage.CompletedCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
 
                                     <!--禁用-->
-                                    <Border Background="#CCCCCC" CornerRadius="6" Margin="4,0" Padding="12,4">
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="禁用"  FontSize ="16" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <Border Width="30" Height="30" Background="White" CornerRadius="15" Margin="8,0,0,0" VerticalAlignment="Center">
+                                    <Border MinWidth="80" Background="#CCCCCC" CornerRadius="6" Margin="4,0" Padding="4">
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="{DynamicResource StorageDetailControl_Status_Disabled}"  Height="25" FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                                            <Border Width="50" Height="25" Background="White" CornerRadius="15" Margin="0,0,0,0" VerticalAlignment="Center">
                                                 <TextBlock Text="{Binding SelectStorage.RestrictionCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>
 
                                     <!--預約-->
-                                    <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="6" Margin="4,0" Padding="12,4">
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="預約" FontSize ="16" Foreground="#555" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <Border Width="30" Height="30" Background="#D6D6D6" CornerRadius="15" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding SelectStorage.BookedCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <Border MinWidth="80" Background="White" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="6" Margin="4,0" Padding="4">
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="{DynamicResource StorageDetailControl_Status_Booked}" Height="25" FontSize ="16" Foreground="#555555" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                                            <Border Width="50" Height="25" Background="#D6D6D6" CornerRadius="15" Margin="0,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding SelectStorage.BookedCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </Border>

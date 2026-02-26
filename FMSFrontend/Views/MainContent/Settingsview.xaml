@@ -1,10 +1,12 @@
 ﻿    <UserControl x:Class="FMSFrontend.Views.SettingsView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:selectors="clr-namespace:FMSFrontend.Selectors" xmlns:helpers="clr-namespace:FMSFrontend.Helpers" mc:Ignorable="d" d:DesignHeight="912" d:DesignWidth="1532">
 
     <UserControl.Resources>
-        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
-        <selectors:TabItemBackgroundSelector x:Key="TabItemColorSelector" />
-        <!-- 新增布林轉可見性轉換器 -->
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <ResourceDictionary>
+            <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
+            <selectors:TabItemBackgroundSelector x:Key="TabItemColorSelector" />
+            <!-- 新增布林轉可見性轉換器 -->
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <Border Background="{DynamicResource PageViewBrush}">
@@ -20,7 +22,7 @@
             <!-- 🔠 主標題（Row 0） -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
                 <materialDesign:PackIcon Kind="Cog" VerticalAlignment="Center" Width="24" Height="24" Margin="0,0,4,0" Foreground="{DynamicResource PrimaryTextBrush}" />
-                <TextBlock Text="系統設定" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                <TextBlock Text="{DynamicResource Settings_Title}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
             </StackPanel>
 
             <!-- 內容區（Row 1）：包含 Tab 與對應內容 -->
@@ -34,11 +36,11 @@
 
                 <!-- Tabs -->
                 <TabControl Grid.Row="0" Tag="MainTab" Height="40" Margin="0,8,0,0" Background="Transparent" SelectedIndex="{Binding SelectedTabIndexParameter}" Style="{StaticResource FlatTabControlStyle}" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}">
-                    <TabItem Header="基本設定" Tag="#2779A7" />
-                    <TabItem Header="進階設定" Tag="#2779A7" IsEnabled="{Binding IsAdvancedEnabled}" />
-                    <TabItem Header="設備設定" Tag="#2779A7" />
-                    <TabItem Header="人員管理" Tag="#2779A7" />
-                    <TabItem Header="保養設定" Tag="#2779A7" />
+                    <TabItem Header="{DynamicResource Settings_Tab_Basic}" Tag="#2779A7" />
+                    <TabItem Header="{DynamicResource Settings_Tab_Advanced}" Tag="#2779A7" IsEnabled="{Binding IsAdvancedEnabled}" />
+                    <TabItem Header="{DynamicResource Settings_Tab_Device}" Tag="#2779A7" />
+                    <TabItem Header="{DynamicResource Settings_Tab_Worker}" Tag="#2779A7" />
+                    <TabItem Header="{DynamicResource Settings_Tab_Maintenance}" Tag="#2779A7" />
                 </TabControl>
 
                 <!-- 外部已經統一套好卡片框 -->
@@ -58,7 +60,7 @@
                                                     <StackPanel Orientation="Vertical" Margin="0,12,0,0" Background="Transparent">
 
                                                         <!-- 權限設定 -->
-                                                        <GroupBox Header="權限設定" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
+                                                        <GroupBox Header="{DynamicResource Settings_Group_Permission}" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
                                                             <Grid>
                                                                 <Grid.ColumnDefinitions>
                                                                     <!-- 名稱欄 -->
@@ -70,7 +72,7 @@
                                                                 </Grid.ColumnDefinitions>
 
                                                                 <!-- 名稱 -->
-                                                                <TextBlock Grid.Column="0" Text="權限" VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,15,0" />
+                                                                <TextBlock Grid.Column="0" Text="{DynamicResource Settings_Label_Permission}" VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,15,0" />
 
                                                                 <!-- 分隔線 -->
                                                                 <Border Grid.Column="1" Background="Black" />
@@ -78,17 +80,20 @@
 
                                                                 <!-- 內容 -->
                                                                 <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                                    <ComboBox Width="250" Height="40" FontSize="20" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding AvailablePermissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}" HorizontalAlignment="Left" />
+                                                                    <ComboBox Width="250" Height="40" FontSize="20" Style="{StaticResource ComboBoxStyle}" SelectedValuePath="Content" SelectedValue="{Binding SelectedPermission, Mode=TwoWay}" HorizontalAlignment="Left">
+                                                                        <ComboBoxItem Content="{DynamicResource Settings_Permission_Staff}" />
+                                                                        <ComboBoxItem Content="{DynamicResource Settings_Permission_Expert}" />
+                                                                    </ComboBox>
                                                                     <StackPanel Orientation="Horizontal" Margin="20,0,0,0" VerticalAlignment="Center" Visibility="{Binding ShowPasswordPrompt, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                                                        <TextBlock FontSize="20" Text="密碼："  VerticalAlignment="Center" FontWeight="Bold" Margin="0,0,8,0" />
+                                                                        <TextBlock FontSize="20" Text="{DynamicResource Settings_Label_Password}"  VerticalAlignment="Center" FontWeight="Bold" Margin="0,0,8,0" />
                                                                         <PasswordBox x:Name="ExpertPasswordBox" FontSize="20" Width="180"  Height="40" VerticalAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" PasswordChar="*" materialDesign:TextFieldAssist.DecorationVisibility="Hidden" helpers:PasswordBoxAssistant.BindPassword="True" helpers:PasswordBoxAssistant.BoundPassword="{Binding Password, Mode=TwoWay}" />
-                                                                        <Button Content="確認" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding PermissionClickCommand}" />
+                                                                        <Button Content="{DynamicResource Settings_Button_Confirm}" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding PermissionClickCommand}" />
                                                                     </StackPanel>
                                                                 </StackPanel>
                                                             </Grid>
                                                         </GroupBox>
                                                         <!-- 保持登入 -->
-                                                        <GroupBox Header="保持登入" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
+                                                        <GroupBox Header="{DynamicResource Settings_Group_KeepLogin}" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
                                                             <Grid Height="40">
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition Width="Auto" />
@@ -100,7 +105,7 @@
                                                                     <CheckBox.LayoutTransform>
                                                                         <ScaleTransform ScaleX="1.3" ScaleY="1.3" />
                                                                     </CheckBox.LayoutTransform>
-                                                                    <TextBlock Text="開啟程式時，自動登入上次使用者">
+                                                                    <TextBlock Text="{DynamicResource Settings_Label_KeepLogin}">
                                                                         <TextBlock.LayoutTransform>
                                                                             <!-- counter-scale the label so its visual size stays about the same -->
                                                                             <ScaleTransform ScaleX="0.769" ScaleY="0.769" />
@@ -109,7 +114,13 @@
                                                                 </CheckBox>
                                                             </Grid>
                                                         </GroupBox>
-
+                                                        <!-- 權限設定 -->
+                                                        <GroupBox Header="{DynamicResource Settings_Group_Language}" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
+                                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                                <ComboBox Width="250" Height="40" FontSize="20" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding AvailableLanguages}" SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" HorizontalAlignment="Left" />
+                                                                <Button Content="{DynamicResource Settings_Button_Confirm}" Width="Auto" MinWidth="120" Height="40" FontSize="16" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding LanguageClickCommand}" />
+                                                            </StackPanel>
+                                                        </GroupBox>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </Setter.Value>
@@ -123,7 +134,7 @@
                                                 <DataTemplate>
                                                     <StackPanel>
                                                         <!-- 系統 IP 位址 -->
-                                                        <GroupBox Header="系統IP位址" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
+                                                        <GroupBox Header="{DynamicResource Settings_Group_SystemIp}" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
                                                             <Grid>
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition Width="Auto" />
@@ -131,27 +142,27 @@
                                                                     <ColumnDefinition Width="Auto" />
                                                                     <ColumnDefinition Width="Auto" />
                                                                 </Grid.ColumnDefinitions>
-                                                                <Button Grid.Column="0" Content="設定" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding SaveIPCommand}" />
+                                                                <Button Grid.Column="0" Width="120" Height="40" FontSize ="16" Content="{DynamicResource Settings_Button_Set}" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding SaveIPCommand}" />
                                                                 <Border Grid.Column="1" Background="Black" />
-                                                                <TextBlock Grid.Column="2" Text="IP位址:" TextWrapping="Wrap" VerticalAlignment="Center"  FontSize="20"  FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="10,0,20,0"/>
+                                                                <TextBlock Grid.Column="2" Text="{DynamicResource Settings_Label_IpAddress}" TextWrapping="Wrap" VerticalAlignment="Center"  FontSize="20"  FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="10,0,20,0"/>
                                                                 <TextBox Grid.Column="3"  Width="200" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontSize="20" Text="{Binding ServerIp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="Black" Padding="5,0" Style="{StaticResource UnderlineTextBoxStyle}" />
                                                             </Grid>
                                                         </GroupBox>
                                                         <!-- 系統還原 -->
-                                                        <GroupBox Header="系統還原" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
+                                                        <GroupBox Header="{DynamicResource Settings_Group_SystemRestore}" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
                                                             <Grid>
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition Width="Auto" />
                                                                     <ColumnDefinition Width="1.5" />
                                                                     <ColumnDefinition Width="*" />
                                                                 </Grid.ColumnDefinitions>
-                                                                <Button Grid.Column="0" Content="還原" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding RestoreSystemCommand}" />
+                                                                <Button Grid.Column="0" Width="120" Height="40" Content="{DynamicResource Settings_Button_Restore}" FontSize="16" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding RestoreSystemCommand}" />
                                                                 <Border Grid.Column="1" Background="Black" />
-                                                                <TextBlock Grid.Column="2" Text="注意：點擊還原按鈕以還原系統。此過程將刪除所有材料、表單、日誌和使用情況。" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
+                                                                <TextBlock Grid.Column="2" Text="{DynamicResource Settings_Text_SystemRestoreNote}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
                                                             </Grid>
                                                         </GroupBox>
                                                         <!-- 系統備份 -->
-                                                        <GroupBox Header="系統備份" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
+                                                        <GroupBox Header="{DynamicResource Settings_Group_SystemBackup}" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
                                                             <Grid>
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition Width="Auto" />
@@ -159,11 +170,11 @@
                                                                     <ColumnDefinition Width="*" />
                                                                 </Grid.ColumnDefinitions>
 
-                                                                <Button Grid.Column="0" Content="備份" Width="120" Height="40"  FontSize="20" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding BackupSystemCommand}" />
+                                                                <Button Grid.Column="0" Width="120" Height="40" Content="{DynamicResource Settings_Button_Backup}" FontSize="16" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding BackupSystemCommand}" />
 
                                                                 <Border Grid.Column="1" Background="Black" />
 
-                                                                <TextBlock Grid.Column="2" Text="注意：點擊備份資料庫。" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
+                                                                <TextBlock Grid.Column="2" Text="{DynamicResource Settings_Text_SystemBackupNote}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
                                                             </Grid>
                                                         </GroupBox>
                                                         <!-- 日誌重置 -->
@@ -203,19 +214,19 @@
                                                         </GroupBox>
                                                         -->
                                                         <!-- 機器人維護 -->
-                                                        <GroupBox Header="機器手臂維護" Style="{StaticResource CustomGroupBoxStyle}">
+                                                        <GroupBox Header="{DynamicResource Settings_Group_RobotMaintenance}" Style="{StaticResource CustomGroupBoxStyle}">
                                                             <Grid>
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition Width="Auto" />
                                                                     <ColumnDefinition Width="1.5" />
                                                                     <ColumnDefinition Width="*" />
                                                                 </Grid.ColumnDefinitions>
-                                                                <Button Grid.Column="0" Content="維護完成" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding CompleteRobotMaintenanceCommand}" />
+                                                                <Button Grid.Column="0" Width="120" Height="40" Content="{DynamicResource Settings_Button_MaintenanceComplete}" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding CompleteRobotMaintenanceCommand}" />
                                                                 <Border Grid.Column="1" Background="Black" />
                                                                 <StackPanel Grid.Column="2" Orientation="Vertical" Margin="8,0,0,0">
-                                                                    <TextBlock Text="注意：如果系統顯示機器人的維護警報，請聯繫 FANUC 進行維護。" TextWrapping="Wrap" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                                    <TextBlock Text="{DynamicResource Settings_Text_RobotMaintenanceNote}" TextWrapping="Wrap" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" />
                                                                     <StackPanel Orientation="Horizontal">
-                                                                        <TextBlock Text="上次維護時間：" FontSize="20" Foreground="Black" Margin="0,10" />
+                                                                        <TextBlock Text="{DynamicResource Settings_Label_LastMaintenance}" FontSize="20" Foreground="Black" Margin="0,10" />
                                                                         <TextBlock Text="{Binding RobotMaintenanceMsg}" FontSize="20" Foreground="Black" Margin="0,10" />
                                                                     </StackPanel>
                                                                 </StackPanel>
@@ -244,8 +255,8 @@
 
                                                         <!-- 標題列 -->
                                                         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,0">
-                                                            <TextBlock Text="設備" FontSize="24" FontWeight="SemiBold" Foreground="#222" />
-                                                            <TextBlock Text="　設備的相關設定" FontSize="16" Foreground="#666" VerticalAlignment="Top" Margin="8,10,0,0" />
+                                                            <TextBlock Text="{DynamicResource Settings_Section_Device}" FontSize="24" FontWeight="SemiBold" Foreground="#222" />
+                                                            <TextBlock Text="{DynamicResource Settings_Section_DeviceHint}" FontSize="16" Foreground="#666" VerticalAlignment="Top" Margin="8,10,0,0" />
                                                         </StackPanel>
                                                         <!-- 主要內容：TabControl -->
                                                         <Grid Grid.Row="1">
@@ -257,9 +268,9 @@
                                                             </Grid.RowDefinitions>
                                                             <!-- Tabs -->
                                                             <TabControl Grid.Row="0" Tag="SubTab" Height="35" Margin="0,8,0,0" Background="Transparent" SelectedIndex="{Binding SelectedSubTabIndexParameter}" Style="{StaticResource FlatTabControlStyle}" ItemContainerStyleSelector="{StaticResource TabItemColorSelector}">
-                                                                <TabItem Header="機台" Tag="#2779A7" />
-                                                                <TabItem Header="機械手臂" Tag="#2779A7" />
-                                                                <TabItem Header="設備" Tag="#2779A7" />
+                                                                <TabItem Header="{DynamicResource Settings_SubTab_Machine}" Tag="#2779A7" />
+                                                                <TabItem Header="{DynamicResource Settings_SubTab_Robot}" Tag="#2779A7" />
+                                                                <TabItem Header="{DynamicResource Settings_SubTab_Device}" Tag="#2779A7" />
                                                             </TabControl>
                                                             <!-- 外部已經統一套好卡片框 -->
                                                             <Border Grid.Row="1" Background="White" CornerRadius="0,0,10,10" Padding="40,16,40,24" Effect="{StaticResource ShadowEffect}">
@@ -305,7 +316,7 @@
 
                                                                                                         <!-- 右側圓形按鈕 -->
                                                                                                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
-                                                                                                            <Button Style="{StaticResource CircleIconButton}" ToolTip="編輯" Command="{Binding EditMachineCommand}" IsEnabled="{Binding SelectedMachine}">
+                                                                                                            <Button Style="{StaticResource CircleIconButton}" ToolTip="{DynamicResource Settings_Tooltip_Edit}" Command="{Binding EditMachineCommand}" IsEnabled="{Binding SelectedMachine}">
                                                                                                                 <materialDesign:PackIcon Kind="Pencil" Width="18" Height="18" />
                                                                                                             </Button>
                                                                                                         </StackPanel>
@@ -329,7 +340,7 @@
 
                                                                                                             <!-- 欄位 -->
                                                                                                             <DataGrid.Columns>
-                                                                                                                <DataGridTextColumn Header="機台編號" Binding="{Binding MachineNo}" Width="*">
+                                                                                                                <DataGridTextColumn Header="{DynamicResource Settings_Column_MachineNo}" Binding="{Binding MachineNo}" Width="*">
                                                                                                                     <DataGridTextColumn.ElementStyle>
                                                                                                                         <Style TargetType="TextBlock">
                                                                                                                             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -339,7 +350,7 @@
                                                                                                                     </DataGridTextColumn.ElementStyle>
                                                                                                                 </DataGridTextColumn>
 
-                                                                                                                <DataGridTextColumn Header="機台名稱" Binding="{Binding MachineName}" Width="*">
+                                                                                                                <DataGridTextColumn Header="{DynamicResource Settings_Column_MachineName}" Binding="{Binding MachineName}" Width="*">
                                                                                                                     <DataGridTextColumn.ElementStyle>
                                                                                                                         <Style TargetType="TextBlock">
                                                                                                                             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -349,7 +360,7 @@
                                                                                                                     </DataGridTextColumn.ElementStyle>
                                                                                                                 </DataGridTextColumn>
 
-                                                                                                                <DataGridTextColumn Header="機台類型" Binding="{Binding MachineType}" Width="*">
+                                                                                                                <DataGridTextColumn Header="{DynamicResource Settings_Column_MachineType}" Binding="{Binding MachineType}" Width="*">
                                                                                                                     <DataGridTextColumn.ElementStyle>
                                                                                                                         <Style TargetType="TextBlock">
                                                                                                                             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -359,7 +370,7 @@
                                                                                                                     </DataGridTextColumn.ElementStyle>
                                                                                                                 </DataGridTextColumn>
 
-                                                                                                                <DataGridTextColumn Header="IP" Binding="{Binding IpAddress}" Width="*">
+                                                                                                                <DataGridTextColumn Header="{DynamicResource Settings_Column_Ip}" Binding="{Binding IpAddress}" Width="*">
                                                                                                                     <DataGridTextColumn.ElementStyle>
                                                                                                                         <Style TargetType="TextBlock">
                                                                                                                             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -369,7 +380,7 @@
                                                                                                                     </DataGridTextColumn.ElementStyle>
                                                                                                                 </DataGridTextColumn>
 
-                                                                                                                <DataGridTextColumn Header="Port" Binding="{Binding Port}" Width="*">
+                                                                                                                <DataGridTextColumn Header="{DynamicResource Settings_Column_Port}" Binding="{Binding Port}" Width="*">
                                                                                                                     <DataGridTextColumn.ElementStyle>
                                                                                                                         <Style TargetType="TextBlock">
                                                                                                                             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -421,7 +432,7 @@
 
                                                                                                         <!-- 右側圓形按鈕 -->
                                                                                                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
-                                                                                                            <Button Style="{StaticResource CircleIconButton}" ToolTip="編輯" Command="{Binding EditRobotCommand}" IsEnabled="{Binding SelectedRobot}">
+                                                                                                            <Button Style="{StaticResource CircleIconButton}" ToolTip="{DynamicResource Settings_Tooltip_Edit}" Command="{Binding EditRobotCommand}" IsEnabled="{Binding SelectedRobot}">
                                                                                                                 <materialDesign:PackIcon Kind="Pencil" Width="18" Height="18" />
                                                                                                             </Button>
                                                                                                         </StackPanel>
@@ -446,7 +457,7 @@
 
                                                                                                             <!-- 欄位 -->
                                                                                                             <DataGrid.Columns>
-                                                                                                                <DataGridTextColumn Header="機械手臂編號" Binding="{Binding RobotNo}" Width="*">
+                                                                                                                <DataGridTextColumn Header="{DynamicResource Settings_Column_RobotNo}" Binding="{Binding RobotNo}" Width="*">
                                                                                                                     <DataGridTextColumn.ElementStyle>
                                                                                                                         <Style TargetType="TextBlock">
                                                                                                                             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -456,7 +467,7 @@
                                                                                                                     </DataGridTextColumn.ElementStyle>
                                                                                                                 </DataGridTextColumn>
 
-                                                                                                                <DataGridTextColumn Header="機械手臂名稱" Binding="{Binding RobotName}" Width="*">
+                                                                                                                <DataGridTextColumn Header="{DynamicResource Settings_Column_RobotName}" Binding="{Binding RobotName}" Width="*">
                                                                                                                     <DataGridTextColumn.ElementStyle>
                                                                                                                         <Style TargetType="TextBlock">
                                                                                                                             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -466,7 +477,7 @@
                                                                                                                     </DataGridTextColumn.ElementStyle>
                                                                                                                 </DataGridTextColumn>
 
-                                                                                                                <DataGridTextColumn Header="機械手臂型號" Binding="{Binding RobotType}" Width="*">
+                                                                                                                <DataGridTextColumn Header="{DynamicResource Settings_Column_RobotType}" Binding="{Binding RobotType}" Width="*">
                                                                                                                     <DataGridTextColumn.ElementStyle>
                                                                                                                         <Style TargetType="TextBlock">
                                                                                                                             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -476,7 +487,7 @@
                                                                                                                     </DataGridTextColumn.ElementStyle>
                                                                                                                 </DataGridTextColumn>
 
-                                                                                                                <DataGridTextColumn Header="IP" Binding="{Binding IpAddress}" Width="*">
+                                                                                                                <DataGridTextColumn Header="{DynamicResource Settings_Column_Ip}" Binding="{Binding IpAddress}" Width="*">
                                                                                                                     <DataGridTextColumn.ElementStyle>
                                                                                                                         <Style TargetType="TextBlock">
                                                                                                                             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -527,7 +538,7 @@
 
                                                                                                         <!-- 右側圓形按鈕 -->
                                                                                                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
-                                                                                                            <Button Style="{StaticResource CircleIconButton}" ToolTip="編輯" Command="{Binding EditDeviceCommand}" IsEnabled="{Binding SelectedDevice}">
+                                                                                                            <Button Style="{StaticResource CircleIconButton}" ToolTip="{DynamicResource Settings_Tooltip_Edit}" Command="{Binding EditDeviceCommand}" IsEnabled="{Binding SelectedDevice}">
                                                                                                                 <materialDesign:PackIcon Kind="Pencil" Width="18" Height="18" />
                                                                                                             </Button>
                                                                                                         </StackPanel>
@@ -561,10 +572,10 @@
 
                                                                                                             <!-- 欄位（依照截圖：編號/名稱/IP/通訊埠/資產編號/設定人員） -->
                                                                                                             <DataGrid.Columns>
-                                                                                                                <DataGridTextColumn Header="裝置編號" Binding="{Binding DeviceNo}" Width="*" ElementStyle="{StaticResource CenterCellText}" />
-                                                                                                                <DataGridTextColumn Header="裝置名稱" Binding="{Binding DeviceName}" Width="*" ElementStyle="{StaticResource CenterCellText}" />
-                                                                                                                <DataGridTextColumn Header= "IP" Binding="{Binding IpAddress}" Width="*" ElementStyle="{StaticResource CenterCellText}" />
-                                                                                                                <DataGridTextColumn Header="Port" Binding="{Binding Port}" Width="*" ElementStyle="{StaticResource CenterCellText}" />
+                                                                                                                <DataGridTextColumn Header="{DynamicResource Settings_Column_DeviceNo}" Binding="{Binding DeviceNo}" Width="*" ElementStyle="{StaticResource CenterCellText}" />
+                                                                                                                <DataGridTextColumn Header="{DynamicResource Settings_Column_DeviceName}" Binding="{Binding DeviceName}" Width="*" ElementStyle="{StaticResource CenterCellText}" />
+                                                                                                                <DataGridTextColumn Header= "{DynamicResource Settings_Column_Ip}" Binding="{Binding IpAddress}" Width="*" ElementStyle="{StaticResource CenterCellText}" />
+                                                                                                                <DataGridTextColumn Header="{DynamicResource Settings_Column_Port}" Binding="{Binding Port}" Width="*" ElementStyle="{StaticResource CenterCellText}" />
                                                                                                             </DataGrid.Columns>
                                                                                                         </DataGrid>
                                                                                                     </Grid>
@@ -606,19 +617,19 @@
 
                                                         <!-- 1) 標題 -->
                                                         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,6">
-                                                            <TextBlock Text="工作人員" FontSize="24" FontWeight="SemiBold" Foreground="#222" />
-                                                            <TextBlock Text="　系統的工作人員設定" FontSize="16" Foreground="#666" VerticalAlignment="Top" Margin="8,10,0,0" />
+                                                            <TextBlock Text="{DynamicResource Settings_Section_Worker}" FontSize="24" FontWeight="SemiBold" Foreground="#222" />
+                                                            <TextBlock Text="{DynamicResource Settings_Section_WorkerHint}" FontSize="16" Foreground="#666" VerticalAlignment="Top" Margin="8,10,0,0" />
                                                         </StackPanel>
 
                                                         <!-- 2) 右上圓形按鈕：新增 / 刪除 / (可選)編輯 -->
                                                         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,8">
-                                                            <Button Style="{StaticResource CircleIconButton}" ToolTip="新增" Command="{Binding AddWorkerCommand}" Margin="0,0,8,0">
+                                                            <Button Style="{StaticResource CircleIconButton}" ToolTip="{DynamicResource Settings_Tooltip_Add}" Command="{Binding AddWorkerCommand}" Margin="0,0,8,0">
                                                                 <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" />
                                                             </Button>
-                                                            <Button Style="{StaticResource CircleIconButton}" ToolTip="刪除" Command="{Binding RemoveWorkerCommand}" IsEnabled="{Binding SelectedWorker}" Margin="0,0,8,0">
+                                                            <Button Style="{StaticResource CircleIconButton}" ToolTip="{DynamicResource Settings_Tooltip_Remove}" Command="{Binding RemoveWorkerCommand}" IsEnabled="{Binding SelectedWorker}" Margin="0,0,8,0">
                                                                 <materialDesign:PackIcon Kind="Minus" Width="18" Height="18" />
                                                             </Button>
-                                                            <Button Style="{StaticResource CircleIconButton}" ToolTip="編輯" Command="{Binding EditWorkerCommand}" IsEnabled="{Binding SelectedWorker}">
+                                                            <Button Style="{StaticResource CircleIconButton}" ToolTip="{DynamicResource Settings_Tooltip_Edit}" Command="{Binding EditWorkerCommand}" IsEnabled="{Binding SelectedWorker}">
                                                                 <materialDesign:PackIcon Kind="Pencil" Width="18" Height="18" />
                                                             </Button>
                                                         </StackPanel>
@@ -657,7 +668,7 @@
                                                                 <!-- 欄位 -->
                                                                 <DataGrid.Columns>
                                                                     <!-- Worker Number -->
-                                                                    <DataGridTextColumn Header="工號" Binding="{Binding WorkerNumber}" Width="2*">
+                                                                    <DataGridTextColumn Header="{DynamicResource Settings_Column_WorkerNo}" Binding="{Binding WorkerNumber}" Width="2*">
                                                                         <DataGridTextColumn.ElementStyle>
                                                                             <Style TargetType="TextBlock">
                                                                                 <Setter Property="HorizontalAlignment" Value="Center" />
@@ -668,7 +679,7 @@
                                                                     </DataGridTextColumn>
 
                                                                     <!-- Worker Name：若為 null/空字串顯示 ?? -->
-                                                                    <DataGridTemplateColumn Header="使用者" Width="3*">
+                                                                    <DataGridTemplateColumn Header="{DynamicResource Settings_Column_WorkerName}" Width="3*">
                                                                         <DataGridTemplateColumn.CellTemplate>
                                                                             <DataTemplate>
                                                                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20">
@@ -707,7 +718,7 @@
                                                 <DataTemplate>
                                                     <StackPanel>
                                                         <!-- 單一卡片（使用你提供的 GroupBox 樣式） -->
-                                                        <GroupBox Header="潤滑排程" Style="{StaticResource CustomGroupBoxStyle}" Margin="12,8,12,0">
+                                                        <GroupBox Header="{DynamicResource Settings_Group_Lubrication}" Style="{StaticResource CustomGroupBoxStyle}" Margin="12,8,12,0">
                                                             <Grid>
                                                                 <Grid.RowDefinitions>
                                                                     <RowDefinition Height="Auto" />
@@ -734,7 +745,7 @@
                                                                         <ColumnDefinition Width="*" />
                                                                     </Grid.ColumnDefinitions>
 
-                                                                    <TextBlock Grid.Column="0" Text="潤滑週期" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                                    <TextBlock Grid.Column="0" Text="{DynamicResource Settings_Label_LubricationPeriod}" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="{DynamicResource PrimaryTextBrush}" />
 
                                                                     <Border Grid.Column="1" Background="Black"/>
                                                                     <!-- 內容：輸入框 + 按鈕 -->
@@ -746,10 +757,10 @@
                                                                 <!-- 🔘 按鈕區 -->
                                                                 <StackPanel Grid.Row="2" Orientation="Horizontal">
                                                                     <!-- 左灰：設定週期 -->
-                                                                    <Button Content="設定週期" Width="120" Height="40" Margin="0,0,12,0" FontSize="20" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding OpenSetPeriodDialogCommand}" />
+                                                                    <Button Content="{DynamicResource Settings_Button_SetPeriod}" MinWidth="120" Height="40" Margin="0,0,12,0" FontSize="16" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding OpenSetPeriodDialogCommand}" />
 
                                                                     <!-- 右藍：強制潤滑 -->
-                                                                    <Button Content="強制潤滑" Width="120" Height="40" FontSize="20" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ForceLubricationCommand}" />
+                                                                    <Button Content="{DynamicResource Settings_Button_ForceLubrication}" MinWidth="120" Height="40" FontSize="16" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ForceLubricationCommand}" />
                                                                 </StackPanel>
                                                             </Grid>
                                                         </GroupBox>
@@ -776,7 +787,7 @@
 
                         <ProgressBar IsIndeterminate="True" Height="10" />
 
-                        <TextBlock Text="請勿關閉程式或中斷電源" Foreground="{DynamicResource PrimaryTextBrush}" Opacity="0.7" Margin="0,12,0,0" TextAlignment="Center" />
+                        <TextBlock Text="{DynamicResource Settings_Text_DoNotClose}" Foreground="{DynamicResource PrimaryTextBrush}" Opacity="0.7" Margin="0,12,0,0" TextAlignment="Center" />
                     </StackPanel>
 
                 </Border>

@@ -1,10 +1,10 @@
-﻿<Window x:Class="FMSFrontend.Extensions.MaterialTypeSelectWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" Title="物料燒錄" Width="600" Height="384" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+﻿<Window x:Class="FMSFrontend.Extensions.MaterialTypeSelectWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" Title="{DynamicResource MaterialTypeSelectWindow_Title}" Width="610" Height="394" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown">
 
     <Window.Resources>
         <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
     </Window.Resources>
 
-    <Border Background="White" CornerRadius="10" Padding="0" Effect="{StaticResource ShadowEffect}" BorderBrush="#CCC" BorderThickness="1">
+    <Border Background="White" CornerRadius="10" Padding="0" Effect="{StaticResource ShadowEffect}" BorderBrush="#CCC" BorderThickness="1" Margin="10">
 
         <Grid>
             <Grid.RowDefinitions>
@@ -24,7 +24,7 @@
 
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0">
                         <materialDesign:PackIcon Kind="DatabaseImport" Width="24" Height="24" Margin="0,0,8,0" Foreground="White" />
-                        <TextBlock Text="物料選擇" FontSize="22" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource MaterialTypeSelectWindow_Header_Title}" FontSize="22" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
                     </StackPanel>
 
                     <!-- 關閉按鈕 -->
@@ -35,9 +35,9 @@
             <!-- 🎯 主內容：選擇類型 -->
             <Grid Grid.Row="1">
                 <StackPanel  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0">
-                    <Button Content="電極" Width="240" Height="78" FontSize="24" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Margin="0,0,0,10" Click="SelectElectrodeCommand" />
-                    <Button Content="工件" Width="240" Height="78" FontSize="24" Style="{StaticResource PrimaryButtonStyle}" Background="#DE8C3E" Margin="0,0,0,10" Click="SelectWorkpieceCommand" />
-                    <Button Content="探針" Width="240" Height="78" FontSize="24" Style="{StaticResource PrimaryButtonStyle}" Background="BlueViolet" Click="SelectProbeCommand" />
+                    <Button Content="{DynamicResource MaterialTypeSelectWindow_Button_Electrode}" Width="240" Height="78" FontSize="24" Style="{StaticResource PrimaryButtonStyle}" Background="#2779A7" Margin="0,0,0,10" Click="SelectElectrodeCommand" />
+                    <Button Content="{DynamicResource MaterialTypeSelectWindow_Button_Workpiece}" Width="240" Height="78" FontSize="24" Style="{StaticResource PrimaryButtonStyle}" Background="#DE8C3E" Margin="0,0,0,10" Click="SelectWorkpieceCommand" />
+                    <Button Content="{DynamicResource MaterialTypeSelectWindow_Button_Probe}" Width="240" Height="78" FontSize="24" Style="{StaticResource PrimaryButtonStyle}" Background="BlueViolet" Click="SelectProbeCommand" />
                 </StackPanel>
             </Grid>
         </Grid>

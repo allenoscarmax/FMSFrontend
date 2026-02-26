@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" Title="編輯" Height="480" Width="560" ResizeMode="NoResize"
+        mc:Ignorable="d" Title="{DynamicResource EditGridWindow_Title}" Height="480" Width="560" ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True"
         Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown">
     <Window.Resources>
@@ -22,13 +22,21 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
-    <Border Background="White" CornerRadius="10" Effect="{StaticResource ShadowEffect}">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="56" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+    <Grid Margin="12">
+        <Border Background="White" CornerRadius="10" SnapsToDevicePixels="True">
+            <Border.Effect>
+                <DropShadowEffect Color="#000000"
+                                  Opacity="0.25"
+                                  BlurRadius="14"
+                                  Direction="270"
+                                  ShadowDepth="6" />
+            </Border.Effect>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="56" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
             <!-- 標題列 -->
             <Border Grid.Row="0" Background="#444" CornerRadius="10,10,0,0">
                 <Grid>
@@ -67,10 +75,11 @@
             </ScrollViewer>
 
             <!-- 底部按鈕 -->
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
-                <Button Content="編輯" Style="{StaticResource EditButtonStyle}" Command="{Binding EditClickCommand}" />
-            </StackPanel>
-        </Grid>
-    </Border>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+                    <Button Content="{DynamicResource EditGridWindow_Button_Edit}" Style="{StaticResource EditButtonStyle}" Command="{Binding EditClickCommand}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
 </Window>
 

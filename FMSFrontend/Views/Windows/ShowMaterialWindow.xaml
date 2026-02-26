@@ -1,11 +1,11 @@
-﻿<Window x:Name="Root" x:Class="FMSFrontend.Views.Windows.ShowMaterialWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vm="clr-namespace:FMSFrontend.ViewModels" xmlns:views="clr-namespace:FMSFrontend.Controls" xmlns:local="clr-namespace:FMSFrontend.Converters" mc:Ignorable="d" Title="倉位資訊" Width="1060" Height="700" WindowStartupLocation="CenterOwner" Background="Transparent" AllowsTransparency="True" WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+﻿<Window x:Name="Root" x:Class="FMSFrontend.Views.Windows.ShowMaterialWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vm="clr-namespace:FMSFrontend.ViewModels" xmlns:views="clr-namespace:FMSFrontend.Controls" xmlns:local="clr-namespace:FMSFrontend.Converters" mc:Ignorable="d" Title="{DynamicResource ShowMaterialWindow_Title}" Width="1060" Height="700" WindowStartupLocation="CenterOwner" Background="Transparent" AllowsTransparency="True" WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown">
 
     <Window.Resources>
         <local:InverseBoolConverter x:Key="InverseBoolConverter" />
     </Window.Resources>
 
     <!-- 外框：白底 + 圓角 + 陰影 + 16px 內距 -->
-    <Border CornerRadius="10" Background="#FFFFFF">
+    <Border CornerRadius="10" Background="#FFFFFF" Margin="10">
         <Border.Effect>
             <DropShadowEffect BlurRadius="4" ShadowDepth="4" Opacity="0.25" />
         </Border.Effect>
@@ -32,7 +32,7 @@
                     </Grid.ColumnDefinitions>
 
 
-                    <TextBlock Text="倉位資訊" Margin="20,0,0,0" VerticalAlignment="Center" Foreground="White" FontSize="24" FontWeight="Bold" />
+                    <TextBlock Text="{DynamicResource ShowMaterialWindow_Title}" Margin="20,0,0,0" VerticalAlignment="Center" Foreground="White" FontSize="24" FontWeight="Bold" />
 
                     <!-- 關閉按鈕 -->
                     <Button Grid.Column="1" Content="✕" Background="Transparent" BorderThickness="0" Foreground="White" FontSize="20" FontWeight="Bold" Width="32" Height="32" HorizontalAlignment="Center" VerticalAlignment="Center" Cursor="Hand" Click="Close_Click" />
@@ -49,7 +49,7 @@
 
                 <!-- 左：倉位編號 + 類別 -->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="10,0,0,0">
-                    <TextBlock Text="倉位編號" FontSize="18" FontWeight="Bold" Margin="0,0,16,0" />
+                    <TextBlock Text="{DynamicResource ShowMaterialWindow_Label_SlotCode}" FontSize="18" FontWeight="Bold" Margin="0,0,16,0" />
                     <!-- 這裡要顯示實際倉位代碼 -->
                     <TextBlock Text="{Binding SlotCode, TargetNullValue=—}" FontSize="18" Margin="0,0,16,0" />
                     <!-- 類別文字（電極 / 工件 / 物料） -->
@@ -59,10 +59,10 @@
                 <!-- 右：解除預約 / 禁用 -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,10,0">
 
-                    <Button  Name ="CancelBook" Command="{Binding CancelBookStorageCommand}" FontSize="14" Content="倉位解除預約" Padding="16,8" Style="{StaticResource PrimaryButtonStyle}" Background="#E58C2C" Foreground="White" BorderBrush="#E58C2C" BorderThickness="1" FontWeight="Bold" Cursor="Hand" Margin="0,0,10,0" />
+                    <Button  Name ="CancelBook" Command="{Binding CancelBookStorageCommand}" FontSize="14" Content="{DynamicResource ShowMaterialWindow_Button_CancelReservation}" Padding="16,8" Style="{StaticResource PrimaryButtonStyle}" Background="#E58C2C" Foreground="White" BorderBrush="#E58C2C" BorderThickness="1" FontWeight="Bold" Cursor="Hand" MinWidth="120" Margin="0,0,10,0" />
 
                     <!-- 滑動開關版本：IsChecked=False=禁用(左)；IsChecked=True=啟用(右) -->
-                    <ToggleButton x:Name="DisableToggle" Cursor="Hand" HorizontalAlignment="Left" ToolTip="禁用 / 啟用" Command="{Binding UpdataStorageCommand}" IsChecked="{Binding IsDisabled, Mode=TwoWay, Converter={StaticResource InverseBoolConverter}}">
+                    <ToggleButton x:Name="DisableToggle" Cursor="Hand" HorizontalAlignment="Left" ToolTip="{DynamicResource ShowMaterialWindow_Toggle_Tooltip}" Command="{Binding UpdataStorageCommand}" IsChecked="{Binding IsDisabled, Mode=TwoWay, Converter={StaticResource InverseBoolConverter}}">
                         <ToggleButton.Style>
                             <Style TargetType="{x:Type ToggleButton}">
                                 <!-- 尺寸統一交由模板控制 -->
@@ -96,7 +96,7 @@
                                                         <VisualState x:Name="Checked">
                                                             <Storyboard>
                                                                 <!-- 180(總寬)-2*2(邊距)-92(滑塊寬)=82；略加手感微調 -> 84 -->
-                                                                <DoubleAnimation Storyboard.TargetName="KnobTransform" Storyboard.TargetProperty="X" To="71" Duration="0:0:0.20">
+                                                                <DoubleAnimation Storyboard.TargetName="KnobTransform" Storyboard.TargetProperty="X" To="61" Duration="0:0:0.20">
                                                                     <DoubleAnimation.EasingFunction>
                                                                         <CubicEase EasingMode="EaseOut" />
                                                                     </DoubleAnimation.EasingFunction>
@@ -129,7 +129,7 @@
                                                 </Border>
 
                                                 <!-- 滑塊 -->
-                                                <Border x:Name="Knob" Width="75" Height="40" Margin="1" CornerRadius="18" Background="White" VerticalAlignment="Center" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5">
+                                                <Border x:Name="Knob" Width="90" Height="40" Margin="1" CornerRadius="18" Background="White" VerticalAlignment="Center" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5">
                                                     <Border.Effect>
                                                         <DropShadowEffect Color="#000000" BlurRadius="10" ShadowDepth="1" Opacity="0.25" />
                                                     </Border.Effect>
@@ -139,8 +139,8 @@
 
                                                     <!-- 滑塊內容：圖示 + 文字 -->
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="6,1" >
-                                                        <TextBlock x:Name="IconText" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Text="🚫" Foreground="Black" />
-                                                        <TextBlock x:Name="LabelText" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" Text="禁用" Foreground="Black" />
+                                                        <TextBlock x:Name="IconText" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Text="🚫" Foreground="Black" />
+                                                        <TextBlock x:Name="LabelText" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Text="{DynamicResource ShowMaterialWindow_Toggle_Disabled}" Foreground="Black" />
                                                     </StackPanel>
                                                 </Border>
 
@@ -153,7 +153,7 @@
                                                     <Setter TargetName="Knob" Property="Background" Value="White" />
                                                     <Setter TargetName="IconText" Property="Text" Value="🚫" />
                                                     <Setter TargetName="IconText" Property="Foreground" Value="#555555" />
-                                                    <Setter TargetName="LabelText" Property="Text" Value="禁用" />
+                                                    <Setter TargetName="LabelText" Property="Text" Value="{DynamicResource ShowMaterialWindow_Toggle_Disabled}" />
                                                     <Setter TargetName="LabelText" Property="Foreground" Value="#555555" />
                                                     <!-- 陰影方向（靠滑塊右側） -->
                                                     <Setter TargetName="ShadowTrail" Property="HorizontalAlignment" Value="Right" />
@@ -165,7 +165,7 @@
                                                     <Setter TargetName="Knob" Property="Background" Value="#555555" />
                                                     <Setter TargetName="IconText" Property="Text" Value="✓ " />
                                                     <Setter TargetName="IconText" Property="Foreground" Value="White" />
-                                                    <Setter TargetName="LabelText" Property="Text" Value="啟用" />
+                                                    <Setter TargetName="LabelText" Property="Text" Value="{DynamicResource ShowMaterialWindow_Toggle_Enabled}" />
                                                     <Setter TargetName="LabelText" Property="Foreground" Value="White" />
                                                     <!-- 陰影方向（靠滑塊左側） -->
                                                     <Setter TargetName="ShadowTrail" Property="HorizontalAlignment" Value="Left" />

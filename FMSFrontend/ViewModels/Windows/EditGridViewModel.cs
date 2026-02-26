@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Helpers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace FMSFrontend.ViewModels.Windows
     // 用於依據輸入的欄位資訊動態產生編輯介面的 ViewModel
     public partial class EditGridViewModel : ObservableObject
     {
-        [ObservableProperty] private string title = "編輯";
+        [ObservableProperty] private string title = string.Empty;
         [ObservableProperty] private ObservableCollection<EditGridInfo> display = new();
 
         public EditGridViewModel(List<EditGridInfo> items, string title = "編輯")
@@ -20,7 +21,9 @@ namespace FMSFrontend.ViewModels.Windows
             {
                 Display = new ObservableCollection<EditGridInfo>(items);
             }
-            Title = title ?? string.Empty;
+            Title = string.IsNullOrWhiteSpace(title)
+                ? LanguageManager.GetString("EditGridViewModel_Title_Default", "編輯")
+                : title;
         }
 
         // 完成編輯命令

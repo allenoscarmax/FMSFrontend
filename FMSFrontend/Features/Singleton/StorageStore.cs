@@ -20,8 +20,8 @@ namespace FMSFrontend.Features.Singleton
             void apply() => dtos.ApplyStorageDto(StorageGroup.Storage);
             if (disp != null && !disp.CheckAccess())
             {
-               // disp.Invoke(apply);
-            } 
+                // disp.Invoke(apply);
+            }
             else apply();
         }
         public void ApplyNullDto(int storageIndex, int slotIindex)
@@ -37,9 +37,9 @@ namespace FMSFrontend.Features.Singleton
             }
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();
-            
+
         }
-        public void ApplyElectrodeDto(ElectrodeDto dto, int storageIndex ,int slotIindex)
+        public void ApplyElectrodeDto(ElectrodeDto dto, int storageIndex, int slotIindex)
         {
             var disp = Application.Current?.Dispatcher;
             void apply() => dto.ApplyElectrodeDto(StorageGroup.Storage[storageIndex].Slots[slotIindex]);
@@ -128,111 +128,16 @@ namespace FMSFrontend.Features.Singleton
                             StorageGroup.SelectStorage.Slots.RemoveAt(StorageGroup.SelectStorage.Slots.Count - 1);
                         }
                     }
-                    StorageGroup.SelectStorage.WaitingCount     = StorageGroup.SelectStorage.Slots.Count(s => s.MaterialStatus == "Verified");
-                    StorageGroup.SelectStorage.ProcessingCount  = StorageGroup.SelectStorage.Slots.Count(s => s.MaterialStatus == "Working");
-                    StorageGroup.SelectStorage.ErrorCount       = StorageGroup.SelectStorage.Slots.Count(s => s.MaterialStatus == "Error");
-                    StorageGroup.SelectStorage.CompletedCount   = StorageGroup.SelectStorage.Slots.Count(s => s.MaterialStatus == "Completed");
+                    StorageGroup.SelectStorage.WaitingCount = StorageGroup.SelectStorage.Slots.Count(s => s.MaterialStatus == "Verified");
+                    StorageGroup.SelectStorage.ProcessingCount = StorageGroup.SelectStorage.Slots.Count(s => s.MaterialStatus == "Working");
+                    StorageGroup.SelectStorage.ErrorCount = StorageGroup.SelectStorage.Slots.Count(s => s.MaterialStatus == "Error");
+                    StorageGroup.SelectStorage.CompletedCount = StorageGroup.SelectStorage.Slots.Count(s => s.MaterialStatus == "Completed");
                     StorageGroup.SelectStorage.RestrictionCount = StorageGroup.SelectStorage.Slots.Count(s => s.StorageRestriction == true);
-                    StorageGroup.SelectStorage.BookedCount      = StorageGroup.SelectStorage.Slots.Count(s => s.StorageStatus == "Booked");
+                    StorageGroup.SelectStorage.BookedCount = StorageGroup.SelectStorage.Slots.Count(s => s.StorageStatus == "Booked");
                 }
             }
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();
         }
-        /*
-            public void ApplyStorageGroupDto(StorageGroupModel data)
-            {
-                var disp = Application.Current?.Dispatcher;
-                void apply()
-                {
-                    // 群組統計
-                    StorageGroup.WaitingTotal = data.WaitingTotal;
-                    StorageGroup.ProcessingTotal = data.ProcessingTotal;
-                    StorageGroup.ErrorTotal = data.ErrorTotal;
-                    StorageGroup.CompletedTotal = data.CompletedTotal;
-                    StorageGroup.RestrictionTotal = data.RestrictionTotal;
-                    StorageGroup.BookedTotal = data.BookedTotal;
-
-                    // 整體清單直接替換
-                    StorageGroup.Storage = data.Storage;
-
-                    // 對齊選取的 Storage 參考
-                    if (data.SelectStorage != null)
-                    {
-                        // 優先指向清單內相同項目，否則就用來源的 SelectStorage
-                        var fromSel = data.SelectStorage;
-                        var matched = StorageGroup.Storage?
-                            .FirstOrDefault(s => s.Name == fromSel.Name && s.Number == fromSel.Number)
-                            ?? StorageGroup.Storage?.FirstOrDefault(s => s.Title == fromSel.Title)
-                            ?? fromSel;
-
-                        StorageGroup.SelectStorage = matched;
-                    }
-                    else if (StorageGroup.SelectStorage != null)
-                    {
-                        // 嘗試以目前選擇在新清單中找到對應實例
-                        var cur = StorageGroup.SelectStorage;
-                        var matched = StorageGroup.Storage?
-                            .FirstOrDefault(s => s.Name == cur.Name && s.Number == cur.Number)
-                            ?? StorageGroup.Storage?.FirstOrDefault(s => s.Title == cur.Title);
-                        if (matched != null)
-                            StorageGroup.SelectStorage = matched;
-                    }
-
-                    if (StorageGroup.SelectStorage != null)
-                    {
-                        var target = StorageGroup.SelectStorage;
-                        var source = data.SelectStorage ?? target; // 若無來源選擇，使用目前選擇做就地刷新
-
-                        // 同步基本屬性與統計
-                        target.Name = source.Name;
-                        target.Number = source.Number;
-                        target.Serial = source.Serial;
-                        target.Rows = source.Rows;
-                        target.Columns = source.Columns;
-
-                        target.WaitingCount = source.WaitingCount;
-                        target.ProcessingCount = source.ProcessingCount;
-                        target.ErrorCount = source.ErrorCount;
-                        target.CompletedCount = source.CompletedCount;
-                        target.RestrictionCount = source.RestrictionCount;
-                        target.BookedCount = source.BookedCount;
-
-                        // 對齊 Slots 長度
-                        var targetSlots = target.Slots ?? new ObservableCollection<Slot>();
-                        var sourceSlots = source.Slots ?? new ObservableCollection<Slot>();
-
-                        if (target.Slots != targetSlots)
-                            target.Slots = targetSlots;
-
-                        if (targetSlots.Count != sourceSlots.Count)
-                        {
-                            targetSlots.Clear();
-                            foreach (var s in sourceSlots)
-                                targetSlots.Add(s);
-                        }
-                        else
-                        {
-                            // 就地更新（Slot 為可通知屬性）
-                            for (int i = 0; i < sourceSlots.Count; i++)
-                            {
-                                var t = targetSlots[i];
-                                var s = sourceSlots[i];
-                                t.Name = s.Name;
-                                t.ShortName = s.ShortName;
-                                t.Serial = s.Serial;
-                                t.Kind = s.Kind;
-                                t.MaterialStatus = s.MaterialStatus;
-                                t.MaterialRestriction = s.MaterialRestriction;
-                                t.StorageStatus = s.StorageStatus;
-                                t.StorageRestriction = s.StorageRestriction;
-                            }
-                        }
-                    }
-                }
-                if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
-                else apply();
-            }
-            */
-        }
+    }
 }

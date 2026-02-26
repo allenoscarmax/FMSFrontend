@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FMSFrontend.Helpers;
 using FMSFrontend.Models;
 using System.Collections.ObjectModel;
 
@@ -38,10 +39,10 @@ namespace FMSFrontend.ViewModels.Windows
 
         public string KindText => Kind switch
         {
-            MaterialKind.Electrode => "電極",
-            MaterialKind.Workpiece => "工件",
-            MaterialKind.Probe => "探針",
-            _ => "物料"
+            MaterialKind.Electrode => LanguageManager.GetString("ShowMaterialInformation_Kind_Electrode", "電極"),
+            MaterialKind.Workpiece => LanguageManager.GetString("ShowMaterialInformation_Kind_Workpiece", "工件"),
+            MaterialKind.Probe => LanguageManager.GetString("ShowMaterialInformation_Kind_Probe", "探針"),
+            _ => LanguageManager.GetString("ShowMaterialInformation_Kind_Material", "物料")
         };
 
         // 可選：提供一個 Close 命令（若你的視窗需要）
