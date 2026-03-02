@@ -122,7 +122,6 @@
                                     <Setter Property="ContentTemplate">
                                         <Setter.Value>
                                             <DataTemplate>
-                                                <ScrollViewer VerticalScrollBarVisibility="Auto">
                                                     <Grid>
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="Auto" />
@@ -260,7 +259,6 @@
                                                             </Grid>
                                                         </Border>
                                                     </Grid>
-                                                </ScrollViewer>
                                             </DataTemplate>
                                         </Setter.Value>
                                     </Setter>
