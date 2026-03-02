@@ -76,8 +76,8 @@
                 <Grid Grid.Column="0" Background="{DynamicResource  SidebarBackgroundBrush}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="55" />
-                        <RowDefinition Height="309" />
-                        <RowDefinition Height="296" />
+                        <RowDefinition Height="290" />
+                        <RowDefinition Height="290" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Border Grid.Row="0" Background="{DynamicResource  DeepBlueBrush}" Height="55" Padding="10,0">

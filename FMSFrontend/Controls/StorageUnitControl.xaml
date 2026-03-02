@@ -6,7 +6,7 @@
 
         <Grid Background="Transparent">
             <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
+                <RowDefinition Height="30" />
                 <!-- 標題 -->
                 <RowDefinition Height="60" />
                 <RowDefinition Height="*" />
@@ -22,7 +22,7 @@
             </Border>
 
             <!-- 標題區分成左右兩個部分 -->
-            <Grid Grid.ColumnSpan="2" Height="40">
+            <Grid Grid.ColumnSpan="2" Height="30">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
@@ -58,12 +58,12 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="3">
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="20,3,3,3">
                     <Ellipse Width="10" Height="10" Stroke="Black" StrokeThickness="1" Fill="{Binding UpperScanStatus, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     <TextBlock Text="{DynamicResource StorageUnitControl_Label_ScanStatus}" Width="Auto" MaxWidth="110" FontSize="16" FontWeight="Bold" Margin="10,0,0,0"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="3">
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="20,3,3,3">
                     <Ellipse Width="10" Height="10" Stroke="Black" StrokeThickness="1" Fill="{Binding UpperDoorStatus, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     <TextBlock Text="{DynamicResource StorageUnitControl_Label_DoorStatus}" Width="Auto" MaxWidth="110" FontSize="16" FontWeight="Bold"  Margin="10,0,0,0"/>
                 </StackPanel>
@@ -90,12 +90,12 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,2">
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="20,3,3,3">
                     <Ellipse Width="10" Height="10" Stroke="Black" StrokeThickness="1" Fill="{Binding LowerScanStatus, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     <TextBlock Text="{DynamicResource StorageUnitControl_Label_ScanStatus}" Width="Auto" MaxWidth="110"  FontSize="16" FontWeight="Bold"  Margin="10,0,0,0"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,2">
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="20,3,3,3">
                     <Ellipse Width="10" Height="10" Stroke="Black" StrokeThickness="1" Fill="{Binding LowerDoorStatus, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     <TextBlock Text="{DynamicResource StorageUnitControl_Label_DoorStatus}" Width="Auto" MaxWidth="110" FontSize="16" FontWeight="Bold"  Margin="10,0,0,0"/>
                 </StackPanel>
