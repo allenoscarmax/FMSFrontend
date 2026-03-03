@@ -9,7 +9,7 @@ namespace FMSFrontend.Models
     {
         private static readonly SolidColorBrush PortTilieColor = new(Color.FromRgb(0x27, 0x79, 0xA7));
         private static readonly SolidColorBrush EleTilieColor = new(Color.FromRgb(0xE0, 0x8E, 0x45));
-        public int magazineParasNumber = 2; //magazine參數數量
+        public int magazineParasNumber = 20; //magazine參數數量
 
         [ObservableProperty] private bool isDoorLightOn = false; //日光燈
         [ObservableProperty] private ObservableCollection<MagazineParaInfo> magazineParas = new();

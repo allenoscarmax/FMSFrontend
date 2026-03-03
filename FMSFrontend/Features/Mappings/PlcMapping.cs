@@ -25,7 +25,9 @@ namespace FMSFrontend.Features.Mappings
                     magazinePara.MagazineParas.Add(new MagazineParaInfo
                     {
                         StorageId = i.ToString(), // 0-based 給 PLC API
+                       
                     });
+                    magazinePara.MagazineParas[i].LeftTitle = "E" + i.ToString();
                 }
                 // 設定標題與顏色 
                 magazinePara.MagazineParas[0].LeftTitle = "W1";

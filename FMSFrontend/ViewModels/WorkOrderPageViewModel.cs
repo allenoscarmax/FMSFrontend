@@ -69,7 +69,7 @@ namespace FMSFrontend.ViewModels
         }
         private bool CanRevise() => EDMSelectedTab == 2 && SelectedEDMQueueItem != null;
 
-        private bool CanFail() => EDMSelectedTab == 2 && SelectedEDMQueueItem != null;
+        private bool CanFail() => ( EDMSelectedTab == 2 || EDMSelectedTab == 1) && SelectedEDMQueueItem != null;
 
         [ObservableProperty]
         private int selectedTabIndexParameter;
@@ -205,7 +205,7 @@ namespace FMSFrontend.ViewModels
             _auth = auth;
             _robotStore = robotStore;
             _userSession = userSession;
-            LanguageManager.ApplySavedLanguage();
+         //   LanguageManager.ApplySavedLanguage();
             SelectedFilterIndex = 0;
             // 使用非同步方法刪除：保留 RelayCommand，但在內部啟動 async Task
             DeleteCommand = new RelayCommand<WorkOrderData>(item =>

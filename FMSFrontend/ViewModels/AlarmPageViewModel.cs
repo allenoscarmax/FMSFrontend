@@ -102,7 +102,7 @@ namespace FMSFrontend.ViewModels
             IAuthorizationService authorizationService, 
             AlarmStore alarmStore)
         {
-            LanguageManager.ApplySavedLanguage();
+           // LanguageManager.ApplySavedLanguage();
             _windowService = windowService;
             _alarmService = alarmService;
 

@@ -15,7 +15,6 @@
 
     <Grid>
         <!-- 陰影層 -->
-        <Border Background="#33000000" CornerRadius="18" Margin="-2" />
         <Border CornerRadius="18" Background="#FFFFFF" BorderBrush="#DDD" ClipToBounds="True" SnapsToDevicePixels="True" />
 
         <Grid>

@@ -6,7 +6,7 @@ namespace FMSFrontend.Features.Mappings
 {
     public static class Conversion
     {
-        private static bool JusticeShortNameFlag = false; //佑義客製需求 20260122
+        private static bool JusticeShortNameFlag = true; //佑義客製需求 20260122
         public static string ShortNameConversion(bool isElectrode, string Name)
         {
             // 電極名稱規則修改為 末三碼-序號+字母 (A,B,C...)，工件名稱規則修改為 末三碼-序號

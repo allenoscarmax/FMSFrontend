@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="FMSFrontend.Views.StorageUnitControlPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:controls="clr-namespace:FMSFrontend.Controls" xmlns:local="clr-namespace:FMSFrontend.Views" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" x:Name="root" Height="329" Width="384">
+﻿<UserControl x:Class="FMSFrontend.Views.StorageUnitControlPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:controls="clr-namespace:FMSFrontend.Controls" xmlns:local="clr-namespace:FMSFrontend.Views" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" x:Name="root" Height="348" Width="384">
 
     <Grid>
         <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto">
@@ -30,7 +30,7 @@
             </ItemsControl>
         </ScrollViewer>
         <!-- 半透明的返回按鈕 -->
-        <Button HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="36" Height="36" Background="Gray" Opacity="0.5" BorderBrush="Transparent" BorderThickness="1" FontSize="24" Foreground="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Command="{Binding BackCommand}" ToolTip="{DynamicResource StorageUnitControlPage_Tooltip_Back}" Margin="10">
+        <Button HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="36" Height="36" Background="Gray" Opacity="0.5" BorderBrush="Transparent" BorderThickness="1" FontSize="24" Foreground="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Command="{Binding BackCommand}" ToolTip="{DynamicResource StorageUnitControlPage_Tooltip_Back}" Margin="5">
 
             <!-- 按鈕圖示內容 -->
             <materialDesign:PackIcon Kind="ArrowULeftTop" Foreground="White" Width="24" Height="24" />

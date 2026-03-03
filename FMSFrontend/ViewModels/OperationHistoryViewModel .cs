@@ -31,7 +31,7 @@ namespace FMSFrontend.ViewModels
         public OperationHistoryViewModel(IWindowService windowService, IOperationMessageLogService operationService)
         {
             _windowService = windowService;
-            LanguageManager.ApplySavedLanguage();
+          //  LanguageManager.ApplySavedLanguage();
 
             OperationRecords = CollectionViewSource.GetDefaultView(_allRecords);
             OperationRecords.Filter = FilterByDate;

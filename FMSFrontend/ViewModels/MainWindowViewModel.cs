@@ -136,7 +136,7 @@ namespace FMSFrontend.ViewModels
 
             //電極倉門初始頁面
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-            bool b = ini.Read("Prarm", "IsStorageUnitControlMini") == "True";
+            bool b = ini.Read("Param", "IsStorageUnitControlMini") == "True";
             if (b)
                 StorageControlPage = App.ServiceProvider!.GetRequiredService<StorageUnitMiniControlPage>();
             else
@@ -155,7 +155,7 @@ namespace FMSFrontend.ViewModels
             // 如果你會改 Robot 內部屬性，也可加：
             RobotStore.Robot.PropertyChanged += (_, __) => RefreshFromStore();
             //自動登入
-            if (ini.Read("Prarm", "KeepLoggedIn") == "True")
+            if (ini.Read("Param", "KeepLoggedIn") == "True")
                 _ = AutoLogin();
         }
 
@@ -700,3 +700,4 @@ namespace FMSFrontend.ViewModels
         #endregion
     }
 }
+

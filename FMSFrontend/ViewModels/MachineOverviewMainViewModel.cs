@@ -95,7 +95,7 @@ namespace FMSFrontend.ViewModels
             //INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "Basesitting.ini");
             //try
             //{
-            //    StationCount = Convert.ToInt16(ini.Read("Prarm", "StationCount"));
+            //    StationCount = Convert.ToInt16(ini.Read("Param", "StationCount"));
             //}
             //catch { }
 
@@ -396,4 +396,5 @@ namespace FMSFrontend.ViewModels
         NULL = 99
     }
 }
+
 

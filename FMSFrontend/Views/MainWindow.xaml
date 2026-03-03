@@ -76,8 +76,8 @@
                 <Grid Grid.Column="0" Background="{DynamicResource  SidebarBackgroundBrush}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="55" />
-                        <RowDefinition Height="309" />
-                        <RowDefinition Height="296" />
+                        <RowDefinition Height="290" />
+                        <RowDefinition Height="290" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Border Grid.Row="0" Background="{DynamicResource  DeepBlueBrush}" Height="55" Padding="10,0">
@@ -191,10 +191,17 @@
                                             </ControlTemplate>
                                             
                                         </Button.Template>
-                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                            <materialDesign:PackIcon Kind="Play" Width="60" Height="60" Margin="0,0,0,3" HorizontalAlignment="Center" Foreground="{Binding StartForeground}" />
-                                            <TextBlock Text="{DynamicResource MainWindow_Button_RobotStart}" FontSize="16" HorizontalAlignment="Center" Foreground="{Binding StartForeground}" />
-                                        </StackPanel>
+                                        <Grid HorizontalAlignment="Center" Width="100">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="50" />
+                                                <RowDefinition Height="50" />
+                                            </Grid.RowDefinitions>
+                                            <materialDesign:PackIcon Grid.Row="0" Kind="Play" Width="50" Height="50" Margin="0,0,0,3" HorizontalAlignment="Center" Foreground="{Binding StartForeground}" />
+                                            <TextBlock Grid.Row="1" Text="{DynamicResource MainWindow_Button_RobotStart}" 
+                                                       TextWrapping="Wrap" 
+                                                       HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center" 
+                                                       Foreground="{Binding StartForeground}" />
+                                        </Grid>
                                     </Button>
 
                                     <!-- 手臂暫停 -->
@@ -218,10 +225,17 @@
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
                                         </Button.Template>
-                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                            <materialDesign:PackIcon Kind="Pause" Width="60" Height="60" Margin="0,0,0,5" Foreground="{Binding PauseForeground}" HorizontalAlignment="Center" />
-                                            <TextBlock Text="{DynamicResource MainWindow_Button_RobotPause}" FontSize="16" HorizontalAlignment="Center" Foreground="{Binding PauseForeground}" />
-                                        </StackPanel>
+                                        <Grid HorizontalAlignment="Center" Width="100">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="50" />
+                                                <RowDefinition Height="50" />
+                                            </Grid.RowDefinitions>
+                                            <materialDesign:PackIcon Grid.Row="0" Kind="Pause" Width="60" Height="50" Margin="0,0,0,5" Foreground="{Binding PauseForeground}" HorizontalAlignment="Center" />
+                                            <TextBlock Grid.Row="1" Text="{DynamicResource MainWindow_Button_RobotPause}" 
+                                                       TextWrapping="Wrap" 
+                                                       HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center" 
+                                                       Foreground="{Binding PauseForeground}" />
+                                        </Grid>
                                     </Button>
 
                                     <!-- 手臂停止 -->
@@ -245,10 +259,17 @@
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
                                         </Button.Template>
-                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                            <materialDesign:PackIcon Kind="Stop" Width="60" Height="60" Margin="0,0,0,5" Foreground="{Binding StopForeground}" HorizontalAlignment="Center" />
-                                            <TextBlock Text="{DynamicResource MainWindow_Button_RobotStop}" FontSize="16" HorizontalAlignment="Center" Foreground="{Binding StopForeground}" />
-                                        </StackPanel>
+                                        <Grid HorizontalAlignment="Center" Width="100">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="50" />
+                                                <RowDefinition Height="50" />
+                                            </Grid.RowDefinitions>
+                                            <materialDesign:PackIcon Grid.Row="0" Kind="Stop" Width="60" Height="50" Margin="0,0,0,5" Foreground="{Binding StopForeground}" HorizontalAlignment="Center" />
+                                            <TextBlock Grid.Row="1" Text="{DynamicResource MainWindow_Button_RobotStop}" 
+                                                       TextWrapping="Wrap" 
+                                                       HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center" 
+                                                       Foreground="{Binding StopForeground}" />
+                                        </Grid>
                                     </Button>
 
                                     <!-- 手臂重置 -->
@@ -263,13 +284,18 @@
                                                 </Border>
                                             </ControlTemplate>
                                         </Button.Template>
-                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                            <materialDesign:PackIcon Kind="Refresh" Width="60" Height="50" Margin="0,0,0,5" Foreground="#004E79     " HorizontalAlignment="Center" />
-                                            <TextBlock Text="{DynamicResource MainWindow_Button_RobotReset}" 
-                                                       TextWrapping="Wrap" Width="90"
+                                        <Grid HorizontalAlignment="Center" Width="100">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="50" />
+                                                <RowDefinition Height="50" />
+                                            </Grid.RowDefinitions>
+                                            <materialDesign:PackIcon Grid.Row="0" Kind="Refresh" Width="60" Height="50" Margin="0,0,0,5" Foreground="#004E79     " HorizontalAlignment="Center" />
+                                            <TextBlock Grid.Row="1" Text="{DynamicResource MainWindow_Button_RobotReset}" 
+                                                       TextWrapping="Wrap" 
+                                                       Width="90"
                                                        HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center" 
                                                        Foreground="#004E79" />
-                                        </StackPanel>
+                                        </Grid>
                                     </Button>
 
                                     <!-- 派工啟動 -->
@@ -284,13 +310,17 @@
                                                 </Border>
                                             </ControlTemplate>
                                         </Button.Template>
-                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                            <materialDesign:PackIcon Kind="CogPlay" Width="60" Height="50" Margin="0,0,0,5" Foreground="{Binding DispatchForeground}" HorizontalAlignment="Center" />
-                                            <TextBlock Text="{Binding DispatchText}" FontSize="16" 
+                                        <Grid HorizontalAlignment="Center" Width="100">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="50" />
+                                                <RowDefinition Height="50" />
+                                            </Grid.RowDefinitions>
+                                            <materialDesign:PackIcon Grid.Row="0" Kind="CogPlay" Width="60" Height="50" Margin="0,0,0,5" Foreground="{Binding DispatchForeground}" HorizontalAlignment="Center" />
+                                            <TextBlock Grid.Row="1" Text="{Binding DispatchText}" FontSize="16" 
                                                        TextWrapping="Wrap" Width="90"
                                                        HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center" 
                                                        Foreground="{Binding DispatchForeground}" />
-                                        </StackPanel>
+                                        </Grid>
                                     </Button>
                                 </WrapPanel>
                             </Border>

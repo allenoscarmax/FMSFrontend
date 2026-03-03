@@ -4,9 +4,6 @@
         <conv:StorageTypeToBrushConverter x:Key="StorageTypeToBrushConverter" />
     </UserControl.Resources>
     <Grid>
-        <!-- 陰影層 -->
-        <Border Background="#33000000" CornerRadius="18" Margin="-2"/>
-
         <!-- 外層圓角白底 + 陰影 -->
         <Border CornerRadius="18" Background="#FFFFFF" Margin="0" BorderBrush="#DDD"  ClipToBounds="True" SnapsToDevicePixels="True">
             <!-- 用 Grid 分區塊＋裁切 -->
@@ -69,6 +66,15 @@
                                 </Border>
                             </StackPanel>
                         </Border>
+                        <Border Background="BlueViolet" CornerRadius="4" Margin="4,0" Padding="4" MinWidth="80" HorizontalAlignment="Center">
+                            <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Height="25" Text="{DynamicResource StorageOverviewControl_Status_Fail}" FontSize="16" Foreground="White" Margin="5,0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                                <Border Width="50" Height="25" Background="White" CornerRadius="15" Margin="5,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding StorageGroup.FailTotal}" d:Text="5" Foreground="#222" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                        
                         <Border Background="#CCCCCC" CornerRadius="4" Margin="4,0" Padding="4" MinWidth="80" HorizontalAlignment="Center">
                             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <TextBlock Height="25" Text="{DynamicResource StorageOverviewControl_Status_Disabled}" FontSize="16" Foreground="#555" Margin="5,0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>

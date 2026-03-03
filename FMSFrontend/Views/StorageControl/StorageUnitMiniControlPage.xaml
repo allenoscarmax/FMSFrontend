@@ -10,12 +10,13 @@
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <!-- 使用 UniformGrid 兩欄顯示 -->
-                        <UniformGrid Columns="2" Margin="4" />
+                        <UniformGrid Columns="2" Margin="3,2" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <controls:StorageUnitMiniControl
+                            Margin="3"
                             StorageId="{Binding StorageId}"
                             StorageTitle="{Binding StorageId}"
                             UpperDoorCommand="{Binding DataContext.UpperDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"

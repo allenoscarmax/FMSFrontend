@@ -119,6 +119,11 @@
                     <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource LabelText}" Text="{DynamicResource WorkpieceDetailView_Label_BatchNo}" />
                     <TextBlock Grid.Row="6" Grid.Column="1" Style="{StaticResource ColonText}" />
                     <TextBlock Grid.Row="6" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding BatchNo}" />
+                    
+                    <!-- 8 -->
+                    <TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource LabelText}" Text="{DynamicResource WorkpieceDetailView_Label_Offset}" />
+                    <TextBlock Grid.Row="7" Grid.Column="1" Style="{StaticResource ColonText}" />
+                    <TextBlock Grid.Row="7" Grid.Column="2" Style="{StaticResource ValueText}" Text="{Binding Offset}" />
 
                 </Grid>
             </ScrollViewer>

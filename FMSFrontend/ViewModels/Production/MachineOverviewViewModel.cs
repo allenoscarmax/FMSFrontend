@@ -190,6 +190,26 @@ namespace FMSFrontend.ViewModels.Production
 
         [ObservableProperty] private string electrodeName = "";
         [ObservableProperty] private string workpieceName = "";
+        // Short display versions used by the card UI (truncated with ellipsis)
+        public string WorkpieceShortName
+        {
+            get
+            {
+                var name = WorkpieceName ?? string.Empty;
+                if (string.IsNullOrEmpty(name)) return string.Empty;
+                return name.Length > 10 ? name.Substring(0, 10) + "…" : name;
+            }
+        }
+
+        public string ElectrodeShortName
+        {
+            get
+            {
+                var name = ElectrodeName ?? string.Empty;
+                if (string.IsNullOrEmpty(name)) return string.Empty;
+                return name.Length > 10 ? name.Substring(0, 10) + "…" : name;
+            }
+        }
 
         //由Status決定顏色
         public Brush StatusBrush => Status switch

@@ -62,6 +62,7 @@
                            VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" />
                 <Button Style="{StaticResource RoundedShadowButtonStyle}"
                         Content="{DynamicResource StorageUnitMiniControl_Button_Open}"
+                        Height="25"
                         Width="48"
                         Margin="3,0"
                         Command="{Binding UpperDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -75,6 +76,7 @@
                            VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" />
                 <Button Style="{StaticResource RoundedShadowButtonStyle}"
                         Content="{DynamicResource StorageUnitMiniControl_Button_Open}"
+                        Height="25"
                         Width="48"
                         Margin="3,0"
                         Command="{Binding LowerDoorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"

@@ -18,6 +18,7 @@ namespace FMSFrontend.Models
         public string ClampNo { get; set; } = "";      // 夾釘器編號
         public string Status { get; set; } = "";      // 狀態
         public string BatchNo { get; set; } = "";    // 批號
+        public string Offset { get; set; } = "";    // 補償
         public string PartName { get; set; } = "";    // 零件名稱
         public string SerialCode { get; set; } = "";   // 序號順序碼
         public string RouteNo { get; set; } = "";     // 途程號碼

@@ -122,7 +122,6 @@
                                     <Setter Property="ContentTemplate">
                                         <Setter.Value>
                                             <DataTemplate>
-                                                <ScrollViewer VerticalScrollBarVisibility="Auto">
                                                     <Grid>
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="Auto" />
@@ -260,7 +259,6 @@
                                                             </Grid>
                                                         </Border>
                                                     </Grid>
-                                                </ScrollViewer>
                                             </DataTemplate>
                                         </Setter.Value>
                                     </Setter>
@@ -375,13 +373,15 @@
                                                                                                 <RowDefinition Height="50" />
                                                                                                 <RowDefinition Height="*" />
                                                                                             </Grid.RowDefinitions>
-
                                                                                             <!-- 上方按鈕區 -->
-                                                                                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10" />
-
+                                                                                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                                                                                                <Button Width="Auto" MinWidth="120" Content="{DynamicResource WorkOrder_Button_Fail}" Height="40" Margin ="3,0 " Background="#0070E0" Foreground="White" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding FailCommand}" />
+                                                                                            </StackPanel>
                                                                                             <!-- 表格 -->
                                                                                             <Border Grid.Row="1" CornerRadius="0" BorderBrush="#CCC" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
-                                                                                                <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" behaviors:RowDetailsToggleBehavior.KeepSelection="False" behaviors:RowDetailsToggleBehavior.ToggleOnRowClick="True" SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource EDMWorkOrderGridStyle}" RowDetailsTemplate="{StaticResource EDMRowDetailsTemplate}">
+                                                                                                <DataGrid ItemsSource="{Binding FilteredEDMList}" SelectedItem="{Binding SelectedEDMQueueItem}" 
+                                                                                                          behaviors:RowDetailsToggleBehavior.KeepSelection="True" behaviors:RowDetailsToggleBehavior.ToggleOnRowClick="True" 
+                                                                                                          SelectionMode="Single" SelectionUnit="FullRow" Style="{StaticResource EDMWorkOrderGridStyle}" RowDetailsTemplate="{StaticResource EDMRowDetailsTemplate}">
                                                                                                     <DataGrid.Columns>
                                                                                                         <!-- 第 0 欄：展開箭頭 -->
                                                                                                         <DataGridTemplateColumn Width="40">

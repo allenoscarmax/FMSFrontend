@@ -47,7 +47,7 @@ namespace FMSFrontend.ViewModels
         RFIDBindStore rfidBindStore,
         RFIDBindLiveUpdater rfidUpdater)
         {
-            LanguageManager.ApplySavedLanguage();
+           // LanguageManager.ApplySavedLanguage();
             _windowService = windowService;
             _httpService = httpService;
             _plcService = plcService;

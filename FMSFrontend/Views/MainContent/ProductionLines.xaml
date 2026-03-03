@@ -17,6 +17,7 @@
         <Storyboard x:Key="MoveBorderStoryboard" RepeatBehavior="Forever" AutoReverse="True">
             <DoubleAnimation Storyboard.TargetName="BorderTransform" Storyboard.TargetProperty="X" From="0" To="1120" Duration="0:0:5" />
         </Storyboard>
+        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.25" />
     </UserControl.Resources>
 
     <Border Background="{DynamicResource PageViewBrush}">
@@ -45,11 +46,12 @@
                     <ColumnDefinition Width="899" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-
-                <ContentControl Grid.Column="0" Grid.Row="1" Margin="0,0,0,0" Background="White" Content="{Binding CurrentStorageView}" />
-                <ContentControl Grid.Column="1" Grid.Row="1" Margin="10,0,0,0"  Background="White" Content="{Binding CurrentWorkingZoneView}" />
-
-                
+                <Border Grid.Column="0" Grid.Row="1" Background="White" CornerRadius="18" Effect="{StaticResource ShadowEffect}">
+                    <ContentControl Content="{Binding CurrentStorageView}" />
+                </Border>
+                <Border Grid.Column="1" Grid.Row="1" Background="White" CornerRadius="18" Margin="10,0,0,0" Effect="{StaticResource ShadowEffect}">
+                    <ContentControl Content="{Binding CurrentWorkingZoneView}" />
+                </Border>
             </Grid>
 
             <!-- ✅ 下方：機械手臂狀態 -->
