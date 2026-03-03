@@ -255,7 +255,7 @@ namespace FMSFrontend.ViewModels.Factory
             int stationCount = 0; //工作站數量 鋐興:0 佑義:1
             try
             {
-                //stationCount = Convert.ToInt16(ini.Read("Prarm", "StationCount"));
+                //stationCount = Convert.ToInt16(ini.Read("Param", "StationCount"));
                 if (stationCount != 0)
                 {
                     Machines.Add(new MachineNode
@@ -408,3 +408,4 @@ namespace FMSFrontend.ViewModels.Factory
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }
+

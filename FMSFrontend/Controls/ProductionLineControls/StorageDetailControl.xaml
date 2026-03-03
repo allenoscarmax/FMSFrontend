@@ -143,6 +143,16 @@
                                         </StackPanel>
                                     </Border>
 
+                                    <!--失敗-->
+                                    <Border MinWidth="80" Name ="BorderFail" Background="BlueViolet" CornerRadius="6" Margin="4,0" Padding="4">
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="{DynamicResource StorageDetailControl_Status_Fail}" Height="25" FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                                            <Border Width="50" Height="25" Background="White" CornerRadius="15" Margin="0,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding SelectStorage.FailCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+                                    
                                     <!--禁用-->
                                     <Border MinWidth="80" Background="#CCCCCC" CornerRadius="6" Margin="4,0" Padding="4">
                                         <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">

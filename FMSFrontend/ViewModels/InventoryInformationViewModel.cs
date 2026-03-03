@@ -52,7 +52,7 @@ namespace FMSFrontend.ViewModels
             _storageStore = storageStore;
             _storageLiveUpdater = storageLiveUpdater;
 
-            LanguageManager.ApplySavedLanguage();
+           // LanguageManager.ApplySavedLanguage();
 
             InventoryList = CollectionViewSource.GetDefaultView(AllItems);
             InventoryList.Filter = FilterRow;

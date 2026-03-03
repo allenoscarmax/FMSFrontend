@@ -106,7 +106,7 @@ namespace FMSFrontend.ViewModels
             _machineLiveUpdater = machineLiveUpdater;
 
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-            bool b = ini.Read("Prarm", "IsStorageOverviewControl") == "True";
+            bool b = ini.Read("Param", "IsStorageOverviewControl") == "True";
             if (b)
                 ShowOverview();
             else
@@ -306,7 +306,8 @@ namespace FMSFrontend.ViewModels
                 SerialCode = db.tagSerial,
                 RouteNo = "",
                 WorkRestriction = db?.restriction ?? false,
-                StorageRestriction = slot.StorageRestriction
+                StorageRestriction = slot.StorageRestriction,
+                Offset = db?.inspectOffset ?? ""
             };
         }
 
@@ -456,4 +457,5 @@ namespace FMSFrontend.ViewModels
         }
     }
 }
+
 

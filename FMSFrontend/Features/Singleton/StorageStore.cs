@@ -73,15 +73,18 @@ namespace FMSFrontend.Features.Singleton
                     StorageGroup.Storage[i].ProcessingCount = StorageGroup.Storage[i].Slots.Count(s => s.MaterialStatus == "Working");
                     StorageGroup.Storage[i].ErrorCount = StorageGroup.Storage[i].Slots.Count(s => s.MaterialStatus == "Error");
                     StorageGroup.Storage[i].CompletedCount = StorageGroup.Storage[i].Slots.Count(s => s.MaterialStatus == "Completed");
+                    StorageGroup.Storage[i].FailCount = StorageGroup.Storage[i].Slots.Count(s => s.MaterialStatus == "Failure" || s.MaterialStatus == "Faulty");
                     StorageGroup.Storage[i].RestrictionCount = StorageGroup.Storage[i].Slots.Count(s => s.StorageRestriction == true);
                     StorageGroup.Storage[i].BookedCount = StorageGroup.Storage[i].Slots.Count(s => s.StorageStatus == "Booked");
                 }
                 StorageGroup.WaitingTotal = StorageGroup.Storage.Sum(s => s.WaitingCount);
                 StorageGroup.CompletedTotal = StorageGroup.Storage.Sum(s => s.CompletedCount);
+                StorageGroup.FailTotal = StorageGroup.Storage.Sum(s => s.FailCount);
                 StorageGroup.ErrorTotal = StorageGroup.Storage.Sum(s => s.ErrorCount);
                 StorageGroup.ProcessingTotal = StorageGroup.Storage.Sum(s => s.ProcessingCount);
                 StorageGroup.RestrictionTotal = StorageGroup.Storage.Sum(s => s.RestrictionCount);
                 StorageGroup.BookedTotal = StorageGroup.Storage.Sum(s => s.BookedCount);
+
             }
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();

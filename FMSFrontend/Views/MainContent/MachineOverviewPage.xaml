@@ -57,7 +57,7 @@
                 </TabControl>
 
                 <!-- 卡片列 -->
-                <Border Grid.Row="1"  CornerRadius ="10,10,10,10" Margin="0,5,0,5" Background="{DynamicResource PageViewBrush}" BorderThickness="0,0,0,0" BorderBrush="#555">
+                <Border Grid.Row="1"  CornerRadius ="10,10,10,10" Margin="0,5,0,5" Background="{DynamicResource PageViewBrush}" BorderThickness="0,0,0,0" BorderBrush="#555" Padding="5,0">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
                     </Border.Effect>

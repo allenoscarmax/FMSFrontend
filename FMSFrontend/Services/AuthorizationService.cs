@@ -97,7 +97,7 @@ namespace FMSFrontend.Services
 
             try
             {
-                num = Convert.ToInt16(ini.Read("Prarm", "Language"));
+                num = Convert.ToInt16(ini.Read("Param", "Language"));
             }
             catch { }
             string FilePath = AppDomain.CurrentDomain.BaseDirectory + "\\Language\\OperationMessage.csv";
@@ -129,3 +129,4 @@ namespace FMSFrontend.Services
         }
     }
 }
+

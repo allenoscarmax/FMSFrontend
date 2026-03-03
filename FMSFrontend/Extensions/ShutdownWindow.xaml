@@ -81,10 +81,10 @@
                                    FontFamily="Eras Bold ITC"
                                    TextWrapping="Wrap"
                                    Width="380">
-                            <Run Text="{DynamicResource ShutdownWindow_Text_ShutdownPrefix}" FontSize="20" Foreground="#333333" />
-                            <Run Text="OSCAR" FontSize="20" FontWeight="Bold" Foreground="#333333" />
-                            <Run Text="FMS" FontSize="20" FontWeight="Bold" Foreground="#E50000" />
-                            <Run Text="{DynamicResource ShutdownWindow_Text_ShutdownSuffix}" FontSize="20" Foreground="#333333" />
+                            <!--<Run Text="{DynamicResource ShutdownWindow_Text_ShutdownPrefix}" FontSize="20" Foreground="#333333" />-->
+                            <!--<Run Text="OSCAR" FontSize="20" FontWeight="Bold" Foreground="#333333" />
+                            <Run Text="FMS" FontSize="20" FontWeight="Bold" Foreground="#E50000" />-->
+                            <!--<Run Text="{DynamicResource ShutdownWindow_Text_ShutdownSuffix}" FontSize="20" Foreground="#333333" />-->
                             <LineBreak />
                             <Run d:Text="手臂正在運行中！確定要關機？"
                                  Text="{Binding ShutdownMessage}"
