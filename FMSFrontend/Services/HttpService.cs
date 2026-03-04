@@ -28,7 +28,7 @@ namespace FMSFrontend.Services
             _global = global;
             _httpClient.Timeout = TimeSpan.FromSeconds(30);
             // 初始化 ServerIp（從 INI 載入）
-            var ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            var ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesetting.ini");
             var ip = ini.Read("Param", "IP");
             if (!string.IsNullOrWhiteSpace(ip))
             {

@@ -28,7 +28,7 @@
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0">
                         <!--<Image Source="pack://application:,,,/Image/Assets/oscar_fms.ico"/>-->
                         <TextBlock FontSize="22" FontWeight="Bold" Foreground="White" FontFamily="Segoe UI">
-                            <Run Text="OSCAR" />
+                            <Run Text="{DynamicResource MainWindow_Logo}" />
                             <Run Text="FMS" Foreground="#FF0000" />
                         </TextBlock>
                         <TextBlock Text="{DynamicResource MainWindow_Subtitle}" Foreground="White" VerticalAlignment="Center" Margin="20,0" FontSize="22" FontWeight="Bold" FontFamily="Segoe UI" />

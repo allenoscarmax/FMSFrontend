@@ -105,7 +105,7 @@ namespace FMSFrontend.ViewModels
             _storageUpdater = storageLiveUpdater;
             _machineLiveUpdater = machineLiveUpdater;
 
-            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesetting.ini");
             bool b = ini.Read("Param", "IsStorageOverviewControl") == "True";
             if (b)
                 ShowOverview();

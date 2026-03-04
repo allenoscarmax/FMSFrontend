@@ -31,11 +31,11 @@ namespace FMSFrontend.Features.Mappings
                 }
                 // 設定標題與顏色 
                 magazinePara.MagazineParas[0].LeftTitle = "W1";
-                magazinePara.MagazineParas[0].RightTitle = "E1";
-                magazinePara.MagazineParas[1].LeftTitle = "E2";
+                magazinePara.MagazineParas[0].RightTitle = "";
+                magazinePara.MagazineParas[1].LeftTitle = "E1";
                 magazinePara.MagazineParas[1].RightTitle = "";
                 magazinePara.MagazineParas[0].LeftTitleBrush = PortTilieColor;
-                magazinePara.MagazineParas[0].RightTitleBrush = EleTilieColor;
+                magazinePara.MagazineParas[0].RightTitleBrush = PortTilieColor;
                 magazinePara.MagazineParas[1].LeftTitleBrush = EleTilieColor;
                 magazinePara.MagazineParas[1].RightTitleBrush = EleTilieColor;
             }

@@ -38,6 +38,7 @@ namespace FMSFrontend.ViewModels
         private readonly IPlcService _PlcService;
         private readonly IAuthorizationService _auth;
         private readonly IOperationMessageLogService _operationService;
+        private readonly Dictionary<string, UserControl> _pageCache = new();
 
         public GlobalProperties _globalProperties { get; }
         public AlarmStore AlarmStore { get; }
@@ -135,7 +136,7 @@ namespace FMSFrontend.ViewModels
             UpdateSummaryMessage();
 
             //電極倉門初始頁面
-            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesetting.ini");
             bool b = ini.Read("Param", "IsStorageUnitControlMini") == "True";
             if (b)
                 StorageControlPage = App.ServiceProvider!.GetRequiredService<StorageUnitMiniControlPage>();
@@ -272,7 +273,16 @@ namespace FMSFrontend.ViewModels
                 _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_ServiceProviderNotReady", "ServiceProvider 尚未初始化，無法切換頁面。"));
                 return;
             }
-            var page = App.ServiceProvider.GetRequiredService<TPage>();
+
+            if (CurrentPageKey == pageKey && CurrentPageView != null)
+                return;
+
+            if (!_pageCache.TryGetValue(pageKey, out var page))
+            {
+                page = App.ServiceProvider.GetRequiredService<TPage>();
+                _pageCache[pageKey] = page;
+            }
+
             CurrentPageView = page;
             CurrentPageKey = pageKey;
             //  SelectedPageIndex = -1;
@@ -451,8 +461,14 @@ namespace FMSFrontend.ViewModels
                     return;
 
                 // 讀取 BaseSitting.ini 的 LastLoginName
-                INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesetting.ini");
                 string lastLoginName = ini.Read("Login", "LastLoginName")?.Trim() ?? string.Empty;
+
+                if (string.IsNullOrWhiteSpace(lastLoginName)
+                    && string.Equals(_httpService.ServerIp, "demo", StringComparison.OrdinalIgnoreCase))
+                {
+                    lastLoginName = "admin";
+                }
 
                 // 無有效名稱則不自動登入
                 if (string.IsNullOrWhiteSpace(lastLoginName))
@@ -508,7 +524,7 @@ namespace FMSFrontend.ViewModels
                         LanguageManager.GetString("MainWindow_Message_LoginWelcome", "歡迎登入，{0}！"),
                         loginName);
                     _windowService.ShowMessage(message);
-                    INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+                    INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesetting.ini");
                     ini.Write("Login", "LastLoginName", loginName);
                 }
                 _auth.RequireLoginAndWriteOperation(1);

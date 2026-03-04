@@ -63,11 +63,6 @@ ElectrodeDetailView_Title,電極資訊,Electrode information,電極情報
 ElectrodeDetailView_Tooltip_Lock,鎖定/解除鎖定,Lock/Unlock,ロック／ロック解除
 EmptyMaterialView_Message_Empty,此倉位目前沒有電極或工件資料。,No electrode or workpiece data in this slot.,このスロットには現在、電極またはワークのデータがありません
 EmptyMaterialView_Title,物料,Material,材料
-FactoryLayout_Button_AutoLayout,自動排列,Auto layout,自動配置
-FactoryLayout_Button_Edit,編輯,Edit,編集
-FactoryLayout_Button_Load,載入舊檔,Load file,ファイル読込
-FactoryLayout_Button_Save,儲存,Save,保存
-FactoryLayout_Button_TestMove,測試移動,Test move,テスト移動
 FactoryLayout_Title,產線配置,Factory layout,ラインレイアウト
 FactoryOverview_Title,整場總覽,Factory Overview,工場全体概要
 Inventory_Button_Refresh,重新整理,Refresh,更新
@@ -249,6 +244,7 @@ MainWindow_Message_WaitForRobotScan,請等待手臂掃描完成後再開啟,Plea
 MainWindow_Section_ControlUnit,控制單元,Control unit,制御ユニット
 MainWindow_Section_RobotPosition,機械臂目前位置,Robot current position,ロボット現在位置
 MainWindow_Section_StorageControl,料倉控制,Storage control,ストレージ制御
+MainWindow_Logo,AccuteX,AccuteX,AccuteX
 MainWindow_Subtitle, 彈性製造系統,Flexible Manufacturing System, フレキシブル製造システム
 MainWindow_Summary_Alarm,系統有警報,System has alarms,システムに警報があります
 MainWindow_Summary_Fallback,提示訊息,Message,メッセージ

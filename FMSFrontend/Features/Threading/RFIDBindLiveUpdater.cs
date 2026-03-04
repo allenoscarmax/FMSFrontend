@@ -39,7 +39,7 @@ namespace FMSFrontend.Features.Threading
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             try
             {
-                INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "Basesitting.ini");
+                INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesetting.ini");
               //  ElectrodeTagNumber = Convert.ToInt16(ini.Read("Param", "ElectrodeTagNumber"));
               //  WorkpieceTagNumber = Convert.ToInt16(ini.Read("Param", "WorkpieceTagNumber"));
             }

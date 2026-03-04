@@ -92,7 +92,7 @@ namespace FMSFrontend.Services
         }
         void ReadMsgTable()
         {
-            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesetting.ini");
             int num = 0;
 
             try

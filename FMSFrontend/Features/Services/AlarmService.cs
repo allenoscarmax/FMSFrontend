@@ -10,22 +10,10 @@ namespace FMSFrontend.Features.Services
 {
     public interface IAlarmService
     {
-        Task<List<ErrorMessageLogDto>?> GetCurrentErrorMessageLogAsync(
-            CancellationToken ct = default);
-
-        Task<List<ErrorMessageLogDto>?> GetErrorMessageLogByDateTimeAsync(
-            DateTime startDate,
-            DateTime endDate,
-            CancellationToken ct = default);
-
-        Task<bool> RemoveErrorMessageLogByDateTimeAsync(
-            DateTime startDate,
-            DateTime endDate,
-            CancellationToken ct = default);
-
-        Task<bool> DeleteAllErrorMessageDataAsync(
-            CancellationToken ct = default);
-
+        Task<List<ErrorMessageLogDto>?> GetCurrentErrorMessageLogAsync(CancellationToken ct = default);
+        Task<List<ErrorMessageLogDto>?> GetErrorMessageLogByDateTimeAsync(DateTime startDate, DateTime endDate, CancellationToken ct = default);
+        Task<bool> RemoveErrorMessageLogByDateTimeAsync(DateTime startDate, DateTime endDate, CancellationToken ct = default);
+        Task<bool> DeleteAllErrorMessageDataAsync(CancellationToken ct = default);
     }
     public class AlarmService : IAlarmService
     {

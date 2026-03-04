@@ -13,6 +13,7 @@ using FMSFrontend.ViewModels.Factory;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views;
 using FMSFrontend.Views.Windows;
+using IniFile;
 using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
 using System.Data;
@@ -46,9 +47,13 @@ namespace FMSFrontend
 #endif
 
             var services = new ServiceCollection();
+            var isDemoMode = IsDemoModeEnabled();
 
             // === 共用服務層 ===
-            services.AddSingleton<IHttpService, HttpService>();
+            if (isDemoMode)
+                services.AddSingleton<IHttpService, DemoHttpService>();
+            else
+                services.AddSingleton<IHttpService, HttpService>();
             services.AddSingleton<IWindowService, WindowService>();
             #region RestoreSingleton
 
@@ -207,6 +212,22 @@ namespace FMSFrontend
             services.AddTransient<ShowMachineWindow>();
             services.AddTransient<ShowRobotWindow>();
             services.AddTransient<ReviseProcessWindow>();
+        }
+
+        private static bool IsDemoModeEnabled()
+        {
+            try
+            {
+                var ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesetting.ini");
+                var value = ini.Read("Param", "DemoMode");
+
+                return string.Equals(value, "True", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(value, "1", StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
     }

@@ -51,6 +51,7 @@ namespace FMSFrontend.Features.Threading
                 try
                 {
                     await UpdateStatusAsync();
+                    //await Demo();
                 }
                 finally
                 {

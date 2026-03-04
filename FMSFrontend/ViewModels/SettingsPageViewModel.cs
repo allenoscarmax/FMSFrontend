@@ -54,7 +54,7 @@ namespace FMSFrontend.ViewModels
             _mongoDBService = mongoDBService;
             _authorizationService = authorizationService;
 
-            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesetting.ini");
             SelectedLanguage = LanguageManager.ApplySavedLanguage();
 
             //基本設定頁面初始
@@ -185,7 +185,7 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
-                INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+                INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesetting.ini");
                 ini.Write("Param", "KeepLoggedIn", value ? "True" : "False");
             }
             catch { }
@@ -208,7 +208,7 @@ namespace FMSFrontend.ViewModels
                 try
                 {
 
-                    INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+                    INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesetting.ini");
                     // 0 = 繁體中文, 1 = English, 2 = 日本語
                     var langVal = SelectedLanguage == "English" ? "1" : SelectedLanguage == "日本語" ? "2" : "0";
                     ini.Write("Param", "Language", langVal);
@@ -243,7 +243,7 @@ namespace FMSFrontend.ViewModels
                     LanguageManager.GetString("Settings_Message_IpSaved", "已設定 IP：{0}"),
                     ip);
                 _windowService.ShowMessage(message);
-                INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+                INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesetting.ini");
                 ini.Write("Param", "IP", ip);
             }
             catch (Exception ex)
@@ -317,7 +317,7 @@ namespace FMSFrontend.ViewModels
         {
             if (!_authorizationService.RequireLoginAndWriteOperation(21))
                 return;
-            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesetting.ini");
             var today = DateTime.Today.ToString("yyyy/MM/dd");
             ini.Write("Param", "RobotMaintenanceMsg", today);
             RobotMaintenanceMsg = today;

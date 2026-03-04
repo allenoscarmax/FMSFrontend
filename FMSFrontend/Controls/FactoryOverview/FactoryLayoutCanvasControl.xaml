@@ -46,11 +46,11 @@
                 </StackPanel>
             </Border>
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,1,10,1">
-                <Button Content="{DynamicResource FactoryLayout_Button_TestMove}" Width="128" Height="28" Margin="0,0,8,0" Command="{Binding onMoveCommand}" Style="{StaticResource PrimaryButtonStyle}" Background="DarkSlateBlue"/>
-                <Button Content="{DynamicResource FactoryLayout_Button_Edit}" Width="64" Height="28" Margin="0,0,8,0" IsEnabled="{Binding IsEditMode, Converter={StaticResource InverseBoolConverter}}" Click="OnEditClick" Style="{StaticResource PrimaryButtonStyle}" />
-                <Button Content="{DynamicResource FactoryLayout_Button_Save}" Width="64" Height="28" Margin="0,0,8,0" IsEnabled="{Binding IsEditMode}" Click="OnSaveClick" Style="{StaticResource PrimaryButtonStyle}" />
-                <Button Content="{DynamicResource FactoryLayout_Button_AutoLayout}" Width="90" Height="28" Margin="0,0,8,0" IsEnabled="{Binding IsEditMode}" Click="LayoutInitClick" Style="{StaticResource PrimaryButtonStyle}" />
-                <Button Content="{DynamicResource FactoryLayout_Button_Load}" Width="90" Height="28" Click="OnLoadClick" IsEnabled="{Binding IsEditMode}" Style="{StaticResource PrimaryButtonStyle}" Cursor="Hand" />
+                <Button Content="Test Move" MinWidth="90" Height="28" Margin="0,0,8,0" Command="{Binding onMoveCommand}" Style="{StaticResource PrimaryButtonStyle}" Background="DarkSlateBlue"/>
+                <Button Content="Edit" MinWidth="90" Height="28" Margin="0,0,8,0" IsEnabled="{Binding IsEditMode, Converter={StaticResource InverseBoolConverter}}" Click="OnEditClick" Style="{StaticResource PrimaryButtonStyle}" />
+                <Button Content="Save" MinWidth="90" Height="28" Margin="0,0,8,0" IsEnabled="{Binding IsEditMode}" Click="OnSaveClick" Style="{StaticResource PrimaryButtonStyle}" />
+                <Button Content="Auto" MinWidth="90" Height="28" Margin="0,0,8,0" IsEnabled="{Binding IsEditMode}" Click="LayoutInitClick" Style="{StaticResource PrimaryButtonStyle}" />
+                <Button Content="Load" MinWidth="90" Height="28" Click="OnLoadClick" IsEnabled="{Binding IsEditMode}" Style="{StaticResource PrimaryButtonStyle}" Cursor="Hand" />
             </StackPanel>
 
             <!-- 主畫布 -->

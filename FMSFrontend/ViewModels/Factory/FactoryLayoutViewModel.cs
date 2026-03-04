@@ -251,7 +251,7 @@ namespace FMSFrontend.ViewModels.Factory
             int StorageCnt = 0; //計算實際有幾個倉儲位置
 
             //讀取工作站資料
-            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "Basesitting.ini");
+            INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesetting.ini");
             int stationCount = 0; //工作站數量 鋐興:0 佑義:1
             try
             {
