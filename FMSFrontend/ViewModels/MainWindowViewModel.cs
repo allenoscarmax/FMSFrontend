@@ -38,7 +38,6 @@ namespace FMSFrontend.ViewModels
         private readonly IPlcService _PlcService;
         private readonly IAuthorizationService _auth;
         private readonly IOperationMessageLogService _operationService;
-        private readonly Dictionary<string, UserControl> _pageCache = new();
 
         public GlobalProperties _globalProperties { get; }
         public AlarmStore AlarmStore { get; }
@@ -273,15 +272,7 @@ namespace FMSFrontend.ViewModels
                 _windowService.ShowMessage(LanguageManager.GetString("MainWindow_Message_ServiceProviderNotReady", "ServiceProvider 尚未初始化，無法切換頁面。"));
                 return;
             }
-
-            if (CurrentPageKey == pageKey && CurrentPageView != null)
-                return;
-
-            if (!_pageCache.TryGetValue(pageKey, out var page))
-            {
-                page = App.ServiceProvider.GetRequiredService<TPage>();
-                _pageCache[pageKey] = page;
-            }
+            var page = App.ServiceProvider.GetRequiredService<TPage>();
 
             CurrentPageView = page;
             CurrentPageKey = pageKey;
