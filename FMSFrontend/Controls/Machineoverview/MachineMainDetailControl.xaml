@@ -208,7 +208,7 @@
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
                             </Border.Effect>
-                            <Image Source="{Binding MachineImagePath}" Margin="10" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />
+                            <Image Source="{Binding MachineImagePath}" Margin="10" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/AccuteX.png" />
                         </Border>
                         <!-- 機台資訊區 -->
                         <Border Grid.Column="1" Background="White" CornerRadius="10" Margin="8" SnapsToDevicePixels="True">

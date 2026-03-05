@@ -36,7 +36,7 @@
     <None Remove="Image\MachineIcons\09-.png" />
     <None Remove="Image\MachineIcons\CMM.png" />
 	<None Remove="Image\MachineIcons\CNC.png" />
-    <None Remove="Image\MachineIcons\EDM.png" />
+    <None Remove="Image\MachineIcons\AccuteX.png" />
     <None Remove="Image\MachineIcons\EX430.png" />
     <None Remove="Image\MachineIcons\FMS.png" />
     <None Remove="Image\MachineIcons\ICG-2Z-NC.png" />
@@ -79,7 +79,7 @@
 	  <Resource Include="Image\MachineIcons\CNC.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Image\MachineIcons\EDM.png">
+    <Resource Include="Image\MachineIcons\AccuteX.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Image\MachineIcons\EX430.png">

@@ -15,7 +15,7 @@ namespace FMSFrontend.Converters
         // 依你專案內實際檔名補齊
         private static readonly Dictionary<string, string> Map = new(StringComparer.OrdinalIgnoreCase)
         {
-            ["EDM"] = "EDM.png",
+            ["EDM"] = "AccuteX.png",
             ["CNC"] = "CNC.png",
             ["CNC1"] = "CNC.png",
             ["CNC2"] = "UH500.png",

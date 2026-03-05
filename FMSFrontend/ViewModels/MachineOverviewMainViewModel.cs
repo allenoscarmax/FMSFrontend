@@ -362,7 +362,7 @@ namespace FMSFrontend.ViewModels
 
         public string MachineImagePath => Type switch
         {
-            MachineType.EDM => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png",
+            MachineType.EDM => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/AccuteX.png",
             MachineType.CNC => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/CNC.png",
             MachineType.ZNC => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/ZNC.png",
             MachineType.ROBOT => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/Robot.png",

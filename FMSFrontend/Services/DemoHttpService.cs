@@ -66,7 +66,7 @@ namespace FMSFrontend.Services
                 new WorkerDto
                 {
                     Id = Guid.NewGuid().ToString("N"),
-                    WorkerNumber = "A001",
+                    WorkerNumber = "admin",
                     WorkerName = "admin",
                     AccountGroup = "Expert",
                     AccountName = "admin",
@@ -79,8 +79,8 @@ namespace FMSFrontend.Services
                 new WorksheetsDto
                 {
                     _id = Guid.NewGuid().ToString("N"),
-                    worksheetNumber = "WS-DEMO-0001",
-                    workpieceName = "WP-DEMO-01",
+                    worksheetNumber = "20260304000000",
+                    workpieceName = "EX_1-W",
                     workPriority = 1,
                     workEnabled = true,
                     workStatus = "Queue",
@@ -91,21 +91,6 @@ namespace FMSFrontend.Services
                     coordinate = "A1",
                     setupUser = "admin"
                 },
-                new WorksheetsDto
-                {
-                    _id = Guid.NewGuid().ToString("N"),
-                    worksheetNumber = "WS-DEMO-0002",
-                    workpieceName = "WP-DEMO-02",
-                    workPriority = 2,
-                    workEnabled = true,
-                    workStatus = "Queue",
-                    workPercentage = "35",
-                    targetEDM = "EDM102",
-                    processStep = 2,
-                    totalProcessStep = 4,
-                    coordinate = "B2",
-                    setupUser = "admin"
-                }
             ];
 
             _electrodes =
@@ -113,13 +98,13 @@ namespace FMSFrontend.Services
                 new ElectrodeDto
                 {
                     _id = "6969aafcbf1189f0903bd9ef",
-                    worksheetNumber = "20260116105724",
+                    worksheetNumber = "20260304000000",
                     worksheetDone = "",
                     tagSerial = "111",
                     electrodeName = "EX_1-001A-01",
                     electrodeType = "Small",
                     currentLocation = "",
-                    state = "Failure",
+                    state = "Verified",
                     pairedEDM = "",
                     offsetStatus = 2,
                     offset = "",
@@ -128,7 +113,7 @@ namespace FMSFrontend.Services
                     useTimes = 0,
                     underSize = "",
                     restriction = false,
-                    edmpgm = "EX_1-001A-01",
+                    edmpgm = "EX_1",
                     edM_offsetPGM = "",
                     measuremented = false,
                     measurementStatus = "",
@@ -141,11 +126,11 @@ namespace FMSFrontend.Services
                 {
                     _id = Guid.NewGuid().ToString("N"),
                     tagSerial = "112",
-                    electrodeName = "EX_1-001A-01",
+                    electrodeName = "EX_1-001A-02",
                     state = "Verified",
                     currentLocation = "inStore",
-                    worksheetNumber = "WS-DEMO-001",
-                    edmpgm = "PGM-E-112",
+                    worksheetNumber = "20260304000000",
+                    edmpgm = "EX_1",
                     restriction = false,
                     setupUser = "System"
                 },
@@ -153,11 +138,11 @@ namespace FMSFrontend.Services
                 {
                     _id = Guid.NewGuid().ToString("N"),
                     tagSerial = "113",
-                    electrodeName = "EX_1-001A-01",
+                    electrodeName = "EX_1-001A-03",
                     state = "Verified",
                     currentLocation = "inStore",
-                    worksheetNumber = "WS-DEMO-001",
-                    edmpgm = "PGM-E-113",
+                    worksheetNumber = "20260304000000",
+                    edmpgm = "EX_1",
                     restriction = false,
                     setupUser = "System"
                 },
@@ -165,11 +150,11 @@ namespace FMSFrontend.Services
                 {
                     _id = Guid.NewGuid().ToString("N"),
                     tagSerial = "114",
-                    electrodeName = "EX_1-001A-01",
+                    electrodeName = "EX_1-001A-04",
                     state = "Verified",
                     currentLocation = "inStore",
-                    worksheetNumber = "EX_1-W",
-                    edmpgm = "PGM-E-114",
+                    worksheetNumber = "20260304000000",
+                    edmpgm = "EX_1",
                     restriction = false,
                     setupUser = "System"
                 },
@@ -181,12 +166,12 @@ namespace FMSFrontend.Services
                 {
                     _id = Guid.NewGuid().ToString("N"),
                     tagSerial = "222",
-                    workpieceName = "W-222",
-                    worksheetNumber = "WS-DEMO-002",
+                    workpieceName = "EX_1-W",
+                    worksheetNumber = "20260304000000",
                     status = "Verified",
                     restriction = false,
                     currentLocation = "inStore",
-                    edmpgm = "PGM-W-222",
+                    edmpgm = "EX_1",
                     setupUser = "System"
                 }
             ];
@@ -200,7 +185,7 @@ namespace FMSFrontend.Services
                 for (var column = 0; column < 10; column++)
                 {
                     var serial = row == 1 && column >=1 && column <= 4
-                        ? "11"+(1 + column).ToString()
+                        ? "11"+(column).ToString()
                         : "";
 
                     _storages.Add(new StorageDto

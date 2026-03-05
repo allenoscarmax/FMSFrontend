@@ -83,11 +83,11 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- 左側圖片 -->
-                    <!--<Image Grid.Column="0" Margin="0,2,0,0" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" Source="{Binding MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" Width="48" Height="48" Stretch="Uniform" VerticalAlignment="Top" />-->
+                    <!--<Image Grid.Column="0" Margin="0,2,0,0" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/AccuteX.png" Source="{Binding MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" Width="48" Height="48" Stretch="Uniform" VerticalAlignment="Top" />-->
 
                     <Button Grid.Column="0" Style="{StaticResource ImageButton}" Command="{Binding DataContext.OpenMachineWindowCommand,
                           RelativeSource={RelativeSource AncestorType={x:Type ctrl:MachineOverviewControl}}}" ToolTip="{DynamicResource MachineCard_Tooltip_OpenMachine}" CommandParameter="{Binding}" Cursor="Hand">
-                        <Image d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" Source="{Binding MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" Width="48" Height="48" Margin="0,2,0,0" Stretch="Uniform" VerticalAlignment="Top" />
+                        <Image d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/AccuteX.png" Source="{Binding MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" Width="48" Height="48" Margin="0,2,0,0" Stretch="Uniform" VerticalAlignment="Top" />
                     </Button>
 
                     <!-- 右側文字 + 進度條 -->

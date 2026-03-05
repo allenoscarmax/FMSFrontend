@@ -99,7 +99,7 @@
                             </Grid.RowDefinitions>
 
                             <!-- 圖片（用你的 Converter） -->
-                            <Image Grid.Row="0" Source="{Binding Info.MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" Width="260" Height="180" Stretch="Uniform" HorizontalAlignment="Center" />
+                            <Image Grid.Row="0" Source="{Binding Info.MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/AccuteX.png" Width="260" Height="180" Stretch="Uniform" HorizontalAlignment="Center" />
 
                             <!-- 橫線 -->
                             <Border Grid.Row="1" Background="#DADDE1" Height="2" Margin="0,6,0,0" />

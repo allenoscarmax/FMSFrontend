@@ -32,11 +32,6 @@ namespace FMSFrontend.Features.Singleton
                 {
                     Machines.Add(new MachineModel { MachineName = "CNC1", Type = "CNC1" });
                 }
-                if (!Machines.Any(m => string.Equals(m.MachineName, "CNC2", StringComparison.OrdinalIgnoreCase)))
-                {
-                    Machines.Add(new MachineModel { MachineName = "CNC2", Type = "CNC2" });
-                }
-
             }
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();

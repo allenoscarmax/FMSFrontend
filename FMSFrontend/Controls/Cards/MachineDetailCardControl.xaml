@@ -70,10 +70,10 @@
       RelativeSource={RelativeSource AncestorType={x:Type ctrl:MachineDetailControl}}}" 
                             ToolTip="{DynamicResource MachineDetailCard_Tooltip_OpenMachine}" 
                             CommandParameter="{Binding}" Cursor="Hand">
-                        <Image d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" Source="{Binding MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" Width="140" Height="140" Margin="0,2,0,0" Stretch="Uniform" VerticalAlignment="Top" />
+                        <Image d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/AccuteX.png" Source="{Binding MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" Width="140" Height="140" Margin="0,2,0,0" Stretch="Uniform" VerticalAlignment="Top" />
                     </Button>
 
-                    <!--<Image Width="140" Height="140" Source="{Binding MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" Stretch="Uniform" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />-->
+                    <!--<Image Width="140" Height="140" Source="{Binding MachineTypeName, Converter={StaticResource MachineTypeToImageConverter}}" Stretch="Uniform" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/AccuteX.png" />-->
                 </StackPanel>
 
                
