@@ -40,8 +40,8 @@ namespace FMSFrontend.Features.Threading
             try
             {
                 INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "Basesitting.ini");
-              //  ElectrodeTagNumber = Convert.ToInt16(ini.Read("Param", "ElectrodeTagNumber"));
-              //  WorkpieceTagNumber = Convert.ToInt16(ini.Read("Param", "WorkpieceTagNumber"));
+                //  ElectrodeTagNumber = Convert.ToInt16(ini.Read("Prarm", "ElectrodeTagNumber"));
+                //  WorkpieceTagNumber = Convert.ToInt16(ini.Read("Prarm", "WorkpieceTagNumber"));
             }
             catch { }
             _timer.Tick += async (_, __) =>

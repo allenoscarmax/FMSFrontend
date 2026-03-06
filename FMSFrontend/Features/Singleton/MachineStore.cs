@@ -27,15 +27,16 @@ namespace FMSFrontend.Features.Singleton
                     }
                     dtos[i].ApplyMachinesDto(Machines[i]);
                 }
-                //TMTS展覽機
-                if (!Machines.Any(m => string.Equals(m.MachineName, "CNC1", StringComparison.OrdinalIgnoreCase)))
-                {
-                    Machines.Add(new MachineModel { MachineName = "CNC1", Type = "CNC1" });
-                }
-                if (!Machines.Any(m => string.Equals(m.MachineName, "CNC2", StringComparison.OrdinalIgnoreCase)))
-                {
-                    Machines.Add(new MachineModel { MachineName = "CNC2", Type = "CNC2" });
-                }
+                //TMTS展覽機模擬
+                
+                //if (!Machines.Any(m => string.Equals(m.MachineName, "CNC1", StringComparison.OrdinalIgnoreCase)))
+                //{
+                //    Machines.Add(new MachineModel { MachineName = "CNC1", Type = "CNC1" });
+                //}
+                //if (!Machines.Any(m => string.Equals(m.MachineName, "CNC2", StringComparison.OrdinalIgnoreCase)))
+                //{
+                //    Machines.Add(new MachineModel { MachineName = "CNC2", Type = "CNC2" });
+                //}
 
             }
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
@@ -96,6 +97,36 @@ namespace FMSFrontend.Features.Singleton
             void apply()
             {
                 dto.ApplyOscarmaxMachineParaDto(Machines[inedx]);
+            }
+            if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
+            else apply();
+        }
+
+        public void ApplyFanucCNCParaDto(FanucCNCDto dto)
+        {
+            var disp = Application.Current?.Dispatcher;
+            void apply()
+            {
+                var model = Machines.FirstOrDefault(m =>
+                    (!string.IsNullOrEmpty(m.MachineName) && m.MachineName.Contains("FanucCNC", StringComparison.OrdinalIgnoreCase)));
+
+                if (model != null)
+                    dto.ApplyFanucCNCParaDto(model);
+            }
+            if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
+            else apply();
+        }
+
+        public void ApplySiemensCNCParaDto(SiemensCNCDto dto)
+        {
+            var disp = Application.Current?.Dispatcher;
+            void apply()
+            {
+                var model = Machines.FirstOrDefault(m =>
+                    (!string.IsNullOrEmpty(m.MachineName) && m.MachineName.Contains("SiemensCNC", StringComparison.OrdinalIgnoreCase)));
+
+                if (model != null)
+                    dto.ApplySiemensCNCParaDto(model);
             }
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();

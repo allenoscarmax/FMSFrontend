@@ -128,17 +128,18 @@ namespace FMSFrontend.ViewModels.Production
         }
         private static MachineType MapToMachineType(string s)
         {
+            if (string.IsNullOrWhiteSpace(s)) return MachineType.EDM;
             if (s.IndexOf("EDM") != -1)
                 return MachineType.EDM; // default value
-            else
+            else if (s.IndexOf("FanucCNC") != -1)
             {
-                return s switch
-                {
-                    "CNC1" => MachineType.CNC1,
-                    "CNC2" => MachineType.CNC2,
-                    _ => MachineType.EDM,
-                };
+                return MachineType.FanucCNC;
             }
+            else if (s.IndexOf("SiemensCNC") != -1)
+            {
+                return MachineType.SiemensCNC;
+            }
+            else return MachineType.EDM;
         }
         [RelayCommand]
         private void BackToOverview()

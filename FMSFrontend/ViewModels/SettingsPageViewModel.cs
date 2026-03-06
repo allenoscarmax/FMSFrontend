@@ -60,12 +60,12 @@ namespace FMSFrontend.ViewModels
             //基本設定頁面初始
             AvailablePermissions = new ObservableCollection<string>();
             SelectedPermission = LanguageManager.GetString("Settings_Permission_Staff", "工作人員");
-            var keep = ini.Read("Param", "KeepLoggedIn");  // 保持登入：開啟時從 Basesitting 讀取
+            var keep = ini.Read("Prarm", "KeepLoggedIn");  // 保持登入：開啟時從 Basesitting 讀取
             KeepLoggedIn = keep == "True";
 
             //進階設定頁面初始
             ServerIp = _httpService.ServerIp ?? string.Empty; // 初始化 IP 顯示（優先用 IHttpService 的 ServerIp）
-            RobotMaintenanceMsg = ini.Read("Param", "RobotMaintenanceMsg");
+            RobotMaintenanceMsg = ini.Read("Prarm", "RobotMaintenanceMsg");
 
             //設備設定頁面初始
             _machinesView = CollectionViewSource.GetDefaultView(MachineList);
@@ -186,7 +186,7 @@ namespace FMSFrontend.ViewModels
             try
             {
                 INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-                ini.Write("Param", "KeepLoggedIn", value ? "True" : "False");
+                ini.Write("Prarm", "KeepLoggedIn", value ? "True" : "False");
             }
             catch { }
         }
@@ -211,7 +211,7 @@ namespace FMSFrontend.ViewModels
                     INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
                     // 0 = 繁體中文, 1 = English, 2 = 日本語
                     var langVal = SelectedLanguage == "English" ? "1" : SelectedLanguage == "日本語" ? "2" : "0";
-                    ini.Write("Param", "Language", langVal);
+                    ini.Write("Prarm", "Language", langVal);
                 }
                 catch { }
             }
@@ -244,7 +244,7 @@ namespace FMSFrontend.ViewModels
                     ip);
                 _windowService.ShowMessage(message);
                 INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-                ini.Write("Param", "IP", ip);
+                ini.Write("Prarm", "IP", ip);
             }
             catch (Exception ex)
             {
@@ -319,7 +319,7 @@ namespace FMSFrontend.ViewModels
                 return;
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
             var today = DateTime.Today.ToString("yyyy/MM/dd");
-            ini.Write("Param", "RobotMaintenanceMsg", today);
+            ini.Write("Prarm", "RobotMaintenanceMsg", today);
             RobotMaintenanceMsg = today;
             StatusMessage = LanguageManager.GetString("Settings_Message_RobotMaintenanceCompleted", "🤖 機械手臂維護已標記為完成");
             _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_RobotMaintenanceUpdated", "維護狀態已更新"));

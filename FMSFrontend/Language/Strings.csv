@@ -105,13 +105,6 @@ MachineDetailControl_Tooltip_Back,返回總覽,Back to overview,概要へ戻る
 MachineDetailControl_Tooltip_Back,返回總覽,Back to overview,概要へ戻る
 MachineMainDetail_Button_Reset,重置,Reset,リセット
 MachineMainDetail_CNC_Info1,機台型號：,Name:,機械型式：
-MachineMainDetail_CNC_Info10, , , 
-MachineMainDetail_CNC_Info11, , , 
-MachineMainDetail_CNC_Info12, , , 
-MachineMainDetail_CNC_Info13, , , 
-MachineMainDetail_CNC_Info14, , , 
-MachineMainDetail_CNC_Info15, , , 
-MachineMainDetail_CNC_Info16, , , 
 MachineMainDetail_CNC_Info2,機台狀態：,Status:,機械状態：
 MachineMainDetail_CNC_Info3,使用刀具：,Tool:,使用工具：
 MachineMainDetail_CNC_Info4,加工程式：,Program:,加工プログラム：
@@ -120,14 +113,14 @@ MachineMainDetail_CNC_Info6,加工進度：,Progress:,加工進捗：
 MachineMainDetail_CNC_Info7,目前工單：,Work order:,現在の作業指示：
 MachineMainDetail_CNC_Info8,刀具號碼：,Tool No.:,工具番号：
 MachineMainDetail_CNC_Info9, , , 
+MachineMainDetail_CNC_Info10, , , 
+MachineMainDetail_CNC_Info11, , , 
+MachineMainDetail_CNC_Info12, , , 
+MachineMainDetail_CNC_Info13, , , 
+MachineMainDetail_CNC_Info14, , , 
+MachineMainDetail_CNC_Info15, , , 
+MachineMainDetail_CNC_Info16, , , 
 MachineMainDetail_CNC_Param1,進給速度:,Feed rate: ,送り速度：
-MachineMainDetail_CNC_Param10,,,
-MachineMainDetail_CNC_Param11,,,
-MachineMainDetail_CNC_Param12,,,
-MachineMainDetail_CNC_Param13,,,
-MachineMainDetail_CNC_Param14,,,
-MachineMainDetail_CNC_Param15,,,
-MachineMainDetail_CNC_Param16,,,
 MachineMainDetail_CNC_Param2,主軸轉速:,Spindle speed: ,主軸回転数：
 MachineMainDetail_CNC_Param3,,,
 MachineMainDetail_CNC_Param4,,,
@@ -136,6 +129,13 @@ MachineMainDetail_CNC_Param6,,,
 MachineMainDetail_CNC_Param7,,,
 MachineMainDetail_CNC_Param8,,,
 MachineMainDetail_CNC_Param9,,,
+MachineMainDetail_CNC_Param10,,,
+MachineMainDetail_CNC_Param11,,,
+MachineMainDetail_CNC_Param12,,,
+MachineMainDetail_CNC_Param13,,,
+MachineMainDetail_CNC_Param14,,,
+MachineMainDetail_CNC_Param15,,,
+MachineMainDetail_CNC_Param16,,,
 MachineMainDetail_Column_CreateTime,建立時間,Time,作成時間
 MachineMainDetail_Column_ElectrodeName,電極名稱,Electrode name,電極名
 MachineMainDetail_Column_WorksheetNumber,工單編號,Work order,作業指示番号
@@ -144,13 +144,6 @@ MachineMainDetail_DateFilter_Custom,自訂,Custom,カスタム
 MachineMainDetail_DateFilter_Last7Days,前7天,Last 7 days,過去7日間
 MachineMainDetail_DateFilter_Today,今天,Today,本日
 MachineMainDetail_EDM_Info1,機台型號：,Name:,機械型式：
-MachineMainDetail_EDM_Info10,主軸轉速 : ,Spindle RPM: ,主軸回転数：
-MachineMainDetail_EDM_Info11,油位狀態 : ,Oil level: ,油量状態：
-MachineMainDetail_EDM_Info12,冷卻液量 : ,Coolant level: ,冷却液量：
-MachineMainDetail_EDM_Info13,,,
-MachineMainDetail_EDM_Info14,,,
-MachineMainDetail_EDM_Info15,,,
-MachineMainDetail_EDM_Info16,,,
 MachineMainDetail_EDM_Info2,機台狀態：,Status:,機械状態：
 MachineMainDetail_EDM_Info3,使用電極：,Electrode:,使用電極：
 MachineMainDetail_EDM_Info4,加工程式：,Program:,加工プログラム：
@@ -159,14 +152,14 @@ MachineMainDetail_EDM_Info6,加工進度：,Progress:,加工進捗：
 MachineMainDetail_EDM_Info7,目前工單：,Work order:,現在の作業指示：
 MachineMainDetail_EDM_Info8,刀具號碼：,Tool No.:,工具番号：
 MachineMainDetail_EDM_Info9,機台溫度 : ,Temperature: ,機械温度 :
+MachineMainDetail_EDM_Info10,主軸轉速 : ,Spindle RPM: ,主軸回転数：
+MachineMainDetail_EDM_Info11,油位狀態 : ,Oil level: ,油量状態：
+MachineMainDetail_EDM_Info12,冷卻液量 : ,Coolant level: ,冷却液量：
+MachineMainDetail_EDM_Info13,,,
+MachineMainDetail_EDM_Info14,,,
+MachineMainDetail_EDM_Info15,,,
+MachineMainDetail_EDM_Info16,,,
 MachineMainDetail_EDM_Param1,TON(us):,TON(us):,TON(us):
-MachineMainDetail_EDM_Param10,JD(mm):,JD(mm):,JD(mm):
-MachineMainDetail_EDM_Param11,OB:,OB:,OB:
-MachineMainDetail_EDM_Param12,JT(s):,JT(s):,JT(s):
-MachineMainDetail_EDM_Param13,,,
-MachineMainDetail_EDM_Param14,,,
-MachineMainDetail_EDM_Param15,,,
-MachineMainDetail_EDM_Param16,,,
 MachineMainDetail_EDM_Param2,TOFF(us):,TOFF(us):,TOFF(us):
 MachineMainDetail_EDM_Param3,I(A):,I(A):,I(A):
 MachineMainDetail_EDM_Param4,Pol:,Pol:,Pol:
@@ -175,6 +168,13 @@ MachineMainDetail_EDM_Param6,Gap(V):,Gap(V):,Gap(V):
 MachineMainDetail_EDM_Param7,Speed:,Speed:,Speed:
 MachineMainDetail_EDM_Param8,Pulse,Pulse,Pulse
 MachineMainDetail_EDM_Param9,Servo(%):,Servo(%):,Servo(%):
+MachineMainDetail_EDM_Param10,JD(mm):,JD(mm):,JD(mm):
+MachineMainDetail_EDM_Param11,OB:,OB:,OB:
+MachineMainDetail_EDM_Param12,JT(s):,JT(s):,JT(s):
+MachineMainDetail_EDM_Param13,,,
+MachineMainDetail_EDM_Param14,,,
+MachineMainDetail_EDM_Param15,,,
+MachineMainDetail_EDM_Param16,,,
 MachineMainDetail_Label_A,A：,A:,A：
 MachineMainDetail_Label_B,B：,B:,B：
 MachineMainDetail_Label_C,C：,C:,C：

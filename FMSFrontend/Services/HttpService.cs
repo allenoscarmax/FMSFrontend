@@ -29,7 +29,7 @@ namespace FMSFrontend.Services
             _httpClient.Timeout = TimeSpan.FromSeconds(30);
             // 初始化 ServerIp（從 INI 載入）
             var ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-            var ip = ini.Read("Param", "IP");
+            var ip = ini.Read("Prarm", "IP");
             if (!string.IsNullOrWhiteSpace(ip))
             {
                 // 僅設定 ServerIp，不修改 HttpClient 屬性，避免已發送請求後拋例外

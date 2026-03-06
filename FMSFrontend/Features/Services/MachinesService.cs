@@ -27,6 +27,12 @@ namespace FMSFrontend.Features.Services
         Task<OscarmaxMachineParaDto?> GetMachineDataAsync(int no, CancellationToken ct = default);
         Task<int> GetMachineCountAsync(CancellationToken ct = default);
         Task<bool> ResetDispatchErrorMessageAsync(int no, CancellationToken ct = default);
+
+        // ==== CNC ====
+        Task<FanucCNCDto?> GetFanucCNCParaAsync(CancellationToken ct = default);
+        Task<SiemensCNCDto?> GetSiemensCNCParaAsync(CancellationToken ct = default);
+        Task<bool> SetFanucCNCMachineCanControlAsync(bool canControl, CancellationToken ct = default);
+        Task<bool> SetSiemensCNCMachineCanControlAsync(bool canControl, CancellationToken ct = default);
     }
 
     public class MachinesService : IMachinesService
@@ -82,5 +88,19 @@ namespace FMSFrontend.Features.Services
 
         public async Task<bool> ResetDispatchErrorMessageAsync(int no, CancellationToken ct = default)
             => await _http.SendPutAsync($"Machine/ResetDispathErrorMes/{no}", new { });
+
+        // ==== CNC ====
+
+        public async Task<FanucCNCDto?> GetFanucCNCParaAsync(CancellationToken ct = default)
+            => await _http.GetJsonAsync<FanucCNCDto>("FanucCNC/GetFanucCNCPara", ct);
+
+        public async Task<SiemensCNCDto?> GetSiemensCNCParaAsync(CancellationToken ct = default)
+            => await _http.GetJsonAsync<SiemensCNCDto>("SiemensCNC/GetSiemensCNCPara", ct);
+
+        public async Task<bool> SetFanucCNCMachineCanControlAsync(bool canControl, CancellationToken ct = default)
+            => await _http.SendPutAsync($"FanucCNC/SetCNCMachineCanControl/{canControl}", new { });
+
+        public async Task<bool> SetSiemensCNCMachineCanControlAsync(bool canControl, CancellationToken ct = default)
+            => await _http.SendPutAsync($"SiemensCNC/SetCNCMachineCanControl/{canControl}", new { });
     }
 }
