@@ -83,7 +83,7 @@
 
                                         <!-- 綠色膠囊標籤 -->
                                         <Border x:Name="Pill" CornerRadius="10" Background="White" BorderBrush="#D1D5DB" BorderThickness="1" Padding="10,6" HorizontalAlignment="Center">
-                                            <TextBlock x:Name="PillText" Text="{Binding DisplayName}" FontSize="22" FontWeight="Bold" Foreground="#111" TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="ClearType" />
+                                            <TextBlock x:Name="PillText" Text="{Binding DisplayName}" FontSize="16" FontWeight="Bold" Foreground="#111" TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="ClearType" />
                                         </Border>
                                         <!-- 機台圖片：等比填滿，和標籤距離 8px -->
                                         <Image Grid.Row="1" Source="{Binding IconPath}" Stretch="Uniform" Margin="0,8,0,0" Width="{Binding Width, FallbackValue=150}" Height="{Binding Height, FallbackValue=150}" />

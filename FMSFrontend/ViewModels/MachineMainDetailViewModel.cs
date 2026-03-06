@@ -64,9 +64,19 @@ namespace FMSFrontend.ViewModels
                 if (edm != null)
                 {
                     bool canctrl = !edm.OscarEdm.CanControl;
+                    if (MachineName.Contains("FanucCNC"))
+                        canctrl = !edm.SunmillFanucCNC.CanControl;
+                    else if (MachineName.Contains("SiemensCNC"))
+                        canctrl = !edm.SunmillSiemensCNC.CanControl;
+
                     if (!_authorizationService.RequireLoginAndWriteOperation(18, " " + edm.MachineName + ": " + canctrl))
                         return;
-                    await _machinesService.SetMachineCanControlAsync(edm.MachineNumber - 1, canctrl);
+                    if (MachineName.Contains("EDM"))
+                        await _machinesService.SetMachineCanControlAsync(edm.MachineNumber - 1, canctrl);
+                    else if (MachineName.Contains("FanucCNC"))
+                        await _machinesService.SetFanucCNCMachineCanControlAsync(canctrl);
+                    else if (MachineName.Contains("SiemensCNC"))
+                        await _machinesService.SetSiemensCNCMachineCanControlAsync(canctrl);
                     canctrlDelay = 5;
                 }
             }
@@ -362,7 +372,53 @@ namespace FMSFrontend.ViewModels
                     DisplayData.ProcessingParam[i].Value = "";
                 }
             }
-            else if (MachineName.Contains("CNC"))
+            else if (MachineName.Contains("FanucCNC"))
+            {
+                // 從MachinesT取得對應Machine名稱一樣的的機台資料顯示在DisplayData上
+                var machine = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
+                if (machine == null || machine.SunmillFanucCNC == null) return;
+                var cnc = machine.SunmillFanucCNC;
+
+                if (canctrlDelay > 0) canctrlDelay--;
+                if (canctrlDelay == 0) DisplayData.CanControl = cnc.CanControl;
+                // 機台資訊
+                DisplayData.MachineInfos[0].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info1", "機台型號：");
+                DisplayData.MachineInfos[0].Value = "JHV-500";
+                DisplayData.MachineInfos[1].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info2", "機台狀態：");
+                DisplayData.MachineInfos[1].Value = cnc.MachineStatus;
+                for (int i = 2; i < 16; i++)
+                {
+                    DisplayData.MachineInfos[i].Name = "";
+                    DisplayData.MachineInfos[i].Value = "";
+                }
+                // 座標
+                DisplayData.PositionID = cnc.PositionID;
+                DisplayData.ABS_X = cnc.ABS_X;
+                DisplayData.ABS_Y = cnc.ABS_Y;
+                DisplayData.ABS_Z = cnc.ABS_Z;
+                DisplayData.ABS_A = cnc.ABS_A;
+                DisplayData.ABS_B = cnc.ABS_B;
+                DisplayData.ABS_C = cnc.ABS_C;
+
+                DisplayData.MCH_X = cnc.MCH_X;
+                DisplayData.MCH_Y = cnc.MCH_Y;
+                DisplayData.MCH_Z = cnc.MCH_Z;
+                DisplayData.MCH_A = cnc.MCH_A;
+                DisplayData.MCH_B = cnc.MCH_B;
+                DisplayData.MCH_C = cnc.MCH_C;
+
+                // 加工參數
+                DisplayData.ProcessingParam[0].Name = LanguageManager.GetString("MachineMainDetail_CNC_Param1", "進給速度");
+                DisplayData.ProcessingParam[0].Value = cnc.FeedRate;
+                DisplayData.ProcessingParam[1].Name = LanguageManager.GetString("MachineMainDetail_CNC_Param2", "主軸轉速");
+                DisplayData.ProcessingParam[1].Value = cnc.SpindleSpeed;
+                for (int i = 2; i < 16; i++)
+                {
+                    DisplayData.ProcessingParam[i].Name = "";
+                    DisplayData.ProcessingParam[i].Value = "";
+                }
+            }
+            else if (MachineName.Contains("SiemensCNC"))
             {
                 // 從MachinesT取得對應Machine名稱一樣的的機台資料顯示在DisplayData上
                 var machine = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
@@ -374,7 +430,7 @@ namespace FMSFrontend.ViewModels
                 if (canctrlDelay == 0) DisplayData.CanControl = cnc.CanControl;
                 // 機台資訊
                 DisplayData.MachineInfos[0].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info1", "機台型號：");
-                DisplayData.MachineInfos[0].Value = cnc.MachineNumber;
+                DisplayData.MachineInfos[0].Value = "UH-500";
                 DisplayData.MachineInfos[1].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info2", "機台狀態：");
                 DisplayData.MachineInfos[1].Value = cnc.MachineStatus;
                 DisplayData.MachineInfos[2].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info3", "使用刀具：");

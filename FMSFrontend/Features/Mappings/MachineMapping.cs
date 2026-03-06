@@ -91,6 +91,63 @@ namespace FMSFrontend.Features.Mappings
             model.OscarEdm.JT = dto.JT ?? "";
             model.OscarEdm.JD = dto.JD ?? "";
         }
+
+        public static void ApplyFanucCNCParaDto(this FanucCNCDto dto, MachineModel model)
+        {
+            if (dto == null || model == null || model.SunmillFanucCNC == null) return;
+            //CNC 色燈  1:綠 2:黃 3:紅 0:沒亮
+            model.SunmillFanucCNC.MachineStatus = dto.CNC_light switch
+            {
+                1 => "Running",
+                2 => "Idle",
+                3 => "Alarm",
+                _ => ""
+            };
+            model.SunmillFanucCNC.MachineMode = dto.CNC_Operation_Mode ?? "";     //主程式名稱
+            model.SunmillFanucCNC.CanControl = dto.CanControl;
+
+            model.SunmillFanucCNC.ABS_X = dto.AxisX.ToString("0.###");
+            model.SunmillFanucCNC.ABS_Y = dto.AxisY.ToString("0.###");
+            model.SunmillFanucCNC.ABS_Z = dto.AxisZ.ToString("0.###");
+
+            model.SunmillFanucCNC.MCH_X = dto.AxisX.ToString("0.###");
+            model.SunmillFanucCNC.MCH_Y = dto.AxisY.ToString("0.###");
+            model.SunmillFanucCNC.MCH_Z = dto.AxisZ.ToString("0.###");
+        }
+
+        public static void ApplySiemensCNCParaDto(this SiemensCNCDto dto, MachineModel model)
+        {
+            if (dto == null || model == null || model.SunmillSiemensCNC == null) return;
+
+            model.SunmillSiemensCNC.MainProgramName = dto.ProgramName ?? "";
+            model.SunmillSiemensCNC.CanControl = dto.CanControl;
+
+            model.SunmillSiemensCNC.MachineNumber = model.MachineName ?? "";
+            model.SunmillSiemensCNC.MachineStatus = dto.MachineStatusRaw ?? "";
+            model.SunmillSiemensCNC.ToolName = dto.ToolIdentifier ?? "";
+            model.SunmillSiemensCNC.MachiningCode = dto.ProgramName ?? "";
+            model.SunmillSiemensCNC.CycleTime = dto.CycleTime?.ToString() ?? dto.CycleTimeRaw ?? "";
+            model.SunmillSiemensCNC.MachiningWorkingPercentage = dto.IsProcessing ? "Processing" : "";
+            model.SunmillSiemensCNC.CurrentWorksheet = model.OnDeckWorksheetSerial ?? "";
+            model.SunmillSiemensCNC.MachiningTool = dto.ActiveToolNumber > 0 ? $"T-{dto.ActiveToolNumber:00}" : "";
+
+            model.SunmillSiemensCNC.PositionID = dto.ActiveFrameIndex.ToString();
+
+            model.SunmillSiemensCNC.ABS_X = dto.WorkPosX.ToString("0.###");
+            model.SunmillSiemensCNC.ABS_Y = dto.WorkPosY.ToString("0.###");
+            model.SunmillSiemensCNC.ABS_Z = dto.WorkPosZ.ToString("0.###");
+            model.SunmillSiemensCNC.ABS_B = dto.WorkPosB.ToString("0.###");
+            model.SunmillSiemensCNC.ABS_C = dto.WorkPosC.ToString("0.###");
+
+            model.SunmillSiemensCNC.MCH_X = dto.MachinePosX.ToString("0.###");
+            model.SunmillSiemensCNC.MCH_Y = dto.MachinePosY.ToString("0.###");
+            model.SunmillSiemensCNC.MCH_Z = dto.MachinePosZ.ToString("0.###");
+            model.SunmillSiemensCNC.MCH_B = dto.MachinePosB.ToString("0.###");
+            model.SunmillSiemensCNC.MCH_C = dto.MachinePosC.ToString("0.###");
+
+            model.SunmillSiemensCNC.FeedRate = dto.FeedSpeed.ToString();
+            model.SunmillSiemensCNC.SpindleSpeed = dto.SpindleSpeed.ToString();
+        }
         private static int Cnt = 0;
         public static void ApplyTest(MachineModel model)
         {

@@ -27,7 +27,7 @@ namespace FMSFrontend.Models
         [ObservableProperty] private string workpieceShortName = "";    //工件短名稱
         [ObservableProperty] private string electrodeName = "";         //電極名稱
         [ObservableProperty] private string electrodeShortName = "";    //電極短名稱
-        
+
         [ObservableProperty] private OscarEdmModel oscarEdm = new(); //機台類型 詳細資訊
         [ObservableProperty] private SunmillSiemensCNC sunmillSiemensCNC = new(); //機台類型 詳細資訊
         [ObservableProperty] private SunmillFanucCNC sunmillFanucCNC = new(); //機台類型 詳細資訊
@@ -35,8 +35,7 @@ namespace FMSFrontend.Models
     public partial class SunmillSiemensCNC : ObservableObject
     {
         [ObservableProperty] private string mainProgramName = "1"; //MachineModel  machineNumber
-        [ObservableProperty] private bool canControl = false; //MachineModel  machineNumber
-
+        [ObservableProperty] private bool canControl = false;
         //機台資訊
         [ObservableProperty] private string machineNumber = "1"; //MachineModel  machineNumber
         [ObservableProperty] private string machineStatus = ""; //加工狀態
@@ -48,21 +47,20 @@ namespace FMSFrontend.Models
         [ObservableProperty] private string machiningTool = ""; //刀具編號
 
         //座標
-        [ObservableProperty] private string positionID = "1";
-        [ObservableProperty] private string aBS_X = "1886.6";
-        [ObservableProperty] private string aBS_Y = "186.6";
-        [ObservableProperty] private string aBS_Z = "176.6";
-        [ObservableProperty] private string aBS_A = "183.0";
-        [ObservableProperty] private string aBS_B = "18.69";
-        [ObservableProperty] private string aBS_C = "186";
+        [ObservableProperty] private string positionID = "";
+        [ObservableProperty] private string aBS_X = "";
+        [ObservableProperty] private string aBS_Y = "";
+        [ObservableProperty] private string aBS_Z = "";
+        [ObservableProperty] private string aBS_A = "";
+        [ObservableProperty] private string aBS_B = "";
+        [ObservableProperty] private string aBS_C = "";
 
-        [ObservableProperty] private string mCH_X = "6886";
-        [ObservableProperty] private string mCH_Y = "1874.6";
-        [ObservableProperty] private string mCH_Z = "1456.6";
-        [ObservableProperty] private string mCH_A = "6886";
-        [ObservableProperty] private string mCH_B = "1874.6";
-        [ObservableProperty] private string mCH_C = "1456.6";
-
+        [ObservableProperty] private string mCH_X = "";
+        [ObservableProperty] private string mCH_Y = "";
+        [ObservableProperty] private string mCH_Z = "";
+        [ObservableProperty] private string mCH_A = "";
+        [ObservableProperty] private string mCH_B = "";
+        [ObservableProperty] private string mCH_C = "";
         //加工參數
         [ObservableProperty] private string spindleSpeed = ""; //主軸轉速
         [ObservableProperty] private string feedRate = ""; //進給速度
@@ -71,28 +69,32 @@ namespace FMSFrontend.Models
     }
     public partial class SunmillFanucCNC : ObservableObject
     {
-        [ObservableProperty] private string mainProgramName = "1"; //機台編號
+        [ObservableProperty] private string mainProgramName = "1"; //機台名稱
         [ObservableProperty] private bool canControl = false; //是否啟用
-        
+
         //機台資訊
+        [ObservableProperty] private string machineMode = "1"; //運作模式
+        [ObservableProperty] private string machineStatus = ""; //加工狀態
 
         //座標
-        [ObservableProperty] private string positionID = "1";
-        [ObservableProperty] private string aBS_X = "1886.6";
-        [ObservableProperty] private string aBS_Y = "186.6";
-        [ObservableProperty] private string aBS_Z = "176.6";
-        [ObservableProperty] private string aBS_A = "183.0";
-        [ObservableProperty] private string aBS_B = "18.69";
-        [ObservableProperty] private string aBS_C = "186";
+        [ObservableProperty] private string positionID = "";
+        [ObservableProperty] private string aBS_X = "";
+        [ObservableProperty] private string aBS_Y = "";
+        [ObservableProperty] private string aBS_Z = "";
+        [ObservableProperty] private string aBS_A = "";
+        [ObservableProperty] private string aBS_B = "";
+        [ObservableProperty] private string aBS_C = "";
 
-        [ObservableProperty] private string mCH_X = "6886";
-        [ObservableProperty] private string mCH_Y = "1874.6";
-        [ObservableProperty] private string mCH_Z = "1456.6";
-        [ObservableProperty] private string mCH_A = "6886";
-        [ObservableProperty] private string mCH_B = "1874.6";
-        [ObservableProperty] private string mCH_C = "1456.6";
+        [ObservableProperty] private string mCH_X = "";
+        [ObservableProperty] private string mCH_Y = "";
+        [ObservableProperty] private string mCH_Z = "";
+        [ObservableProperty] private string mCH_A = "";
+        [ObservableProperty] private string mCH_B = "";
+        [ObservableProperty] private string mCH_C = "";
 
         //加工參數
+        [ObservableProperty] private string spindleSpeed = ""; //主軸轉速
+        [ObservableProperty] private string feedRate = ""; //進給速度
     }
     public partial class OscarEdmModel : ObservableObject
     {

@@ -20,7 +20,7 @@ namespace FMSFrontend.Helpers
         public static string ApplySavedLanguage()
         {
             INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "\\Basesitting.ini");
-            var languageValue = ini.Read("Param", "Language");
+            var languageValue = ini.Read("Prarm", "Language");
             var selectedLanguage = languageValue == "1"
                 ? "English"
                 : languageValue == "2"

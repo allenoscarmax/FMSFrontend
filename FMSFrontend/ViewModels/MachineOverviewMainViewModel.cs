@@ -95,7 +95,7 @@ namespace FMSFrontend.ViewModels
             //INIFile ini = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "Basesitting.ini");
             //try
             //{
-            //    StationCount = Convert.ToInt16(ini.Read("Param", "StationCount"));
+            //    StationCount = Convert.ToInt16(ini.Read("Prarm", "StationCount"));
             //}
             //catch { }
 
@@ -232,7 +232,9 @@ namespace FMSFrontend.ViewModels
             {
                 0 => AllMachines, // ALL
                 1 => AllMachines.Where(m => m.Type == MachineType.EDM),
-                2 => AllMachines.Where(m => (m.Type == MachineType.CNC || m.Type == MachineType.UH500)),
+                2 => AllMachines.Where(m => (m.Type == MachineType.CNC || 
+                                             m.Type == MachineType.FanucCNC || 
+                                             m.Type == MachineType.SiemensCNC)),
                 3 => AllMachines.Where(m => m.Type == MachineType.STATION),
                 _ => AllMachines
             };
@@ -243,22 +245,9 @@ namespace FMSFrontend.ViewModels
         private static MachineType MapToMachineType(string s)
         {
             if (s.IndexOf("EDM") != -1) return MachineType.EDM;
-            else
-            {
-                switch (s)
-                {
-                    case "CNC1":
-                        return MachineType.CNC;
-                    case "CNC2":
-                        return MachineType.UH500;
-                    case "CMM":
-                        return MachineType.CMM;
-                    case "STATION":
-                        return MachineType.STATION;
-                    default:
-                        return MachineType.NULL;
-                }
-            }
+            else if(s.IndexOf("FanucCNC") != -1) return MachineType.FanucCNC;
+            else if(s.IndexOf("SiemensCNC") != -1) return MachineType.SiemensCNC;
+            else return MachineType.EDM; // 預設為 EDM，實際上不太會有這種情況
         }
 
         [RelayCommand]
@@ -367,7 +356,8 @@ namespace FMSFrontend.ViewModels
             MachineType.ZNC => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/ZNC.png",
             MachineType.ROBOT => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/Robot.png",
             MachineType.STATION => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/FMS.png",
-            MachineType.UH500 => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/UH500.png",
+            MachineType.FanucCNC => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/CNC.png",
+            MachineType.SiemensCNC => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/UH500.png",
             MachineType.CMM => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/CMM.png",
             _ => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/RobotOff.png"
         };
@@ -391,8 +381,9 @@ namespace FMSFrontend.ViewModels
         ZNC = 2,
         ROBOT = 3,
         STATION = 4,
-        UH500 = 5,
-        CMM = 6,
+        FanucCNC = 5,
+        SiemensCNC = 6,
+        CMM = 7,
         NULL = 99
     }
 }

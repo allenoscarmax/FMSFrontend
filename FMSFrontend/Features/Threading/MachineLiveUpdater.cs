@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Shapes;
 using System.Windows.Threading;
@@ -65,7 +66,6 @@ namespace FMSFrontend.Features.Threading
             try
             {
                 //取得所有機器基本資料
-                List<MachineModel> machines = new List<MachineModel>();
                 List<MachinesDto>? mDtos = await _svc_Machines.GetAllMachinesAsync();
                 if (mDtos != null && mDtos.Count > 0)
                 {
@@ -116,10 +116,27 @@ namespace FMSFrontend.Features.Threading
                                 _store.ApplyOscarmaxMachineParaDto(oscarDto, i);
                             }
                         }
+                        else if (mDtos[i].machineCode.Contains("FanucCNC"))
+                        {
+                            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+                            var fanucDto = await _svc_Machines.GetFanucCNCParaAsync(cts.Token);
+                            if (fanucDto != null)
+                            {
+                                _store.ApplyFanucCNCParaDto(fanucDto);
+                            }
+                        }
+                        else if (mDtos[i].machineCode.Contains("SiemensCNC"))
+                        {
+                            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+                            var siemensDto = await _svc_Machines.GetSiemensCNCParaAsync(cts.Token);
+                            if (siemensDto != null)
+                            {
+                                _store.ApplySiemensCNCParaDto(siemensDto);
+                            }
+                        }
                     }
                 }
-
-
+                
                 return true;
             }
             catch //(Exception ex)
