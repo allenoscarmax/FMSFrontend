@@ -45,14 +45,6 @@
                                 </Border>
                             </StackPanel>
                         </Border>
-                        <Border Background="#56C06C" CornerRadius="4" Margin="0,0,8,0" Height="Auto" Width="Auto" HorizontalAlignment="Center">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                <TextBlock Text="加工中" FontSize="16" Foreground="White" Margin="10,5,0,5" FontWeight="Bold" VerticalAlignment="Center" />
-                                <Border Width="40" Height="30" Background="White" CornerRadius="15" Margin="5,5,10,5" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding StorageGroup.ProcessingTotal}" d:Text="3" Foreground="#222" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                </Border>
-                            </StackPanel>
-                        </Border>
                         <Border Background="#C0392B" CornerRadius="4" Margin="0,0,8,0" Height="Auto" Width="Auto" HorizontalAlignment="Center">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <TextBlock Text="異常" FontSize="16" Foreground="White" Margin="10,5,0,5" FontWeight="Bold" VerticalAlignment="Center" />
@@ -66,6 +58,14 @@
                                 <TextBlock Text="完成" FontSize="16" Foreground="White" Margin="10,5,0,5" FontWeight="Bold" VerticalAlignment="Center" />
                                 <Border Width="40" Height="30" Background="White" CornerRadius="15" Margin="5,5,10,5" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding StorageGroup.CompletedTotal}" d:Text="5" Foreground="#222" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="BlueViolet" CornerRadius="4" Margin="0,0,8,0" Height="Auto" Width="Auto" HorizontalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Text="失敗" FontSize="16" Foreground="White" Margin="10,5,0,5" FontWeight="Bold" VerticalAlignment="Center" />
+                                <Border Width="40" Height="30" Background="White" CornerRadius="15" Margin="5,5,10,5" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding StorageGroup.FailTotal}" d:Text="3" Foreground="#222" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                 </Border>
                             </StackPanel>
                         </Border>

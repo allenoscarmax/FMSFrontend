@@ -114,15 +114,7 @@
                                         </StackPanel>
                                     </Border>
 
-                                    <!--加工中-->
-                                    <Border  Name ="BorderProcessing" Background="#56C06C" CornerRadius="6" Margin="4,0" Padding="12,4">
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="加工中" FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <Border Width="30" Height="30" Background="White" CornerRadius="15" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding SelectStorage.ProcessingCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                            </Border>
-                                        </StackPanel>
-                                    </Border>
+
 
                                     <!--異常-->
                                     <Border Name ="BorderError" Background="#C0392B" CornerRadius="6" Margin="4,0" Padding="12,4" >
@@ -143,7 +135,16 @@
                                             </Border>
                                         </StackPanel>
                                     </Border>
-
+                                    
+                                    <!--失敗-->
+                                    <Border  Name ="BorderFailed" Background="BlueViolet" CornerRadius="6" Margin="4,0" Padding="12,4">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="失敗" FontSize ="16" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" />
+                                            <Border Width="30" Height="30" Background="White" CornerRadius="15" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding SelectStorage.FailCount}" Foreground="Black" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
                                     <!--禁用-->
                                     <Border Background="#CCCCCC" CornerRadius="6" Margin="4,0" Padding="12,4">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
