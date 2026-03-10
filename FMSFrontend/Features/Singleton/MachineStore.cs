@@ -21,23 +21,12 @@ namespace FMSFrontend.Features.Singleton
                 for (int i = 0; i < dtos.Count; i++)
                 {
                     //if (Machines.Count == i) Machines.Add(new MachineModel());
-                    if (!Machines.Any(m => string.Equals(m.MachineName, dtos[i].machineName, StringComparison.OrdinalIgnoreCase)))
+                    if (!Machines.Any(m => string.Equals(m.MachineId, dtos[i].machineCode, StringComparison.OrdinalIgnoreCase)))
                     {
                         Machines.Add(new MachineModel());
                     }
                     dtos[i].ApplyMachinesDto(Machines[i]);
                 }
-                //TMTS展覽機模擬
-                
-                //if (!Machines.Any(m => string.Equals(m.MachineName, "CNC1", StringComparison.OrdinalIgnoreCase)))
-                //{
-                //    Machines.Add(new MachineModel { MachineName = "CNC1", Type = "CNC1" });
-                //}
-                //if (!Machines.Any(m => string.Equals(m.MachineName, "CNC2", StringComparison.OrdinalIgnoreCase)))
-                //{
-                //    Machines.Add(new MachineModel { MachineName = "CNC2", Type = "CNC2" });
-                //}
-
             }
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();
@@ -108,7 +97,7 @@ namespace FMSFrontend.Features.Singleton
             void apply()
             {
                 var model = Machines.FirstOrDefault(m =>
-                    (!string.IsNullOrEmpty(m.MachineName) && m.MachineName.Contains("FanucCNC", StringComparison.OrdinalIgnoreCase)));
+                    (!string.IsNullOrEmpty(m.MachineId) && m.MachineId.Contains("FanucCNC", StringComparison.OrdinalIgnoreCase)));
 
                 if (model != null)
                     dto.ApplyFanucCNCParaDto(model);
@@ -123,7 +112,7 @@ namespace FMSFrontend.Features.Singleton
             void apply()
             {
                 var model = Machines.FirstOrDefault(m =>
-                    (!string.IsNullOrEmpty(m.MachineName) && m.MachineName.Contains("SiemensCNC", StringComparison.OrdinalIgnoreCase)));
+                    (!string.IsNullOrEmpty(m.MachineId) && m.MachineId.Contains("SiemensCNC", StringComparison.OrdinalIgnoreCase)));
 
                 if (model != null)
                     dto.ApplySiemensCNCParaDto(model);

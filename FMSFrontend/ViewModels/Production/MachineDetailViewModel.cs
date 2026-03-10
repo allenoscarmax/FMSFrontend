@@ -93,6 +93,8 @@ namespace FMSFrontend.ViewModels.Production
                     }
                     // 更新 CardVm 的內容
                     _machineDetails[updateCnt].MachineName = Machines[updateCnt].MachineName;
+                    _machineDetails[updateCnt].machineId = Machines[updateCnt].MachineId;
+
                     _machineDetails[updateCnt].Type = MapToMachineType(Machines[updateCnt].Type);
                     _machineDetails[updateCnt].Status = Machines[updateCnt].Status;
                     _machineDetails[updateCnt].Restriction = Machines[updateCnt].Restriction;

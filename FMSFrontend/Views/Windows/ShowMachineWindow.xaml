@@ -123,16 +123,16 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0">
-                                    <TextBlock Text="{DynamicResource ShowMachineWindow_Label_EquipmentName}" FontSize="20" Margin="0,6" />
-                                    <TextBlock Text="{Binding Info.EquipmentName}" FontSize="20" Margin="0,6" />
-                                </StackPanel>
+                                <!--<StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,0">-->
+                                    <TextBlock Grid.Row="0" Grid.Column="0"  Text="{DynamicResource ShowMachineWindow_Label_MachineName}" FontSize="20" Margin="0,6" />
+                                    <TextBlock Grid.Row="0" Grid.Column="1"  Text="{Binding Info.MachineName}" FontSize="20" Margin="0,6" />
+                                <!--</StackPanel>-->
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource ShowMachineWindow_Label_EquipmentType}" FontSize="20" Margin="0,6" />
-                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Info.EquipmentType}" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource ShowMachineWindow_Label_Manufacturer}" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Info.Manufacturer}" FontSize="20" Margin="0,6" />
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource ShowMachineWindow_Label_ModelNo}" FontSize="20" Margin="0,6" />
-                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Info.ModelNo}" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource ShowMachineWindow_Label_MachineId}" FontSize="20" Margin="0,6" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Info.MachineId}" FontSize="20" Margin="0,6" />
 
                                 <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource ShowMachineWindow_Label_MainProgram}" FontSize="20" Margin="0,6" />
                                 <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Info.MainProgramName}" FontSize="20" Margin="0,6" />

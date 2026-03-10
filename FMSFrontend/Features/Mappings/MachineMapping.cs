@@ -11,7 +11,34 @@ namespace FMSFrontend.Features.Mappings
         {
             if (dto == null || model == null) return;
 
-            model.MachineName = dto.machineName ?? "";
+            // model.MachineName = dto.machineName ?? "";
+            if (dto.machineName == "EDM1" || dto.machineName == "EDM101")
+            {
+                model.MachineName = "EX-60";
+                model.Manufacturer = "OscarMax";
+            }
+            else if (dto.machineName == "EDM2" || dto.machineName == "EDM102")
+            {
+                model.MachineName = "ESD-430";
+                model.Manufacturer = "OscarMax";
+            }
+            else if (dto.machineName == "FanucCNC1")
+            {
+                model.MachineName = "JHV-550";
+                model.Manufacturer = "Sunmill";
+            }
+            else if (dto.machineName == "SiemensCNC1")
+            {
+                model.MachineName = "UH-500";
+                model.Manufacturer = "Sunmill";
+            }
+            else
+            {
+                model.MachineName = dto.machineName;
+                model.Manufacturer = "";
+            }
+
+            model.MachineId = dto.machineCode ?? "";
             model.Status = dto.status ?? "";
             model.Type = dto.machineCode ?? "";
             model.Restriction = false;
@@ -46,17 +73,17 @@ namespace FMSFrontend.Features.Mappings
         {
             if (dto == null || model == null || model.OscarEdm == null) return;
             //設備資訊
-            model.OscarEdm.MainProgramName = dto.MainProgramName ?? "";     //主程式名稱
-            model.OscarEdm.CanControl = dto.CanControl;                     //是否可控
+            model.OscarEdm.MainProgramName = dto.MainProgramName ?? "";                 //主程式名稱
+            model.OscarEdm.CanControl = dto.CanControl;                                 //是否可控
 
             model.OscarEdm.MachineNumber = model.MachineName ?? "";                     //機台名稱
             model.OscarEdm.MachineStatus = model.Status ?? "";                          //機台狀態
             model.OscarEdm.UsingElectrode = model.ElectrodeShortName ?? "";             //電極名稱
-            model.OscarEdm.MachiningCode = dto.MainProgramName ?? "";                            //機台型號
+            model.OscarEdm.MachiningCode = dto.MainProgramName ?? "";                   //機台型號
             model.OscarEdm.CycleTime = dto.CycleTime ?? "";                             //加工持續時間
-            model.OscarEdm.MachiningWorkingPercentage = $"{dto.ProgressBar}%" ?? ""; //加工進度
-            model.OscarEdm.CurrentWorksheet = dto.WorkNumber_now.ToString() ?? ""; //?? 目前工單
-            model.OscarEdm.MachiningTool = $"T-{dto.Run_Tool:00}" ?? ""; // 使用刀具 ?? 感覺是電極
+            model.OscarEdm.MachiningWorkingPercentage = $"{dto.ProgressBar}%" ?? "";    //加工進度
+            model.OscarEdm.CurrentWorksheet = dto.WorkNumber_now.ToString() ?? "";      //?? 目前工單
+            model.OscarEdm.MachiningTool = $"T-{dto.Run_Tool:00}" ?? "";                // 使用刀具 ?? 感覺是電極
 
             model.OscarEdm.MachineTemperature = ""; //??
             model.OscarEdm.SpindleRPM = ""; //??
@@ -96,13 +123,16 @@ namespace FMSFrontend.Features.Mappings
         {
             if (dto == null || model == null || model.SunmillFanucCNC == null) return;
             //CNC 色燈  1:綠 2:黃 3:紅 0:沒亮
+            /*
             model.SunmillFanucCNC.MachineStatus = dto.CNC_light switch
             {
+                0 => "Off",
                 1 => "Running",
                 2 => "Idle",
                 3 => "Alarm",
                 _ => ""
             };
+            */
             model.SunmillFanucCNC.MachineMode = dto.CNC_Operation_Mode ?? "";     //主程式名稱
             model.SunmillFanucCNC.CanControl = dto.CanControl;
 
@@ -113,6 +143,9 @@ namespace FMSFrontend.Features.Mappings
             model.SunmillFanucCNC.MCH_X = dto.AxisX.ToString("0.###");
             model.SunmillFanucCNC.MCH_Y = dto.AxisY.ToString("0.###");
             model.SunmillFanucCNC.MCH_Z = dto.AxisZ.ToString("0.###");
+
+            model.SunmillFanucCNC.FeedRate = dto.FeedSpeed.ToString();
+            model.SunmillFanucCNC.SpindleSpeed = dto.SpindleSpeed.ToString();
         }
 
         public static void ApplySiemensCNCParaDto(this SiemensCNCDto dto, MachineModel model)

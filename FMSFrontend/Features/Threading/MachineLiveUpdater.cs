@@ -119,6 +119,7 @@ namespace FMSFrontend.Features.Threading
                         else if (mDtos[i].machineCode.Contains("FanucCNC"))
                         {
                             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+                            _store.Machines[i].SunmillFanucCNC.MachineStatus = _store.Machines[i].Status;
                             var fanucDto = await _svc_Machines.GetFanucCNCParaAsync(cts.Token);
                             if (fanucDto != null)
                             {
@@ -127,6 +128,7 @@ namespace FMSFrontend.Features.Threading
                         }
                         else if (mDtos[i].machineCode.Contains("SiemensCNC"))
                         {
+                            _store.Machines[i].SunmillSiemensCNC.MachineStatus = _store.Machines[i].Status;
                             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
                             var siemensDto = await _svc_Machines.GetSiemensCNCParaAsync(cts.Token);
                             if (siemensDto != null)

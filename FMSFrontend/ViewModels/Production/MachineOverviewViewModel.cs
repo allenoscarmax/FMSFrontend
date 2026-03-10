@@ -87,6 +87,9 @@ namespace FMSFrontend.ViewModels.Production
                         MachineCardVm.Add(new MachineCardViewModel(_parent));
                     }
                     MachineCardVm[updateCnt].MachineName = Machines[updateCnt].MachineName;
+                    MachineCardVm[updateCnt].machineId = Machines[updateCnt].MachineId;
+                    MachineCardVm[updateCnt].Manufacturer = Machines[updateCnt].Manufacturer;
+
                     MachineCardVm[updateCnt].Type = MapToMachineType(Machines[updateCnt].Type);
                     MachineCardVm[updateCnt].Status = Machines[updateCnt].Status;
                     MachineCardVm[updateCnt].onDeckElectrodeSerial = Machines[updateCnt].OnDeckElectrodeSerial;
@@ -173,6 +176,7 @@ namespace FMSFrontend.ViewModels.Production
         public MachineCardViewModel(ProductionLinesViewModel parent) { _parent = parent; }
 
         [ObservableProperty] private string machineName = ""; //設備名稱
+        [ObservableProperty] private string manufacturer = ""; //製造商
         [ObservableProperty] private string status = "";  
         [ObservableProperty] private MachineType type = MachineType.EDM; //設備類型
         [ObservableProperty] private bool restriction;  //設備鎖定 保留

@@ -386,7 +386,19 @@ namespace FMSFrontend.ViewModels
                 DisplayData.MachineInfos[0].Value = "JHV-500";
                 DisplayData.MachineInfos[1].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info2", "機台狀態：");
                 DisplayData.MachineInfos[1].Value = cnc.MachineStatus;
-                for (int i = 2; i < 16; i++)
+                DisplayData.MachineInfos[2].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info3", "使用刀具：");
+                DisplayData.MachineInfos[2].Value = cnc.ToolName;
+                DisplayData.MachineInfos[3].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info4", "加工程式：");
+                DisplayData.MachineInfos[3].Value = cnc.MachiningCode;
+                DisplayData.MachineInfos[4].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info5", "加工時間：");
+                DisplayData.MachineInfos[4].Value = cnc.CycleTime;
+                DisplayData.MachineInfos[5].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info6", "加工進度：");
+                DisplayData.MachineInfos[5].Value = cnc.MachiningWorkingPercentage;
+                DisplayData.MachineInfos[6].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info7", "目前工單：");
+                DisplayData.MachineInfos[6].Value = cnc.CurrentWorksheet;
+                DisplayData.MachineInfos[7].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info8", "刀具號碼：");
+                DisplayData.MachineInfos[7].Value = cnc.MachiningTool;
+                for (int i = 8; i < 16; i++)
                 {
                     DisplayData.MachineInfos[i].Name = "";
                     DisplayData.MachineInfos[i].Value = "";

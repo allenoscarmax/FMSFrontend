@@ -553,11 +553,11 @@ ShowMachineWindow_DateFilter_Today,今天,Today,本日
 ShowMachineWindow_Header_Title,設備資訊,Machine information,機械情報
 ShowMachineWindow_Label_CycleTime,狀態持續時間：,Status duration:,状態継続時間：
 ShowMachineWindow_Label_ElectrodeName,電極名稱：,Electrode name:,電極名：
-ShowMachineWindow_Label_EquipmentName,設備名稱：,Equipment name:,設備名：
-ShowMachineWindow_Label_EquipmentType,設備類型：,Equipment type:,設備タイプ：
+ShowMachineWindow_Label_MachineName,設備名稱：,Machine name:,設備名：
+ShowMachineWindow_Label_Manufacturer,製造商：,Manufacturer:,製造元：
+ShowMachineWindow_Label_MachineId,設備Id：,Machine ID.:,設備ID：
 ShowMachineWindow_Label_MachineState,機台狀態：,Machine status:,機械状態：
 ShowMachineWindow_Label_MainProgram,當前程式：,Current program:,現在のプログラム：
-ShowMachineWindow_Label_ModelNo,設備型號：,Model no.:,設備型式：
 ShowMachineWindow_Label_WorkPieceName,工件名稱：,Workpiece name:,ワーク名：
 ShowMachineWindow_Label_WorkSheetName,工單名稱：,Work order name:,作業指示名：
 ShowMachineWindow_Message_DateRangeTooLong,選擇的日期範圍不能超過一個月,Selected date range cannot exceed one month.,選択した日付範囲は1か月を超えることはできません

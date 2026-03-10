@@ -55,10 +55,9 @@ namespace FMSFrontend.ViewModels.Windows
         {
             DeviceName = m.MachineName
                 ?? LanguageManager.GetString("ShowMachineWindowViewModel_DeviceName_Default", "設備名稱");
-            Info.MachineTypeName = m.MachineTypeName;
-            Info.EquipmentName = m.MachineName ?? "";
-            Info.EquipmentType = m.Type.ToString();
-            Info.ModelNo = m.MachineName ?? "";
+            Info.MachineName = m.MachineName ?? "";
+            Info.Manufacturer = m.Manufacturer ?? "";
+            Info.MachineId = m.machineId ?? "";
             Info.MainProgramName = m.MainProgramName;
             Info.MachineState = m.Status;
             Info.CycleTime = m.CycleTime;
@@ -234,10 +233,9 @@ namespace FMSFrontend.ViewModels.Windows
 
     public partial class MachineInfo : ObservableObject
     {
-        [ObservableProperty] private string machineTypeName = "EDM";
-        [ObservableProperty] private string equipmentName = "";
-        [ObservableProperty] private string equipmentType = "";
-        [ObservableProperty] private string modelNo = "";
+        [ObservableProperty] private string machineName = "EDM";
+        [ObservableProperty] private string manufacturer = "";
+        [ObservableProperty] private string machineId = "";
         [ObservableProperty] private string mainProgramName = "";
         [ObservableProperty] private string machineState = "";
         [ObservableProperty] private string cycleTime = "";
