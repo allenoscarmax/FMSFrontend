@@ -12,6 +12,32 @@ namespace FMSFrontend.Features.Mappings
             if (dto == null || model == null) return;
 
             model.MachineName = dto.machineName ?? "";
+            //TMTS展覽用
+            if (dto.machineName == "EDM1" || dto.machineName == "EDM101")
+            {
+                model.machineModel = "EX-60";
+                model.Manufacturer = "OscarMax";
+            }
+            else if (dto.machineName == "EDM2" || dto.machineName == "EDM102")
+            {
+                model.machineModel = "ESD-430";
+                model.Manufacturer = "OscarMax";
+            }
+            else if (dto.machineName == "FanucCNC1")
+            {
+                model.machineModel = "JHV-550";
+                model.Manufacturer = "Sunmill";
+            }
+            else if (dto.machineName == "SiemensCNC1")
+            {
+                model.machineModel = "UH-500";
+                model.Manufacturer = "Sunmill";
+            }
+            else
+            {
+                model.machineModel = "";
+                model.Manufacturer = "";
+            }
             model.Status = dto.status ?? "";
             model.Type = dto.machineCode ?? "";
             model.Restriction = false;
@@ -33,7 +59,7 @@ namespace FMSFrontend.Features.Mappings
             model.ElectrodeName = dto.probeName;
             model.ElectrodeShortName = "probe"; //20260120佑義要求修改電極名稱規則
         }
-        
+
         public static void ApplyWorkpieceDto(this WorkpieceDto dto, MachineModel model)
         {
             if (dto == null || model == null) return;
@@ -96,6 +122,7 @@ namespace FMSFrontend.Features.Mappings
         {
             if (dto == null || model == null || model.SunmillFanucCNC == null) return;
             //CNC 色燈  1:綠 2:黃 3:紅 0:沒亮
+            /*
             model.SunmillFanucCNC.MachineStatus = dto.CNC_light switch
             {
                 1 => "Running",
@@ -103,6 +130,7 @@ namespace FMSFrontend.Features.Mappings
                 3 => "Alarm",
                 _ => ""
             };
+            */
             model.SunmillFanucCNC.MachineMode = dto.CNC_Operation_Mode ?? "";     //主程式名稱
             model.SunmillFanucCNC.CanControl = dto.CanControl;
 
@@ -113,6 +141,10 @@ namespace FMSFrontend.Features.Mappings
             model.SunmillFanucCNC.MCH_X = dto.AxisX.ToString("0.###");
             model.SunmillFanucCNC.MCH_Y = dto.AxisY.ToString("0.###");
             model.SunmillFanucCNC.MCH_Z = dto.AxisZ.ToString("0.###");
+
+            model.SunmillFanucCNC.FeedRate = dto.FeedSpeed.ToString();
+            model.SunmillFanucCNC.SpindleSpeed = dto.SpindleSpeed.ToString();
+
         }
 
         public static void ApplySiemensCNCParaDto(this SiemensCNCDto dto, MachineModel model)

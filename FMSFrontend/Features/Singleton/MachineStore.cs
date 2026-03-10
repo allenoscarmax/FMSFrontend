@@ -1,11 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;         
-using FMSFrontend.Features.Dtos;                      
-using FMSFrontend.Features.Mappings;              
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using FMSFrontend.Features.Dtos;
+using FMSFrontend.Features.Mappings;
 using FMSFrontend.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows;                              
+using System.Windows;
 
 namespace FMSFrontend.Features.Singleton
 {
@@ -28,7 +28,7 @@ namespace FMSFrontend.Features.Singleton
                     dtos[i].ApplyMachinesDto(Machines[i]);
                 }
                 //TMTS展覽機模擬
-                
+
                 //if (!Machines.Any(m => string.Equals(m.MachineName, "CNC1", StringComparison.OrdinalIgnoreCase)))
                 //{
                 //    Machines.Add(new MachineModel { MachineName = "CNC1", Type = "CNC1" });
@@ -42,7 +42,7 @@ namespace FMSFrontend.Features.Singleton
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();
         }
-        public void ApplyNull(int inedx,bool isElectrode)
+        public void ApplyNull(int inedx, bool isElectrode)
         {
             var disp = Application.Current?.Dispatcher;
             void apply()
@@ -61,12 +61,12 @@ namespace FMSFrontend.Features.Singleton
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();
         }
-        public void ApplyElectrodeDto(ElectrodeDto dto,int inedx)
+        public void ApplyElectrodeDto(ElectrodeDto dto, int inedx)
         {
             var disp = Application.Current?.Dispatcher;
             void apply()
             {
-                    dto.ApplyElectrodeDto(Machines[inedx]);
+                dto.ApplyElectrodeDto(Machines[inedx]);
             }
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();

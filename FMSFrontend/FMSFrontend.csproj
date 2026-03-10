@@ -48,6 +48,7 @@
     <None Remove="Image\MachineIcons\Robot.png" />
     <None Remove="Image\MachineIcons\RobotOff.png" />
     <None Remove="Image\MachineIcons\short-track.png" />
+    <None Remove="Image\MachineIcons\Target.png" />
     <None Remove="Image\MachineIcons\ZNC.png" />
     <None Remove="Language\Strings.csv" />
   </ItemGroup>
@@ -133,6 +134,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Image\MachineIcons\short-track.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\MachineIcons\Target.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Image\MachineIcons\ZNC.png">

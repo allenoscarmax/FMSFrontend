@@ -55,10 +55,15 @@ namespace FMSFrontend.ViewModels.Windows
         {
             DeviceName = m.MachineName
                 ?? LanguageManager.GetString("ShowMachineWindowViewModel_DeviceName_Default", "設備名稱");
-            Info.MachineTypeName = m.MachineTypeName;
-            Info.EquipmentName = m.MachineName ?? "";
-            Info.EquipmentType = m.Type.ToString();
-            Info.ModelNo = m.MachineName ?? "";
+            Info.MachineName = DeviceName;
+            var machineModel = m.machineModel ?? "";
+            if (machineModel == "EDM2") Info.MachineTypeName = "ESD";
+            else if (machineModel.IndexOf("FanucCNC") != -1) Info.MachineTypeName = "FanucCNC";
+            else if (machineModel.IndexOf("SiemensCNC") != -1) Info.MachineTypeName = "SiemensCNC";
+            else Info.MachineTypeName = "EDM";
+
+            Info.Manufacturer = m.Manufacturer ?? "";
+            Info.MachineModel = machineModel;
             Info.MainProgramName = m.MainProgramName;
             Info.MachineState = m.Status;
             Info.CycleTime = m.CycleTime;
@@ -235,9 +240,9 @@ namespace FMSFrontend.ViewModels.Windows
     public partial class MachineInfo : ObservableObject
     {
         [ObservableProperty] private string machineTypeName = "EDM";
-        [ObservableProperty] private string equipmentName = "";
-        [ObservableProperty] private string equipmentType = "";
-        [ObservableProperty] private string modelNo = "";
+        [ObservableProperty] private string machineName = "EDM";
+        [ObservableProperty] private string manufacturer = "";
+        [ObservableProperty] private string machineModel = "";
         [ObservableProperty] private string mainProgramName = "";
         [ObservableProperty] private string machineState = "";
         [ObservableProperty] private string cycleTime = "";

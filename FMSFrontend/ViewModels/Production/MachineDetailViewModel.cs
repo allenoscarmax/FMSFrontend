@@ -93,6 +93,8 @@ namespace FMSFrontend.ViewModels.Production
                     }
                     // 更新 CardVm 的內容
                     _machineDetails[updateCnt].MachineName = Machines[updateCnt].MachineName;
+                    _machineDetails[updateCnt].machineModel = Machines[updateCnt].machineModel;
+
                     _machineDetails[updateCnt].Type = MapToMachineType(Machines[updateCnt].Type);
                     _machineDetails[updateCnt].Status = Machines[updateCnt].Status;
                     _machineDetails[updateCnt].Restriction = Machines[updateCnt].Restriction;
@@ -122,24 +124,20 @@ namespace FMSFrontend.ViewModels.Production
             {
                 MachineName = m.MachineName,
                 Status = m.Status,
-                Type = MapToMachineType(m.Type),
+                Type = MapToMachineType(m.MachineName),
                 Restriction = m.Restriction
             };
         }
-        private static MachineType MapToMachineType(string s)
+        private static MachineType MapToMachineType(string MachineName)
         {
-            if (string.IsNullOrWhiteSpace(s)) return MachineType.EDM;
-            if (s.IndexOf("EDM") != -1)
-                return MachineType.EDM; // default value
-            else if (s.IndexOf("FanucCNC") != -1)
-            {
-                return MachineType.FanucCNC;
-            }
-            else if (s.IndexOf("SiemensCNC") != -1)
-            {
-                return MachineType.SiemensCNC;
-            }
-            else return MachineType.EDM;
+            if (string.IsNullOrWhiteSpace(MachineName)) return MachineType.EDM;
+
+            if (string.Equals(MachineName, "EDM2", StringComparison.OrdinalIgnoreCase)) return MachineType.ESD;
+            if (MachineName.IndexOf("EDM", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.EDM;
+            if (MachineName.IndexOf("FanucCNC", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.FanucCNC;
+            if (MachineName.IndexOf("SiemensCNC", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.SiemensCNC;
+
+            return MachineType.EDM;
         }
         [RelayCommand]
         private void BackToOverview()

@@ -35,6 +35,8 @@ namespace FMSFrontend.Controls.FactoryOverview
                     // 避免重複訂閱，先解除一次（保險）
                     VM.RobotMoveRequested -= OnRobotMoveRequested;
                     VM.RobotMoveRequested += OnRobotMoveRequested;
+                    VM.Robot2MoveRequested -= OnRobot2MoveRequested;
+                    VM.Robot2MoveRequested += OnRobot2MoveRequested;
                 }
             };
         }
@@ -137,6 +139,22 @@ namespace FMSFrontend.Controls.FactoryOverview
                 }
 
                 AnimateRobotTo(robot, x, y);
+            });
+        }
+
+        private void OnRobot2MoveRequested(MachineNode robot2, double x, double y)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var container = (ContentPresenter?)FactoryItemsControl.ItemContainerGenerator.ContainerFromItem(robot2);
+                if (container == null)
+                {
+                    robot2.X = x;
+                    robot2.Y = y;
+                    return;
+                }
+
+                AnimateRobotTo(robot2, x, y);
             });
         }
         private async void LayoutInitClick(object sender, RoutedEventArgs e)

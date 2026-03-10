@@ -12,7 +12,11 @@ namespace FMSFrontend.Models
     public partial class MachineModel : ObservableObject
     {
         // 機台基本資訊
-        [ObservableProperty] private string machineName = ""; //機台名稱
+        [ObservableProperty] private string machineName = ""; //機台單一識別碼 EDM1、CNC1.....
+        public string machineModel { get; set; } = ""; //機台型號 
+        [ObservableProperty] private string manufacturer = ""; //OscarMax、Sunmill、Fanuc
+
+            
         [ObservableProperty] private string status = ""; //機台狀態
         [ObservableProperty] private string type = ""; //機台類型
         [ObservableProperty] private bool restriction; //機台鎖定
@@ -40,7 +44,7 @@ namespace FMSFrontend.Models
         [ObservableProperty] private string machineNumber = "1"; //MachineModel  machineNumber
         [ObservableProperty] private string machineStatus = ""; //加工狀態
         [ObservableProperty] private string toolName = ""; //刀具名稱
-        [ObservableProperty] private string machiningCode = ""; //機台類型
+        [ObservableProperty] private string machiningCode = ""; //加工程式
         [ObservableProperty] private string cycleTime = ""; //加工時間 
         [ObservableProperty] private string machiningWorkingPercentage = ""; //完成進度
         [ObservableProperty] private string currentWorksheet = "";//工單編號
@@ -73,8 +77,14 @@ namespace FMSFrontend.Models
         [ObservableProperty] private bool canControl = false; //是否啟用
 
         //機台資訊
-        [ObservableProperty] private string machineMode = "1"; //運作模式
-        [ObservableProperty] private string machineStatus = ""; //加工狀態
+        [ObservableProperty] private string machineMode = "1";              //運作模式
+        [ObservableProperty] private string machineStatus = "";             //加工狀態
+        [ObservableProperty] private string toolName = "";                  //刀具名稱
+        [ObservableProperty] private string machiningCode = "";             //加工程式
+        [ObservableProperty] private string cycleTime = "";                 //加工時間 
+        [ObservableProperty] private string machiningWorkingPercentage = "";//完成進度
+        [ObservableProperty] private string currentWorksheet = "";          //工單編號
+        [ObservableProperty] private string machiningTool = "";             //刀具編號
 
         //座標
         [ObservableProperty] private string positionID = "";
@@ -93,8 +103,8 @@ namespace FMSFrontend.Models
         [ObservableProperty] private string mCH_C = "";
 
         //加工參數
-        [ObservableProperty] private string spindleSpeed = ""; //主軸轉速
-        [ObservableProperty] private string feedRate = ""; //進給速度
+        [ObservableProperty] private string spindleSpeed = "";  //主軸轉速
+        [ObservableProperty] private string feedRate = "";      //進給速度
     }
     public partial class OscarEdmModel : ObservableObject
     {
@@ -105,7 +115,7 @@ namespace FMSFrontend.Models
         [ObservableProperty] private string machineNumber = "1"; //MachineModel  machineNumber
         [ObservableProperty] private string machineStatus = ""; //MachineModel Status
         [ObservableProperty] private string usingElectrode = ""; //MachineModel electrodeShortName
-        [ObservableProperty] private string machiningCode = ""; //MachineModel  type
+        [ObservableProperty] private string machiningCode = ""; //程式碼
         [ObservableProperty] private string cycleTime = ""; // Cycle Time 
         [ObservableProperty] private string machiningWorkingPercentage = ""; //45%
         [ObservableProperty] private string currentWorksheet = "";//WS20250717

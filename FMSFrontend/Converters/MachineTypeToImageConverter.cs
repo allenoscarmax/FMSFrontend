@@ -16,7 +16,9 @@ namespace FMSFrontend.Converters
         private static readonly Dictionary<string, string> Map = new(StringComparer.OrdinalIgnoreCase)
         {
             ["EDM"] = "EDM.png",
+            ["ESD"] = "ESD.png",
             ["CNC"] = "CNC.png",
+            ["EDM2"] = "ESD.png",
             ["FanucCNC"] = "CNC.png",
             ["SiemensCNC"] = "UH500.png",
             ["ZNC"] = "ZNC.png",

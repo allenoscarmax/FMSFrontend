@@ -47,17 +47,25 @@ namespace FMSFrontend.ViewModels.Factory
         /// // 建議集中定義 Id
         private const string RobotId = "ROBOT";
         private const string TrackId = "Track";
+        private const string Robot2Id = "ROBOT2";
         string robotAtId = "CNC"; // 預設在 CNC（可從外部更新）
+        private string robot2AtId = "Target1";
         public string RobotAtId
         {
             get => robotAtId;
             set { robotAtId = value; OnPropertyChanged(); UpdateHighlight(); }
+        }
+        public string Robot2AtId
+        {
+            get => robot2AtId;
+            set { robot2AtId = value; OnPropertyChanged(); UpdateRobot2Highlight(); }
         }
         private MachineNode? Find(string id) =>
     Machines.FirstOrDefault(m => string.Equals(m.Id, id, StringComparison.OrdinalIgnoreCase));
 
 
         public void SetRobotAt(string machineId) => RobotAtId = machineId;
+        public void SetRobot2At(string targetId) => Robot2AtId = targetId;
 
         //void UpdateHighlight()
         //{
@@ -79,12 +87,15 @@ namespace FMSFrontend.ViewModels.Factory
         // ✅ 只計算高亮與目標座標 → 觸發事件給 View 做動畫
         // 🔔 提供給 View 訂閱用：請在 View 裡接到後做動畫
         public event Action<MachineNode, double, double>? RobotMoveRequested;
+        public event Action<MachineNode, double, double>? Robot2MoveRequested;
         private void UpdateHighlight()
         {
             MachineNode? target = null;
             if (RobotAtId == null || RobotAtId == "") return;
             foreach (var m in Machines)
             {
+                if (m.Id.StartsWith("Target", StringComparison.OrdinalIgnoreCase))
+                    continue;
                 // var active = string.Equals(m.Id, RobotAtId, StringComparison.OrdinalIgnoreCase); 
                 var active = m.Id.IndexOf(RobotAtId, StringComparison.OrdinalIgnoreCase) >= 0;
                 m.IsActive = active;
@@ -114,6 +125,28 @@ namespace FMSFrontend.ViewModels.Factory
             }
             // 🔔 通知 View（UserControl）去做動畫
             RobotMoveRequested?.Invoke(robot, targetX, targetY);
+        }
+
+        private void UpdateRobot2Highlight()
+        {
+            if (string.IsNullOrWhiteSpace(Robot2AtId)) return;
+
+            foreach (var m in Machines.Where(x => x.Id.StartsWith("Target", StringComparison.OrdinalIgnoreCase)))
+            {
+                m.IsActive = string.Equals(m.Id, Robot2AtId, StringComparison.OrdinalIgnoreCase);
+            }
+
+            var target = Find(Robot2AtId);
+            var robot2 = Find(Robot2Id);
+            if (robot2 == null || target == null || ReferenceEquals(robot2, target))
+                return;
+
+            var targetWidth = target.Width > 0 ? target.Width : 130;
+            var robotWidth = robot2.Width > 0 ? robot2.Width : 130;
+            var targetX = target.X + (targetWidth - robotWidth) / 2.0+15;
+            var targetY = target.Y+40;
+
+            Robot2MoveRequested?.Invoke(robot2, targetX, targetY);
         }
 
         private void AlignRobotToTargetX(MachineNode robot, MachineNode target)
@@ -172,6 +205,7 @@ namespace FMSFrontend.ViewModels.Factory
         }
 
         private static readonly Random _rnd = new Random();
+        private int _robot2TargetIndex = 0;
         public async Task LoadLayoutAsync(string path)
         {
 
@@ -202,12 +236,14 @@ namespace FMSFrontend.ViewModels.Factory
             Machines.Add(new MachineNode { Id = "FanucCNC1", DisplayName = "JHV-550",     X = 500, Y = 5,  Width = 140, Height = 140, IconPath = Pack("Image/MachineIcons/CNC.png") });
             Machines.Add(new MachineNode { Id = "SiemensCNC1", DisplayName = "UH-500", X = 250, Y = 5,  Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/UH500.png") });
             Machines.Add(new MachineNode { Id = "EDM1", DisplayName = "EDM1",               X = 20,  Y = 190, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/EDM.png") });
-            Machines.Add(new MachineNode { Id = "ROBOT", DisplayName = "Robot",             X = 170, Y = 200, Width = 120, Height = 120, IconPath = Pack("Image/MachineIcons/Robot.png") });
-            Machines.Add(new MachineNode { Id = "Track", DisplayName = "",                  X = 200, Y = 330, Width = 700, Height = 40,  IconPath = Pack("Image/MachineIcons/long-track.png") });
-            Machines.Add(new MachineNode { Id = "W1", DisplayName = "W1",                   X = 375, Y = 380, Width = 130, Height = 130, IconPath = Pack("Image/MachineIcons/Magzine.png") });
-            Machines.Add(new MachineNode { Id = "E1", DisplayName = "E1",                   X = 625, Y = 380, Width = 130, Height = 130, IconPath = Pack("Image/MachineIcons/Magzine.png") });
-            Machines.Add(new MachineNode { Id = "EDM2", DisplayName = "ESD",               X = 20,  Y = 540, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/ESD.png") });
-            Machines.Add(new MachineNode { Id = "ROBOT2", DisplayName = "Robot2",           X = 750, Y = 560, Width = 130, Height = 130, IconPath = Pack("Image/MachineIcons/RobotOnAMR.png") });
+            Machines.Add(new MachineNode { Id = "ROBOT", DisplayName = "Robot1",            X = 170, Y = 200, Width = 120, Height = 120, IconPath = Pack("Image/MachineIcons/Robot.png") });
+            Machines.Add(new MachineNode { Id = "Track", DisplayName = "",                  X = 200, Y = 320, Width = 700, Height = 40,  IconPath = Pack("Image/MachineIcons/long-track.png") });
+            Machines.Add(new MachineNode { Id = "E1", DisplayName = "E1",                   X = 375, Y = 370, Width = 130, Height = 120, IconPath = Pack("Image/MachineIcons/Magzine.png") });
+            Machines.Add(new MachineNode { Id = "W1", DisplayName = "W1",                   X = 625, Y = 370, Width = 130, Height = 120, IconPath = Pack("Image/MachineIcons/Magzine.png") });
+            Machines.Add(new MachineNode { Id = "EDM2", DisplayName = "ESD",                X = 20,  Y = 540, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/ESD.png") });
+            Machines.Add(new MachineNode { Id = "Target1", DisplayName = "Target1",         X = 195, Y = 530, Width = 50, Height = 200, IconPath = Pack("Image/MachineIcons/Target.png") });
+            Machines.Add(new MachineNode { Id = "Target2", DisplayName = "Target2",         X = 650, Y = 530, Width = 50, Height = 200, IconPath = Pack("Image/MachineIcons/Target.png") });
+            Machines.Add(new MachineNode { Id = "ROBOT2", DisplayName = "Robot2",           X = 750, Y = 570, Width = 120, Height = 120, IconPath = Pack("Image/MachineIcons/RobotOnAMR.png") });
         }
         public async Task LayoutInit()
         {
@@ -254,7 +290,7 @@ namespace FMSFrontend.ViewModels.Factory
             int stationCount = 0; //工作站數量 鋐興:0 佑義:1
             try
             {
-            //stationCount = Convert.ToInt16(ini.Read("Prarm", "StationCount"));
+                //stationCount = Convert.ToInt16(ini.Read("Prarm", "StationCount"));
                 if (stationCount != 0)
                 {
                     Machines.Add(new MachineNode
@@ -359,13 +395,24 @@ namespace FMSFrontend.ViewModels.Factory
             await Moverobot();
         }
 
+        [RelayCommand]
+        private async Task onMoveRobot2()
+        {
+            await MoveRobot2SequentialAsync();
+        }
+
         private async Task Moverobot()
         {
             await Task.Delay(1); // 保持 async 簽名
 
             // 所有可去的機台 Id（不包含手臂/軌道）
             var candidates = Machines
-                .Where(m => m.Id != "ROBOT" && m.Id != "Track")
+                .Where(m => !string.Equals(m.Id, "ROBOT", StringComparison.OrdinalIgnoreCase)
+                         && !string.Equals(m.Id, "TRACK", StringComparison.OrdinalIgnoreCase)
+                         && !string.Equals(m.Id, "ROBOT2", StringComparison.OrdinalIgnoreCase)
+                         && !string.Equals(m.Id, "ESD", StringComparison.OrdinalIgnoreCase)
+                         && !string.Equals(m.DisplayName, "ESD", StringComparison.OrdinalIgnoreCase)
+                         && !m.Id.StartsWith("Target", StringComparison.OrdinalIgnoreCase))
                 .Select(m => m.Id)
                 .ToList();
 
@@ -377,6 +424,30 @@ namespace FMSFrontend.ViewModels.Factory
 
             // 移動手臂
             SetRobotAt(nextId);
+        }
+
+        private async Task MoveRobot2SequentialAsync()
+        {
+            await Task.Delay(1);
+
+            var orderedTargets = Machines
+                .Where(m => m.Id.StartsWith("Target", StringComparison.OrdinalIgnoreCase))
+                .OrderBy(m =>
+                {
+                    var suffix = m.Id.Length > 6 ? m.Id[6..] : string.Empty;
+                    return int.TryParse(suffix, out var n) ? n : int.MaxValue;
+                })
+                .Select(m => m.Id)
+                .ToList();
+
+            if (!orderedTargets.Any())
+                return;
+
+            if (_robot2TargetIndex >= orderedTargets.Count)
+                _robot2TargetIndex = 0;
+
+            SetRobot2At(orderedTargets[_robot2TargetIndex]);
+            _robot2TargetIndex = (_robot2TargetIndex + 1) % orderedTargets.Count;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

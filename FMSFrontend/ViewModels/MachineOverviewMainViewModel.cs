@@ -231,7 +231,7 @@ namespace FMSFrontend.ViewModels
             IEnumerable<MachineOverviewCard> source = SelectedTabIndex switch
             {
                 0 => AllMachines, // ALL
-                1 => AllMachines.Where(m => m.Type == MachineType.EDM),
+                1 => AllMachines.Where(m => m.Type == MachineType.EDM || m.Type == MachineType.ESD),
                 2 => AllMachines.Where(m => (m.Type == MachineType.CNC || 
                                              m.Type == MachineType.FanucCNC || 
                                              m.Type == MachineType.SiemensCNC)),
@@ -242,11 +242,14 @@ namespace FMSFrontend.ViewModels
             foreach (var m in source)
                 FilteredMachines.Add(m);
         }
-        private static MachineType MapToMachineType(string s)
+        private static MachineType MapToMachineType(string? machineModel)
         {
-            if (s.IndexOf("EDM") != -1) return MachineType.EDM;
-            else if(s.IndexOf("FanucCNC") != -1) return MachineType.FanucCNC;
-            else if(s.IndexOf("SiemensCNC") != -1) return MachineType.SiemensCNC;
+            if (string.IsNullOrWhiteSpace(machineModel)) return MachineType.EDM;
+
+            if (string.Equals(machineModel, "EDM2", StringComparison.OrdinalIgnoreCase)) return MachineType.ESD;
+            if (machineModel.IndexOf("EDM", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.EDM;
+            else if(machineModel.IndexOf("FANUC", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.FanucCNC;
+            else if(machineModel.IndexOf("SIEMENS", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.SiemensCNC;
             else return MachineType.EDM; // 預設為 EDM，實際上不太會有這種情況
         }
 
@@ -352,6 +355,7 @@ namespace FMSFrontend.ViewModels
         public string MachineImagePath => Type switch
         {
             MachineType.EDM => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png",
+            MachineType.ESD => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/ESD.png",
             MachineType.CNC => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/CNC.png",
             MachineType.ZNC => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/ZNC.png",
             MachineType.ROBOT => "pack://application:,,,/FMSFrontend;component/Image/MachineIcons/Robot.png",
@@ -377,13 +381,14 @@ namespace FMSFrontend.ViewModels
     public enum MachineType
     {
         EDM = 0,
-        CNC = 1,
-        ZNC = 2,
-        ROBOT = 3,
-        STATION = 4,
-        FanucCNC = 5,
-        SiemensCNC = 6,
-        CMM = 7,
+        ESD = 1,
+        CNC = 2,
+        ZNC = 3,
+        ROBOT = 4,
+        STATION = 5,
+        FanucCNC = 6,
+        SiemensCNC = 7,
+        CMM = 8,
         NULL = 99
     }
 }
