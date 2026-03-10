@@ -555,7 +555,7 @@ ShowMachineWindow_Label_CycleTime,狀態持續時間：,Status duration:,状態�
 ShowMachineWindow_Label_ElectrodeName,電極名稱：,Electrode name:,電極名：
 ShowMachineWindow_Label_MachineName,設備名稱：,Machine name:,設備名：
 ShowMachineWindow_Label_Manufacturer,製造商：,Manufacturer:,製造元：
-ShowMachineWindow_Label_MachineId,設備Id：,Machine ID.:,設備ID：
+ShowMachineWindow_Label_MachineModel,設備型號：,Machine model:,設備型式：
 ShowMachineWindow_Label_MachineState,機台狀態：,Machine status:,機械状態：
 ShowMachineWindow_Label_MainProgram,當前程式：,Current program:,現在のプログラム：
 ShowMachineWindow_Label_WorkPieceName,工件名稱：,Workpiece name:,ワーク名：

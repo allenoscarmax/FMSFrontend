@@ -12,11 +12,11 @@ namespace FMSFrontend.Models
     public partial class MachineModel : ObservableObject
     {
         // 機台基本資訊
-        [ObservableProperty] private string machineName = ""; //機台顯示名稱 EX-60 UH-500...
-        [ObservableProperty] private string machineId = ""; //機台單一識別碼 EDM1、CNC1.....
+        [ObservableProperty] private string machineName = ""; //機台單一識別碼 EDM1、CNC1.....
+        public string machineModel { get; set; } = ""; //機台型號 
         [ObservableProperty] private string manufacturer = ""; //OscarMax、Sunmill、Fanuc
 
-
+            
         [ObservableProperty] private string status = ""; //機台狀態
         [ObservableProperty] private string type = ""; //機台類型
         [ObservableProperty] private bool restriction; //機台鎖定

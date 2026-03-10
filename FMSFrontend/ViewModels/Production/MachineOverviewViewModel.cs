@@ -87,7 +87,7 @@ namespace FMSFrontend.ViewModels.Production
                         MachineCardVm.Add(new MachineCardViewModel(_parent));
                     }
                     MachineCardVm[updateCnt].MachineName = Machines[updateCnt].MachineName;
-                    MachineCardVm[updateCnt].machineId = Machines[updateCnt].MachineId;
+                    MachineCardVm[updateCnt].machineModel = Machines[updateCnt].machineModel;
                     MachineCardVm[updateCnt].Manufacturer = Machines[updateCnt].Manufacturer;
 
                     MachineCardVm[updateCnt].Type = MapToMachineType(Machines[updateCnt].Type);
@@ -139,18 +139,24 @@ namespace FMSFrontend.ViewModels.Production
             {
                 MachineName = m.MachineName,
                 Status = m.Status,
-                Type = MapToMachineType(m.Type),
+                Type = MapToMachineType(m.MachineName),
                 Restriction = m.Restriction
             };
             return vm;
         }
-        private static MachineType MapToMachineType(string s)
+        private static MachineType MapToMachineType(string? MachineName)
         {
-            if (s.IndexOf("EDM") != -1)
+            if (string.IsNullOrWhiteSpace(MachineName))
+                return MachineType.EDM;
+
+            if (string.Equals(MachineName, "EDM2", StringComparison.OrdinalIgnoreCase))
+                return MachineType.ESD;
+
+            if (MachineName.IndexOf("EDM", StringComparison.OrdinalIgnoreCase) != -1)
                 return MachineType.EDM; // default value
-            else if (s.IndexOf("FanucCNC") != -1)
+            else if (MachineName.IndexOf("FanucCNC", StringComparison.OrdinalIgnoreCase) != -1)
                 return MachineType.FanucCNC;
-            else if (s.IndexOf("SiemensCNC") != -1)
+            else if (MachineName.IndexOf("SiemensCNC", StringComparison.OrdinalIgnoreCase) != -1)
                 return MachineType.SiemensCNC;
             else return MachineType.EDM;
         }
@@ -183,7 +189,8 @@ namespace FMSFrontend.ViewModels.Production
         //設備資訊
         [ObservableProperty] private string mainProgramName = "";
         [ObservableProperty] private string cycleTime = "";
-        public string machineId { get; set; } = "";// 機台Id
+        public string machineModel { get; set; } = "";// 機台型號
+
         public string onDeckElectrodeSerial { get; set; } = "";// 夾持中電極標籤序號（RFID）
         public string onDeckWorkpieceSerial { get; set; } = "";// 夾持中工件標籤序號（RFID）
         public string onDeckWorksheetSerial { get; set; } = "";// 當前工單號/序號  
@@ -242,10 +249,11 @@ namespace FMSFrontend.ViewModels.Production
     public enum MachineType
     {
         EDM = 0,
-        ZNC = 1,
-        CNC = 2,
-        SiemensCNC = 3,
-        FanucCNC = 4,
+        ESD = 1,
+        ZNC = 2,
+        CNC = 3,
+        SiemensCNC = 4,
+        FanucCNC = 5,
         Null = 99
     }
 
