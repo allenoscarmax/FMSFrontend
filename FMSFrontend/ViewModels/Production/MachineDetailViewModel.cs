@@ -105,7 +105,12 @@ namespace FMSFrontend.ViewModels.Production
                     _machineDetails[updateCnt].WorkpieceName = Machines[updateCnt].WorkpieceShortName;
                     _machineDetails[updateCnt].MainProgramName = Machines[updateCnt].OscarEdm.MainProgramName;
                     _machineDetails[updateCnt].CycleTime = Machines[updateCnt].OscarEdm.CycleTime;
-                    _machineDetails[updateCnt].Restriction = !Machines[updateCnt].OscarEdm.CanControl;
+                    if (Machines[updateCnt].MachineName.IndexOf("EDM") != -1)
+                        _machineDetails[updateCnt].Restriction = !Machines[updateCnt].OscarEdm.CanControl;
+                    else if (Machines[updateCnt].MachineName.IndexOf("FanucCNC") != -1)
+                        _machineDetails[updateCnt].Restriction = !Machines[updateCnt].SunmillFanucCNC.CanControl;
+                    else if (Machines[updateCnt].MachineName.IndexOf("SiemensCNC") != -1)
+                        _machineDetails[updateCnt].Restriction = !Machines[updateCnt].SunmillSiemensCNC.CanControl;
                 }
                 while (_machineDetails.Count > Machines.Count) //刪除多餘的 CardVm
                 {

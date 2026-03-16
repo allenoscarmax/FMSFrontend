@@ -99,8 +99,12 @@ namespace FMSFrontend.ViewModels.Production
                     MachineCardVm[updateCnt].WorkpieceName = Machines[updateCnt].WorkpieceShortName;
                     MachineCardVm[updateCnt].MainProgramName = Machines[updateCnt].OscarEdm.MainProgramName;
                     MachineCardVm[updateCnt].CycleTime = Machines[updateCnt].OscarEdm.CycleTime;
-
-                    MachineCardVm[updateCnt].Restriction =  !Machines[updateCnt].OscarEdm.CanControl;
+                    if (Machines[updateCnt].MachineName.IndexOf("EDM") != -1)
+                        MachineCardVm[updateCnt].Restriction = !Machines[updateCnt].OscarEdm.CanControl;
+                    else if (Machines[updateCnt].MachineName.IndexOf("FanucCNC") != -1)
+                        MachineCardVm[updateCnt].Restriction = !Machines[updateCnt].SunmillFanucCNC.CanControl;
+                    else if (Machines[updateCnt].MachineName.IndexOf("SiemensCNC") != -1)
+                        MachineCardVm[updateCnt].Restriction = !Machines[updateCnt].SunmillSiemensCNC.CanControl;
                 }
                 while (MachineCardVm.Count > Machines.Count)
                 {
