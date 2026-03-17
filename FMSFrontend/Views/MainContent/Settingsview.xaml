@@ -121,6 +121,19 @@
                                                                 <Button Content="{DynamicResource Settings_Button_Confirm}" Width="Auto" MinWidth="120" Height="40" FontSize="16" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding LanguageClickCommand}" />
                                                             </StackPanel>
                                                         </GroupBox>
+                                                        <!-- 系統還原 -->
+                                                        <GroupBox Header="{DynamicResource Settings_Group_SystemRestore}" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="1.5" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Button Grid.Column="0" Width="120" Height="40" Content="{DynamicResource Settings_Button_Restore}" FontSize="16" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding RestoreSystemCommand}" />
+                                                                <Border Grid.Column="1" Background="Black" />
+                                                                <TextBlock Grid.Column="2" Text="{DynamicResource Settings_Text_SystemRestoreNote}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
+                                                            </Grid>
+                                                        </GroupBox>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </Setter.Value>
@@ -148,19 +161,7 @@
                                                                 <TextBox Grid.Column="3"  Width="200" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontSize="20" Text="{Binding ServerIp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="Black" Padding="5,0" Style="{StaticResource UnderlineTextBoxStyle}" />
                                                             </Grid>
                                                         </GroupBox>
-                                                        <!-- 系統還原 -->
-                                                        <GroupBox Header="{DynamicResource Settings_Group_SystemRestore}" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
-                                                            <Grid>
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="Auto" />
-                                                                    <ColumnDefinition Width="1.5" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                </Grid.ColumnDefinitions>
-                                                                <Button Grid.Column="0" Width="120" Height="40" Content="{DynamicResource Settings_Button_Restore}" FontSize="16" VerticalAlignment="Center" Background="#1976D2" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding RestoreSystemCommand}" />
-                                                                <Border Grid.Column="1" Background="Black" />
-                                                                <TextBlock Grid.Column="2" Text="{DynamicResource Settings_Text_SystemRestoreNote}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
-                                                            </Grid>
-                                                        </GroupBox>
+ 
                                                         <!-- 系統備份 -->
                                                         <GroupBox Header="{DynamicResource Settings_Group_SystemBackup}" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
                                                             <Grid>

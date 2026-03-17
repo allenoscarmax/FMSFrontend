@@ -22,21 +22,35 @@ namespace FMSFrontend.Models
     }
     public enum Enum_QueueCommandType
     {
-        InstallElectrodeToEDM, 
-        UnInstallElectrodeFromEDM, 
-        InstallElectrodeToCMM, 
+        InstallElectrodeToEDM,
+        UnInstallElectrodeFromEDM,
+        InstallElectrodeToCMM,
         UnInstallElectrodeFromCMM,
-        InstallWorkpieceToEDM, 
 
-        UnInstallWorkpieceFromEDM, 
+        InstallWorkpieceToEDM,
+        UnInstallWorkpieceFromEDM,
         TurnOverProcessing,
         InstallWorkpieceToCMM,
         UnInstallWorkpieceFromCMM,
-        InstallWorkpieceToCleaningStation,
 
+        InstallWorkpieceToCleaningStation,
         UnInstallWorkpieceFromCleaningStation,
+
         PutWorkpieceToASE,
         TakeWorkpieceFromASE,
+
+
+        InstallWorkpieceToFanucCNC,
+        UnInstallWorkpieceFromFanucCNC,
+        InstallElectrodeToFanucCNC,
+        UnInstallElectrodeFromFanucCNC,
+
+        InstallWorkpieceToSiemensCNC,
+        UnInstallWorkpieceFromSiemensCNC,
+        InstallElectrodeToSiemensCNC,
+        UnInstallElectrodeFromSiemensCNC,
+
+
         MoveEleBetweenStorage,
         MovePartBetweenStorage,
 

@@ -9,6 +9,7 @@ using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views.Windows;
 using IniFile;
+using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -260,13 +261,59 @@ namespace FMSFrontend.ViewModels
 
         #region 系統還原
         [RelayCommand]
-        private void RestoreSystem()
+        private async Task RestoreSystem()
         {
             if (!_authorizationService.RequireLoginAndWriteOperation(20))
                 return;
-            // TODO: 加入系統還原邏輯，例如清除資料、表單、日誌等
-            StatusMessage = LanguageManager.GetString("Settings_Message_SystemRestored", "⚠️ 系統已還原，所有資料已清除");
-            _windowService.ShowMessage(LanguageManager.GetString("Settings_Message_SystemRestoreCompleted", "系統還原完成"));
+
+            var isConfirmed = _windowService.ShowYesNoDialog(
+                LanguageManager.GetString("Settings_Confirm_SystemRestore", "確定要進行系統還原？"));
+            if (!isConfirmed)
+            {
+                StatusMessage = LanguageManager.GetString("Settings_Message_RestoreCanceled", "已取消系統還原");
+                return;
+            }
+
+            var folderDialog = new OpenFolderDialog
+            {
+                Title = LanguageManager.GetString("Settings_Restore_SelectFolder", "請選擇還原資料夾")
+            };
+
+            var dialogResult = folderDialog.ShowDialog();
+            if (dialogResult != true || string.IsNullOrWhiteSpace(folderDialog.FolderName))
+            {
+                StatusMessage = LanguageManager.GetString("Settings_Message_RestoreCanceled", "已取消系統還原");
+                return;
+            }
+
+            var restorePath = folderDialog.FolderName;
+            IsBusy = true;
+            BusyMessage = LanguageManager.GetString("Settings_Message_RestoreInProgress", "系統還原中，請稍候...");
+
+            try
+            {
+                var ok = await _mongoDBService.RestoreDatabaseAsync(restorePath);
+                StatusMessage = ok
+                    ? LanguageManager.GetString("Settings_Message_RestoreSuccess", "系統還原成功")
+                    : LanguageManager.GetString("Settings_Message_RestoreFailed", "系統還原失敗");
+
+                _windowService.ShowMessage(ok
+                    ? LanguageManager.GetString("Settings_Message_RestoreSuccessPrompt", "系統還原成功")
+                    : LanguageManager.GetString("Settings_Message_RestoreFailedPrompt", "系統還原失敗"));
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = LanguageManager.GetString("Settings_Message_RestoreError", "系統還原發生例外");
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    LanguageManager.GetString("Settings_Message_RestoreErrorPrompt", "系統還原發生例外：{0}"),
+                    ex.Message);
+                _windowService.ShowMessage(message);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
         #endregion
 

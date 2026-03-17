@@ -247,7 +247,6 @@ namespace FMSFrontend.ViewModels.Factory
             if (nodes == null) return;
             Machines.Clear();
             foreach (var n in nodes) Machines.Add(n);
-            SetRobotAt(Robot.CurrentLocation);
             /*
             //測試 佑義Layout
             Machines.Clear();
@@ -276,6 +275,7 @@ namespace FMSFrontend.ViewModels.Factory
             Machines.Add(new MachineNode { Id = "Target1", DisplayName = "Target1",         X = 195, Y = 530, Width = 50, Height = 200, IconPath = Pack("Image/MachineIcons/Target.png") });
             Machines.Add(new MachineNode { Id = "Target2", DisplayName = "Target2",         X = 650, Y = 530, Width = 50, Height = 200, IconPath = Pack("Image/MachineIcons/Target.png") });
             Machines.Add(new MachineNode { Id = "ROBOT2", DisplayName = "Robot2",           X = 750, Y = 570, Width = 120, Height = 120, IconPath = Pack("Image/MachineIcons/RobotOnAMR.png") });
+            SetRobotAt(Robot.CurrentLocation);
         }
         public async Task LayoutInit()
         {

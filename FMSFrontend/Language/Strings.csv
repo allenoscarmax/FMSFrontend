@@ -438,6 +438,7 @@ Settings_Column_RobotType,機械手臂型號,Robot Model,ロボット型式
 Settings_Column_WorkerName,使用者,User,ユーザー
 Settings_Column_WorkerNo,工號,Employee No.,社員番号
 Settings_Confirm_ChangeLanguage,確認切換語言？,Confirm language change?,言語を変更しますか？
+Settings_Confirm_SystemRestore,確定要進行系統還原？,Are you sure you want to restore the system?,システム復元を実行してもよろしいですか？
 Settings_EditDevice_Title_Id,裝置編號,Device ID,デバイス番号
 Settings_EditDevice_Title_Ip,IP,IP,IP
 Settings_EditDevice_Title_Name,名稱,Name,名称
@@ -473,6 +474,14 @@ Settings_Message_BackupFailed,系統備份失敗,System backup failed.,システ
 Settings_Message_BackupInProgress,系統備份中，請稍候...,System backup in progress. Please wait...,システムバックアップ中です。お待ちください...
 Settings_Message_BackupSuccess,系統備份成功,System backup succeeded.,システムバックアップが完了しました
 Settings_Message_Busy,處理中...,Processing...,処理中...
+Settings_Message_RestoreCanceled,已取消系統還原,System restore canceled.,システム復元をキャンセルしました
+Settings_Message_RestoreError,系統還原發生例外,System restore exception occurred.,システム復元中に例外が発生しました
+Settings_Message_RestoreErrorPrompt,系統還原發生例外：{0},System restore exception: {0},システム復元で例外が発生しました：{0}
+Settings_Message_RestoreFailed,系統還原失敗,System restore failed.,システム復元に失敗しました
+Settings_Message_RestoreFailedPrompt,系統還原失敗,System restore failed.,システム復元に失敗しました
+Settings_Message_RestoreInProgress,系統還原中，請稍候...,System restore in progress. Please wait...,システム復元中です。お待ちください...
+Settings_Message_RestoreSuccess,系統還原成功,System restore succeeded.,システム復元が完了しました
+Settings_Message_RestoreSuccessPrompt,系統還原成功,System restore succeeded.,システム復元が完了しました
 Settings_Message_DeviceNotFound,找不到原始裝置資料，更新失敗,Original device data not found. Update failed.,元のデバイスデータが見つかりません。更新に失敗しました
 Settings_Message_DeviceUpdated,裝置參數已更新,Device parameters updated.,デバイスパラメータが更新されました
 Settings_Message_DeviceUpdateFailed,裝置更新失敗，請稍後再試,Device update failed. Please try again later.,デバイスの更新に失敗しました。後でもう一度お試しください
