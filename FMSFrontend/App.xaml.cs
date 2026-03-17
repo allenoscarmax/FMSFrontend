@@ -69,6 +69,7 @@ namespace FMSFrontend
             services.AddSingleton<IAppointmentMaintenanceService, AppointmentMaintenanceService>();
             services.AddSingleton<ICommandScheduleService, CommandScheduleService>();
             services.AddSingleton<IAlarmService, AlarmService>();
+            services.AddSingleton<IAMRService, AMRService>();
             services.AddSingleton<IWorksheetAppService, WorksheetAppService>();
             services.AddSingleton<IAuthorizationService, AuthorizationService>();
             services.AddSingleton<IOperationMessageLogService, OperationMessageLogService>();
@@ -84,6 +85,7 @@ namespace FMSFrontend
             services.AddSingleton<StationStore>();
             services.AddSingleton<StorageStore>();
             services.AddSingleton<MachineStore>();
+            services.AddSingleton<AMRStore>();
             services.AddSingleton<UserSession>();
 
 
@@ -97,6 +99,7 @@ namespace FMSFrontend
             services.AddSingleton<StationLiveUpdater>();
             services.AddSingleton<StorageLiveUpdater>();
             services.AddSingleton<MachineLiveUpdater>();
+            services.AddTransient<AMRLiveUpdater>();
             #endregion
 
 

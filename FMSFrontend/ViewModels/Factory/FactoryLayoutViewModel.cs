@@ -22,15 +22,17 @@ using System.Windows.Media.Animation;
 
 namespace FMSFrontend.ViewModels.Factory
 {
-    public partial class FactoryLayoutViewModel : INotifyPropertyChanged
+    public partial class FactoryLayoutViewModel : INotifyPropertyChanged, IDisposable
     {
         // == Service ===
         private readonly IHttpService _httpService;
         private readonly IMachinesService _machinesService;
         private readonly IStorageService _storageService;
         private readonly IRobotService _robotService;
+        private readonly AMRLiveUpdater _amrLiveUpdater;
         // === Singleton ===
         public RobotStore RobotStore { get; }
+        public AMRStore AMRStore { get; }
         public Robot Robot => RobotStore.Robot;
         public ObservableCollection<MachineNode> Machines { get; } = new();
         private static string Pack(string rel) => $"/FMSFrontend;component/{rel}";
@@ -172,15 +174,29 @@ namespace FMSFrontend.ViewModels.Factory
             IMachinesService machinesService,
             IStorageService storageService,
             IRobotService robotService,
-            RobotStore robotStore)
+            RobotStore robotStore,
+            AMRStore amrStore,
+            AMRLiveUpdater amrLiveUpdater)
         {
             _httpService = httpService;
             _machinesService = machinesService;
             _storageService = storageService;
             _robotService = robotService;
+            _amrLiveUpdater = amrLiveUpdater;
             RobotStore = robotStore;
+            AMRStore = amrStore;
             //UpdateHighlight(); // 初始化一次
             Robot.PropertyChanged += RobotOnPropertyChanged;
+            AMRStore.Amr.PropertyChanged += AmrOnPropertyChanged;
+            _amrLiveUpdater.Start();
+        }
+
+        private void AmrOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(AMRModel.Location))
+            {
+                ApplyAmrLocation(AMRStore.Amr.Location);
+            }
         }
         private void RobotOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
@@ -198,6 +214,22 @@ namespace FMSFrontend.ViewModels.Factory
             // 呼叫移動函式
             SetRobotAt(Robot.CurrentLocation);
         }
+
+        public void ApplyAmrLocation(string? location)
+        {
+            if (string.IsNullOrWhiteSpace(location))
+                return;
+
+            if (location.Contains("machine", StringComparison.OrdinalIgnoreCase))
+            {
+                SetRobot2At("Target1");
+            }
+            else if (location.Contains("item", StringComparison.OrdinalIgnoreCase))
+            {
+                SetRobot2At("Target2");
+            }
+        }
+
         public async Task SaveLayoutAsync(string path)
         {
             var json = JsonSerializer.Serialize(Machines, new JsonSerializerOptions { WriteIndented = true });
@@ -232,15 +264,15 @@ namespace FMSFrontend.ViewModels.Factory
             
             //TMTS Layout
             Machines.Clear();
-            Machines.Add(new MachineNode { Id = "CMM", DisplayName = "CMM",                 X = 750, Y = 5,  Width = 130, Height = 130, IconPath = Pack("Image/MachineIcons/CMM.png") });
+            Machines.Add(new MachineNode { Id = "CMM", DisplayName = "MiSTAR 555",                 X = 750, Y = 5,  Width = 130, Height = 130, IconPath = Pack("Image/MachineIcons/CMM.png") });
             Machines.Add(new MachineNode { Id = "FanucCNC1", DisplayName = "JHV-550",     X = 500, Y = 5,  Width = 140, Height = 140, IconPath = Pack("Image/MachineIcons/CNC.png") });
             Machines.Add(new MachineNode { Id = "SiemensCNC1", DisplayName = "UH-500", X = 250, Y = 5,  Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/UH500.png") });
-            Machines.Add(new MachineNode { Id = "EDM1", DisplayName = "EDM1",               X = 20,  Y = 190, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/EDM.png") });
+            Machines.Add(new MachineNode { Id = "EDM1", DisplayName = "EX-60",               X = 20,  Y = 190, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/EDM.png") });
             Machines.Add(new MachineNode { Id = "ROBOT", DisplayName = "Robot1",            X = 170, Y = 200, Width = 120, Height = 120, IconPath = Pack("Image/MachineIcons/Robot.png") });
             Machines.Add(new MachineNode { Id = "Track", DisplayName = "",                  X = 200, Y = 320, Width = 700, Height = 40,  IconPath = Pack("Image/MachineIcons/long-track.png") });
             Machines.Add(new MachineNode { Id = "E1", DisplayName = "E1",                   X = 375, Y = 370, Width = 130, Height = 120, IconPath = Pack("Image/MachineIcons/Magzine.png") });
             Machines.Add(new MachineNode { Id = "W1", DisplayName = "W1",                   X = 625, Y = 370, Width = 130, Height = 120, IconPath = Pack("Image/MachineIcons/Magzine.png") });
-            Machines.Add(new MachineNode { Id = "EDM2", DisplayName = "ESD",                X = 20,  Y = 540, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/ESD.png") });
+            Machines.Add(new MachineNode { Id = "EDM2", DisplayName = "ESD-435",                X = 20,  Y = 540, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/ESD.png") });
             Machines.Add(new MachineNode { Id = "Target1", DisplayName = "Target1",         X = 195, Y = 530, Width = 50, Height = 200, IconPath = Pack("Image/MachineIcons/Target.png") });
             Machines.Add(new MachineNode { Id = "Target2", DisplayName = "Target2",         X = 650, Y = 530, Width = 50, Height = 200, IconPath = Pack("Image/MachineIcons/Target.png") });
             Machines.Add(new MachineNode { Id = "ROBOT2", DisplayName = "Robot2",           X = 750, Y = 570, Width = 120, Height = 120, IconPath = Pack("Image/MachineIcons/RobotOnAMR.png") });
@@ -453,6 +485,13 @@ namespace FMSFrontend.ViewModels.Factory
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        public void Dispose()
+        {
+            Robot.PropertyChanged -= RobotOnPropertyChanged;
+            AMRStore.Amr.PropertyChanged -= AmrOnPropertyChanged;
+            _amrLiveUpdater.Stop();
+        }
     }
 
     public class MachineNode : INotifyPropertyChanged

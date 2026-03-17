@@ -35,6 +35,21 @@ namespace FMSFrontend.Models
         [ObservableProperty] private OscarEdmModel oscarEdm = new(); //機台類型 詳細資訊
         [ObservableProperty] private SunmillSiemensCNC sunmillSiemensCNC = new(); //機台類型 詳細資訊
         [ObservableProperty] private SunmillFanucCNC sunmillFanucCNC = new(); //機台類型 詳細資訊
+        [ObservableProperty] private MitutoyoCMM mitutoyoCMM = new(); //機台類型 詳細資訊
+    }
+    public partial class MitutoyoCMM : ObservableObject
+    {
+        [ObservableProperty] private string mainProgramName = "1"; //MachineModel  machineNumber
+        [ObservableProperty] private bool canControl = false;
+        //機台資訊
+        [ObservableProperty] private string machineNumber = "1"; //MachineModel  machineNumber
+        [ObservableProperty] private string machineStatus = ""; //加工狀態
+        [ObservableProperty] private string toolName = ""; //刀具名稱
+        [ObservableProperty] private string machiningCode = ""; //加工程式
+        [ObservableProperty] private string cycleTime = ""; //加工時間 
+        [ObservableProperty] private string machiningWorkingPercentage = ""; //完成進度
+        [ObservableProperty] private string currentWorksheet = "";//工單編號
+        [ObservableProperty] private string machiningTool = ""; //刀具編號
     }
     public partial class SunmillSiemensCNC : ObservableObject
     {

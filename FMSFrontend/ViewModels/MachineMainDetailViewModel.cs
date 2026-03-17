@@ -39,6 +39,7 @@ namespace FMSFrontend.ViewModels
         private readonly MachineStore _machineStore;
         public ObservableCollection<MachineModel> AllMachines => _machineStore.Machines;
         DispatcherTimer _timer;
+        private bool _isRefreshing;
 
         //機台資訊
         [ObservableProperty] private ObservableCollection<TabItemModel> tabs;           // 機台資訊Tab
@@ -59,25 +60,38 @@ namespace FMSFrontend.ViewModels
         {
             try
             {
-
-                var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
-                if (edm != null)
+                if (MachineName.Contains("CMM"))
                 {
-                    bool canctrl = !edm.OscarEdm.CanControl;
-                    if (MachineName.Contains("FanucCNC"))
-                        canctrl = !edm.SunmillFanucCNC.CanControl;
-                    else if (MachineName.Contains("SiemensCNC"))
-                        canctrl = !edm.SunmillSiemensCNC.CanControl;
+                    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+                    var cmmDto = await _machinesService.GetCMMparaAsync(cts.Token);
+                    if (cmmDto != null)
+                    {
+                        var canctrl = !cmmDto.CanControl;
+                        await _machinesService.SetCMMCanControlAsync(canctrl);
+                    }
+                }
+                else
+                {
+                    var edm = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
+                    if (edm != null)
+                    {
+                        bool canctrl = !edm.OscarEdm.CanControl;
+                        if (MachineName.Contains("FanucCNC"))
+                            canctrl = !edm.SunmillFanucCNC.CanControl;
+                        else if (MachineName.Contains("SiemensCNC"))
+                            canctrl = !edm.SunmillSiemensCNC.CanControl;
 
-                    if (!_authorizationService.RequireLoginAndWriteOperation(18, " " + edm.MachineName + ": " + canctrl))
-                        return;
-                    if (MachineName.Contains("EDM"))
-                        await _machinesService.SetMachineCanControlAsync(edm.MachineNumber - 1, canctrl);
-                    else if (MachineName.Contains("FanucCNC"))
-                        await _machinesService.SetFanucCNCMachineCanControlAsync(canctrl);
-                    else if (MachineName.Contains("SiemensCNC"))
-                        await _machinesService.SetSiemensCNCMachineCanControlAsync(canctrl);
-                    canctrlDelay = 5;
+                        if (!_authorizationService.RequireLoginAndWriteOperation(18, " " + edm.MachineName + ": " + canctrl))
+                            return;
+                        if (MachineName.Contains("EDM"))
+                            await _machinesService.SetMachineCanControlAsync(edm.MachineNumber - 1, canctrl);
+                        else if (MachineName.Contains("FanucCNC"))
+                            await _machinesService.SetFanucCNCMachineCanControlAsync(canctrl);
+                        else if (MachineName.Contains("SiemensCNC"))
+                            await _machinesService.SetSiemensCNCMachineCanControlAsync(canctrl);
+
+                        canctrlDelay = 5;
+                    }
                 }
             }
             catch { }
@@ -241,7 +255,19 @@ namespace FMSFrontend.ViewModels
             _authorizationService = parent._authorizationService;
 
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
-            _timer.Tick += (_, __) => RefreshFromStore();
+            _timer.Tick += async (_, __) =>
+            {
+                if (_isRefreshing) return;
+                _isRefreshing = true;
+                try
+                {
+                    await RefreshFromStoreAsync();
+                }
+                finally
+                {
+                    _isRefreshing = false;
+                }
+            };
             _timer.Start();
 
             Tabs = new ObservableCollection<TabItemModel>
@@ -280,8 +306,9 @@ namespace FMSFrontend.ViewModels
             _timer = null!;
         }
         bool test = false;
-        public int canctrlDelay = 3;
-        private void RefreshFromStore()
+        public int canctrlDelay = 0;
+        public int CMMDelay = 0;
+        private async Task RefreshFromStoreAsync()
         {
             if (Machine == null || DisplayData == null) return;
             if (MachineName.Contains("EDM"))
@@ -488,6 +515,64 @@ namespace FMSFrontend.ViewModels
                     DisplayData.ProcessingParam[i].Name = "";
                     DisplayData.ProcessingParam[i].Value = "";
                 }
+            }
+            else if (MachineName.Contains("CMM"))
+            {
+                if (CMMDelay == 0)
+                {
+                    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+                    var cmmDto = await _machinesService.GetCMMparaAsync(cts.Token);
+                    if (cmmDto != null)
+                    {
+                        if (canctrlDelay > 0) canctrlDelay--;
+                        if (canctrlDelay == 0) DisplayData.CanControl = cmmDto.CanControl;
+                        // 機台資訊
+                        DisplayData.MachineInfos[0].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info1", "機台型號：");
+                        DisplayData.MachineInfos[0].Value = "MiSTAR 555";
+                        DisplayData.MachineInfos[1].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info2", "機台狀態：");
+                        DisplayData.MachineInfos[1].Value = cmmDto.ExecutionStatus ?? "";
+                        DisplayData.MachineInfos[2].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info3", "使用刀具：");
+                        DisplayData.MachineInfos[2].Value = "";
+                        DisplayData.MachineInfos[3].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info4", "加工程式：");
+                        DisplayData.MachineInfos[3].Value = cmmDto.MainProgramName ?? "";
+                        DisplayData.MachineInfos[4].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info5", "加工時間：");
+                        DisplayData.MachineInfos[4].Value = cmmDto.CycleTime ?? "";
+                        DisplayData.MachineInfos[5].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info6", "加工進度：");
+                        DisplayData.MachineInfos[5].Value = "";
+                        DisplayData.MachineInfos[6].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info7", "目前工單：");
+                        DisplayData.MachineInfos[6].Value = "";
+                        DisplayData.MachineInfos[7].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info8", "刀具號碼：");
+                        DisplayData.MachineInfos[7].Value = "";
+                    }
+                    for (int i = 8; i < 16; i++)
+                    {
+                        DisplayData.MachineInfos[i].Name = "";
+                        DisplayData.MachineInfos[i].Value = "";
+                    }
+                    // 座標(不顯示)
+                    DisplayData.PositionID = "";
+                    DisplayData.ABS_X = "";
+                    DisplayData.ABS_Y = "";
+                    DisplayData.ABS_Z = "";
+                    DisplayData.ABS_A = "";
+                    DisplayData.ABS_B = "";
+                    DisplayData.ABS_C = "";
+
+                    DisplayData.MCH_X = "";
+                    DisplayData.MCH_Y = "";
+                    DisplayData.MCH_Z = "";
+                    DisplayData.MCH_A = "";
+                    DisplayData.MCH_B = "";
+                    DisplayData.MCH_C = "";
+
+                    // 加工參數(不顯示)
+                    for (int i = 0; i < 16; i++)
+                    {
+                        DisplayData.ProcessingParam[i].Name = "";
+                        DisplayData.ProcessingParam[i].Value = "";
+                    }
+                }
+                CMMDelay = (CMMDelay + 1) % 3;
             }
         }
 

@@ -33,6 +33,10 @@ namespace FMSFrontend.Features.Services
         Task<SiemensCNCDto?> GetSiemensCNCParaAsync(CancellationToken ct = default);
         Task<bool> SetFanucCNCMachineCanControlAsync(bool canControl, CancellationToken ct = default);
         Task<bool> SetSiemensCNCMachineCanControlAsync(bool canControl, CancellationToken ct = default);
+
+        // ==== CNC ====
+        Task<bool> SetCMMCanControlAsync(bool canControl, CancellationToken ct = default);
+        Task<CMMDto?> GetCMMparaAsync(CancellationToken ct = default);
     }
 
     public class MachinesService : IMachinesService
@@ -94,13 +98,23 @@ namespace FMSFrontend.Features.Services
         public async Task<FanucCNCDto?> GetFanucCNCParaAsync(CancellationToken ct = default)
             => await _http.GetJsonAsync<FanucCNCDto>("FanucCNC/GetFanucCNCPara", ct);
 
+        public async Task<bool> SetFanucCNCMachineCanControlAsync(bool canControl, CancellationToken ct = default)
+           => await _http.SendPutAsync($"FanucCNC/SetCNCMachineCanControl/{canControl}", new { });
+
+
         public async Task<SiemensCNCDto?> GetSiemensCNCParaAsync(CancellationToken ct = default)
             => await _http.GetJsonAsync<SiemensCNCDto>("SiemensCNC/GetSiemensCNCPara", ct);
 
-        public async Task<bool> SetFanucCNCMachineCanControlAsync(bool canControl, CancellationToken ct = default)
-            => await _http.SendPutAsync($"FanucCNC/SetCNCMachineCanControl/{canControl}", new { });
-
         public async Task<bool> SetSiemensCNCMachineCanControlAsync(bool canControl, CancellationToken ct = default)
             => await _http.SendPutAsync($"SiemensCNC/SetCNCMachineCanControl/{canControl}", new { });
+
+        // ==== CMM ====
+
+        public async Task<bool> SetCMMCanControlAsync(bool canControl, CancellationToken ct = default)
+            => await _http.SendPutAsync($"CMM/SetCMMCanControl/{canControl}", new { });
+
+        public async Task<CMMDto?> GetCMMparaAsync(CancellationToken ct = default)
+            => await _http.GetJsonAsync<CMMDto>("CMM/GetCMMpara", ct);
+
     }
 }
