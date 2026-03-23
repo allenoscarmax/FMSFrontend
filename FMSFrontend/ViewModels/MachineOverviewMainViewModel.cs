@@ -176,7 +176,7 @@ namespace FMSFrontend.ViewModels
             }
 
             //CMM卡（單一張）
-
+            /*
             if (AllMachines.Count > 0)
             {
                 var stationCard = AllMachines.FirstOrDefault(c => c.Type == MachineType.CMM);
@@ -194,7 +194,7 @@ namespace FMSFrontend.ViewModels
                     stationCard.Status = Station != null ? "Running" : "";
                 }
             }
-
+            */
             // 3) 更新畫面上「已經存在」的 FilteredMachines 狀態（不重建清單）
             foreach (var card in FilteredMachines)
             {
@@ -242,14 +242,15 @@ namespace FMSFrontend.ViewModels
             foreach (var m in source)
                 FilteredMachines.Add(m);
         }
-        private static MachineType MapToMachineType(string? machineModel)
+        private static MachineType MapToMachineType(string? machineName)
         {
-            if (string.IsNullOrWhiteSpace(machineModel)) return MachineType.EDM;
+            if (string.IsNullOrWhiteSpace(machineName)) return MachineType.EDM;
 
-            if (string.Equals(machineModel, "EDM2", StringComparison.OrdinalIgnoreCase)) return MachineType.ESD;
-            if (machineModel.IndexOf("EDM", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.EDM;
-            else if(machineModel.IndexOf("FANUC", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.FanucCNC;
-            else if(machineModel.IndexOf("SIEMENS", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.SiemensCNC;
+            if (string.Equals(machineName, "EDM2", StringComparison.OrdinalIgnoreCase)) return MachineType.ESD;
+            if (machineName.IndexOf("EDM", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.EDM;
+            else if(machineName.IndexOf("FANUC", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.FanucCNC;
+            else if(machineName.IndexOf("SIEMENS", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.SiemensCNC;
+            else if (machineName.IndexOf("CMM", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.CMM;
             else return MachineType.EDM; // 預設為 EDM，實際上不太會有這種情況
         }
 

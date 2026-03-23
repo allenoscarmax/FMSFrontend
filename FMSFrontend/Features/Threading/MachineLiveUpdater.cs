@@ -137,8 +137,89 @@ namespace FMSFrontend.Features.Threading
                             }
                         }
                     }
+                    //CMM 取得狀態與材料的名稱
+                    using var ctsCmms = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+                    var allCmms = await _svc_Machines.GetAllCMMsAsync(ctsCmms.Token);
+                    if (allCmms != null && allCmms.Count > 0)
+                    {
+                        var allCmm = allCmms.FirstOrDefault();
+                        int no = _store.Machines.ToList().FindIndex(m => string.Equals(m.MachineName, "CMM", StringComparison.OrdinalIgnoreCase));
+                        if (allCmm != null && no >= 0)
+                        {
+                            _store.ApplyCMMsDto(allCmm);
+                            //如果有電極序號 讀取電極資訊
+                            if (!string.IsNullOrEmpty(allCmm.onDeckObjSerial))
+                            {
+                                string serial = allCmm.onDeckObjSerial;
+                                List<ElectrodeDto>? eDtos = await _svc_electrode.DB_GetElectrodesByTagSerialAsync(serial);
+                                if (eDtos != null && eDtos.Count > 0)
+                                {
+                                    var eDto = eDtos.FirstOrDefault();
+                                    if (eDto != null)
+                                    {
+                                        _store.Machines[no].OnDeckElectrodeSerial = serial;
+                                        _store.Machines[no].OnDeckWorkpieceSerial = "";
+                                        _store.ApplyNull(no, false);
+                                        _store.ApplyElectrodeDto(eDto, no);
+                                    }
+                                }
+                                else
+                                {
+                                    ProbeDto? pDto = await _svc_Probe.DB_GetProbeByTagSerialAsync(serial);
+
+                                    if (pDto != null)
+                                    {
+                                        _store.Machines[no].OnDeckElectrodeSerial = serial;
+                                        _store.Machines[no].OnDeckWorkpieceSerial = "";
+                                        _store.ApplyNull(no, false);
+                                        _store.ApplyProbeDto(pDto, no);
+                                    }
+                                    else
+                                    {
+                                        var wDto = await _svc_Workpiece.GetWorkpieceByTagSerialAsync(serial);
+                                        if (wDto != null)
+                                        {
+                                            _store.Machines[no].OnDeckElectrodeSerial = "";
+                                            _store.Machines[no].OnDeckWorkpieceSerial = serial;
+                                            _store.ApplyNull(no, true);
+                                            _store.ApplyWorkpieceDto(wDto, no);
+                                        }
+                                        else
+                                        {
+                                            _store.Machines[no].OnDeckElectrodeSerial = "";
+                                            _store.Machines[no].OnDeckWorkpieceSerial = "";
+                                            _store.ApplyNull(no, true);
+                                            _store.ApplyNull(no, false);
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                _store.Machines[no].OnDeckElectrodeSerial = "";
+                                _store.Machines[no].OnDeckWorkpieceSerial = "";
+                                _store.ApplyNull(no, true);
+                                _store.ApplyNull(no, false);
+                            }
+                        }
+                        else 
+                        {
+                            _store.Machines[no].OnDeckElectrodeSerial = "";
+                            _store.Machines[no].OnDeckWorkpieceSerial = "";
+                            _store.ApplyNull(no, true);
+                            _store.ApplyNull(no, false);
+                        }
+                    }
+
+                    //如果是CMM 取得參數
+                    using var ctsPara = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+                    var cmmDto = await _svc_Machines.GetCMMparaAsync(ctsPara.Token);
+                    if (cmmDto != null)
+                    {
+                        _store.ApplyCMMParaDto(cmmDto);
+                    }
                 }
-                
+
                 return true;
             }
             catch //(Exception ex)

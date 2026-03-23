@@ -120,6 +120,14 @@ MachineMainDetail_CNC_Info13, , ,
 MachineMainDetail_CNC_Info14, , , 
 MachineMainDetail_CNC_Info15, , , 
 MachineMainDetail_CNC_Info16, , , 
+MachineMainDetail_CMM_Info1,機台型號：,Name:,機械型式：
+MachineMainDetail_CMM_Info2,機台狀態：,Status:,機械状態：
+MachineMainDetail_CMM_Info3,加工程式：,Program:,加工プログラム：
+MachineMainDetail_CMM_Info4,加工時間：,Cycle time:,加工時間：
+MachineMainDetail_CMM_Info5,工件名稱：,Workpiece name:,ワーク名：
+MachineMainDetail_CMM_Info6,電極名稱：,Electrode name:,電極名：
+MachineMainDetail_CMM_Info7,,,
+MachineMainDetail_CMM_Info8,,,
 MachineMainDetail_CNC_Param1,進給速度:,Feed rate: ,送り速度：
 MachineMainDetail_CNC_Param2,主軸轉速:,Spindle speed: ,主軸回転数：
 MachineMainDetail_CNC_Param3,,,
@@ -186,6 +194,10 @@ MachineMainDetail_Label_Z,Z：,Z:,Z：
 MachineMainDetail_Message_DateFormatError,日期格式錯誤,Invalid date format.,日付形式が正しくありません
 MachineMainDetail_Message_DateRangeTooLong,選擇的日期範圍不能超過一個月,Selected date range cannot exceed one month.,選択した日付範囲は1か月を超えることはできません
 MachineMainDetail_Section_MachineInfo,機台資訊區,Machine information,機械情報エリア
+MachineMainDetail_Section_MachineInfo_1,機台資訊區 1,Machine information 1,機械情報エリア 1
+MachineMainDetail_Section_MachineInfo_2,機台資訊區 2,Machine information 2,機械情報エリア 2
+MachineMainDetail_Section_MachineInfo_3,機台資訊區 3,Machine information 3,機械情報エリア 3
+MachineMainDetail_Section_MachineInfo_IndexFormat,機台資訊區{0},Machine information {0},機械情報エリア{0}
 MachineMainDetail_Section_MachiningParams,加工參數,Machining parameters,加工パラメータ
 MachineMainDetail_Section_WorkPosition,工作座標,Work position,作業座標
 MachineMainDetail_Tab_Absolute,絕對,Absolute,絶対

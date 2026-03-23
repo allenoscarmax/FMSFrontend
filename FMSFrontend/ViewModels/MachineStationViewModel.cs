@@ -40,7 +40,7 @@ namespace FMSFrontend.ViewModels
         private readonly StationStore _store = new();
         private StationModel Station => _store.Station;
 
-        private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
+      //  private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
 
         DispatcherTimer _timer;
         // 對 UI 綁定的資料封裝 (改為屬性，供 WPF Binding 使用)
@@ -82,7 +82,7 @@ namespace FMSFrontend.ViewModels
         }
 
 
-        int Cnt = 0;
+       // int Cnt = 0;
         void RefreshFromStore()
         {
             /*

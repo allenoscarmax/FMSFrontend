@@ -22,6 +22,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -51,6 +53,16 @@ namespace FMSFrontend.ViewModels
         [ObservableProperty] private int selectedTabIndexParameter;                     // 加工參數 Tab選擇
         [ObservableProperty] private int selectedTabIndexWorkOrder;                     // 工單資訊 Tab選擇
         [ObservableProperty] private MachineDisplayData displayData; //顯示機台詳細資訊
+        [ObservableProperty] private string sectionMachineInfoTitle = "";
+        [ObservableProperty] private string sectionWorkPositionTitle = "";
+        [ObservableProperty] private string sectionMachiningParamsTitle = "";
+        [ObservableProperty] private string positionLabel = "";
+        [ObservableProperty] private string xLabel = "";
+        [ObservableProperty] private string yLabel = "";
+        [ObservableProperty] private string zLabel = "";
+        [ObservableProperty] private string cLabel = "";
+        [ObservableProperty] private string aLabel = "";
+        [ObservableProperty] private string bLabel = "";
 
         public int MachineNumber = 0;
         public string SelectMachineName = "";
@@ -68,6 +80,7 @@ namespace FMSFrontend.ViewModels
                     {
                         var canctrl = !cmmDto.CanControl;
                         await _machinesService.SetCMMCanControlAsync(canctrl);
+                        canctrlDelay = 5;
                     }
                 }
                 else
@@ -275,7 +288,14 @@ namespace FMSFrontend.ViewModels
                 new TabItemModel { Header = "1", TagColor = "#2779A7" },
                 new TabItemModel { Header = "2", TagColor = "#2779A7" }
             };
-            TabsPosition = new ObservableCollection<TabItemModel>
+
+            TabsPosition = MachineName.Contains("CMM")  
+            ? new ObservableCollection<TabItemModel>
+            {
+                new TabItemModel { Header = "1", TagColor = "#2779A7" },
+                new TabItemModel { Header = "2", TagColor = "#2779A7" }
+            }
+            : new ObservableCollection<TabItemModel>
             {
                 new TabItemModel { Header = LanguageManager.GetString("MachineMainDetail_Tab_Absolute", "絕對"), TagColor = "#2779A7" },
                 new TabItemModel { Header = LanguageManager.GetString("MachineMainDetail_Tab_Machine", "機械"), TagColor = "#2779A7" }
@@ -292,9 +312,58 @@ namespace FMSFrontend.ViewModels
             };
 
             DisplayData = new MachineDisplayData();
+            InitializeLocalizedLabels();
 
             SelectedFilterIndex = 0;
             selectedTabIndex = 0; selectedTabIndexPosition = 0; selectedTabIndexParameter = 0; selectedTabIndexWorkOrder = 1;
+        }
+
+        private void InitializeLocalizedLabels()
+        {
+            if (MachineName.Contains("CMM"))
+            {
+                SectionMachineInfoTitle = LanguageManager.GetString("MachineMainDetail_Section_MachineInfo_1", "機台資訊區 1");
+                SectionWorkPositionTitle = LanguageManager.GetString("MachineMainDetail_Section_MachineInfo_2", "機台資訊區 2");
+                SectionMachiningParamsTitle = LanguageManager.GetString("MachineMainDetail_Section_MachineInfo_3", "機台資訊區 3");
+
+                PositionLabel = string.Empty;
+                XLabel = string.Empty;
+                YLabel = string.Empty;
+                ZLabel = string.Empty;
+                CLabel = string.Empty;
+                ALabel = string.Empty;
+                BLabel = string.Empty;
+                return;
+            }
+
+            SectionMachineInfoTitle = BuildMachineInfoSectionTitle();
+            SectionWorkPositionTitle = LanguageManager.GetString("MachineMainDetail_Section_WorkPosition", "工作座標");
+            SectionMachiningParamsTitle = LanguageManager.GetString("MachineMainDetail_Section_MachiningParams", "加工參數");
+            PositionLabel = LanguageManager.GetString("MachineMainDetail_Label_Position", "座標：");
+            XLabel = LanguageManager.GetString("MachineMainDetail_Label_X", "X：");
+            YLabel = LanguageManager.GetString("MachineMainDetail_Label_Y", "Y：");
+            ZLabel = LanguageManager.GetString("MachineMainDetail_Label_Z", "Z：");
+            CLabel = LanguageManager.GetString("MachineMainDetail_Label_C", "C：");
+            ALabel = LanguageManager.GetString("MachineMainDetail_Label_A", "A：");
+            BLabel = LanguageManager.GetString("MachineMainDetail_Label_B", "B：");
+        }
+
+        private string BuildMachineInfoSectionTitle()
+        {
+            if (MachineName.Contains("CMM") && TryGetCmmIndex(MachineName, out var cmmIndex))
+            {
+                var format = LanguageManager.GetString("MachineMainDetail_Section_MachineInfo_IndexFormat", "機台資訊區{0}");
+                return string.Format(CultureInfo.CurrentCulture, format, cmmIndex);
+            }
+
+            return LanguageManager.GetString("MachineMainDetail_Section_MachineInfo", "機台資訊區");
+        }
+
+        private static bool TryGetCmmIndex(string machineName, out int cmmIndex)
+        {
+            cmmIndex = 0;
+            var match = Regex.Match(machineName, @"(\d+)");
+            return match.Success && int.TryParse(match.Value, out cmmIndex);
         }
         public void OnPageActivated()
         {
@@ -305,7 +374,7 @@ namespace FMSFrontend.ViewModels
             _timer.Stop();
             _timer = null!;
         }
-        bool test = false;
+        // bool test = false;
         public int canctrlDelay = 0;
         public int CMMDelay = 0;
         private async Task RefreshFromStoreAsync()
@@ -520,28 +589,31 @@ namespace FMSFrontend.ViewModels
             {
                 if (CMMDelay == 0)
                 {
-                    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
-                    var cmmDto = await _machinesService.GetCMMparaAsync(cts.Token);
-                    if (cmmDto != null)
+                    //  using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+                    //  var cmmDto = await _machinesService.GetCMMparaAsync(cts.Token);
+                    var machine = AllMachines.FirstOrDefault(m => m.MachineName == Machine.MachineName);
+                    if (machine == null || machine.MitutoyoCMM == null) return;
+                    var cmm = machine.MitutoyoCMM;
+                    if (cmm != null)
                     {
                         if (canctrlDelay > 0) canctrlDelay--;
-                        if (canctrlDelay == 0) DisplayData.CanControl = cmmDto.CanControl;
+                        if (canctrlDelay == 0) DisplayData.CanControl = cmm.CanControl;
                         // 機台資訊
-                        DisplayData.MachineInfos[0].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info1", "機台型號：");
+                        DisplayData.MachineInfos[0].Name = LanguageManager.GetString("MachineMainDetail_CMM_Info1", "機台型號：");
                         DisplayData.MachineInfos[0].Value = "MiSTAR 555";
-                        DisplayData.MachineInfos[1].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info2", "機台狀態：");
-                        DisplayData.MachineInfos[1].Value = cmmDto.ExecutionStatus ?? "";
-                        DisplayData.MachineInfos[2].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info3", "使用刀具：");
-                        DisplayData.MachineInfos[2].Value = "";
-                        DisplayData.MachineInfos[3].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info4", "加工程式：");
-                        DisplayData.MachineInfos[3].Value = cmmDto.MainProgramName ?? "";
-                        DisplayData.MachineInfos[4].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info5", "加工時間：");
-                        DisplayData.MachineInfos[4].Value = cmmDto.CycleTime ?? "";
-                        DisplayData.MachineInfos[5].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info6", "加工進度：");
-                        DisplayData.MachineInfos[5].Value = "";
-                        DisplayData.MachineInfos[6].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info7", "目前工單：");
+                        DisplayData.MachineInfos[1].Name = LanguageManager.GetString("MachineMainDetail_CMM_Info2", "機台狀態：");
+                        DisplayData.MachineInfos[1].Value = cmm.MachineStatus ?? "";
+                        DisplayData.MachineInfos[2].Name = LanguageManager.GetString("MachineMainDetail_CMM_Info3", "加工程式：");
+                        DisplayData.MachineInfos[2].Value = cmm.MainProgramName ?? "";
+                        DisplayData.MachineInfos[3].Name = LanguageManager.GetString("MachineMainDetail_CMM_Info4", "加工時間：");
+                        DisplayData.MachineInfos[3].Value = cmm.CycleTime ?? "";
+                        DisplayData.MachineInfos[4].Name = LanguageManager.GetString("MachineMainDetail_CMM_Info5", "工件名稱：");
+                        DisplayData.MachineInfos[4].Value = machine.WorkpieceName ?? "";
+                        DisplayData.MachineInfos[5].Name = LanguageManager.GetString("MachineMainDetail_CMM_Info6", "電極名稱：");
+                        DisplayData.MachineInfos[5].Value = machine.ElectrodeName;
+                        DisplayData.MachineInfos[6].Name = LanguageManager.GetString("MachineMainDetail_CMM_Info7", "");
                         DisplayData.MachineInfos[6].Value = "";
-                        DisplayData.MachineInfos[7].Name = LanguageManager.GetString("MachineMainDetail_CNC_Info8", "刀具號碼：");
+                        DisplayData.MachineInfos[7].Name = LanguageManager.GetString("MachineMainDetail_CMM_Info8", "");
                         DisplayData.MachineInfos[7].Value = "";
                     }
                     for (int i = 8; i < 16; i++)

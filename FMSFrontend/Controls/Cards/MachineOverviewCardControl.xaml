@@ -20,7 +20,7 @@
             </Border.Style>
             <Grid Margin="10,4,10,4">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
@@ -29,7 +29,7 @@
                 </Grid.RowDefinitions>
 
                 <!-- 機台圖 -->
-                <Image Grid.RowSpan="2" Grid.Column="0" Height="48" Margin="0,0,12,0" Source="{Binding MachineImagePath}" Stretch="Uniform" VerticalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />
+                <Image Grid.RowSpan="2" Grid.Column="0" Height="auto" Width="auto" Margin="0,0,12,0"  Source="{Binding MachineImagePath}" Stretch="Uniform" VerticalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />
 
                 <!-- 機台名稱 -->
                 <TextBlock Grid.Column="1" Text="{Binding MachineName, FallbackValue=EDM}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="#111" />

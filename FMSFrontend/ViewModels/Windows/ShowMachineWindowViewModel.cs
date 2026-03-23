@@ -57,10 +57,18 @@ namespace FMSFrontend.ViewModels.Windows
                 ?? LanguageManager.GetString("ShowMachineWindowViewModel_DeviceName_Default", "設備名稱");
             Info.MachineName = DeviceName;
             var machineModel = m.machineModel ?? "";
-            if (machineModel == "EDM2") Info.MachineTypeName = "ESD";
-            else if (machineModel.IndexOf("FanucCNC") != -1) Info.MachineTypeName = "FanucCNC";
-            else if (machineModel.IndexOf("SiemensCNC") != -1) Info.MachineTypeName = "SiemensCNC";
-            else Info.MachineTypeName = "EDM";
+            if (m.MachineName == null)
+                Info.MachineTypeName = "EDM";
+            else if(m.MachineName == "EDM2") 
+                Info.MachineTypeName = "ESD";
+            else if (m.MachineName.IndexOf("FanucCNC") != -1) 
+                Info.MachineTypeName = "FanucCNC";
+            else if (m.MachineName.IndexOf("SiemensCNC") != -1) 
+                Info.MachineTypeName = "SiemensCNC";
+            else if (m.MachineName.IndexOf("CMM") != -1)
+                Info.MachineTypeName = "CMM";
+            else
+                Info.MachineTypeName = "EDM";
 
             Info.Manufacturer = m.Manufacturer ?? "";
             Info.MachineModel = machineModel;

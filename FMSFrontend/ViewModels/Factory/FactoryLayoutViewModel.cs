@@ -263,10 +263,10 @@ namespace FMSFrontend.ViewModels.Factory
             
             //TMTS Layout
             Machines.Clear();
-            Machines.Add(new MachineNode { Id = "CMM", DisplayName = "MiSTAR 555",                 X = 750, Y = 5,  Width = 130, Height = 130, IconPath = Pack("Image/MachineIcons/CMM.png") });
-            Machines.Add(new MachineNode { Id = "FanucCNC1", DisplayName = "JHV-550",     X = 500, Y = 5,  Width = 140, Height = 140, IconPath = Pack("Image/MachineIcons/CNC.png") });
-            Machines.Add(new MachineNode { Id = "SiemensCNC1", DisplayName = "UH-500", X = 250, Y = 5,  Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/UH500.png") });
-            Machines.Add(new MachineNode { Id = "EDM1", DisplayName = "EX-60",               X = 20,  Y = 190, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/EDM.png") });
+            Machines.Add(new MachineNode { Id = "CMM", DisplayName = "MiSTAR 555",          X = 750, Y = 5,  Width = 130, Height = 130, IconPath = Pack("Image/MachineIcons/CMM.png") });
+            Machines.Add(new MachineNode { Id = "FanucCNC1", DisplayName = "JHV-550",       X = 500, Y = 5,  Width = 140, Height = 140, IconPath = Pack("Image/MachineIcons/CNC.png") });
+            Machines.Add(new MachineNode { Id = "SiemensCNC1", DisplayName = "UH-500",      X = 250, Y = 5,  Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/UH500.png") });
+            Machines.Add(new MachineNode { Id = "EDM1", DisplayName = "EX-60",              X = 20,  Y = 190, Width = 150, Height = 150, IconPath = Pack("Image/MachineIcons/EDM.png") });
             Machines.Add(new MachineNode { Id = "ROBOT", DisplayName = "Robot1",            X = 170, Y = 200, Width = 120, Height = 120, IconPath = Pack("Image/MachineIcons/Robot.png") });
             Machines.Add(new MachineNode { Id = "Track", DisplayName = "",                  X = 200, Y = 320, Width = 700, Height = 40,  IconPath = Pack("Image/MachineIcons/long-track.png") });
             Machines.Add(new MachineNode { Id = "E1", DisplayName = "E1",                   X = 375, Y = 370, Width = 130, Height = 120, IconPath = Pack("Image/MachineIcons/Magzine.png") });
@@ -443,7 +443,7 @@ namespace FMSFrontend.ViewModels.Factory
                          && !string.Equals(m.Id, "TRACK", StringComparison.OrdinalIgnoreCase)
                          && !string.Equals(m.Id, "ROBOT2", StringComparison.OrdinalIgnoreCase)
                          && !string.Equals(m.Id, "ESD", StringComparison.OrdinalIgnoreCase)
-                         && !string.Equals(m.DisplayName, "ESD", StringComparison.OrdinalIgnoreCase)
+                         && !string.Equals(m.DisplayName, "ESD-435", StringComparison.OrdinalIgnoreCase)
                          && !m.Id.StartsWith("Target", StringComparison.OrdinalIgnoreCase))
                 .Select(m => m.Id)
                 .ToList();

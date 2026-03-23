@@ -21,6 +21,7 @@ namespace FMSFrontend.Converters
             ["EDM2"] = "ESD.png",
             ["FanucCNC"] = "CNC.png",
             ["SiemensCNC"] = "UH500.png",
+            ["CMM"] = "CMM.png",
             ["ZNC"] = "ZNC.png",
             ["ROBOT"] = "Robot.png",
             ["ICG-2Z-NC"] = "ICG-2Z-NC.png",

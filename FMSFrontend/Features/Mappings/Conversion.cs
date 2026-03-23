@@ -6,7 +6,7 @@ namespace FMSFrontend.Features.Mappings
 {
     public static class Conversion
     {
-        private static bool JusticeShortNameFlag = true; //佑義客製需求 20260122
+        private static bool JusticeShortNameFlag = false; //佑義客製需求 20260122
         public static string ShortNameConversion(bool isElectrode, string Name)
         {
             // 電極名稱規則修改為 末三碼-序號+字母 (A,B,C...)，工件名稱規則修改為 末三碼-序號
@@ -38,6 +38,8 @@ namespace FMSFrontend.Features.Mappings
                 }
                 else //一般規則
                 {
+                    return Name;
+                    /*
                     if (isElectrode)
                         return Regex.Match(Name, @"_(\d+-[A-Za-z0-9]+)").Groups[1].Value;
                     else
@@ -46,7 +48,7 @@ namespace FMSFrontend.Features.Mappings
                         //改成顯示最後六碼
                         return Name.Length >= 6 ? Name.Substring(Name.Length - 6) : Name;
                     }
-
+                    */
                 }
             }
             catch { }

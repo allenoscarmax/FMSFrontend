@@ -34,7 +34,8 @@ namespace FMSFrontend.Features.Services
         Task<bool> SetFanucCNCMachineCanControlAsync(bool canControl, CancellationToken ct = default);
         Task<bool> SetSiemensCNCMachineCanControlAsync(bool canControl, CancellationToken ct = default);
 
-        // ==== CNC ====
+        // ==== CMM ====
+        Task<List<AllCmmsDto>?> GetAllCMMsAsync(CancellationToken ct = default);
         Task<bool> SetCMMCanControlAsync(bool canControl, CancellationToken ct = default);
         Task<CMMDto?> GetCMMparaAsync(CancellationToken ct = default);
     }
@@ -109,6 +110,9 @@ namespace FMSFrontend.Features.Services
             => await _http.SendPutAsync($"SiemensCNC/SetCNCMachineCanControl/{canControl}", new { });
 
         // ==== CMM ====
+
+        public async Task<List<AllCmmsDto>?> GetAllCMMsAsync(CancellationToken ct = default)
+            => await _http.GetJsonAsync<List<AllCmmsDto>>("CMM/DB_GetAllCMMs", ct);
 
         public async Task<bool> SetCMMCanControlAsync(bool canControl, CancellationToken ct = default)
             => await _http.SendPutAsync($"CMM/SetCMMCanControl/{canControl}", new { });

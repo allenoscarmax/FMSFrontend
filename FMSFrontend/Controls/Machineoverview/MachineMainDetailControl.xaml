@@ -227,7 +227,7 @@
 
                                 <!-- 區塊標題 -->
                                 <Border Background="#444" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
-                                    <TextBlock Text="{DynamicResource MachineMainDetail_Section_MachineInfo}" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding SectionMachineInfoTitle}" FontSize="24" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                 </Border>
 
                                 <TabControl x:Name="MachineInfoTabControl" Grid.Row="1" Style="{StaticResource MachineMainDetailTabControlStyle}" ItemsSource="{Binding Tabs}" SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
@@ -383,7 +383,7 @@
 
                                 <!-- 標題 -->
                                 <Border Background="#444" CornerRadius="6,6,0,0">
-                                    <TextBlock Text="{DynamicResource MachineMainDetail_Section_WorkPosition}" Foreground="White" FontSize="24" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding SectionWorkPositionTitle}" Foreground="White" FontSize="24" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                 </Border>
 
                                 <!-- TabControl：資料綁定 -->
@@ -426,29 +426,29 @@
 
                                                                     <!-- 坐標系統 -->
                                                                     <StackPanel  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
-                                                                        <TextBlock Text="{DynamicResource MachineMainDetail_Label_Position}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                        <TextBlock Text="G54" FontSize="20" FontWeight="Bold" Margin="20,0,0,0" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
+                                                                        <TextBlock Text="{Binding PositionLabel}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                        <TextBlock Text="{Binding DisplayData.Position}" FontSize="20" FontWeight="Bold" Margin="20,0,0,0" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
                                                                     </StackPanel>
                                                                     <!--以下座標-->
-                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_X}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding XLabel}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.ABS_X}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
                                                                     
-                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_Y}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding YLabel}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DisplayData.ABS_Y}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
 
-                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_Z}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding ZLabel}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.ABS_Z}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
 
                                                                     <TextBlock Grid.Row="0" Grid.Column="2" Text="{DynamicResource MachineMainDetail_Label_W}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding DisplayData.ABS_W}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
 
-                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{DynamicResource MachineMainDetail_Label_C}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding CLabel}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.ABS_C}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
                                                            
-                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{DynamicResource MachineMainDetail_Label_A}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding ALabel}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DisplayData.ABS_A}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
                                                                     
-                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{DynamicResource MachineMainDetail_Label_B}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding BLabel}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
                                                                     <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding DisplayData.ABS_B}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
                                                                 </Grid>
                                                             </DataTemplate>
@@ -478,9 +478,9 @@
 
                                                                     <!-- 左欄標題 -->
                                                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_X}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_Y}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource MachineMainDetail_Label_Z}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding XLabel}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding YLabel}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding ZLabel}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
 
                                                                     <!-- 左欄資料 -->
                                                                     <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DisplayData.MCH_X}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
@@ -488,9 +488,9 @@
                                                                     <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayData.MCH_Z}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
                                                                     
                                                                     <!-- 右欄標題 -->
-                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{DynamicResource MachineMainDetail_Label_C}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{DynamicResource MachineMainDetail_Label_A}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
-                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{DynamicResource MachineMainDetail_Label_B}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding CLabel}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding ALabel}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
+                                                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding BLabel}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" />
 
                                                                     <!-- 右欄資料 -->
                                                                     <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding DisplayData.MCH_C}" FontSize="20" FontWeight="Bold" FontFamily="微軟正黑體" HorizontalAlignment="Center" />
@@ -531,7 +531,7 @@
 
                                 <!-- 標題列 -->
                                 <Border Background="#444" CornerRadius="6,6,0,0" VerticalAlignment="Stretch">
-                                    <TextBlock Text="{DynamicResource MachineMainDetail_Section_MachiningParams}" Foreground="White" FontWeight="Bold" FontSize="24" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding SectionMachiningParamsTitle}" Foreground="White" FontWeight="Bold" FontSize="24" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                 </Border>
 
                                 <!-- TabControl -->
