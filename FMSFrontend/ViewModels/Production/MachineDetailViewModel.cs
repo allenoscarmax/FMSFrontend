@@ -111,6 +111,8 @@ namespace FMSFrontend.ViewModels.Production
                         _machineDetails[updateCnt].Restriction = !Machines[updateCnt].SunmillFanucCNC.CanControl;
                     else if (Machines[updateCnt].MachineName.IndexOf("SiemensCNC") != -1)
                         _machineDetails[updateCnt].Restriction = !Machines[updateCnt].SunmillSiemensCNC.CanControl;
+                    else if (Machines[updateCnt].MachineName.IndexOf("CMM") != -1)
+                        _machineDetails[updateCnt].Restriction = !Machines[updateCnt].MitutoyoCMM.CanControl;
                 }
                 while (_machineDetails.Count > Machines.Count) //刪除多餘的 CardVm
                 {
@@ -138,10 +140,11 @@ namespace FMSFrontend.ViewModels.Production
             if (string.IsNullOrWhiteSpace(MachineName)) return MachineType.EDM;
 
             if (string.Equals(MachineName, "EDM2", StringComparison.OrdinalIgnoreCase)) return MachineType.ESD;
-            if (MachineName.IndexOf("EDM", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.EDM;
-            if (MachineName.IndexOf("FanucCNC", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.FanucCNC;
-            if (MachineName.IndexOf("SiemensCNC", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.SiemensCNC;
-
+            else if (MachineName.IndexOf("EDM", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.EDM;
+            else if (MachineName.IndexOf("FanucCNC", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.FanucCNC;
+            else if (MachineName.IndexOf("SiemensCNC", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.SiemensCNC;
+            else if (MachineName.IndexOf("CMM", StringComparison.OrdinalIgnoreCase) != -1) return MachineType.CMM;
+      
             return MachineType.EDM;
         }
         [RelayCommand]

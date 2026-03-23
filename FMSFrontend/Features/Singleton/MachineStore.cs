@@ -37,7 +37,15 @@ namespace FMSFrontend.Features.Singleton
                 //{
                 //    Machines.Add(new MachineModel { MachineName = "CNC2", Type = "CNC2" });
                 //}
-
+                if (!Machines.Any(m => string.Equals(m.MachineName, "CMM", StringComparison.OrdinalIgnoreCase)))
+                {
+                    Machines.Add(new MachineModel { 
+                        MachineName = "CMM", 
+                        Type = "CMM", 
+                        machineModel = "MiSTAR 555", 
+                        Manufacturer = "Mitutoyo" 
+                    });
+                }
             }
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();
@@ -131,5 +139,37 @@ namespace FMSFrontend.Features.Singleton
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
             else apply();
         }
+
+        public void ApplyCMMsDto(AllCmmsDto dto)
+        {
+            var disp = Application.Current?.Dispatcher;
+            void apply()
+            {
+                var model = Machines.FirstOrDefault(m =>
+                    !string.IsNullOrEmpty(m.Type) && m.Type.Contains("CMM", StringComparison.OrdinalIgnoreCase));
+
+                if (model == null) return;
+                if (dto != null)
+                    dto.ApplyCMMsDto(model);
+            }
+            if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
+            else apply();
+        }
+
+        public void ApplyCMMParaDto(CMMDto dto)
+        {
+            var disp = Application.Current?.Dispatcher;
+            void apply()
+            {
+                var model = Machines.FirstOrDefault(m =>
+                    !string.IsNullOrEmpty(m.Type) && m.Type.Contains("CMM", StringComparison.OrdinalIgnoreCase));
+
+                if (model != null)
+                    dto.ApplyCMMParaDto(model);
+            }
+            if (disp != null && !disp.CheckAccess()) disp.Invoke(apply);
+            else apply();
+        }
+
     }
 }

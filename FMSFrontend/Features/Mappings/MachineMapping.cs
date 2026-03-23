@@ -180,6 +180,23 @@ namespace FMSFrontend.Features.Mappings
             model.SunmillSiemensCNC.FeedRate = dto.FeedSpeed.ToString();
             model.SunmillSiemensCNC.SpindleSpeed = dto.SpindleSpeed.ToString();
         }
+        public static void ApplyCMMsDto(this AllCmmsDto dto, MachineModel model)
+        {
+            if (dto == null || model == null) return;
+
+            model.Status = dto.status ?? "";
+            model.MitutoyoCMM.MachineStatus = dto.status ?? "";
+        }
+
+        public static void ApplyCMMParaDto(this CMMDto dto, MachineModel model)
+        {
+            if (dto == null || model == null || model.MitutoyoCMM == null) return;
+
+            model.MitutoyoCMM.CanControl = dto.CanControl;
+            model.MitutoyoCMM.MainProgramName = dto.MainProgramName ?? "";
+            model.MitutoyoCMM.CycleTime = dto.CycleTime ?? "";
+        }
+
         private static int Cnt = 0;
         public static void ApplyTest(MachineModel model)
         {

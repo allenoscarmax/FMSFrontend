@@ -105,6 +105,8 @@ namespace FMSFrontend.ViewModels.Production
                         MachineCardVm[updateCnt].Restriction = !Machines[updateCnt].SunmillFanucCNC.CanControl;
                     else if (Machines[updateCnt].MachineName.IndexOf("SiemensCNC") != -1)
                         MachineCardVm[updateCnt].Restriction = !Machines[updateCnt].SunmillSiemensCNC.CanControl;
+                    else if (Machines[updateCnt].MachineName.IndexOf("CMM") != -1)
+                        MachineCardVm[updateCnt].Restriction = !Machines[updateCnt].MitutoyoCMM.CanControl;
                 }
                 while (MachineCardVm.Count > Machines.Count)
                 {
@@ -162,6 +164,8 @@ namespace FMSFrontend.ViewModels.Production
                 return MachineType.FanucCNC;
             else if (MachineName.IndexOf("SiemensCNC", StringComparison.OrdinalIgnoreCase) != -1)
                 return MachineType.SiemensCNC;
+            else if (MachineName.IndexOf("CMM", StringComparison.OrdinalIgnoreCase) != -1)
+                return MachineType.CMM;
             else return MachineType.EDM;
         }
         [RelayCommand]
@@ -201,6 +205,10 @@ namespace FMSFrontend.ViewModels.Production
 
         [ObservableProperty] private string electrodeName = "";
         [ObservableProperty] private string workpieceName = "";
+
+        partial void OnElectrodeNameChanged(string value) => OnPropertyChanged(nameof(ElectrodeShortName));
+        partial void OnWorkpieceNameChanged(string value) => OnPropertyChanged(nameof(WorkpieceShortName));
+
         // Short display versions used by the card UI (truncated with ellipsis)
         public string WorkpieceShortName
         {
@@ -258,6 +266,7 @@ namespace FMSFrontend.ViewModels.Production
         CNC = 3,
         SiemensCNC = 4,
         FanucCNC = 5,
+        CMM = 6,
         Null = 99
     }
 
