@@ -124,12 +124,12 @@ MachineMainDetail_CMM_Info1,機台型號：,Name:,機械型式：
 MachineMainDetail_CMM_Info2,機台狀態：,Status:,機械状態：
 MachineMainDetail_CMM_Info3,加工程式：,Program:,加工プログラム：
 MachineMainDetail_CMM_Info4,加工時間：,Cycle time:,加工時間：
-MachineMainDetail_CMM_Info5,工件名稱：,Workpiece name:,ワーク名：
-MachineMainDetail_CMM_Info6,電極名稱：,Electrode name:,電極名：
+MachineMainDetail_CMM_Info5,工件名稱：,Workpiece:,ワーク名：
+MachineMainDetail_CMM_Info6,電極名稱：,Electrode:,電極名：
 MachineMainDetail_CMM_Info7,,,
 MachineMainDetail_CMM_Info8,,,
 MachineMainDetail_CNC_Param1,進給速度:,Feed rate: ,送り速度：
-MachineMainDetail_CNC_Param2,主軸轉速:,Spindle speed: ,主軸回転数：
+MachineMainDetail_CNC_Param2,主軸轉速:,Spindle Spd: ,主軸回転数：
 MachineMainDetail_CNC_Param3,,,
 MachineMainDetail_CNC_Param4,,,
 MachineMainDetail_CNC_Param5,,,
@@ -162,7 +162,7 @@ MachineMainDetail_EDM_Info8,刀具號碼：,Tool No.:,工具番号：
 MachineMainDetail_EDM_Info9,機台溫度 : ,Temperature: ,機械温度 :
 MachineMainDetail_EDM_Info10,主軸轉速 : ,Spindle RPM: ,主軸回転数：
 MachineMainDetail_EDM_Info11,油位狀態 : ,Oil level: ,油量状態：
-MachineMainDetail_EDM_Info12,冷卻液量 : ,Coolant level: ,冷却液量：
+MachineMainDetail_EDM_Info12,冷卻液量 : ,Coolant: ,冷却液量：
 MachineMainDetail_EDM_Info13,,,
 MachineMainDetail_EDM_Info14,,,
 MachineMainDetail_EDM_Info15,,,

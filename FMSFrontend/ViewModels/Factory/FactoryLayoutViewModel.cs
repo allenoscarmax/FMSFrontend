@@ -213,6 +213,7 @@ namespace FMSFrontend.ViewModels.Factory
             //if (string.IsNullOrWhiteSpace(pos) )return;
             // 呼叫移動函式
             SetRobotAt(Robot.CurrentLocation);
+            
         }
 
         public void ApplyAmrLocation(string? location)
@@ -220,11 +221,11 @@ namespace FMSFrontend.ViewModels.Factory
             if (string.IsNullOrWhiteSpace(location))
                 return;
 
-            if (location.Contains("machine", StringComparison.OrdinalIgnoreCase))
+            if (location.Contains("Machine", StringComparison.OrdinalIgnoreCase))
             {
                 SetRobot2At("Target1");
             }
-            else if (location.Contains("item", StringComparison.OrdinalIgnoreCase))
+            else if (location.Contains("Item", StringComparison.OrdinalIgnoreCase))
             {
                 SetRobot2At("Target2");
             }
@@ -276,6 +277,7 @@ namespace FMSFrontend.ViewModels.Factory
             Machines.Add(new MachineNode { Id = "Target2", DisplayName = "Target2",         X = 650, Y = 530, Width = 50, Height = 200, IconPath = Pack("Image/MachineIcons/Target.png") });
             Machines.Add(new MachineNode { Id = "ROBOT2", DisplayName = "Robot2",           X = 750, Y = 570, Width = 120, Height = 120, IconPath = Pack("Image/MachineIcons/RobotOnAMR.png") });
             SetRobotAt(Robot.CurrentLocation);
+            ApplyAmrLocation(AMRStore.Amr.Location);
         }
         public async Task LayoutInit()
         {
