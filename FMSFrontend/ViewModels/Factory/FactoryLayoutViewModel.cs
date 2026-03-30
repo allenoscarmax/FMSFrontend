@@ -174,13 +174,28 @@ namespace FMSFrontend.ViewModels.Factory
         private static readonly Random _rnd = new Random();
         public async Task LoadLayoutAsync(string path)
         {
-
-            if (!File.Exists(path)) return;
-            var json = await File.ReadAllTextAsync(path);
-            var nodes = JsonSerializer.Deserialize<ObservableCollection<MachineNode>>(json);
-            if (nodes == null) return;
             Machines.Clear();
-            foreach (var n in nodes) Machines.Add(n);
+            /*
+            if (File.Exists(path))
+            {
+                var json = await File.ReadAllTextAsync(path);
+                var nodes = JsonSerializer.Deserialize<ObservableCollection<MachineNode>>(json);
+                if (nodes != null && nodes.Count > 0)
+                {
+                    foreach (var n in nodes) Machines.Add(n);
+                    SetRobotAt(Robot.CurrentLocation);
+                    return;
+                }
+            }
+            */
+            // 測試資料
+            Machines.Add(new MachineNode { Id = "EDM101", DisplayName = "EDM101", Width = 150, Height = 140, IconPath = Pack("Image/MachineIcons/EDM.png"), Stretch = Stretch.Uniform, X = 177, Y = 30, IsActive = false });
+            Machines.Add(new MachineNode { Id = "EDM102", DisplayName = "EDM102", Width = 150, Height = 140, IconPath = Pack("Image/MachineIcons/EDM.png"), Stretch = Stretch.Uniform, X = 661, Y = 30, IsActive = false });
+            Machines.Add(new MachineNode { Id = "E1/W1", DisplayName = "E1/W1", Width = 150, Height = 140, IconPath = Pack("Image/MachineIcons/Magzine.png"), Stretch = Stretch.Uniform, X = 177, Y = 500, IsActive = false });
+            Machines.Add(new MachineNode { Id = "E2", DisplayName = "E2", Width = 150, Height = 140, IconPath = Pack("Image/MachineIcons/Magzine.png"), Stretch = Stretch.Uniform, X = 661, Y = 500, IsActive = false });
+            Machines.Add(new MachineNode { Id = "ROBOT", DisplayName = "ROBOT", Width = 110, Height = 130, IconPath = Pack("Image/MachineIcons/Robot.png"), Stretch = Stretch.Uniform, X = 439, Y = 270, IsActive = false });
+            Machines.Add(new MachineNode { Id = "Track", DisplayName = "", Width = 668, Height = 40, IconPath = Pack("Image/MachineIcons/long-track.png"), Stretch = Stretch.Uniform, X = 150, Y = 430, IsActive = false });
+
             SetRobotAt(Robot.CurrentLocation);
             /*
             //測試 佑義Layout
