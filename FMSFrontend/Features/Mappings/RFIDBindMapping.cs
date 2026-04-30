@@ -57,6 +57,20 @@ namespace FMSFrontend.Features.Mappings
             output.electrode.ProcessedCount = dtos.useTimes?.ToString() ?? "";
             output.electrode.ElecRestriction = dtos.restriction ?? false;
         }
+        public static void ApplyProbeDto(this ProbeDto dtos, RFIDBindModel output)
+        {
+            output.ReadElectrodeFlag = true;
+            output.electrode.Id = dtos._id;
+            output.electrode.Name = dtos.probeName ?? "";
+            output.electrode.No = "";
+            output.electrode.Type = dtos.probeType  ?? "";
+            output.electrode.Status = "";
+            output.electrode.TagSerial = dtos.tagSerial ?? "";
+            output.electrode.MaxDischargeCount =  "";
+            output.electrode.Compensation = "";
+            output.electrode.ProcessedCount = "";
+            output.electrode.ElecRestriction = dtos.restriction ?? false;
+        }
         public static void ApplyWpDto(this WorkpieceDto dtos, RFIDBindModel output)
         {
             output.ReadWorkpieceFlag = true;

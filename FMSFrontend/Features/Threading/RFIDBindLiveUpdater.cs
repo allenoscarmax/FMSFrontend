@@ -18,7 +18,8 @@ namespace FMSFrontend.Features.Threading
         private readonly IRfidService _svc;
         private readonly IElectrodeService _svc_Electrode;
         private readonly IWorkpieceService _svc_Workpiece;
-     
+        private readonly IProbeService _svc_Probe;
+
         private readonly RFIDBindStore _store;
         private readonly DispatcherTimer _timer;
         public bool ReadTagFlag { get; set; } = false;
@@ -79,7 +80,16 @@ namespace FMSFrontend.Features.Threading
                                 _store.ApplyEleDto(eleDto);
                             }
                         }
+                        else
+                        {
+                            var probeDto = await _svc_Probe.DB_GetProbeByTagSerialAsync(TagDto);
+                            if (probeDto != null)
+                            {
+                                _store.ApplyProbeDto(probeDto);
+                            }
+                        }
                     }
+                  
                     TagDto = await _svc.Read_Tag_IDAsync(0, WorkpieceTagNumber);
                     //TagDto = "10";
                     if (!string.IsNullOrEmpty(TagDto))

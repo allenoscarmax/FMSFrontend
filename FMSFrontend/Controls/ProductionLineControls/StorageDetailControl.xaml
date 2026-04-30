@@ -227,14 +227,8 @@
                                             <ControlTemplate TargetType="Button">
                                                 <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderBrush="#DDD" BorderThickness="1">
                                                     <Grid>
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition Height="22" />
-                                                            <RowDefinition Height="*" />
-                                                            <RowDefinition Height="22" />
-                                                        </Grid.RowDefinitions>
-                                                        <materialDesign:PackIcon Grid.Row="0" Kind="Lock" Width="16" Height="16" Foreground="Black" Visibility="{Binding MaterialRestriction, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                        <TextBlock Grid.Row="1" Text="{Binding ShortName}" FontSize="14" FontWeight="SemiBold" Foreground="Black" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                                        <Grid Grid.Row="2" />
+                                                        <materialDesign:PackIcon Kind="Lock" Width="30" Height="30" Foreground="#80DDDDDD" Visibility="{Binding MaterialRestriction, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="-3,-1" />
+                                                        <TextBlock Text="{Binding ShortName}" FontSize="16" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap" TextAlignment="Left" Margin="0,4" MaxWidth="60" Panel.ZIndex="1" />
                                                     </Grid>
                                                 </Border>
                                             </ControlTemplate>

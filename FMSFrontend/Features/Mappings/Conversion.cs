@@ -36,17 +36,30 @@ namespace FMSFrontend.Features.Mappings
                         return $"{mainNo}-{seqNo}";
                     }
                 }
+
                 else //一般規則
                 {
+                    var parts = Name.Split('-');
+                    //顯示末三碼,不足三碼顯示全部
+                    var mainNo = parts[0].Length >= 8 ? parts[0].Substring(parts[0].Length - 8) : parts[0];
+                    //取得會最尾巴位文字
+                    var seqNo = parts.Length > 1 ? parts[parts.Length - 1] : "";
+                    int n = 0;
                     if (isElectrode)
-                        return Regex.Match(Name, @"_(\d+-[A-Za-z0-9]+)").Groups[1].Value;
+                    {
+                        if (int.TryParse(seqNo, out n))
+                        {
+                            return $"{mainNo}-{seqNo}";
+                        }
+                        else
+                        {
+                            return $"{mainNo}-{seqNo}";
+                        }
+                    }
                     else
                     {
-                        //return Regex.Match(Name, @"-(\d+_\d+-[A-Za-z]+)$").Groups[1].Value;
-                        //改成顯示最後六碼
-                        return Name.Length >= 6 ? Name.Substring(Name.Length - 6) : Name;
+                        return $"{mainNo}-{seqNo}";
                     }
-
                 }
             }
             catch { }

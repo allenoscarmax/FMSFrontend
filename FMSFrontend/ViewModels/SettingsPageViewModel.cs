@@ -8,9 +8,11 @@ using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views.Windows;
 using IniFile;
+using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Windows;
@@ -222,13 +224,58 @@ namespace FMSFrontend.ViewModels
 
         #region 系統還原
         [RelayCommand]
-        private void RestoreSystem()
+        private async Task RestoreSystem()
         {
             if (!_authorizationService.RequireLoginAndWriteOperation(20))
                 return;
-            // TODO: 加入系統還原邏輯，例如清除資料、表單、日誌等
-            StatusMessage = "⚠️ 系統已還原，所有資料已清除";
-            _windowService.ShowMessage("系統還原完成");
+
+            var isConfirmed = _windowService.ShowYesNoDialog("確定要進行系統還原？");
+            if (!isConfirmed)
+            {
+                StatusMessage = "已取消系統還原";
+                return;
+            }
+
+            var folderDialog = new OpenFolderDialog
+            {
+                Title = "請選擇還原資料夾"
+            };
+
+            var dialogResult = folderDialog.ShowDialog();
+            if (dialogResult != true || string.IsNullOrWhiteSpace(folderDialog.FolderName))
+            {
+                StatusMessage = "已取消系統還原";
+                return;
+            }
+
+            var restorePath = folderDialog.FolderName;
+            IsBusy = true;
+            BusyMessage = "系統還原中，請稍候...";
+
+            try
+            {
+                var ok = await _mongoDBService.RestoreDatabaseAsync(restorePath);
+                StatusMessage = ok
+                    ? "系統還原成功"
+                    : "系統還原失敗";
+
+                _windowService.ShowMessage(ok
+                    ? "系統還原成功"
+                    : "系統還原失敗");
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = "系統還原發生例外";
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    "系統還原發生例外：{0}",
+                    ex.Message);
+                _windowService.ShowMessage(message);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
         #endregion
 

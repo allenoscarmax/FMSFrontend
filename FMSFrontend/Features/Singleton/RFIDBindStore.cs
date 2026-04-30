@@ -45,6 +45,15 @@ namespace FMSFrontend.Features.Singleton
             if (disp != null && !disp.CheckAccess()) disp.Invoke(apply); //如果不是UI執行緒就用Dispatcher.Invoke切換到UI執行緒
             else apply();
         }
+        public void ApplyProbeDto(ProbeDto dto)
+        {
+            var disp = Application.Current?.Dispatcher; //這樣才能在非UI執行緒更新UI綁定的屬性
+
+            void apply() => dto.ApplyProbeDto(RfidBind); //利用擴充方法進行映射
+
+            if (disp != null && !disp.CheckAccess()) disp.Invoke(apply); //如果不是UI執行緒就用Dispatcher.Invoke切換到UI執行緒
+            else apply();
+        }
 
         public void ApplyWpDto(WorkpieceDto dto)
         {

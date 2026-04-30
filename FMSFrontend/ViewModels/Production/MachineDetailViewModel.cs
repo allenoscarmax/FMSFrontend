@@ -99,8 +99,13 @@ namespace FMSFrontend.ViewModels.Production
                     _machineDetails[updateCnt].onDeckElectrodeSerial = Machines[updateCnt].OnDeckElectrodeSerial;
                     _machineDetails[updateCnt].onDeckWorkpieceSerial = Machines[updateCnt].OnDeckWorkpieceSerial;
                     _machineDetails[updateCnt].onDeckWorksheetSerial = Machines[updateCnt].OnDeckWorksheetSerial;
-                    _machineDetails[updateCnt].ElectrodeName = Machines[updateCnt].ElectrodeShortName;
-                    _machineDetails[updateCnt].WorkpieceName = Machines[updateCnt].WorkpieceShortName;
+                    _machineDetails[updateCnt].ElectrodeShortName = Machines[updateCnt].ElectrodeShortName;
+                    _machineDetails[updateCnt].WorkpieceShortName = Machines[updateCnt].WorkpieceShortName;
+
+                    _machineDetails[updateCnt].ElectrodeName = Machines[updateCnt].ElectrodeName;
+                    _machineDetails[updateCnt].WorkpieceName = Machines[updateCnt].WorkpieceName;
+                    _machineDetails[updateCnt].WorksheetName = Machines[updateCnt].OscarEdm.MachiningCode;
+
                     _machineDetails[updateCnt].MainProgramName = Machines[updateCnt].OscarEdm.MainProgramName;
                     _machineDetails[updateCnt].CycleTime = Machines[updateCnt].OscarEdm.CycleTime;
                     _machineDetails[updateCnt].Restriction = !Machines[updateCnt].OscarEdm.CanControl;
