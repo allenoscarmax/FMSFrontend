@@ -216,6 +216,16 @@ namespace FMSFrontend.ViewModels
 
             foreach (var m in source)
                 FilteredMachines.Add(m);
+
+            UpdateSelectedMachineState();
+        }
+
+        private void UpdateSelectedMachineState()
+        {
+            foreach (var machine in AllMachines)
+            {
+                machine.IsSelected = machine == SelectedMachine;
+            }
         }
 
         /* 先前版本
@@ -312,6 +322,11 @@ namespace FMSFrontend.ViewModels
             // 如果原本選的機台還在清單裡，就什麼都不做，下面畫面保持不動
         }
 
+        partial void OnSelectedMachineChanged(MachineOverviewCard? value)
+        {
+            UpdateSelectedMachineState();
+        }
+
         /*  先前版本
         // 修正：移除重複定義，並避免每次切換 Tab 強制清空 SelectedMachine
         partial void OnSelectedTabIndexChanged(int value)
@@ -344,6 +359,9 @@ namespace FMSFrontend.ViewModels
     {
         [ObservableProperty]
         private string machineName = "EDM-XX";
+
+        [ObservableProperty]
+        private bool isSelected;
 
         [ObservableProperty]
         private string status = "idle";

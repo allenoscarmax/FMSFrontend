@@ -12,6 +12,9 @@
                 <Style TargetType="Border">
                     <Setter Property="Background" Value="#DDDDDD" />
                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                            <Setter Property="Background" Value="#AAAAAA" />
+                        </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="#AAAAAA" />
                         </Trigger>
