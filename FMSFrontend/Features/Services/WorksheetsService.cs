@@ -68,8 +68,15 @@ namespace FMSFrontend.Features.Services
             => await _http.SendPutAsync($"Worksheet/DB_DeleteWorkSheetDataById/{Uri.EscapeDataString(id)}", new { });
 
         public async Task<List<WorksheetIncludeTimelineDto>?> GetWorkSheetsIncludeTimelineByDateTimeAsync(DateTime start, DateTime end, CancellationToken ct = default)
-            => await _http.GetJsonAsync<List<WorksheetIncludeTimelineDto>>(
-                $"Worksheet/DB_GetWorkSheetsIncludeTimelineByDateTime/{start:O}/{end:O}", ct);
+        {
+            // 將日期強制轉換為標準的 ISO 8601 格式 (yyyy-MM-ddTHH:mm:ss)
+            // 這樣產生的格式會是: 2026-04-20T00:00:00，這是 API 最容易解析的格式
+            var startStr = start.ToString("yyyy-MM-ddTHH:mm:ss");
+            var endStr = end.ToString("yyyy-MM-ddTHH:mm:ss");
+
+            return await _http.GetJsonAsync<List<WorksheetIncludeTimelineDto>>(
+                $"Worksheet/DB_GetWorkSheetsIncludeTimelineByDateTime/{startStr}/{endStr}", ct);
+        }
 
         public async Task<WorksheetsTimelineDto?> GetWorksheetsTimelineByWorkSheetSerialAsync(string workSheetSerial, CancellationToken ct = default)
             => await _http.GetJsonAsync<WorksheetsTimelineDto>(

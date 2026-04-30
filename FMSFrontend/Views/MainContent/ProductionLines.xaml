@@ -83,7 +83,7 @@
                         </StackPanel>
 
                         <!-- 右側：顯示文字（可點擊開資訊視窗） -->
-                        <Button Name="BtnMMaterial" Grid.Column="1" Height="40" Width="176" Padding="12,6" Command="{Binding ShowCurrentMaterialInfoCommand}" Cursor="Hand" Background="#FFFFFF" BorderBrush="#DDDDDD" BorderThickness="1" Foreground="#555" FontSize="16" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                        <Button Name="BtnMMaterial" Grid.Column="1" Height="40" Width="176" Padding="12,6" Command="{Binding ShowCurrentMaterialInfoCommand}" Cursor="Hand" Background="#FFFFFF" BorderBrush="#DDDDDD" BorderThickness="1" Foreground="#555" FontSize="14" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                             <Button.Resources>
                                 <!-- 讓 Button 的外框也吃圓角 -->
                                 <Style TargetType="Border">

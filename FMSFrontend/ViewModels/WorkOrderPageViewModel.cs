@@ -386,7 +386,8 @@ namespace FMSFrontend.ViewModels
                 {
                     if (FromDate != null && ToDate != null)
                     {
-                        List<WorksheetIncludeTimelineDto> dtos = await _WorksheetsService.GetWorkSheetsIncludeTimelineByDateTimeAsync(FromDate.Value, ToDate.Value, ct) ?? new();
+                        var dtoss = await _WorksheetsService.GetWorkSheetsIncludeTimelineByDateTimeAsync(FromDate.Value, ToDate.Value, ct) ?? new();
+                        List<WorksheetIncludeTimelineDto> dtos = dtoss;
 
                         ws = MappedWorksheets(dtos);
                     }

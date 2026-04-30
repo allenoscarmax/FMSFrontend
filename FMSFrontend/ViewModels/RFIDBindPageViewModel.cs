@@ -161,6 +161,12 @@ namespace FMSFrontend.ViewModels
                     else
                         ShowWarning("未讀取到電極資料");
                     break;
+                case MaterialKind.Probe:
+                    if (rFIDBindmodel.ReadElectrodeFlag)
+                        _windowService.ShowMaterialInformation(rFIDBindmodel.electrode, rFIDBindmodel.Timeline);
+                    else
+                        ShowWarning("未讀取到探針資料");
+                    break;
                 case MaterialKind.Workpiece:
                     if (rFIDBindmodel.ReadWorkpieceFlag)
                         _windowService.ShowMaterialInformation(rFIDBindmodel.workpiece, rFIDBindmodel.Timeline);
