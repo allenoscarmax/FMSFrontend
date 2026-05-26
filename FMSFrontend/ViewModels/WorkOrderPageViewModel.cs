@@ -67,7 +67,7 @@ namespace FMSFrontend.ViewModels
         }
         private bool CanRevise() => EDMSelectedTab == 2 && SelectedEDMQueueItem != null;
 
-        private bool CanFail() => EDMSelectedTab == 2 && SelectedEDMQueueItem != null;
+        private bool CanFail() =>( EDMSelectedTab == 2 || EDMSelectedTab == 1) && SelectedEDMQueueItem != null;
 
         [ObservableProperty]
         private int selectedTabIndexParameter;
