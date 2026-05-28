@@ -92,12 +92,18 @@ namespace FMSFrontend.ViewModels.Production
                     MachineCardVm[updateCnt].onDeckElectrodeSerial = Machines[updateCnt].OnDeckElectrodeSerial;
                     MachineCardVm[updateCnt].onDeckWorkpieceSerial = Machines[updateCnt].OnDeckWorkpieceSerial;
                     MachineCardVm[updateCnt].onDeckWorksheetSerial = Machines[updateCnt].OnDeckWorksheetSerial;
-                    MachineCardVm[updateCnt].ElectrodeName = Machines[updateCnt].ElectrodeShortName;
-                    MachineCardVm[updateCnt].WorkpieceName = Machines[updateCnt].WorkpieceShortName;
+
+                    MachineCardVm[updateCnt].ElectrodeShortName = Machines[updateCnt].ElectrodeShortName;
+                    MachineCardVm[updateCnt].WorkpieceShortName = Machines[updateCnt].WorkpieceShortName;
+
+                    MachineCardVm[updateCnt].ElectrodeName = Machines[updateCnt].ElectrodeName;
+                    MachineCardVm[updateCnt].WorkpieceName = Machines[updateCnt].WorkpieceName;
+                    MachineCardVm[updateCnt].WorksheetName = Machines[updateCnt].OscarEdm.MachiningCode;
+
                     MachineCardVm[updateCnt].MainProgramName = Machines[updateCnt].OscarEdm.MainProgramName;
                     MachineCardVm[updateCnt].CycleTime = Machines[updateCnt].OscarEdm.CycleTime;
 
-                    MachineCardVm[updateCnt].Restriction =  !Machines[updateCnt].OscarEdm.CanControl;
+                    MachineCardVm[updateCnt].Restriction = !Machines[updateCnt].OscarEdm.CanControl;
                 }
                 while (MachineCardVm.Count > Machines.Count)
                 {
@@ -173,7 +179,7 @@ namespace FMSFrontend.ViewModels.Production
         public MachineCardViewModel(ProductionLinesViewModel parent) { _parent = parent; }
 
         [ObservableProperty] private string machineName = ""; //設備名稱
-        [ObservableProperty] private string status = "";  
+        [ObservableProperty] private string status = "";
         [ObservableProperty] private MachineType type = MachineType.EDM; //設備類型
         [ObservableProperty] private bool restriction;  //設備鎖定 保留
         //設備資訊
@@ -186,6 +192,10 @@ namespace FMSFrontend.ViewModels.Production
 
         [ObservableProperty] private string electrodeName = "";
         [ObservableProperty] private string workpieceName = "";
+        [ObservableProperty] private string worksheetName = "";
+
+        [ObservableProperty] private string electrodeShortName = "";
+        [ObservableProperty] private string workpieceShortName = "";
 
         //由Status決定顏色
         public Brush StatusBrush => Status switch

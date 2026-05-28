@@ -21,6 +21,7 @@ namespace FMSFrontend.Models
         [ObservableProperty] public int processingTotal = 0;   //加工中總數
         [ObservableProperty] public int errorTotal = 0;        //異常總數
         [ObservableProperty] public int completedTotal = 0;    //已完成總數
+        [ObservableProperty] public int failTotal = 0;         //失敗總數
         [ObservableProperty] public int restrictionTotal = 0;  //鎖定總數
         [ObservableProperty] public int bookedTotal = 0;       //預約總數
         //所有儲存庫
@@ -34,7 +35,7 @@ namespace FMSFrontend.Models
         // 讀取參數
         [ObservableProperty] private string name = string.Empty;
         [ObservableProperty] private string number = string.Empty;
-       // [ObservableProperty] private string serial = string.Empty; // 材料庫序號
+        // [ObservableProperty] private string serial = string.Empty; // 材料庫序號
         // 尺寸
         [ObservableProperty] private int rows = 0;    // 最大列數
         [ObservableProperty] private int columns = 0; // 最大行數
@@ -45,6 +46,7 @@ namespace FMSFrontend.Models
         [ObservableProperty] private int processingCount = 0;  // 加工中數
         [ObservableProperty] private int errorCount = 0;       // 異常數
         [ObservableProperty] private int completedCount = 0;   // 已完成數
+        [ObservableProperty] private int failCount = 0;        // 失敗數
         [ObservableProperty] private int restrictionCount = 0; // 鎖定總數
         [ObservableProperty] private int bookedCount = 0;      // 預約總數
         // 自動計算屬性
@@ -94,16 +96,18 @@ namespace FMSFrontend.Models
                 // ② 預約狀態（Reserved）
                 if (StorageStatus == "Booked")
                 {
-                    return Brushes.White; // 白色
+                    return Brushes.White; // 米色
                 }
 
                 // ③ 一般材料狀態
                 return MaterialStatus switch
                 {
                     "Verified" => new SolidColorBrush(Color.FromRgb(0xE6, 0xB9, 0x3E)),
-                    "Working" => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)),
+                    "Processing" => new SolidColorBrush(Color.FromRgb(0x56, 0xC0, 0x6C)),
                     "Error" => new SolidColorBrush(Color.FromRgb(0xC0, 0x39, 0x2B)),
                     "Completed" => new SolidColorBrush(Color.FromRgb(0x2F, 0x64, 0xCF)),
+                    "Failure" => new SolidColorBrush(Color.FromRgb(0x8A, 0x2B, 0xE2)),
+                    "Faulty" => new SolidColorBrush(Color.FromRgb(0x8A, 0x2B, 0xE2)),
                     "Booked" => Brushes.White,
                     _ => new SolidColorBrush(Color.FromRgb(245, 245, 220))
                 };
