@@ -274,6 +274,7 @@ namespace FMSFrontend.ViewModels
             _ = RefreshFetchAsync();
         }
 
+                        bool ok = await _plcService.BalluffPowerAsync(true);
         private async Task RefreshFetchAsync()
         {
             try
