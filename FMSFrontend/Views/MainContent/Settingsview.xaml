@@ -166,6 +166,18 @@
                                                                 <TextBlock Grid.Column="2" Text="注意：點擊備份資料庫。" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
                                                             </Grid>
                                                         </GroupBox>
+                                                        <GroupBox Header="DebugView" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="1.5" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Button Grid.Column="0" Content="開啟" Width="120" Height="40" FontSize="20" VerticalAlignment="Center" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,15,0" Command="{Binding OpenDebugViewCommand}" />
+                                                                <Border Grid.Column="1" Background="Black" />
+                                                                <TextBlock Grid.Column="2" Text="開啟除錯資訊視窗。" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" Margin="8,0,0,0" />
+                                                            </Grid>
+                                                        </GroupBox>
                                                         <!-- 日誌重置 -->
                                                         <!--
                                                         <GroupBox Header="日誌重置" Style="{StaticResource CustomGroupBoxStyle}" Margin="0,0,0,10">

@@ -3,8 +3,11 @@
         <selectors:TabItemBackgroundSelector x:Key="TabtemColorSelector" />
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
-    <Border BorderBrush="#000000" BorderThickness="1" CornerRadius="0">
-        <Grid Background="{DynamicResource PageViewBrush}" Loaded="ToggleRoot_Loaded">
+    <Border BorderBrush="#000000" BorderThickness="0" CornerRadius="10,10,10,10" Margin="0,5,0,0" Background="{DynamicResource PageViewBrush}" >
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
+        </Border.Effect>
+        <Grid Background="Transparent" Loaded="ToggleRoot_Loaded">
 
             <!-- 🧩 頂層切 2 Row：標題 + 內容 -->
             <Grid.RowDefinitions>
@@ -15,7 +18,7 @@
             </Grid.RowDefinitions>
 
             <!-- 🔹 標題區塊 -->
-            <Border Grid.Row="0" Background="#CCCCCC" BorderThickness="1" BorderBrush="#000000">
+            <Border Grid.Row="0" Background="#CCCCCC" BorderThickness="0" BorderBrush="#000000" CornerRadius="10,10,0,0">
                 <!-- 修正：使用 Grid 分三欄，避免在無 Grid 的 Border 內使用 Grid.Column -->
                 <Grid Margin="12,0">
                     <Grid.ColumnDefinitions>
@@ -26,8 +29,8 @@
 
                     <!-- 左側原資訊 -->
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <materialDesign:PackIcon Kind="MonitorDashboard" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" />
-                        <TextBlock Text="{Binding MachineName}" d:Text="EDM1" TextDecorations="Underline" FontSize="20" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                        <materialDesign:PackIcon Kind="MonitorDashboard" Width="24" Height="24" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding MachineName}" d:Text="EDM1" TextDecorations="Underline" FontSize="30" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="10,0,20,0" />
                         <TextBlock Text=" 機台資訊" FontSize="20" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
                     </StackPanel>
 
@@ -65,7 +68,7 @@
                                                             <!-- 勾選：瞬間版 -->
                                                             <VisualState x:Name="CheckedInstant">
                                                                 <Storyboard>
-                                                                    <DoubleAnimation Storyboard.TargetName="KnobTransform" Storyboard.TargetProperty="X" To="71" Duration="0:0:0" />
+                                                                    <DoubleAnimation Storyboard.TargetName="KnobTransform" Storyboard.TargetProperty="X" To="31" Duration="0:0:0" />
                                                                     <ColorAnimation Storyboard.TargetName="TrackBrush" Storyboard.TargetProperty="Color" To="#CCCCCC" Duration="0:0:0" />
                                                                 </Storyboard>
                                                             </VisualState>
@@ -93,7 +96,7 @@
                                                             <VisualState x:Name="Checked">
                                                                 <Storyboard>
                                                                     <!-- 180(總寬)-2*2(邊距)-92(滑塊寬)=82；略加手感微調 -> 84 -->
-                                                                    <DoubleAnimation Storyboard.TargetName="KnobTransform" Storyboard.TargetProperty="X" To="71" Duration="0:0:0.2">
+                                                                    <DoubleAnimation Storyboard.TargetName="KnobTransform" Storyboard.TargetProperty="X" To="31" Duration="0:0:0.2">
                                                                         <DoubleAnimation.EasingFunction>
                                                                             <CubicEase EasingMode="EaseOut" />
                                                                         </DoubleAnimation.EasingFunction>
@@ -127,7 +130,7 @@
                                                     </Border>
 
                                                     <!-- 滑塊 -->
-                                                    <Border x:Name="Knob" Width="75" Height="40" Margin="1" CornerRadius="18" Background="White" VerticalAlignment="Center" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5">
+                                                    <Border x:Name="Knob" MinWidth="120" Height="40" Margin="1" CornerRadius="18" Background="White" VerticalAlignment="Center" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5">
                                                         <Border.Effect>
                                                             <DropShadowEffect Color="#000000" BlurRadius="10" ShadowDepth="1" Opacity="0.25" />
                                                         </Border.Effect>
@@ -183,7 +186,7 @@
             </Border>
 
             <!-- 🔸 下方內容區 -->
-            <Grid Grid.Row="1" Margin="16">
+            <Grid Grid.Row="1" Margin="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="550" />
@@ -202,9 +205,12 @@
                         </Grid.ColumnDefinitions>
                         <!-- 🔹 左上圖片 -->
                         <Border Grid.Column="0" Background="White" CornerRadius="8" Margin="8" BorderBrush="LightGray" BorderThickness="1">
-                            <Image Source="{Binding MachineImagePath}" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
+                            </Border.Effect>
+                            <Image Source="{Binding MachineImagePath}" Margin="10" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" d:Source="pack://application:,,,/FMSFrontend;component/Image/MachineIcons/EDM.png" />
                         </Border>
-
+                        <!-- 機台資訊區 -->
                         <Border Grid.Column="1" Background="White" CornerRadius="10" Margin="8" SnapsToDevicePixels="True">
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3" />
@@ -244,7 +250,7 @@
                                                     <Setter Property="ContentTemplate">
                                                         <Setter.Value>
                                                             <DataTemplate>
-                                                                <Grid>
+                                                                <Grid Margin="5,0">
                                                                     <Grid.ColumnDefinitions>
                                                                         <ColumnDefinition Width="2*" />
                                                                         <!-- 標籤 -->
@@ -295,7 +301,7 @@
                                                     <Setter Property="ContentTemplate">
                                                         <Setter.Value>
                                                             <DataTemplate>
-                                                                <Grid>
+                                                                <Grid Margin="5,0">
                                                                     <Grid.ColumnDefinitions>
                                                                         <ColumnDefinition Width="2*" />
                                                                         <!-- 標籤 -->

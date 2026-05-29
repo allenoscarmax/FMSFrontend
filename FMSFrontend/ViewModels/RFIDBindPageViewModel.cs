@@ -13,9 +13,11 @@ using FMSFrontend.Services;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Bson.IO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -35,6 +37,7 @@ namespace FMSFrontend.ViewModels
         private readonly IPlcService _plcService;
         private readonly IAuthorizationService _auth;
         private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
+        
         // === Singleton ===
         public RFIDBindStore RfidBindStore { get; }
         public RFIDBindModel rFIDBindmodel => RfidBindStore.RfidBind;
@@ -53,7 +56,19 @@ namespace FMSFrontend.ViewModels
             RfidBindStore = rfidBindStore;
             _rfidUpdater = rfidUpdater;
             _rfidUpdater.ReadTagFlag = true;
+            _rfidUpdater.PropertyChanged += OnRfidUpdaterPropertyChanged;
             _auth = auth;
+        }
+
+        private void OnRfidUpdaterPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(RFIDBindLiveUpdater.IsResetting))
+                return;
+
+            if (Application.Current?.Dispatcher?.CheckAccess() == true)
+                BalluffResetCommand.NotifyCanExecuteChanged();
+            else
+                Application.Current?.Dispatcher?.Invoke(BalluffResetCommand.NotifyCanExecuteChanged);
         }
 
         // ====== 日期篩選 ======
@@ -209,25 +224,20 @@ namespace FMSFrontend.ViewModels
             _rfidUpdater.ReadTagFlag = false;
             RefreshFetch();   // 關閉視窗後重新抓取並綁定
         }
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanExecuteBalluffReset))]
         private async Task BalluffReset()
         {
             if (!_auth.RequireLoginAndWriteOperation(30)) return;
 
             try
             {
-                bool ok = await _plcService.BalluffPowerAsync(true);
-                await Task.Delay(1000);
-                ok = await _plcService.BalluffPowerAsync(false);
-                await Task.Delay(1000);
-                ok = await _rfidService.RFID_to_disconnect(0);
-                await Task.Delay(300);
-                ok = await _rfidService.RFID_to_connect(0);
-
+                await RunBalluffResetAsync();
                 _windowService.ShowMessage("OK");
             }
             catch { }
         }
+
+        private bool CanExecuteBalluffReset() => !_rfidUpdater.IsResetting;
 
         [RelayCommand]
         private async Task Clear()
@@ -261,6 +271,7 @@ namespace FMSFrontend.ViewModels
         {
             // _rfidUpdater.Start();
             RefreshFetch(); // 重新抓資料
+            _ = RunBalluffResetAsync(); // 進入頁面時執行重置
         }
 
         // 當頁面卸載時停止
@@ -287,7 +298,24 @@ namespace FMSFrontend.ViewModels
             rFIDBindmodel.to = ToDate; // 更新模型的日期範圍
             _rfidUpdater.ReadTagFlag = false;
             bool ok = await _rfidUpdater.UpdateStatusAsync();
+
+           
         }
+
+        private async Task RunBalluffResetAsync()
+        {
+            BalluffResetCommand.NotifyCanExecuteChanged();
+
+            try
+            {
+                await _rfidUpdater.RfidResetAsync();
+            }
+            finally
+            {
+                BalluffResetCommand.NotifyCanExecuteChanged();
+            }
+        }
+
         private void ShowWarning(string message)
         {
             FMSFrontend.Extensions.DialogMessageWindow dd = new Extensions.DialogMessageWindow(message);

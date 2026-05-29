@@ -23,9 +23,27 @@ namespace FMSFrontend.Views
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            
             if (this.Resources["MoveBorderStoryboard"] is Storyboard sb)
             {
                 sb.Begin(this, true);
+            }
+            
+        }
+
+        private void MovingBorder_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (this.Resources["MoveBorderStoryboard"] is Storyboard sb)
+            {
+                sb.Pause(this);
+            }
+        }
+
+        private void MovingBorder_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (this.Resources["MoveBorderStoryboard"] is Storyboard sb)
+            {
+                sb.Resume(this);
             }
         }
     }
