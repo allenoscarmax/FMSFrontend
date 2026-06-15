@@ -113,13 +113,13 @@ namespace FMSFrontend.ViewModels
             ShowMachineOverview();
 
         }
-        public void OnPageActivated()
+        public void OnPageActivated() //開啟畫面事件
         {
 
             _storageUpdater.Start();
             _machineLiveUpdater.Start();
         }
-        public void OnPageDeactivated()
+        public void OnPageDeactivated() //離開畫面事件
         {
             _storageUpdater.Stop();
             _machineLiveUpdater.Stop();
@@ -435,7 +435,7 @@ namespace FMSFrontend.ViewModels
         }
 
         [RelayCommand]
-        private async Task ShowCurrentMaterialInfo()
+        private async Task ShowCurrentMaterialInfo() //顯示材料訊息
         {
             var robotModel = this.RobotModel;
 

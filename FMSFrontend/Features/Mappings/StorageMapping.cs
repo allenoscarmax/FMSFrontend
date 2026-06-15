@@ -42,25 +42,6 @@ namespace FMSFrontend.Features.Mappings
 
                 models[i].Columns = Math.Max(1, g.Max(x => x.column));    //最大列數
                 int SlotsCnt = 0;
-
-                /*
-                for (int r = 1; r <= models[i].Rows; r++)
-                {
-                    for (int c = 1; c <= models[i].Columns; c++)
-                    {
-                        if (models[i].Slots.Count == SlotsCnt)
-                            models[i].Slots.Add(new Slot());
-                        var rec = g.FirstOrDefault(x => x.row == r && x.column == c);
-                        models[i].Slots[SlotsCnt].Kind = MaterialType.None;
-                        models[i].Slots[SlotsCnt].Serial = rec?.ondeskTagserial ?? "";
-                        models[i].Slots[SlotsCnt].StorageStatus = rec?.state ?? "";
-                        models[i].Slots[SlotsCnt].StorageRestriction = rec?.restriction ?? false;
-                        models[i].Slots[SlotsCnt].SlotCode = $"{rec?.storageName}:{rec?.storageNumber}:{rec?.region}:{rec?.column}:{rec?.row}";
-                        SlotsCnt++;
-                    }
-                }
-                */
-
                 // 依 region 逐一排列 row，再依 column
                 foreach (var regionInfo in regionInfos)
                 {
@@ -102,7 +83,7 @@ namespace FMSFrontend.Features.Mappings
             model.Kind = MaterialType.Electrode;
             model.Name = dto?.electrodeName ?? "";
             string[] sr = Conversion.ShortNameConversion(true, dto?.electrodeName ?? "").Split('-');
-            model.ShortName = sr[0]+"\r\n-"+sr[1];  //20260120佑義要求修改電極名稱規則
+            model.ShortName = sr.Length > 1 ? sr[0] + "\r\n-" + sr[1] : sr[0];  //20260120佑義要求修改電極名稱規則
             model.MaterialStatus = dto?.state ?? "";
             model.MaterialRestriction = dto?.restriction ?? false;
             //庫存資訊
@@ -118,7 +99,7 @@ namespace FMSFrontend.Features.Mappings
             model.Kind = MaterialType.Workpiece;
             model.Name = dto?.workpieceName ?? "";
             string[] sr = Conversion.ShortNameConversion(true, dto?.workpieceName ?? "").Split('-');
-            model.ShortName = sr[0] + "\r\n-" + sr[1];  //20260120佑義要求修改電極名稱規則
+            model.ShortName = sr.Length>2? sr[0] + "\r\n-" + sr[1]: sr[0];  //20260120佑義要求修改電極名稱規則
             model.MaterialStatus = dto?.status ?? "";
             model.MaterialRestriction = dto?.restriction ?? false;
             //庫存資訊

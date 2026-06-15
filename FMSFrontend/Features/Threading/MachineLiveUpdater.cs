@@ -52,7 +52,7 @@ namespace FMSFrontend.Features.Threading
                 _isUpdating = true;
                 try
                 {
-                    await UpdateStatusAsync();
+
                 }
                 finally
                 {
@@ -60,6 +60,7 @@ namespace FMSFrontend.Features.Threading
                 }
             };
         }
+
         public async Task<bool> UpdateStatusAsync()
         {
             try

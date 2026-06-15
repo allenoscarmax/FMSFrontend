@@ -8,6 +8,7 @@ using FMSFrontend.Helpers;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Models;
 using FMSFrontend.Services;
+using FMSFrontend.SQL.Server;
 using FMSFrontend.ViewModels;
 using FMSFrontend.ViewModels.Factory;
 using FMSFrontend.ViewModels.Windows;
@@ -49,19 +50,20 @@ namespace FMSFrontend
 
             // === 共用服務層 ===
             services.AddSingleton<IHttpService, HttpService>();
+            services.AddSingleton<ISqlServer, SqlServer>();
             services.AddSingleton<IWindowService, WindowService>();
             #region RestoreSingleton
 
             // === Services ===
-            services.AddSingleton<IElectrodeService, ElectrodeService>();
+            services.AddSingleton<IElectrodeService, ElectrodeServiceSQL>();
             services.AddSingleton<IProbeService, ProbeService>();
             services.AddSingleton<IRfidService, RfidService>();
             services.AddSingleton<IRobotService, RobotService>();
             services.AddSingleton<IPlcService, PlcService>();
-            services.AddSingleton<IWorkpieceService, WorkpieceService>();
+            services.AddSingleton<IWorkpieceService, WorkpieceServiceSQL>();
             services.AddSingleton<IWorksheetsService, WorksheetsService>();
             services.AddSingleton<IMachinesService, MachinesService>();
-            services.AddSingleton<IStorageService, StorageService>();
+            services.AddSingleton<IStorageService, StorageServiceSQL>();
             services.AddSingleton<IDevicesService, DevicesService>();
             services.AddSingleton<IMongoDBService, MongoDBService>();
             services.AddSingleton<IServerHealthService, ServerHealthService>();

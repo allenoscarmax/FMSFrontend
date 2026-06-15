@@ -3,21 +3,29 @@ using FMSFrontend.Features.Services;
 using FMSFrontend.Features.Singleton;
 using FMSFrontend.Models;
 using FMSFrontend.SQL.Server;
+using FMSFrontend.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
-namespace FMSFrontend.Features.Threading
+namespace FMSFrontend.SQL.Timer
 {
-    public class StorageLiveUpdater : IDisposable
+    public class CycLiveUpdater : IDisposable
     {
-        private readonly IStorageService _svc_Storage;
+        enum Page
+        {
+            ProductionLines = 0,
+        }
         private readonly ISqlServer _sqlServer;
+        private readonly IStorageService _svc_Storage;
         private readonly IElectrodeService _svc_electrode;
         private readonly IWorkpieceService _svc_Workpiece;
-        private readonly IProbeService _svc_Probe;
+        private readonly IDevicesService _svc_devices;
+        private readonly IWorksheetsService _svc_Worksheets;
+        private readonly IAlarmService _svc_alarm;
+
 
         private readonly StorageStore _store;
         private readonly DispatcherTimer _timer;
@@ -27,17 +35,22 @@ namespace FMSFrontend.Features.Threading
         //private CancellationTokenSource? _currentUpdateCts; // 取消目前更新的 CancellationTokenSource
         private bool _isUpdating; // 用於避免重入的旗標
 
-        public StorageLiveUpdater(IElectrodeService electrodeService, IStorageService storageService,
-            ISqlServer sqlServerService,
-            IWorkpieceService workpieceService, IProbeService probeService, StorageStore store)
+        public CycLiveUpdater(ISqlServer sqlServerService,
+            IStorageService storageService,
+            IElectrodeService electrodeService,
+            IWorkpieceService workpieceService,
+            IDevicesService devicesService,
+            IWorksheetsService worksheetsService,
+            IAlarmService alarmService)
         {
-            _svc_electrode = electrodeService;
-            _svc_Storage = storageService;
             _sqlServer = sqlServerService;
+            _svc_Storage = storageService;
+            _svc_electrode = electrodeService;
             _svc_Workpiece = workpieceService;
-            _svc_Probe = probeService;
+            _svc_devices = devicesService;
+            _svc_Worksheets = worksheetsService;
+            _svc_alarm = alarmService;
 
-            _store = store;
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(0.8) };
             _timer.Tick += async (_, __) =>
             {
@@ -127,75 +140,6 @@ namespace FMSFrontend.Features.Threading
             _store.ApplySelectStorage(SelectTitle);
             return true;
         }
-        public async Task<bool> UpdateStatusAsync()
-        {
-            try
-            {
-                var storage = await _svc_Storage.GetAllStorageAsync();
-                if (storage == null) return false;
-                _store.ApplyStorageDto(storage);
-                for (int i = 0; i < _store.StorageGroup.Storage.Count; i++)
-                {
-                    StorageModel s = _store.StorageGroup.Storage[i];
-                    for (int j = 0; j < s.Slots.Count; j++)
-                    {
-                        var slot = s.Slots[j];
-                        if (!string.IsNullOrWhiteSpace(slot.Serial))
-                        {
-                            if (s.Kind == MaterialType.Electrode) //檢查是否為電極
-                            {
-                                var eleDtos = await _svc_electrode.DB_GetElectrodesByTagSerialAsync(slot.Serial);
-                                if (eleDtos != null)
-                                {
-                                    var eleDto = eleDtos.FirstOrDefault() ?? new ElectrodeDto();
-                                    _store.ApplyElectrodeDto(eleDto, i, j); // 傳入 index
-                                }
-                                else //檢查是否為探針
-                                {
-                                    var probeDto = await _svc_Probe.DB_GetProbeByTagSerialAsync(slot.Serial);
-                                    if (probeDto != null)
-                                    {
-                                        _store.ApplyProbeDto(probeDto, i, j); // 傳入 index
-                                    }
-                                    else
-                                    {
-                                        _store.ApplyNullDto(i, j); // 傳入 index
-                                    }
-                                }
-                            }
-                            else if (s.Kind == MaterialType.Workpiece) //檢查是否為工件
-                            {
-                                var workpieceDto = await _svc_Workpiece.GetWorkpieceByTagSerialAsync(slot.Serial);
-                                if (workpieceDto != null)
-                                {
-                                    _store.ApplyWorkpieceDto(workpieceDto, i, j); // 傳入 index
-                                }
-                                else
-                                {
-                                    _store.ApplyNullDto(i, j); // 傳入 index
-                                }
-                            }
-                            else
-                            {
-                                _store.ApplyNullDto(i, j); // 傳入 index
-                            }
-                        }
-                        else
-                        {
-                            _store.ApplyNullDto(i, j); // 傳入 index
-                        }
-                    }
-                }
-                _store.ApplyStatusCount();
-                _store.ApplySelectStorage(SelectTitle);
-                return true;
-            }
-            catch 
-            {
-                return false;
-            }
-        }
-        public int Cnt = 0;
         public void Start()
         {
             _ = UpdateStatusAsyncBySQL();
@@ -205,8 +149,8 @@ namespace FMSFrontend.Features.Threading
         public void Dispose() => _timer.Stop();
 
         private static bool IsProbe(ElectrodeDto dto)
-            => (!string.IsNullOrWhiteSpace(dto.electrodeType) && dto.electrodeType.Contains("Probe", StringComparison.OrdinalIgnoreCase))
-               || (!string.IsNullOrWhiteSpace(dto.electrodeName) && dto.electrodeName.Contains("Probe", StringComparison.OrdinalIgnoreCase));
+            => !string.IsNullOrWhiteSpace(dto.electrodeType) && dto.electrodeType.Contains("Probe", StringComparison.OrdinalIgnoreCase)
+               || !string.IsNullOrWhiteSpace(dto.electrodeName) && dto.electrodeName.Contains("Probe", StringComparison.OrdinalIgnoreCase);
 
         private static ProbeDto ToProbeDto(ElectrodeDto dto)
             => new ProbeDto

@@ -1,5 +1,7 @@
 ﻿using FMSFrontend.Features.Dtos;
 using FMSFrontend.Services;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,22 +10,16 @@ namespace FMSFrontend.Features.Services
     public interface IStorageService
     {
         // ==== Storage 區 ====
-        Task<List<StorageDto>?> GetAllStorageAsync(CancellationToken ct = default);                                     // GET Storage/DB_GetAllStorageData
-        Task<bool> UpdateStorageDataAsync(StorageDto storageDto, CancellationToken ct = default);                       // PUT Storage/DB_UpdateStorageData
-
-        Task<bool> SetOndeskTagserialByLocationAsync(                                                               // PUT Storage/DB_SetOndeskTagserialbyStorageLocation?StorageName=...&...
-            string storageName, string storageNumber, int region, int column, int row, string ondeskTagserial, CancellationToken ct = default);
-
-        Task<StorageDto?> GetStorageByLocationAsync(                                                                    // GET Storage/DB_GetStoragebyStorageLocation/{StorageName}/{StorageNumber}/{Region}/{Column}/{Row}
-            string storageName, string storageNumber, int region, int column, int row, CancellationToken ct = default);
-
-        Task<List<StorageDto>?> GetStorageByNameAsync(string storageName, string storageNumber, CancellationToken ct = default); // GET Storage/DB_GetStoragebyStorageName/{StorageName}/{StorageNumber}
-
-        Task<bool> RemoveOndeskTagserialFromAllLocationAsync(string tagSerial, CancellationToken ct = default);      // PUT Storage/DB_RemoveOndeskTagserialFromAllLocation/{TagSerial}
-        Task<bool> RemoveAllOndeskTagserialAsync(CancellationToken ct = default);                                    // PUT Storage/DB_RemoveAlldeskTagserialFromAllLocation
-
-        Task<bool> SetRestrictionByLocationAsync(                                                                    // PUT Storage/DB_SetRestrictionbyStorageLocation/{StorageName}/{StorageNumber}/{Region}/{Column}/{Row}/{Restriction}
-            string storageName, string storageNumber, int region, int column, int row, bool restriction, CancellationToken ct = default);
+        Task<List<StorageDto>?> GetAllStorageAsync(CancellationToken ct = default);     //取得所有倉儲資料                               
+        Task<StorageDto?> GetStorageByLocationAsync(string storageName, string storageNumber, int region, int column, int row, CancellationToken ct = default); //根據位置取得倉儲資料
+        Task<bool> UpdateStorageDataAsync(StorageDto storageDto, CancellationToken ct = default); //更新倉儲資料                      
+        Task<bool> SetRestrictionByLocationAsync(string storageName, string storageNumber, int region, int column, int row, bool restriction, CancellationToken ct = default); //根據位置禁用倉儲
+        /*
+                Task<bool> SetOndeskTagserialByLocationAsync(string storageName, string storageNumber, int region, int column, int row, string ondeskTagserial, CancellationToken ct = default);
+                Task<List<StorageDto>?> GetStorageByNameAsync(string storageName, string storageNumber, CancellationToken ct = default); 
+                Task<bool> RemoveOndeskTagserialFromAllLocationAsync(string tagSerial, CancellationToken ct = default);  
+                Task<bool> RemoveAllOndeskTagserialAsync(CancellationToken ct = default);                                 
+        */
     }
 
     public class StorageService : IStorageService
@@ -67,4 +63,5 @@ namespace FMSFrontend.Features.Services
         public async Task<bool> SetRestrictionByLocationAsync(string storageName, string storageNumber, int region, int column, int row, bool restriction, CancellationToken ct = default)
             => await _http.SendPutAsync($"Storage/DB_SetRestrictionbyStorageLocation/{Uri.EscapeDataString(storageName)}/{Uri.EscapeDataString(storageNumber)}/{region}/{column}/{row}/{restriction}", new { });
     }
+
 }

@@ -1,44 +1,38 @@
 ﻿using FMSFrontend.Features.Dtos;
 using FMSFrontend.Services;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
 
 namespace FMSFrontend.Features.Services
 {
     public interface IWorkpieceService
     {
-        // ==== GET ====
-        Task<List<WorkpieceDto>?> GetAllWorkpieceAsync(CancellationToken ct = default);
-        Task<List<WorkpieceDto>?> GetAllOnShelfWorkpieceAsync(CancellationToken ct = default);
+        Task<List<WorkpieceDto>?> GetAllWorkpieceAsync(CancellationToken ct = default); // 取得所有工件
+        Task<WorkpieceDto?> GetWorkpieceByTagSerialAsync(string tagSerial, CancellationToken ct = default);       // 序號篩選
+        Task<WorkpieceDto?> GetWorkpieceByWorksheetNumberAsync(string WorksheetNumber, CancellationToken ct = default); //由工單篩選
+        Task<List<WpTimelineDto>?> GetWorkpieceTimelineByWorkpieceIdAsync(string workpieceId, CancellationToken ct = default); //由Id取得工件 Timeline
 
-        Task<WorkpieceDto?> GetWorkpieceByIdAsync(string id, CancellationToken ct = default);
-        Task<WorkpieceDto?> GetWorkpieceByTagSerialAsync(string tagSerial, CancellationToken ct = default);       // 單筆
-        Task<List<WorkpieceDto>?> GetWorkpiecesByTagSerialAsync(string tagSerial, CancellationToken ct = default); // 多筆（另一支API）
-        Task<WorkpieceDto?> GetWorkpieceByWorksheetNumberAsync(string WorksheetNumber, CancellationToken ct = default);
+        Task<bool> UpdateWorkpieceDataAsync(WorkpieceDto payload, CancellationToken ct = default); //更新工件
+        Task<bool> SetWorkpieceRestrictionByTagSerialAsync(string tagSerial, bool restriction, CancellationToken ct = default); //用序號禁用工件
+        Task<bool> DeleteWorkpieceDataByIdAsync(string id, CancellationToken ct = default); //用ID刪除工件
 
-     
+        //Task<List<WorkpieceDto>?> GetWorkpiecesByTagSerialAsync(string tagSerial, CancellationToken ct = default); // 多筆（另一支API）
+        //Task<List<WorkpieceDto>?> GetAllOnShelfWorkpieceAsync(CancellationToken ct = default);
+        //Task<WorkpieceDto?> GetWorkpieceByIdAsync(string id, CancellationToken ct = default);
         // Timeline
-        Task<List<WpTimelineDto>?> GetWorkpieceTimelineByWorkpieceIdAsync(string workpieceId, CancellationToken ct = default); // GET
-        Task<List<WpTimelineDto>?> GetWorkpieceTimelineByIdAsync(string id, CancellationToken ct = default);                    // PUT（空 body）
-        Task<List<WpTimelineDto>?> GetWorkpieceTimelineByDateAsync(DateTime start, DateTime end, CancellationToken ct = default);
-
-       
+        //Task<List<WpTimelineDto>?> GetWorkpieceTimelineByIdAsync(string id, CancellationToken ct = default);                    // PUT（空 body）
+        //Task<List<WpTimelineDto>?> GetWorkpieceTimelineByDateAsync(DateTime start, DateTime end, CancellationToken ct = default);
 
         // ==== PUT ====
-        Task<bool> InsertWorkpieceAsync(WorkpieceDto payload, CancellationToken ct = default);
-        Task<bool> UpdateWorkpieceDataAsync(WorkpieceDto payload, CancellationToken ct = default);
-
-        Task<bool> SetWorkpieceRestrictionByTagSerialAsync(string tagSerial, bool restriction, CancellationToken ct = default);
-        Task<bool> SetWorkpieceRestrictionByIdAsync(string id, bool restriction, CancellationToken ct = default);
-        Task<bool> SetWorkpieceStatusByIdAsync(string id, string status, CancellationToken ct = default);
-        Task<bool> SetWorkpieceCurrentLocationByIdAsync(string id, string currentLocation, CancellationToken ct = default);
-
-        Task<bool> DeleteAllWorkpieceDataAsync(CancellationToken ct = default);
-        Task<bool> DeleteWorkpieceDataByIdAsync(string id, CancellationToken ct = default);
-        Task<bool> RemoveWorkpieceTagSerialDataByIdAsync(string id, CancellationToken ct = default);
-
-        Task<bool> DeleteAllWorkpieceTimelineAsync(CancellationToken ct = default);
+        //Task<bool> InsertWorkpieceAsync(WorkpieceDto payload, CancellationToken ct = default);
+        //Task<bool> SetWorkpieceRestrictionByIdAsync(string id, bool restriction, CancellationToken ct = default);
+        //Task<bool> SetWorkpieceStatusByIdAsync(string id, string status, CancellationToken ct = default);
+        //Task<bool> SetWorkpieceCurrentLocationByIdAsync(string id, string currentLocation, CancellationToken ct = default);
+        //Task<bool> DeleteAllWorkpieceDataAsync(CancellationToken ct = default);
+        //Task<bool> RemoveWorkpieceTagSerialDataByIdAsync(string id, CancellationToken ct = default);
+        //Task<bool> DeleteAllWorkpieceTimelineAsync(CancellationToken ct = default);
     }
 
     public class WorkpieceService : IWorkpieceService

@@ -9,11 +9,11 @@ namespace FMSFrontend.Features.Dtos
 
         [BsonRepresentation(BsonType.ObjectId)]
         public string _id { get; set; } = "";
-        public string worksheetNumber { get;set; } = "";
+        public string worksheetNumber { get;set; } = ""; //工單序號
         public string worksheetDone { get; set; } = "";
-        public string tagSerial { get; set; } = "";
-        public string electrodeName { get; set; } = "";
-        public string electrodeType { get; set; } = ""; //
+        public string tagSerial { get; set; } = ""; //序號
+        public string electrodeName { get; set; } = ""; //電極名稱
+        public string electrodeType { get; set; } = ""; //電極類型
         public string currentLocation { get; set; } = "";
         public string state { get; set; } = "";
         public string pairedEDM { get; set; } = "";

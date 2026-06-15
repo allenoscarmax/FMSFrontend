@@ -1,45 +1,49 @@
 ﻿using FMSFrontend.Features.Dtos;
 using FMSFrontend.Services;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace FMSFrontend.Features.Services
 {
     public interface IElectrodeService
     {
         // ===== Electrode Repository =====
-        Task<bool> DB_InsertElectrodeAsync(ElectrodeDto dto, CancellationToken ct = default);
-        Task<bool> DB_UpdateElectrodeDataAsync(ElectrodeDto dto, CancellationToken ct = default);
+        Task<List<ElectrodeDto>?> DB_GetAllElectrodeAsync(CancellationToken ct = default); //取得所有電極
+        Task<List<ElectrodeDto>?> DB_GetElectrodesByTagSerialAsync(string tagSerial, CancellationToken ct = default); //用序號篩選
+        Task<List<ElectrodeDto>?> GetElectrodeByWorksheetNumberAsync(string WorksheetNumber, CancellationToken ct = default); //用工單號篩選
+        Task<List<EleTimelineDto>?> DB_GetElectrodeTimelineByIdAsync(string id, CancellationToken ct = default); //用電極ID取得時間軸紀錄
 
-        Task<List<ElectrodeDto>?> DB_GetAllElectrodeAsync(CancellationToken ct = default);
+        Task<bool> DB_UpdateElectrodeDataAsync(ElectrodeDto dto, CancellationToken ct = default); //更新電極資料
+        Task<bool> DB_SetElectrodeRestrictionByTagSerialAsync(string tagSerial, bool restriction, CancellationToken ct = default); //禁用電極
+        Task<bool> DB_DeleteElectrodeDataByIdAsync(string id, CancellationToken ct = default); //用 ID 刪除電極資料
+
+        /*
+        Task<bool> DB_InsertElectrodeAsync(ElectrodeDto dto, CancellationToken ct = default);
         Task<List<ElectrodeDto>?> DB_GetAllOnShelfElectrodeAsync(CancellationToken ct = default);
         Task<List<ElectrodeDto>?> DB_GetElectrodeBySpecificStateAsync(string state, CancellationToken ct = default);
-        Task<List<ElectrodeDto>?> DB_GetElectrodesByTagSerialAsync(string tagSerial, CancellationToken ct = default);
         Task<ElectrodeDto?> DB_GetElectrodeByIdAsync(string id, CancellationToken ct = default);
-        Task<List<ElectrodeDto>?> GetElectrodeByWorksheetNumberAsync(string WorksheetNumber, CancellationToken ct = default);
         Task<bool> DB_SetElectrodeStateByTagSerialAsync(string tagSerial, string state, CancellationToken ct = default);
         Task<bool> DB_SetElectrodeUseTimesByTagSerialAsync(string tagSerial, int useTimes, CancellationToken ct = default);
-        Task<bool> DB_SetElectrodeRestrictionByTagSerialAsync(string tagSerial, bool restriction, CancellationToken ct = default);
         Task<bool> DB_SetElectrodeOffsetByTagSerialAsync(string tagSerial, string offset, CancellationToken ct = default);
-
         Task<bool> DB_SetElectrodeStateByIdAsync(string id, string state, CancellationToken ct = default);
         Task<bool> DB_SetElectrodeUseTimesByIdAsync(string id, int useTimes, CancellationToken ct = default);
         Task<bool> DB_SetElectrodeRestrictionByIdAsync(string id, bool restriction, CancellationToken ct = default);
         Task<bool> DB_SetElectrodeOffsetByIdAsync(string id, string offset, CancellationToken ct = default); // 後端路由存在，內部實作可能有小 typo
         Task<bool> DB_SetElectrodeCurrentLocationByIdAsync(string id, string currentLocation, CancellationToken ct = default);
-
         Task<bool> DB_DeleteAllElectrodeDataAsync(CancellationToken ct = default);
-        Task<bool> DB_DeleteElectrodeDataByIdAsync(string id, CancellationToken ct = default);
         Task<bool> DB_RemoveElectrodeTagSerialDataByIdAsync(string id, CancellationToken ct = default);
+        */
 
         // ===== Electrode Timeline =====
+        /*
         Task<bool> DB_InsertNewElectrodeTimelineAsync(EleTimelineDto dto, CancellationToken ct = default);
-        Task<List<EleTimelineDto>?> DB_GetElectrodeTimelineByIdAsync(string id, CancellationToken ct = default);
         Task<List<EleTimelineDto>?> DB_GetElectrodeTimelineByElectrodeIdAsync(string electrodeId, CancellationToken ct = default);
         Task<List<EleTimelineDto>?> DB_GetElectrodeTimelineByDateTimeAsync(DateTime start, DateTime end, CancellationToken ct = default);
         Task<bool> DB_DeleteAllElectrodeTimelineAsync(CancellationToken ct = default);
+        */
     }
 
     public class ElectrodeService : IElectrodeService

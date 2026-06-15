@@ -5,6 +5,7 @@ using FMSFrontend.Features.Dtos;
 using FMSFrontend.Features.Services;
 using FMSFrontend.Interfaces;
 using FMSFrontend.Services;
+using FMSFrontend.SQL.Server;
 using FMSFrontend.ViewModels.Windows;
 using FMSFrontend.Views.Windows;
 using IniFile;
@@ -26,6 +27,7 @@ namespace FMSFrontend.ViewModels
 
         private readonly IWindowService _windowService;
         private readonly IHttpService _httpService;
+        private readonly ISqlServer _sqlServer;
         private readonly IMachinesService _machinesService;
         private readonly IRobotService _robotService;
         private readonly IDevicesService _devicesService;
@@ -36,6 +38,7 @@ namespace FMSFrontend.ViewModels
 
         public SettingsPageViewModel(IWindowService windowService,
             IHttpService httpService,
+            ISqlServer sqlServer,
             IMachinesService machinesService,
             IRobotService robotService,
             IDevicesService devicesService,
@@ -46,6 +49,7 @@ namespace FMSFrontend.ViewModels
         {
             _windowService = windowService;
             _httpService = httpService;
+            _sqlServer = sqlServer;
             _machinesService = machinesService;
             _robotService = robotService;
             _devicesService = devicesService;
